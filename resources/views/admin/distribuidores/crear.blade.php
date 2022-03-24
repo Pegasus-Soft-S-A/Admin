@@ -55,5 +55,23 @@
         delimiter: [","],
     });
 
+    function recuperarInformacion() {
+
+        var cad = document.getElementById('identificacion').value;
+        $("#spinner").addClass("spinner spinner-success spinner-right");
+        $.post('{{ route('recuperarInformacionPost') }}', {
+            _token: '{{ csrf_token() }}',
+            cedula: cad
+        }, function(data) {
+            $("#spinner").removeClass("spinner spinner-success spinner-right");
+            if (data.identificacion) {
+                $("#razonsocial").val(data.razon_social);
+                $("#nombrecomercial").val(data.nombrecomercial);
+                $("#direccion").val(data.direccion);
+                $("#correo").val(data.correo);
+            
+            }
+        });
+    }
 </script>
 @endsection

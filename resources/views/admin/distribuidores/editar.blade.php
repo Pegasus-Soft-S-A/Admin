@@ -36,6 +36,29 @@
                             <div class="card-body">
                                 @include('admin.distribuidores._form')
                             </div>
+
+                            <div class="card-footer pt-2 pb-2">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <span class="font-size-sm font-weight-bolder text-dark ml-2">Auditoría</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="font-size-sm font-weight-bolder text-dark ml-2">Creación</span>
+                                        <span
+                                            class="font-size-sm text-primary ml-2">{{$distribuidor->usuariocreacion}}</span>
+                                        <span
+                                            class="font-size-sm text-primary ml-2">{{substr($distribuidor->fechacreacion,0,19)}}</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="font-size-sm font-weight-bolder text-dark ml-2">Modificación</span>
+                                        <span
+                                            class="font-size-sm text-primary ml-2">{{$distribuidor->usuariomodificacion}}</span>
+                                        <span
+                                            class="font-size-sm text-primary ml-2">{{substr($distribuidor->fechamodificacion,0,19)}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                         <!--end::Card-->
                     </form>
@@ -52,5 +75,22 @@
         delimiter: [","],
     });
 
+    function recuperarInformacion() {
+
+    var cad = document.getElementById('identificacion').value;
+        $("#spinner").addClass("spinner spinner-success spinner-right");
+        $.post('{{ route('recuperarInformacionPost') }}', {
+            _token: '{{ csrf_token() }}',
+            cedula: cad
+        }, function(data) {
+            $("#spinner").removeClass("spinner spinner-success spinner-right");
+            if (data.identificacion) {
+                $("#razonsocial").val(data.razon_social);
+                $("#nombrecomercial").val(data.nombrecomercial);
+                $("#direccion").val(data.direccion);
+                $("#correo").val(data.correo);
+            }
+        });
+    }
 </script>
 @endsection

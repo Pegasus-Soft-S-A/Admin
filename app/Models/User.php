@@ -11,34 +11,25 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use \Rackbeat\UIAvatars\HasAvatar;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $table = 'sis_distribuidores_usuarios';
+    protected $primaryKey = 'sis_distribuidores_usuariosid';
+    public $timestamps = false;
+    protected $rememberTokenName = false;
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'contrasena'
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    //Especificar que el campo clave es contrasena
+    public function getAuthPassword()
+    {
+        return $this->contrasena;
+    }
+
+    public function getAvatarNameKey()
+    {
+        return 'nombres';
+    }
 }

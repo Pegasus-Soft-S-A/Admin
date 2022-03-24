@@ -36,6 +36,28 @@
                             <div class="card-body">
                                 @include('admin.usuarios._form')
                             </div>
+
+                            <div class="card-footer pt-2 pb-2">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <span class="font-size-sm font-weight-bolder text-dark ml-2">Auditoría</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="font-size-sm font-weight-bolder text-dark ml-2">Creación</span>
+                                        <span
+                                            class="font-size-sm text-primary ml-2">{{$usuarios->usuariocreacion}}</span>
+                                        <span
+                                            class="font-size-sm text-primary ml-2">{{substr($usuarios->fechacreacion,0,19)}}</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <span class="font-size-sm font-weight-bolder text-dark ml-2">Modificación</span>
+                                        <span
+                                            class="font-size-sm text-primary ml-2">{{$usuarios->usuariomodificacion}}</span>
+                                        <span
+                                            class="font-size-sm text-primary ml-2">{{substr($usuarios->fechamodificacion,0,19)}}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!--end::Card-->
                     </form>

@@ -1,6 +1,19 @@
 @csrf
 <div class="form-group row">
     <div class="col-lg-6">
+        <label>Identificacion:</label>
+        <div id="spinner">
+            <input type="text" class="form-control {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
+                placeholder="Ingrese identificacion" name="identificacion" autocomplete="off"
+                value="{{ old('identificacion', $distribuidor->identificacion) }}" id="identificacion"
+                onkeypress="return validarNumero(event)" onblur="validarIdentificacion()" />
+        </div>
+        <span class="text-danger d-none" id="mensajeBandera">La cédula o Ruc no es válido</span>
+        @if ($errors->has('identificacion'))
+        <span class="text-danger">{{ $errors->first('identificacion') }}</span>
+        @endif
+    </div>
+    <div class="col-lg-6">
         <label>Razon Social:</label>
         <input type="text" class="form-control {{ $errors->has('razonsocial') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Razon Social" name="razonsocial" autocomplete="off"
@@ -9,6 +22,10 @@
         <span class="text-danger">{{ $errors->first('razonsocial') }}</span>
         @endif
     </div>
+
+</div>
+
+<div class="form-group row">
     <div class="col-lg-6">
         <label>Nombre Comercial:</label>
         <input type="text" class="form-control {{ $errors->has('nombrecomercial') ? 'is-invalid' : '' }}"
@@ -18,9 +35,6 @@
         <span class="text-danger">{{ $errors->first('nombrecomercial') }}</span>
         @endif
     </div>
-</div>
-
-<div class="form-group row">
     <div class="col-lg-6">
         <label>Correo(s):</label>
         <input class="form-control {{ $errors->has('correos') ? 'is-invalid' : '' }}" placeholder="Ingrese Correo"

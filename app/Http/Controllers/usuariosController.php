@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Log;
 use App\Models\Usuarios;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables as DataTables;
 
 class usuariosController extends Controller
@@ -102,17 +104,23 @@ class usuariosController extends Controller
             ],
         );
 
-        $usuarios = $request->all();
         $contadorIdentificacion = strlen($request->identificacion);
-        $usuarios['tipoidentificacion'] = $contadorIdentificacion == 10 ? 'C' : 'R';
-        $usuarios['estado'] = $request->estado == null ? 0 : 1;
-        $usuarios['contrasena'] = encrypt_openssl($request->contrasena, "Perseo1232*");
-        $usuarios['fechacreacion'] = now();
-        $usuarios['usuariocreacion'] = 'admin';
+        $request['tipoidentificacion'] = $contadorIdentificacion == 10 ? 'C' : 'R';
+        $request['estado'] = $request->estado == null ? 0 : 1;
+        $request['contrasena'] = encrypt_openssl($request->contrasena, "Perseo1232*");
+        $request['fechacreacion'] = now();
+        $request['usuariocreacion'] = Auth::user()->nombres;
+        $usuarios =   Usuarios::create($request->all());
 
-        $usuarios =   Usuarios::create($usuarios);
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->tipooperacion = "Crear";
+        $log->fecha = now();
+        $log->detalle = $usuarios;
+        $log->save();
+
         flash('Usuario creado correctamente')->success();
-        return view('admin.usuarios.editar', compact('usuarios'));
+        return redirect()->route('usuarios.editar', $usuarios->sis_distribuidores_usuariosid);
     }
 
     public function editar(Usuarios $usuarios)
@@ -138,8 +146,6 @@ class usuariosController extends Controller
                 'correo.email' => 'Ingrese un Correo válido',
                 'sis_distribuidoresid.required' => 'Escoja un Distribuidor',
                 'tipo.required' => 'Escoja un Tipo',
-
-
             ],
         );
 
@@ -153,11 +159,16 @@ class usuariosController extends Controller
         }
 
         $request['estado'] = $request->estado == null ? 0 : 1;
-
         $request['fechamodificacion'] = now();
-        $request['usuariomodificacion'] = 'admin';
-
+        $request['usuariomodificacion'] = Auth::user()->nombres;
         $usuarios->update($request->all());
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->tipooperacion = "Modificar";
+        $log->fecha = now();
+        $log->detalle = $usuarios;
+        $log->save();
 
         flash('Actualizado Correctamente')->success();
         return back();
@@ -166,6 +177,14 @@ class usuariosController extends Controller
     public function eliminar(Usuarios $usuarios)
     {
         $usuarios->delete();
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->tipooperacion = "Eliminar";
+        $log->fecha = now();
+        $log->detalle = $usuarios;
+        $log->save();
+
         flash("Eliminado Correctamente")->success();
         return back();
     }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Log;
 use App\Models\Revendedores;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables as DataTables;
 
 class revendedoresController extends Controller
@@ -89,13 +91,21 @@ class revendedoresController extends Controller
             ],
         );
 
-        $revendedor = $request->all();
         $contadorIdentificacion = strlen($request->identificacion);
-        $revendedor['tipoidentificacion'] = $contadorIdentificacion == 10 ? 'C' : 'R';
+        $request['tipoidentificacion'] = $contadorIdentificacion == 10 ? 'C' : 'R';
+        $request['fechacreacion'] = now();
+        $request['usuariocreacion'] = Auth::user()->nombres;
+        $revendedor = Revendedores::create($request->all());
 
-        $revendedor = Revendedores::create($revendedor);
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->tipooperacion = "Crear";
+        $log->fecha = now();
+        $log->detalle = $revendedor;
+        $log->save();
+
         flash('Revendedor creado correctamente')->success();
-        return view('admin.revendedores.editar', compact('revendedor'));
+        return redirect()->route('revendedores.editar', $revendedor->sis_revendedoresid);
     }
 
     public function editar(Revendedores $revendedor)
@@ -128,7 +138,16 @@ class revendedoresController extends Controller
 
         $contadorIdentificacion = strlen($request->identificacion);
         $request['tipoidentificacion'] = $contadorIdentificacion == 10 ? 'C' : 'R';
+        $request['fechamodificacion'] = now();
+        $request['usuariomodificacion'] = Auth::user()->nombres;
         $revendedor->update($request->all());
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->tipooperacion = "Modificar";
+        $log->fecha = now();
+        $log->detalle = $revendedor;
+        $log->save();
 
         flash('Actualizado Correctamente')->success();
         return back();
@@ -138,6 +157,13 @@ class revendedoresController extends Controller
     {
 
         $revendedor->delete();
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->tipooperacion = "Eliminar";
+        $log->fecha = now();
+        $log->detalle = $revendedor;
+        $log->save();
+
         flash("Eliminado Correctamente")->success();
         return back();
     }

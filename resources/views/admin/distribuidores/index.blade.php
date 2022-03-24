@@ -102,7 +102,8 @@
                                 <thead>
                                     <tr>
                                         <th class="no-exportar">#</th>
-                                        <th data-priority="1">Razon Social</th>
+                                        <th data-priority="1">Identificación</th>
+                                        <th data-priority="2">Razon Social</th>
                                         <th>Nombre Comercial</th>
                                         <th>Correo</th>
                                         <th class="no-exportar">Acciones</th>
@@ -153,6 +154,7 @@
             //Columnas de la tabla (Debe contener misma cantidad que thead)
             columns: [
                 {data: 'sis_distribuidoresid', name: 'sis_distribuidoresid',visible:false},
+                {data: 'identificacion', name: 'identificacion'},
                 {data: 'razonsocial', name: 'razonsocial'},
                 {data: 'nombrecomercial', name: 'nombrecomercial'},
                 {data: 'correos', name: 'correos'},
