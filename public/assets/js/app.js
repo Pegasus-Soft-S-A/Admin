@@ -247,6 +247,7 @@ function validarNumero(e) {
     te = String.fromCharCode(tecla);
     return patron.test(te);
 }
+
 function validarIdentificacion() {
     var cad = document.getElementById('identificacion').value.trim();
     var total = 0;
@@ -288,77 +289,21 @@ function validarIdentificacion() {
 
             camposvacios();
 
-
         }
     } else
         if (longitud == 13 && cad !== "") {
-            var controlador = 1;
-            var valor = 0;
-
-            valor = valor + ((cad.substr(0, 1)) * 4);
-            valor = valor + ((cad.substr(1, 1)) * 3);
-            valor = valor + ((cad.substr(2, 1)) * 2);
-            valor = valor + ((cad.substr(3, 1)) * 7);
-            valor = valor + ((cad.substr(4, 1)) * 6);
-            valor = valor + ((cad.substr(5, 1)) * 5);
-            valor = valor + ((cad.substr(6, 1)) * 4);
-            valor = valor + ((cad.substr(7, 1)) * 3);
-            valor = valor + ((cad.substr(8, 1)) * 2);
-
-            valor = 11 - ((valor % 11) == 0 ? 11 : (valor % 11));
-
-            if (valor == (cad.substr(9, 1)) && (cad.substr(10, 3)) == "001") {
-                controlador = 2;
+            var extraer = cad.substr(10, 3);
+            if (extraer == "001") {
                 recuperarInformacion(cad);
                 $('#mensajeBandera').addClass("d-none");
                 $('#identificacion').removeClass("is-invalid");
-
             } else {
-                valor = 0;
-                valor = valor + cad.substr(0, 1) * 3;
-                valor = valor + cad.substr(1, 1) * 2;
-                valor = valor + cad.substr(2, 1) * 7;
-                valor = valor + cad.substr(3, 1) * 6;
-                valor = valor + cad.substr(4, 1) * 5;
-                valor = valor + cad.substr(5, 1) * 4;
-                valor = valor + cad.substr(6, 1) * 3;
-                valor = valor + cad.substr(7, 1) * 2;
-                valor = 11 - ((valor % 11) == 0 ? 11 : (valor % 11));
-
-                if (valor == (cad.substr(8, 1)) && (cad.substr(9, 4)) == "0001") {
-                    controlador = 2;
-                    recuperarInformacion(cad);
-                    $('#mensajeBandera').addClass("d-none");
-                    $('#identificacion').removeClass("is-invalid");
-
-                } else {
-                    valor = 0;
-                    valor = valor + (cad.substr(0, 1) * 2 > 9 ? ((cad.substr(0, 1)) * 2) - 9 : (cad.substr(0, 1)) * 2);
-                    valor = valor + (cad.substr(1, 1) * 1 > 9 ? ((cad.substr(1, 1)) * 1) - 9 : (cad.substr(1, 1)) * 1);
-                    valor = valor + (cad.substr(2, 1) * 2 > 9 ? ((cad.substr(2, 1)) * 2) - 9 : (cad.substr(2, 1)) * 2);
-                    valor = valor + (cad.substr(3, 1) * 1 > 9 ? ((cad.substr(3, 1)) * 1) - 9 : (cad.substr(3, 1)) * 1);
-                    valor = valor + (cad.substr(4, 1) * 2 > 9 ? ((cad.substr(4, 1)) * 2) - 9 : (cad.substr(4, 1)) * 2);
-                    valor = valor + (cad.substr(5, 1) * 1 > 9 ? ((cad.substr(5, 1)) * 1) - 9 : (cad.substr(5, 1)) * 1);
-                    valor = valor + (cad.substr(6, 1) * 2 > 9 ? ((cad.substr(6, 1)) * 2) - 9 : (cad.substr(6, 1)) * 2);
-                    valor = valor + (cad.substr(7, 1) * 1 > 9 ? ((cad.substr(7, 1)) * 1) - 9 : (cad.substr(7, 1)) * 1);
-                    valor = valor + (cad.substr(8, 1) * 2 > 9 ? ((cad.substr(8, 1)) * 2) - 9 : (cad.substr(8, 1)) * 2);
-                    valor = 10 - ((valor % 10) == 0 ? 10 : (valor % 10))
-                    if (valor == (cad.substr(9, 1)) && (cad.substr(10, 3)) == "001") {
-                        controlador = 2;
-                        recuperarInformacion(cad);
-                        $('#mensajeBandera').addClass("d-none");
-                        $('#identificacion').removeClass("is-invalid");
-
-
-                    } else {
-                        $('#identificacion').focus();
-                        $('#mensajeBandera').removeClass("d-none");
-                        $('#identificacion').addClass("is-invalid");
-
-                        camposvacios();
-                    }
-                }
+                $('#identificacion').focus();
+                $('#mensajeBandera').removeClass("d-none");
+                $('#identificacion').addClass("is-invalid");
+                camposvacios();
             }
+
 
         } else
             if (cad !== "") {

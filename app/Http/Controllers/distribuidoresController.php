@@ -67,6 +67,7 @@ class distribuidoresController extends Controller
 
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Distribuidores";
         $log->tipooperacion = "Crear";
         $log->fecha = now();
         $log->detalle = $distribuidor;
@@ -108,6 +109,7 @@ class distribuidoresController extends Controller
 
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Distribuidores";
         $log->tipooperacion = "Modificar";
         $log->fecha = now();
         $log->detalle = $distribuidor;
@@ -130,6 +132,7 @@ class distribuidoresController extends Controller
 
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Distribuidores";
         $log->tipooperacion = "Eliminar";
         $log->fecha = now();
         $log->detalle = $distribuidor;

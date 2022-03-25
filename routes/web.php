@@ -21,6 +21,11 @@ Route::group(['middleware' => 'auth'], function () {
 
     /* Clientes */
     Route::get('/clientes', [clientesController::class, 'index'])->name('clientes.index');
+    Route::get('/clientes/crear', [clientesController::class, 'crear'])->name('clientes.crear');
+    Route::post('/clientes', [clientesController::class, 'guardar'])->name('clientes.guardar');
+    Route::get('/clientes/editar/{cliente}', [clientesController::class, 'editar'])->name('clientes.editar');
+    Route::put('/clientes/{cliente}', [clientesController::class, 'actualizar'])->name('clientes.actualizar');
+    Route::delete('/clientes/{cliente}', [clientesController::class, 'eliminar'])->name('clientes.eliminar');
 
     /* Distribuidores */
     Route::get('/distribuidores', [distribuidoresController::class, 'index'])->name('distribuidores.index');
@@ -32,6 +37,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     /* Revendedores */
     Route::get('/revendedores', [revendedoresController::class, 'index'])->name('revendedores.index');
+    Route::get('/revendedoresDistribuidor/{distribuidor}/{tipo}', [revendedoresController::class, 'revendedoresDistribuidor'])->name('revendedoresDistribuidor');
     Route::get('/revendedoresCrear', [revendedoresController::class, 'crear'])->name('revendedores.crear');
     Route::post('/revendedoresGuardar', [revendedoresController::class, 'guardar'])->name('revendedores.guardar');
     Route::get('/revendedoresEditar/{revendedor}', [revendedoresController::class, 'editar'])->name('revendedores.editar');

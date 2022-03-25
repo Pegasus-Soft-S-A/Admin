@@ -114,6 +114,7 @@ class usuariosController extends Controller
 
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Usuarios";
         $log->tipooperacion = "Crear";
         $log->fecha = now();
         $log->detalle = $usuarios;
@@ -165,6 +166,7 @@ class usuariosController extends Controller
 
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Usuarios";
         $log->tipooperacion = "Modificar";
         $log->fecha = now();
         $log->detalle = $usuarios;
@@ -180,6 +182,7 @@ class usuariosController extends Controller
 
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Usuarios";
         $log->tipooperacion = "Eliminar";
         $log->fecha = now();
         $log->detalle = $usuarios;

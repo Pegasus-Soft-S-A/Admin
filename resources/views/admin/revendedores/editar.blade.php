@@ -46,14 +46,14 @@
                                         <span
                                             class="font-size-sm text-primary ml-2">{{$revendedor->usuariocreacion}}</span>
                                         <span
-                                            class="font-size-sm text-primary ml-2">{{substr($revendedor->fechacreacion,0,19)}}</span>
+                                            class="font-size-sm text-primary ml-2">{{$revendedor->fechacreacion}}</span>
                                     </div>
                                     <div class="col-md-4">
                                         <span class="font-size-sm font-weight-bolder text-dark ml-2">Modificación</span>
                                         <span
                                             class="font-size-sm text-primary ml-2">{{$revendedor->usuariomodificacion}}</span>
                                         <span
-                                            class="font-size-sm text-primary ml-2">{{substr($revendedor->fechamodificacion,0,19)}}</span>
+                                            class="font-size-sm text-primary ml-2">{{$revendedor->fechamodificacion}}</span>
                                     </div>
                                 </div>
                             </div>

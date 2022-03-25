@@ -10,6 +10,14 @@ use Yajra\DataTables\DataTables as DataTables;
 
 class revendedoresController extends Controller
 {
+    public function revendedoresDistribuidor($distribuidor, $tipo)
+    {
+        $revendedor = Revendedores::where('sis_revendedores.sis_distribuidoresid', $distribuidor)
+            ->where('sis_revendedores.tipo', $tipo)
+            ->get();
+        return with(["revendedor" => $revendedor]);
+    }
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -99,6 +107,7 @@ class revendedoresController extends Controller
 
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Revendedores";
         $log->tipooperacion = "Crear";
         $log->fecha = now();
         $log->detalle = $revendedor;
@@ -144,6 +153,7 @@ class revendedoresController extends Controller
 
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Revendedores";
         $log->tipooperacion = "Modificar";
         $log->fecha = now();
         $log->detalle = $revendedor;
@@ -159,6 +169,7 @@ class revendedoresController extends Controller
         $revendedor->delete();
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Revendedores";
         $log->tipooperacion = "Eliminar";
         $log->fecha = now();
         $log->detalle = $revendedor;
