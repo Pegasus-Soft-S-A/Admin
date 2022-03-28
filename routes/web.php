@@ -3,6 +3,7 @@
 use App\Http\Controllers\adminController;
 use App\Http\Controllers\clientesController;
 use App\Http\Controllers\distribuidoresController;
+use App\Http\Controllers\licenciasController;
 use App\Http\Controllers\revendedoresController;
 use App\Http\Controllers\usuariosController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,16 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/clientes/editar/{cliente}', [clientesController::class, 'editar'])->name('clientes.editar');
     Route::put('/clientes/{cliente}', [clientesController::class, 'actualizar'])->name('clientes.actualizar');
     Route::delete('/clientes/{cliente}', [clientesController::class, 'eliminar'])->name('clientes.eliminar');
+
+    /* Licencias */
+    Route::get('/licencias/{cliente}', [licenciasController::class, 'index'])->name('licencias.index');
+    Route::get('/licencias/{cliente}/crearWeb', [licenciasController::class, 'crearWeb'])->name('licencias.web.crear');
+    Route::get('/licencias/{cliente}/crearPC', [licenciasController::class, 'crearPC'])->name('licencias.pc.crear');
+    Route::post('/licencias', [licenciasController::class, 'guardar'])->name('licencias.guardar');
+    Route::get('/licencias/editarWeb/{cliente}/{licencia}', [licenciasController::class, 'editarWeb'])->name('licencias.web.editar');
+    Route::get('/licencias/editarPC/{cliente}/{licencia}', [licenciasController::class, 'editarPC'])->name('licencias.pc.editar');
+    Route::put('/licencias/{licencia}', [licenciasController::class, 'actualizar'])->name('licencias.actualizar');
+    Route::delete('/licencias/{licencia}', [licenciasController::class, 'eliminar'])->name('licencias.eliminar');
 
     /* Distribuidores */
     Route::get('/distribuidores', [distribuidoresController::class, 'index'])->name('distribuidores.index');

@@ -16,7 +16,7 @@
                     <div class="card card-custom card-sticky" id="kt_page_sticky_card">
                         <div class="card-header ">
                             <div class="card-title">
-                                <h3 class="card-label">Clientes</h3>
+                                <h3 class="card-label">Distribuidores</h3>
 
                             </div>
                             <div class="card-toolbar">
@@ -86,7 +86,7 @@
                                     <!--end::Dropdown Menu-->
                                 </div>
 
-                                <a href="{{route('clientes.crear')}}" class="btn btn-primary font-weight-bolder">
+                                <a href="{{route('distribuidores.crear')}}" class="btn btn-primary font-weight-bolder">
                                     <span class="svg-icon svg-icon-md">
                                         <i class="flaticon2-plus-1"></i>
                                     </span>Nuevo
@@ -102,10 +102,10 @@
                                 <thead>
                                     <tr>
                                         <th class="no-exportar">#</th>
-                                        <th>Contrato</th>
                                         <th data-priority="1">Identificación</th>
-                                        <th data-priority="2">Nombres</th>
-                                        <th>Celular</th>
+                                        <th data-priority="2">Razon Social</th>
+                                        <th>Nombre Comercial</th>
+                                        <th>Correo</th>
                                         <th class="no-exportar">Acciones</th>
                                     </tr>
                                 </thead>
@@ -150,14 +150,14 @@
             //Trabajar del lado del server
             serverSide: true,
             //Peticion ajax que devuelve los registros
-            ajax: "{{ route('clientes.index') }}",
+            ajax: "{{ route('distribuidores.index') }}",
             //Columnas de la tabla (Debe contener misma cantidad que thead)
             columns: [
-                {data: 'sis_clientesid', name: 'sis_clientesid',visible:false},
-                {data: 'numerocontrato', name: 'numerocontrato',visible:false},
+                {data: 'sis_distribuidoresid', name: 'sis_distribuidoresid',visible:false},
                 {data: 'identificacion', name: 'identificacion'},
-                {data: 'nombres', name: 'nombres'},
-                {data: 'telefono2', name: 'nombrecomercial'},
+                {data: 'razonsocial', name: 'razonsocial'},
+                {data: 'nombrecomercial', name: 'nombrecomercial'},
+                {data: 'correos', name: 'correos'},
                 {data: 'action', name: 'action', orderable: false, searchable: false, className: "text-center"},
             ],
             
@@ -165,28 +165,28 @@
             buttons: [
                 {
                     extend: 'print',
-                    title: 'Clientes',
+                    title: 'Distribuidores',
                     exportOptions: {
                         columns: ':not(.no-exportar)'
                     }
                 },
                 {
                     extend: 'copyHtml5',
-                    title: 'Clientes',
+                    title: 'Distribuidores',
                     exportOptions: {
                         columns: ':not(.no-exportar)'
                     }
                 },
                 {
                     extend: 'excelHtml5',
-                    title: 'Clientes',
+                    title: 'Distribuidores',
                     exportOptions: {
                         columns: ':not(.no-exportar)'
                     }
                 },
                 {
                     extend: 'pdfHtml5',
-                    title: 'Clientes',
+                    title: 'Distribuidores',
                     exportOptions: {
                         columns: ':not(.no-exportar)'
                     }
