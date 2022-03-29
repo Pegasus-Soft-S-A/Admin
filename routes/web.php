@@ -9,8 +9,9 @@ use App\Http\Controllers\usuariosController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas login 
-Route::get('/login', [AdminController::class, 'login'])->name('login');
-Route::post('/login', [AdminController::class, 'post_login'])->name('post_login');
+Route::get('/', [adminController::class, 'login']);
+Route::get('/login', [adminController::class, 'login'])->name('login');
+Route::post('/login', [adminController::class, 'post_login'])->name('post_login');
 
 Route::group(['middleware' => 'auth'], function () {
 
@@ -19,6 +20,7 @@ Route::group(['middleware' => 'auth'], function () {
     //Rutas Admin
     Route::post('/menu', [adminController::class, 'cambiarMenu'])->name('cambiarMenu');
     Route::post('/recuperar-Post', [adminController::class, 'recuperarPost'])->name('recuperarInformacionPost');
+    Route::get('/subcategorias', [adminController::class, 'subcategorias'])->name('subcategorias');
 
     /* Clientes */
     Route::get('/clientes', [clientesController::class, 'index'])->name('clientes.index');

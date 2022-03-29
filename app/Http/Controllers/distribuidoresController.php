@@ -56,7 +56,6 @@ class distribuidoresController extends Controller
                 'razonsocial.required' => 'Ingrese una Razón Social',
                 'nombrecomercial.required' => 'Ingrese un Nombre Comercial',
                 'correos.required' => 'Ingrese un Correo',
-                //'correos.*.email' => 'Ingrese un Correo válido',
             ],
         );
 

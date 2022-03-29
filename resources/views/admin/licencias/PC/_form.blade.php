@@ -1,4 +1,31 @@
 @csrf
+<style>
+    #aplicativos td {
+        padding: 3px;
+    }
+</style>
+
+@if ($errors->has('correopropietario') || $errors->has('correoadministrador') || $errors->has('correocontador'))
+<div class="alert alert-custom alert-notice alert-light-danger fade show" role="alert">
+    <div class="alert-icon"><i class="flaticon-warning"></i></div>
+    <div class="alert-text">
+        @if ($errors->has('correopropietario'))
+        {{ $errors->first('correopropietario') }} <br>
+        @endif
+        @if ($errors->has('correoadministrador'))
+        {{ $errors->first('correoadministrador') }} <br>
+        @endif
+        @if ($errors->has('correocontador'))
+        {{ $errors->first('correocontador') }} <br>
+        @endif
+    </div>
+    <div class="alert-close">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true"><i class="ki ki-close"></i></span>
+        </button>
+    </div>
+</div>
+@endif
 
 <ul class="nav nav-tabs nav-tabs-line nav-bold">
     <li class="nav-item">
@@ -10,12 +37,14 @@
 </ul>
 <div class="tab-content mt-5" id="myTabContent">
     <div class="tab-pane fade show active" id="datoslicencia" role="tabpanel">
+        <input type="hidden" id="permisos" name="aplicaciones">
+        <input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>Numero Contrato:</label>
                 <input type="text" class="form-control {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
                     placeholder="Contrato" name="numerocontrato" autocomplete="off" id="numerocontrato"
-                    value="{{ old('numerocontrato', $licencia->numerocontrato) }}" disabled />
+                    value="{{ old('numerocontrato', $licencia->numerocontrato) }}" readonly />
                 @if ($errors->has('numerocontrato'))
                 <span class="text-danger">{{ $errors->first('numerocontrato') }}</span>
                 @endif
@@ -45,11 +74,11 @@
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>Identificador Servidor:</label>
-                <input type="text" class="form-control {{ $errors->has('identificador') ? 'is-invalid' : '' }}"
-                    placeholder="Identificador" name="identificador" autocomplete="off" id="identificador"
-                    value="{{ old('identificador', $licencia->identificador) }}" />
-                @if ($errors->has('identificador'))
-                <span class="text-danger">{{ $errors->first('identificador') }}</span>
+                <input type="text" class="form-control {{ $errors->has('Identificador') ? 'is-invalid' : '' }}"
+                    placeholder="Identificador" name="Identificador" autocomplete="off" id="Identificador"
+                    value="{{ old('Identificador', $licencia->Identificador) }}" />
+                @if ($errors->has('Identificador'))
+                <span class="text-danger">{{ $errors->first('Identificador') }}</span>
                 @endif
             </div>
             <div class="col-lg-4">
@@ -156,8 +185,8 @@
                         <label>Sistema Perseo Práctico:</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="estado" id="estado" @if ($licencia->modulopractico== 1)
-                                checked="checked" @endif/>
+                                <input @if ($licencia->modulopractico== 1) checked="checked" @endif type="checkbox"
+                                name="modulopractico" id="practico" />
                                 <span></span>
                             </label>
                         </span>
@@ -166,8 +195,8 @@
                         <label>Sistema Perseo Control:</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="estado" id="estado" @if ($licencia->modulocontrol== 1)
-                                checked="checked" @endif/>
+                                <input @if ($licencia->modulocontrol== 1) checked="checked" @endif type="checkbox"
+                                name="modulocontrol" id="control" />
                                 <span></span>
                             </label>
                         </span>
@@ -176,8 +205,8 @@
                         <label>Sistema Perseo Contable</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="estado" id="estado" @if ($licencia->modulocontable== 1)
-                                checked="checked" @endif/>
+                                <input @if ($licencia->modulocontable== 1) checked="checked" @endif type="checkbox"
+                                name="modulocontable" id="contable" />
                                 <span></span>
                             </label>
                         </span>
@@ -188,8 +217,8 @@
                         <label>Actualizaciones Automáticas:</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="estado" id="estado" @if ($licencia->actulizaciones== 1)
-                                checked="checked" @endif/>
+                                <input @if ($licencia->actulizaciones== 1) checked="checked" @endif type="checkbox"
+                                name="actulizaciones" id="actualiza" />
                                 <span></span>
                             </label>
                         </span>
@@ -328,7 +357,7 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="restaurante" id="restaurante" />
+                                <input type="checkbox" name="restaurantes" id="restaurantes" />
                                 <span></span>
                             </label>
                         </span>
@@ -416,7 +445,7 @@
             </div>
 
             <div class="tab-pane fade show" id="respaldos" role="tabpanel">
-                <div class="form-group">
+                <div class="form-group row">
                     <label>Token Dropbox:</label>
                     <textarea class="form-control {{ $errors->has('tokenrespaldo') ? 'is-invalid' : '' }}"
                         placeholder="Token Respaldo" name="tokenrespaldo" autocomplete="off" id="tokenrespaldo"
@@ -428,44 +457,225 @@
             </div>
 
             <div class="tab-pane fade show" id="bloqueos" role="tabpanel">
-                <div class="form-group">
-                    <label>Motivo Bloqueo:</label>
-                    <textarea class="form-control {{ $errors->has('motivobloqueo') ? 'is-invalid' : '' }}"
-                        placeholder="Token Respaldo" name="motivobloqueo" autocomplete="off" id="motivobloqueo"
-                        value="{{ old('motivobloqueo', $licencia->motivobloqueo) }}"></textarea>
-                    @if ($errors->has('motivobloqueo'))
-                    <span class="text-danger">{{ $errors->first('motivobloqueo') }}</span>
-                    @endif
+                <div class="form-group row">
+                    <div class="col-lg-12">
+                        <label>Motivo Bloqueo:</label>
+                        <input class="form-control {{ $errors->has('motivobloqueo') ? 'is-invalid' : '' }}"
+                            placeholder="Motivo bloqueo" name="motivobloqueo" autocomplete="off" id="motivobloqueo"
+                            value="{{ old('motivobloqueo', $licencia->motivobloqueo) }}" />
+                        @if ($errors->has('motivobloqueo'))
+                        <span class="text-danger">{{ $errors->first('motivobloqueo') }}</span>
+                        @endif
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Mensaje Entrar al Sistema:</label>
-                    <textarea class="form-control {{ $errors->has('mensaje') ? 'is-invalid' : '' }}"
-                        placeholder="Token Respaldo" name="mensaje" autocomplete="off" id="mensaje"
-                        value="{{ old('mensaje', $licencia->mensaje) }}"></textarea>
-                    @if ($errors->has('mensaje'))
-                    <span class="text-danger">{{ $errors->first('mensaje') }}</span>
-                    @endif
+                <div class="form-group row">
+                    <div class="col-lg-12">
+                        <label>Mensaje Entrar al Sistema:</label>
+                        <input class="form-control {{ $errors->has('mensaje') ? 'is-invalid' : '' }}"
+                            placeholder="Mensaje" name="mensaje" autocomplete="off" id="mensaje"
+                            value="{{ old('mensaje', $licencia->mensaje) }}" />
+                        @if ($errors->has('mensaje'))
+                        <span class="text-danger">{{ $errors->first('mensaje') }}</span>
+                        @endif
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Observaciones:</label>
-                    <textarea class="form-control {{ $errors->has('observacion') ? 'is-invalid' : '' }}"
-                        placeholder="Token Respaldo" name="observacion" autocomplete="off" id="observacion"
-                        value="{{ old('observacion', $licencia->observacion) }}"></textarea>
-                    @if ($errors->has('observacion'))
-                    <span class="text-danger">{{ $errors->first('observacion') }}</span>
-                    @endif
+                <div class="form-group row">
+                    <div class="col-lg-12">
+                        <label>Observaciones:</label>
+                        <input class="form-control {{ $errors->has('observacion') ? 'is-invalid' : '' }}"
+                            placeholder="Observaciones" name="observacion" autocomplete="off" id="observacion"
+                            value="{{ old('observacion', $licencia->observacion) }}" />
+                        @if ($errors->has('observacion'))
+                        <span class="text-danger">{{ $errors->first('observacion') }}</span>
+                        @endif
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <div class="tab-pane fade" id="aplicaciones" role="tabpanel">Aplicaciones
-
+    <div class="tab-pane fade" role="tabpanel" id="aplicaciones">
+        <table class="table table-sm table-bordered table-head-custom table-hover" id="aplicativos">
+            <thead>
+                <tr>
+                    <th>Categorias ID</th>
+                    <th>ID</th>
+                    <th>Opciones</th>
+                    <th>Activo</th>
+                </tr>
+            </thead>
+        </table>
     </div>
 </div>
 
 @section('script')
 <script>
+    //recorrer tabla de permisos y hacer una sola cadena con los ids 
+    $('#formulario').submit(function(event) {
+        event.preventDefault(); 
+        permisos='';
+        $("#aplicaciones tbody td input").each(function(){
+            if ($(this).prop('checked')) {
+                permisos=permisos+$(this).attr('id') + ';';
+            }
+        });	
+        $('#permisos').val(permisos)		
+        $(this).unbind('submit').submit(); 	
+    })
+
+    $('#practico').click(function(){
+        $('#control').prop('checked', false);
+        $('#contable').prop('checked', false);
+        if ($('#practico').prop('checked')) {
+            moduloPerseoPractico(true);
+        }else{
+            moduloPerseoPractico(false);
+        }
+        
+    });
+
+    $('#control').click(function(){
+        $('#practico').prop('checked', false);
+        $('#contable').prop('checked', false);
+
+        if ($('#control').prop('checked')) {
+            moduloPerseoPractico(true);
+            moduloPerseoControl(true);
+        }else{
+            moduloPerseoPractico(false);
+            moduloPerseoControl(false);
+        }
+    });
+
+    $('#contable').click(function(){
+        $('#control').prop('checked', false);
+        $('#practico').prop('checked', false);
+
+        if ($('#contable').prop('checked')) {
+            moduloPerseoPractico(true);
+            moduloPerseoControl(true);
+            moduloPerseoContable(true);
+        }else{
+            moduloPerseoPractico(false);
+            moduloPerseoControl(false);
+            moduloPerseoContable(false);
+        }
+    });
+
+    $('#nomina').click(function(){
+        if ($('#nomina').prop('checked')) {
+            moduloPerseoNomina(true);
+        }else{
+            moduloPerseoNomina(false);
+        }
+    });
+
+    $('#activos').click(function(){
+        if ($('#activos').prop('checked')) {
+            moduloPerseoActivos(true);
+        }else{
+            moduloPerseoActivos(false);
+        }
+    });
+
+    $('#produccion').click(function(){
+        if ($('#produccion').prop('checked')) {
+            moduloPerseoProduccion(true);
+        }else{
+            moduloPerseoProduccion(false);
+        }
+    });
+
+    $('#tvcable').click(function(){
+        if ($('#tvcable').prop('checked')) {
+            moduloPerseoOperadoras(true);
+        }else{
+            moduloPerseoOperadoras(false);
+        }
+    });
+
+    $('#encomiendas').click(function(){
+        if ($('#encomiendas').prop('checked')) {
+            moduloPerseoEncomiendas(true);
+        }else{
+            moduloPerseoEncomiendas(false);
+        }
+    });
+
+    $('#crmcartera').click(function(){
+        if ($('#crmcartera').prop('checked')) {
+            moduloPerseoCrmCartera(true);
+        }else{
+            moduloPerseoCrmCartera(false);
+        }
+    });
+
+    $('#apiwhatsapp').click(function(){
+        if ($('#apiwhatsapp').prop('checked')) {
+            moduloPerseoIntegraciones(true);
+        }else{
+            moduloPerseoIntegraciones(false);
+        }
+    });
+
+    $('#hybrid').click(function(){
+        if ($('#hybrid').prop('checked')) {
+            moduloPerseoIntegraciones(true);
+        }else{
+            moduloPerseoIntegraciones(false);
+        }
+    });
+
+    $('#woocomerce').click(function(){
+        if ($('#woocomerce').prop('checked')) {
+            moduloPerseoIntegraciones(true);
+        }else{
+            moduloPerseoIntegraciones(false);
+        }
+    });
+
+    $('#tienda').click(function(){
+        if ($('#tienda').prop('checked')) {
+            moduloPerseoIntegraciones(true);
+        }else{
+            moduloPerseoIntegraciones(false);
+        }
+    });
+
+    $('#restaurantes').click(function(){
+        if ($('#restaurantes').prop('checked')) {
+            moduloPerseoRestaurantes(true);
+        }else{
+            moduloPerseoRestaurantes(false);
+        }
+    });
+
+    $('#garantias').click(function(){
+        if ($('#garantias').prop('checked')) {
+            moduloPerseoGarantias(true);
+        }else{
+            moduloPerseoGarantias(false);
+        }
+    });
+
+    $('#talleres').click(function(){
+        if ($('#talleres').prop('checked')) {
+            moduloPerseoTalleres(true);
+        }else{
+            moduloPerseoTalleres(false);
+        }
+    });
+
+    $('#integraciones').click(function(){
+        if ($('#integraciones').prop('checked')) {
+            moduloPerseoIntegraciones(true);
+        }else{
+            moduloPerseoIntegraciones(false);
+        }
+    });
+
+
     $(document).ready(function () {
         //Iniciar fecha de bloqueo
         $('#fechacaduca').datepicker({
@@ -488,6 +698,234 @@
             }
         });
 
+        //inicializar datatable
+        var table = $('#aplicativos').DataTable({
+            responsive: true,
+            processing: true,
+            //Guardar pagina, busqueda, etc
+            //stateSave: true,
+            //Trabajar del lado del server
+            serverSide: true,
+            searching: false,
+            paging: false,
+            //Peticion ajax que devuelve los registros
+            ajax: "{{ route('subcategorias') }}",
+            drawCallback: function (settings) {
+
+				var api = this.api();
+				var rows = api.rows({ page: 'current' }).nodes();
+				var last = null;
+
+				api.column(0, { page: 'current' }).data().each(function (group, i) {
+					if (last !== group) {
+						$(rows).eq(i).before(
+							'<tr class="group"><td colspan="3">' + group + '</td></tr>',
+						);
+						last = group;
+					}
+				});
+			},
+            //Columnas de la tabla (Debe contener misma cantidad que thead)
+            columns: [
+                {data: 'categoriasdescripcion', name: 'categoriasdescripcion',visible:false},
+                {data: 'sis_subcategoriasid', orderable: false, searchable: false,name: 'sis_subcategoriasid'},
+                {data: 'descripcionsubcategoria',orderable: false, searchable: false, name: 'descripcionsubcategoria'},
+                {data: 'activo', name: 'activo', orderable: false, searchable: false},
+            ],
+        });
     });
+
+    function moduloPerseoPractico(estado){
+        //Activar o desactivar modulos
+        $('#105').prop('checked', estado);
+        $('#110').prop('checked', estado);
+        $('#111').prop('checked', estado);
+        $('#112').prop('checked', estado);
+        $('#113').prop('checked', estado);
+        $('#114').prop('checked', estado);
+        $('#115').prop('checked', estado);
+        $('#117').prop('checked', estado);
+        $('#118').prop('checked', estado);
+        $('#120').prop('checked', estado);
+        $('#125').prop('checked', estado);
+        $('#126').prop('checked', estado);
+        $('#127').prop('checked', estado);
+        $('#130').prop('checked', estado);
+        $('#131').prop('checked', estado);
+        $('#135').prop('checked', estado);
+        $('#136').prop('checked', estado);
+        $('#141').prop('checked', estado);
+        $('#142').prop('checked', estado);
+        $('#150').prop('checked', estado);
+        $('#305').prop('checked', estado);
+        $('#310').prop('checked', estado);
+        $('#315').prop('checked', estado);
+        $('#320').prop('checked', estado);
+        $('#325').prop('checked', estado);
+        $('#330').prop('checked', estado);
+        $('#335').prop('checked', estado);
+        $('#430').prop('checked', estado);
+        $('#431').prop('checked', estado);
+        $('#432').prop('checked', estado);
+        $('#433').prop('checked', estado);
+        $('#434').prop('checked', estado);
+        $('#435').prop('checked', estado);
+        $('#440').prop('checked', estado);
+        $('#445').prop('checked', estado);
+        $('#450').prop('checked', estado);
+        $('#455').prop('checked', estado);
+        $('#460').prop('checked', estado);
+        $('#461').prop('checked', estado);
+        $('#462').prop('checked', estado);
+        $('#463').prop('checked', estado);
+        $('#464').prop('checked', estado);
+        $('#465').prop('checked', estado);
+        $('#466').prop('checked', estado);
+        $('#470').prop('checked', estado);
+        $('#471').prop('checked', estado);
+        $('#475').prop('checked', estado);
+        $('#480').prop('checked', estado);
+        $('#491').prop('checked', estado);
+        $('#492').prop('checked', estado);
+        $('#495').prop('checked', estado);
+        $('#905').prop('checked', estado);
+        $('#910').prop('checked', estado);
+        $('#915').prop('checked', estado);
+        $('#916').prop('checked', estado);
+        $('#917').prop('checked', estado);
+        $('#918').prop('checked', estado);
+        $('#919').prop('checked', estado);
+        $('#920').prop('checked', estado);
+        $('#925').prop('checked', estado);
+        $('#930').prop('checked', estado);
+        $('#931').prop('checked', estado);
+        $('#940').prop('checked', estado);
+        $('#960').prop('checked', estado);
+        $('#1105').prop('checked', estado);
+        $('#1110').prop('checked', estado);
+        $('#1115').prop('checked', estado);
+        $('#1120').prop('checked', estado);
+    }
+
+    function moduloPerseoControl(estado){
+        //Activar o desactivar modulos
+        $('#200').prop('checked', estado);
+        $('#142').prop('checked', estado);
+        $('#201').prop('checked', estado);
+        $('#205').prop('checked', estado);
+        $('#210').prop('checked', estado);
+        $('#215').prop('checked', estado);
+        $('#505').prop('checked', estado);
+        $('#510').prop('checked', estado);
+        $('#462').prop('checked', estado);
+        $('#463').prop('checked', estado);
+        $('#485').prop('checked', estado);
+        $('#490').prop('checked', estado);
+        $('#116').prop('checked', estado);
+        $('#140').prop('checked', estado);
+        $('#605').prop('checked', estado);
+        $('#630').prop('checked', estado);
+        $('#635').prop('checked', estado);
+    }
+
+    function moduloPerseoContable(estado){
+        //Activar o desactivar modulos
+        $('#605').prop('checked', estado);
+        $('#142').prop('checked', estado);
+        $('#606').prop('checked', estado);
+        $('#610').prop('checked', estado);
+        $('#615').prop('checked', estado);
+        $('#616').prop('checked', estado);
+        $('#620').prop('checked', estado);
+        $('#625').prop('checked', estado);
+        $('#626').prop('checked', estado);
+        $('#627').prop('checked', estado);
+        $('#628').prop('checked', estado);
+        $('#630').prop('checked', estado);
+        $('#635').prop('checked', estado);
+        $('#640').prop('checked', estado);
+    }
+
+    function moduloPerseoNomina(estado){
+        //Activar o desactivar modulos
+        $('#705').prop('checked', estado);
+        $('#710').prop('checked', estado);
+        $('#715').prop('checked', estado);
+        $('#720').prop('checked', estado);
+        $('#725').prop('checked', estado);
+        $('#730').prop('checked', estado);
+        $('#735').prop('checked', estado);
+        $('#740').prop('checked', estado);
+        $('#741').prop('checked', estado);
+        $('#745').prop('checked', estado);
+    }
+
+    function moduloPerseoActivos(estado){
+        //Activar o desactivar modulos
+        $('#805').prop('checked', estado);
+        $('#806').prop('checked', estado);
+        $('#810').prop('checked', estado);
+        $('#815').prop('checked', estado);
+        $('#816').prop('checked', estado);
+        $('#820').prop('checked', estado);
+    }
+
+    function moduloPerseoProduccion(estado){
+        //Activar o desactivar modulos
+        $('#1005').prop('checked', estado);
+        $('#1010').prop('checked', estado);
+        $('#1015').prop('checked', estado);
+    }
+
+    function moduloPerseoOperadoras(estado){
+        //Activar o desactivar modulos
+        $('#1200').prop('checked', estado);
+        $('#1205').prop('checked', estado);
+        $('#1210').prop('checked', estado);
+        $('#1215').prop('checked', estado);
+        $('#1220').prop('checked', estado);
+    }
+
+    function moduloPerseoEncomiendas(estado){
+        //Activar o desactivar modulos
+        $('#1601').prop('checked', estado);
+        $('#1610').prop('checked', estado);
+        $('#1615').prop('checked', estado);
+        $('#1620').prop('checked', estado);
+        $('#1625').prop('checked', estado);
+    }
+
+    function moduloPerseoCrmCartera(estado){
+        //Activar o desactivar modulos
+        $('#220').prop('checked', estado);
+    }
+
+    function moduloPerseoIntegraciones(estado){
+        //Activar o desactivar modulos
+        $('#950').prop('checked', estado);
+    }
+
+    function moduloPerseoRestaurantes(estado){
+        //Activar o desactivar modulos
+        $('#1500').prop('checked', estado);
+        $('#1505').prop('checked', estado);
+        $('#1510').prop('checked', estado);
+        $('#1515').prop('checked', estado);
+        $('#1520').prop('checked', estado);
+    }
+
+    function moduloPerseoGarantias(estado){
+        //Activar o desactivar modulos
+        $('#1300').prop('checked', estado);
+        $('#1305').prop('checked', estado);
+        $('#1310').prop('checked', estado);
+    }
+
+    function moduloPerseoTalleres(estado){
+        //Activar o desactivar modulos
+        $('#1400').prop('checked', estado);
+        $('#1405').prop('checked', estado);
+        $('#1410').prop('checked', estado);
+    }
 </script>
 @endsection

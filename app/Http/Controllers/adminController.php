@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subcategorias;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Yajra\DataTables\Facades\DataTables;
 
 class adminController extends Controller
 {
@@ -75,5 +77,26 @@ class adminController extends Controller
             ->post($url, ['identificacion' => $request->cedula])
             ->json();
         return $resultado;
+    }
+
+    public function subcategorias(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $data  = Subcategorias::select('sis_categorias.categoriasdescripcion', 'sis_subcategorias.sis_subcategoriasid', 'sis_subcategorias.sis_categoriasid', 'sis_subcategorias.descripcionsubcategoria')
+                ->join('sis_categorias', 'sis_subcategorias.sis_categoriasid', 'sis_categorias.sis_categoriasid')
+                ->orderBy('sis_subcategorias.sis_subcategoriasid');
+
+            return DataTables::of($data)
+
+                ->editColumn('activo', function ($data) {
+                    return '<label class="checkbox checkbox-outline checkbox-success">
+                        <input type="checkbox" name=aplicaciones[] id="' . $data->sis_subcategoriasid . '" disabled />
+                        <span></span>
+                    </label>';
+                })
+                ->rawColumns(['activo'])
+                ->make(true);
+        }
     }
 }
