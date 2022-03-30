@@ -37,7 +37,7 @@
 </ul>
 <div class="tab-content mt-5" id="myTabContent">
     <div class="tab-pane fade show active" id="datoslicencia" role="tabpanel">
-        <input type="hidden" id="permisos" name="aplicaciones">
+        <input type="hidden" id="permisos" name="aplicaciones" value="{{$licencia->aplicaciones}}">
         <input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
         <div class="form-group row">
             <div class="col-lg-4">
@@ -249,6 +249,17 @@
                         @endif
                     </div>
                 </div>
+                <div class="form-group row">
+                    <div class="col-lg-12">
+                        <label>Clave de Activación:</label>
+                        <textarea class="form-control {{ $errors->has('key') ? 'is-invalid' : '' }}"
+                            placeholder="Clave de Activación" name="key" autocomplete="off"
+                            id="key">{{$licencia->key}}</textarea>
+                        @if ($errors->has('key'))
+                        <span class="text-danger">{{ $errors->first('key') }}</span>
+                        @endif
+                    </div>
+                </div>
             </div>
 
             <div class="tab-pane fade show" id="modulosadicionales" role="tabpanel">
@@ -257,7 +268,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="nomina" id="nomina" />
+                                <input @if ($modulos[0]->nomina== true) checked="checked" @endif type="checkbox"
+                                name="nomina" id="nomina" />
                                 <span></span>
                             </label>
                         </span>
@@ -266,7 +278,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="activos" id="activos" />
+                                <input @if ($modulos[0]->activos== true) checked="checked" @endif type="checkbox"
+                                name="activos" id="activos" />
                                 <span></span>
                             </label>
                         </span>
@@ -277,7 +290,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="produccion" id="produccion" />
+                                <input @if ($modulos[0]->produccion== true) checked="checked" @endif type="checkbox"
+                                name="produccion" id="produccion" />
                                 <span></span>
                             </label>
                         </span>
@@ -286,7 +300,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="tvcable" id="tvcable" />
+                                <input @if ($modulos[0]->operadoras== true) checked="checked" @endif type="checkbox"
+                                name="tvcable" id="tvcable" />
                                 <span></span>
                             </label>
                         </span>
@@ -297,7 +312,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="encomiendas" id="encomiendas" />
+                                <input @if ($modulos[0]->encomiendas== true) checked="checked" @endif type="checkbox"
+                                name="encomiendas" id="encomiendas" />
                                 <span></span>
                             </label>
                         </span>
@@ -306,7 +322,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="crmcartera" id="crmcartera" />
+                                <input @if ($modulos[0]->crm_cartera== true) checked="checked" @endif type="checkbox"
+                                name="crmcartera" id="crmcartera" />
                                 <span></span>
                             </label>
                         </span>
@@ -317,7 +334,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="apiwhatsapp" id="apiwhatsapp" />
+                                <input @if ($modulos[0]->api_whatsapp== true) checked="checked" @endif type="checkbox"
+                                name="apiwhatsapp" id="apiwhatsapp" />
                                 <span></span>
                             </label>
                         </span>
@@ -326,7 +344,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="hybrid" id="hybrid" />
+                                <input @if ($modulos[0]->perseo_hybrid== true) checked="checked" @endif type="checkbox"
+                                name="hybrid" id="hybrid" />
                                 <span></span>
                             </label>
                         </span>
@@ -337,7 +356,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="woocomerce" id="woocomerce" />
+                                <input @if ($modulos[0]->tienda_woocommerce== true) checked="checked" @endif
+                                type="checkbox" name="woocomerce" id="woocomerce" />
                                 <span></span>
                             </label>
                         </span>
@@ -346,7 +366,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="tienda" id="tienda" />
+                                <input @if ($modulos[0]->tienda_perseo_publico== true) checked="checked" @endif
+                                type="checkbox" name="tienda" id="tienda" />
                                 <span></span>
                             </label>
                         </span>
@@ -357,7 +378,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="restaurantes" id="restaurantes" />
+                                <input @if ($modulos[0]->restaurantes== true) checked="checked" @endif type="checkbox"
+                                name="restaurantes" id="restaurantes" />
                                 <span></span>
                             </label>
                         </span>
@@ -366,7 +388,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="garantias" id="garantias" />
+                                <input @if ($modulos[0]->garantias== true) checked="checked" @endif type="checkbox"
+                                name="garantias" id="garantias" />
                                 <span></span>
                             </label>
                         </span>
@@ -377,7 +400,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="talleres" id="talleres" />
+                                <input @if ($modulos[0]->talleres== true) checked="checked" @endif type="checkbox"
+                                name="talleres" id="talleres" />
                                 <span></span>
                             </label>
                         </span>
@@ -386,7 +410,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="integraciones" id="integraciones" />
+                                <input @if ($modulos[0]->tienda_perseo_distribuidor== true) checked="checked" @endif
+                                type="checkbox" name="integraciones" id="integraciones" />
                                 <span></span>
                             </label>
                         </span>
@@ -397,7 +422,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="cashmanager" id="cashmanager" />
+                                <input @if ($modulos[0]->cash_manager== true) checked="checked" @endif type="checkbox"
+                                name="cashmanager" id="cashmanager" />
                                 <span></span>
                             </label>
                         </span>
@@ -406,7 +432,8 @@
                     <div class="col-3">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input type="checkbox" name="equifax" id="equifax" />
+                                <input @if ($modulos[0]->reporte_equifax== true) checked="checked" @endif
+                                type="checkbox" name="equifax" id="equifax" />
                                 <span></span>
                             </label>
                         </span>
@@ -419,7 +446,7 @@
                     <label>Correo Propietario:</label>
                     <input class="form-control {{ $errors->has('correopropietario') ? 'is-invalid' : '' }}"
                         placeholder="Ingrese Correo" name="correopropietario" autocomplete="off"
-                        value="{{ old('correopropietario', $cliente->correopropietario) }}" id="correo" />
+                        value="{{ old('correopropietario', $licencia->correopropietario) }}" id="correo" />
                     @if ($errors->has('correopropietario'))
                     <span class="text-danger">{{ $errors->first('correopropietario') }}</span>
                     @endif
@@ -428,7 +455,7 @@
                     <label>Correo Administrador:</label>
                     <input class="form-control {{ $errors->has('correoadministrador') ? 'is-invalid' : '' }}"
                         placeholder="Ingrese Correo" name="correoadministrador" autocomplete="off"
-                        value="{{ old('correoadministrador', $cliente->correoadministrador) }}" id="correo" />
+                        value="{{ old('correoadministrador', $licencia->correoadministrador) }}" id="correo" />
                     @if ($errors->has('correoadministrador'))
                     <span class="text-danger">{{ $errors->first('correoadministrador') }}</span>
                     @endif
@@ -437,7 +464,7 @@
                     <label>Correo Contador:</label>
                     <input class="form-control {{ $errors->has('correocontador') ? 'is-invalid' : '' }}"
                         placeholder="Ingrese Correo" name="correocontador" autocomplete="off"
-                        value="{{ old('correocontador', $cliente->correocontador) }}" id="correo" />
+                        value="{{ old('correocontador', $licencia->correocontador) }}" id="correo" />
                     @if ($errors->has('correocontador'))
                     <span class="text-danger">{{ $errors->first('correocontador') }}</span>
                     @endif
@@ -448,8 +475,8 @@
                 <div class="form-group row">
                     <label>Token Dropbox:</label>
                     <textarea class="form-control {{ $errors->has('tokenrespaldo') ? 'is-invalid' : '' }}"
-                        placeholder="Token Respaldo" name="tokenrespaldo" autocomplete="off" id="tokenrespaldo"
-                        value="{{ old('tokenrespaldo', $licencia->tokenrespaldo) }}"></textarea>
+                        placeholder="Token Respaldo" name="tokenrespaldo" autocomplete="off"
+                        id="tokenrespaldo">{{$licencia->tokenrespaldo}}</textarea>
                     @if ($errors->has('tokenrespaldo'))
                     <span class="text-danger">{{ $errors->first('tokenrespaldo') }}</span>
                     @endif
@@ -519,10 +546,18 @@
             if ($(this).prop('checked')) {
                 permisos=permisos+$(this).attr('id') + ';';
             }
-        });	
-        $('#permisos').val(permisos)		
-        $(this).unbind('submit').submit(); 	
+        });
+        if(permisos==""){
+            alert("Seleccione si es Perseo: Práctico, Control o Contable ");
+        }else{
+            $('#permisos').val(permisos)		
+            $(this).unbind('submit').submit(); 	
+        }	
     })
+
+    $('#periodo').change(function(){
+        cambiarComboPC();
+    });
 
     $('#practico').click(function(){
         $('#control').prop('checked', false);
@@ -532,7 +567,7 @@
         }else{
             moduloPerseoPractico(false);
         }
-        
+        cambiarComboPC();
     });
 
     $('#control').click(function(){
@@ -546,6 +581,7 @@
             moduloPerseoPractico(false);
             moduloPerseoControl(false);
         }
+        cambiarComboPC();
     });
 
     $('#contable').click(function(){
@@ -561,6 +597,7 @@
             moduloPerseoControl(false);
             moduloPerseoContable(false);
         }
+        cambiarComboPC();
     });
 
     $('#nomina').click(function(){
@@ -677,6 +714,7 @@
 
 
     $(document).ready(function () {
+
         //Iniciar fecha de bloqueo
         $('#fechacaduca').datepicker({
             language: "es",
@@ -701,7 +739,7 @@
         //inicializar datatable
         var table = $('#aplicativos').DataTable({
             responsive: true,
-            processing: true,
+            //processing: true,
             //Guardar pagina, busqueda, etc
             //stateSave: true,
             //Trabajar del lado del server
@@ -732,7 +770,18 @@
                 {data: 'descripcionsubcategoria',orderable: false, searchable: false, name: 'descripcionsubcategoria'},
                 {data: 'activo', name: 'activo', orderable: false, searchable: false},
             ],
+            initComplete: function(settings, json) {
+                //Al terminar de llenar tabla, cargar permisos
+                var permisos=$("#permisos").val();
+                var array =  permisos.split(';');
+
+                for (var i = 0; i <array.length ; i++) {
+                    $('#'+array[i]).prop('checked', true);
+                }
+            }
         });
+
+        
     });
 
     function moduloPerseoPractico(estado){
@@ -926,6 +975,131 @@
         $('#1400').prop('checked', estado);
         $('#1405').prop('checked', estado);
         $('#1410').prop('checked', estado);
+    }
+
+    function cambiarComboPC(){
+        var fecha = new Date();
+        var fechaPagado = new Date();
+
+        switch ($('#periodo').val()) {
+            case '1':
+                fecha.setMonth(fecha.getMonth() + 1);
+                fechaPagado.setMonth(fechaPagado.getMonth() + 1);
+
+                if ($('#practico').prop('checked')) {
+                    $('#numeroequipos').val('2');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', false);
+                    $('#activos').prop('checked', false);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(false);
+                    moduloPerseoActivos(false);
+                    moduloPerseoProduccion(false);
+                }
+                if ($('#control').prop('checked')) {
+                    $('#numeroequipos').val('3');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', false);
+                    $('#activos').prop('checked', false);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(false);
+                    moduloPerseoActivos(false);
+                    moduloPerseoProduccion(false);
+                }
+                if ($('#contable').prop('checked')) {
+                    $('#numeroequipos').val('4');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', true);
+                    $('#activos').prop('checked', true);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(true);
+                    moduloPerseoActivos(true);
+                    moduloPerseoProduccion(false);
+                }
+                break;
+            case '2':
+                fecha.setYear(fecha.getFullYear() + 1);
+                fechaPagado.setYear(fechaPagado.getFullYear() + 1);
+                if ($('#practico').prop('checked')) {
+                    $('#numeroequipos').val('2');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', false);
+                    $('#activos').prop('checked', false);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(false);
+                    moduloPerseoActivos(false);
+                    moduloPerseoProduccion(false);
+                }
+                if ($('#control').prop('checked')) {
+                    $('#numeroequipos').val('3');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', false);
+                    $('#activos').prop('checked', false);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(false);
+                    moduloPerseoActivos(false);
+                    moduloPerseoProduccion(false);
+                }
+                if ($('#contable').prop('checked')) {
+                    $('#numeroequipos').val('4');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', true);
+                    $('#activos').prop('checked', true);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(true);
+                    moduloPerseoActivos(true);
+                    moduloPerseoProduccion(false);
+                }
+                break;
+            case '3':
+                fecha.setYear(fecha.getFullYear() + 5);
+                fechaPagado.setYear(fechaPagado.getFullYear() + 1);
+                if ($('#practico').prop('checked')) {
+                    $('#numeroequipos').val('3');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', false);
+                    $('#activos').prop('checked', false);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(false);
+                    moduloPerseoActivos(false);
+                    moduloPerseoProduccion(false);
+                }
+                if ($('#control').prop('checked')) {
+                    $('#numeroequipos').val('5');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', false);
+                    $('#activos').prop('checked', false);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(false);
+                    moduloPerseoActivos(false);
+                    moduloPerseoProduccion(false);
+                }
+                if ($('#contable').prop('checked')) {
+                    $('#numeroequipos').val('5');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', true);
+                    $('#activos').prop('checked', true);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(true);
+                    moduloPerseoActivos(true);
+                    moduloPerseoProduccion(false);
+                }
+                break;
+        }
+        let fechaFormato = fecha.getDate() + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear() 
+        let fechaPagadoFormato = fechaPagado.getDate() + "-" + ("0" + (fechaPagado.getMonth()+1)).slice(-2) + "-" + fechaPagado.getFullYear() 
+
+        $('#fechacaduca').val(fechaFormato);
+        $('#fechaactulizaciones').val(fechaPagadoFormato);
     }
 </script>
 @endsection

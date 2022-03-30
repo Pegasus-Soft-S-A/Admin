@@ -34,11 +34,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/licencias/{cliente}', [licenciasController::class, 'index'])->name('licencias.index');
     Route::get('/licencias/{cliente}/crearWeb', [licenciasController::class, 'crearWeb'])->name('licencias.web.crear');
     Route::get('/licencias/{cliente}/crearPC', [licenciasController::class, 'crearPC'])->name('licencias.pc.crear');
-    Route::post('/licencias', [licenciasController::class, 'guardar'])->name('licencias.guardar');
+    Route::post('/licenciasPC', [licenciasController::class, 'guardarPC'])->name('licencias.pc.guardar');
+    Route::post('/licenciasWeb', [licenciasController::class, 'guardarWeb'])->name('licencias.web.guardar');
     Route::get('/licencias/editarWeb/{cliente}/{licencia}', [licenciasController::class, 'editarWeb'])->name('licencias.web.editar');
     Route::get('/licencias/editarPC/{cliente}/{licencia}', [licenciasController::class, 'editarPC'])->name('licencias.pc.editar');
-    Route::put('/licencias/{licencia}', [licenciasController::class, 'actualizar'])->name('licencias.actualizar');
-    Route::delete('/licencias/{licencia}', [licenciasController::class, 'eliminar'])->name('licencias.eliminar');
+    Route::put('/licenciasPC/{licencia}', [licenciasController::class, 'actualizarPC'])->name('licencias.pc.actualizar');
+    Route::put('/licenciasWeb/{licencia}', [licenciasController::class, 'actualizarWeb'])->name('licencias.web.actualizar');
+    Route::delete('/licencias/eliminarPC/{licencia}', [licenciasController::class, 'eliminarPC'])->name('licencias.pc.eliminar');
+    Route::delete('/licencias/eliminarWeb/{licencia}', [licenciasController::class, 'eliminarWeb'])->name('licencias.web.eliminar');
 
     /* Distribuidores */
     Route::get('/distribuidores', [distribuidoresController::class, 'index'])->name('distribuidores.index');

@@ -112,6 +112,10 @@
 </div>
 @endsection
 
+@section('modal')
+@include('modals.delete_modal')
+@endsection
+
 @section('script')
 <script>
     $(document).ready(function(){
