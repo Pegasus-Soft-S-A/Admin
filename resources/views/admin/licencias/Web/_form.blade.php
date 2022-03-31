@@ -1,6 +1,7 @@
 @csrf
 <div class="form-group row">
     <div class="col-lg-6">
+        <input type="hidden" name="tipo" id="tipo">
         <input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
         <label>Numero Contrato:</label>
         <input type="text" class="form-control {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
@@ -109,8 +110,8 @@
     </div>
 </div>
 <div class="form-group row">
-    <label class="col-3 col-form-label">Nómina</label>
-    <div class="col-3">
+    <label class="col-4 col-form-label">Nómina</label>
+    <div class="col-2">
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->nomina== 1) checked="checked" @endif type="checkbox" name="nomina" id="nomina" />
@@ -118,8 +119,8 @@
             </label>
         </span>
     </div>
-    <label class="col-3 col-form-label">Activos Fijos</label>
-    <div class="col-3">
+    <label class="col-4 col-form-label">Activos Fijos</label>
+    <div class="col-2">
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->activos== 1) checked="checked" @endif type="checkbox" name="activos" id="activos"
@@ -130,8 +131,8 @@
     </div>
 </div>
 <div class="form-group row">
-    <label class="col-3 col-form-label">Producción</label>
-    <div class="col-3">
+    <label class="col-4 col-form-label">Producción</label>
+    <div class="col-2">
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->produccion== 1) checked="checked" @endif type="checkbox" name="produccion"
@@ -140,8 +141,8 @@
             </label>
         </span>
     </div>
-    <label class="col-3 col-form-label">Restaurantes</label>
-    <div class="col-3">
+    <label class="col-4 col-form-label">Restaurantes</label>
+    <div class="col-2">
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->restaurantes== 1) checked="checked" @endif type="checkbox" name="restaurantes"
@@ -152,8 +153,8 @@
     </div>
 </div>
 <div class="form-group row">
-    <label class="col-3 col-form-label">Talleres</label>
-    <div class="col-3">
+    <label class="col-4 col-form-label">Talleres</label>
+    <div class="col-2">
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->talleres== 1) checked="checked" @endif type="checkbox" name="talleres"
@@ -162,8 +163,8 @@
             </label>
         </span>
     </div>
-    <label class="col-3 col-form-label">Garantías</label>
-    <div class="col-3">
+    <label class="col-4 col-form-label">Garantías</label>
+    <div class="col-2">
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->garantias== 1) checked="checked" @endif type="checkbox" name="garantias"
@@ -174,8 +175,8 @@
     </div>
 </div>
 <div class="form-group row">
-    <label class="col-3 col-form-label">Ecommerce</label>
-    <div class="col-3">
+    <label class="col-4 col-form-label">Ecommerce</label>
+    <div class="col-2">
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->ecommerce== 1) checked="checked" @endif type="checkbox" name="ecommerce"
@@ -188,6 +189,18 @@
 
 @section('script')
 <script>
+    $("#renovarmensual").click(function(e) {
+        confirmar('mes',"Está seguro de Renovar la Licencia?");
+    });
+
+    $("#renovaranual").click(function(e) {
+        confirmar('anual',"Está seguro de Renovar la Licencia?");
+    });
+
+    $("#recargar").click(function(e) {
+        confirmar('recargar',"Esta Seguro de Recargar 120 Documentos Adicionales a la Licencia?");
+    });
+
     $('#periodo').change(function(){
         cambiarComboWeb();
     });
@@ -195,19 +208,35 @@
     $('#producto').change(function(){
         cambiarComboWeb();
     });
+
     $(document).ready(function () {
+        
+        if ("{{ isset($licencia->sis_licenciasid) }}" == false ) {
+            var fecha = new Date();
+            let fechaInicia = fecha.getDate() + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear() 
+            $('#fechainicia').val(fechaInicia);
 
-        var fechainicia = new Date();
+            fecha.setDate(fecha.getDate() + 30);
+            let fechaFin = ("0" +(fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear() 
+            $('#fechacaduca').val(fechaFin);
 
-        if ("{{ isset($licencia->licenciasid) }}" == true ) {
-            cambiarComboWeb();
+            $('#precio').val('11.40');
+            $('#usuarios').val('3');
+            $('#numeromoviles').val('1');
+            $('#ecommerce').prop('checked', false);
+            $('#produccion').prop('checked', true);
+            $('#nomina').prop('checked', false);
+            $('#activos').prop('checked', false);
+            $('#restaurantes').prop('checked', true);
+            $('#talleres').prop('checked', false);
+            $('#garantias').prop('checked', false);
         }else{
-            let inicio = fechainicia.getDate() + "-" + ("0" + (fechainicia.getMonth()+1)).slice(-2) + "-" + fechainicia.getFullYear() 
-            let fin = fechacaduca.getDate() + "-" + ("0" + (fechacaduca.getMonth()+2)).slice(-2) + "-" + fechacaduca.getFullYear() 
-            $('#fechainicia').val(inicio);
-        $('#fechacaduca').val(fin);
+            if("{{ $licencia->producto }}"==6){
+                $('#periodo').prop( "disabled", true );
+            }
         }
-    //Iniciar input numerico
+
+        //Iniciar input numerico
         $('#precio').TouchSpin({
             buttondown_class: 'btn btn-secondary',
             buttonup_class: 'btn btn-secondary',
@@ -230,6 +259,7 @@
                 rightArrow: '<i class="la la-angle-right"></i>'
             }
         });
+
         $('#fechacaduca').datepicker({
             language: "es",
             todayHighlight: true,
@@ -242,10 +272,11 @@
     });
 
     function cambiarComboWeb(){
+        
         if ("{{ isset($licencia->licenciasid) }}" == true ) {
             var fecha = new Date('{{ $licencia->fechacaduca }}');
         }else{
-            var fecha = new Date('{{ $licencia->fechainicia }}');
+            var fecha = new Date();
         }
 
         switch ($('#producto').val()) {
@@ -254,7 +285,7 @@
                 switch($('#periodo').val()){
                     case '1':
                         $('#precio').val('11.40');
-                        fecha.setMonth(fecha.getMonth() + 1);
+                        fecha.setDate(fecha.getDate() + 30);
                     break;
                     case '2':
                         $('#precio').val('86.40');
@@ -278,7 +309,7 @@
                 switch($('#periodo').val()){
                     case '1':
                         $('#precio').val('20.40');
-                        fecha.setMonth(fecha.getMonth() + 1);
+                        fecha.setDate(fecha.getDate() + 30);
                     break;
                     case '2':
                         $('#precio').val('180');
@@ -302,7 +333,7 @@
                 switch($('#periodo').val()){
                     case '1':
                         $('#precio').val('28.80');
-                        fecha.setMonth(fecha.getMonth() + 1);
+                        fecha.setDate(fecha.getDate() + 30);
                         $('#activos').prop('checked', false);
                     break;
                     case '2':
@@ -327,7 +358,7 @@
                 switch($('#periodo').val()){
                     case '1':
                         $('#precio').val('13');
-                        fecha.setMonth(fecha.getMonth() + 1);
+                        fecha.setDate(fecha.getDate() + 30);
                     break;
                     case '2':
                         $('#precio').val('108');
@@ -363,11 +394,11 @@
                 $('#garantias').prop('checked', true);
             break;
             //Soy Contador Servicios
-            case '5':
+            case '8':
                 switch($('#periodo').val()){
                     case '1':
                         $('#precio').val('9.80');
-                        fecha.setMonth(fecha.getMonth() + 1);
+                        fecha.setDate(fecha.getDate() + 30);
                     break;
                     case '2':
                         $('#precio').val('90');
@@ -387,9 +418,25 @@
                 $('#garantias').prop('checked', false);
             break;
         }
-        let fechaFormato = fecha.getDate() + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear() 
-
+        let fechaFormato = ("0" +(fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear() 
         $('#fechacaduca').val(fechaFormato);
+    }
+
+    function confirmar(tipo,mensaje){
+        Swal.fire({
+            title: "Advertencia",
+            text: mensaje,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Confirmar",
+            cancelButtonText: "Cancelar",
+            reverseButtons: true
+        }).then(function(result) {
+            if (result.value) {
+                $('#tipo').val(tipo);
+                $("#formulario").submit();
+            } 
+        });
     }
 </script>
 @endsection

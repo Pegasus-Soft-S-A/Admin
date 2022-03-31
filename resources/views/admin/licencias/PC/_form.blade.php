@@ -264,8 +264,8 @@
 
             <div class="tab-pane fade show" id="modulosadicionales" role="tabpanel">
                 <div class="form-group row">
-                    <label class="col-3 col-form-label">Nómina</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Nómina</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->nomina== true) checked="checked" @endif type="checkbox"
@@ -274,8 +274,8 @@
                             </label>
                         </span>
                     </div>
-                    <label class="col-3 col-form-label">Activos Fijos</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Activos Fijos</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->activos== true) checked="checked" @endif type="checkbox"
@@ -286,8 +286,8 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-3 col-form-label">Producción</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Producción</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->produccion== true) checked="checked" @endif type="checkbox"
@@ -296,8 +296,8 @@
                             </label>
                         </span>
                     </div>
-                    <label class="col-3 col-form-label">TV-Cable e Internet</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">TV-Cable e Internet</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->operadoras== true) checked="checked" @endif type="checkbox"
@@ -308,8 +308,8 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-3 col-form-label">Servicio de Encomiendas</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Servicio de Encomiendas</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->encomiendas== true) checked="checked" @endif type="checkbox"
@@ -318,8 +318,8 @@
                             </label>
                         </span>
                     </div>
-                    <label class="col-3 col-form-label">CRM de Cartera</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">CRM de Cartera</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->crm_cartera== true) checked="checked" @endif type="checkbox"
@@ -330,8 +330,8 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-3 col-form-label">API Whatsapp</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">API Whatsapp</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->api_whatsapp== true) checked="checked" @endif type="checkbox"
@@ -340,8 +340,8 @@
                             </label>
                         </span>
                     </div>
-                    <label class="col-3 col-form-label">Perseo Hybrid</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Perseo Hybrid</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->perseo_hybrid== true) checked="checked" @endif type="checkbox"
@@ -352,8 +352,8 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-3 col-form-label">Plugin Woocomerce</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Plugin Woocomerce</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->tienda_woocommerce== true) checked="checked" @endif
@@ -362,8 +362,8 @@
                             </label>
                         </span>
                     </div>
-                    <label class="col-3 col-form-label">Tienda Perseo</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Tienda Perseo</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->tienda_perseo_publico== true) checked="checked" @endif
@@ -374,18 +374,18 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-3 col-form-label">Restaurantes</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Restaurantes</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if ($modulos[0]->restaurantes== true) checked="checked" @endif type="checkbox"
+                                <input @if ($modulos[0]->restaurante== true) checked="checked" @endif type="checkbox"
                                 name="restaurantes" id="restaurantes" />
                                 <span></span>
                             </label>
                         </span>
                     </div>
-                    <label class="col-3 col-form-label">Servicio Técnico/Garantías</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Servicio Técnico/Garantías</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->garantias== true) checked="checked" @endif type="checkbox"
@@ -396,8 +396,8 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-3 col-form-label">Servicio Técnico Talleres Vehículos</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Servicio Técnico Talleres Vehículos</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->talleres== true) checked="checked" @endif type="checkbox"
@@ -406,8 +406,8 @@
                             </label>
                         </span>
                     </div>
-                    <label class="col-3 col-form-label">Integraciones</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Integraciones</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->tienda_perseo_distribuidor== true) checked="checked" @endif
@@ -418,8 +418,8 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-3 col-form-label">Cash Manager</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Cash Manager</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->cash_manager== true) checked="checked" @endif type="checkbox"
@@ -428,8 +428,8 @@
                             </label>
                         </span>
                     </div>
-                    <label class="col-3 col-form-label">Reporte Equifax</label>
-                    <div class="col-3">
+                    <label class="col-4 col-form-label">Reporte Equifax</label>
+                    <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->reporte_equifax== true) checked="checked" @endif
@@ -547,12 +547,34 @@
                 permisos=permisos+$(this).attr('id') + ';';
             }
         });
-        if(permisos==""){
-            alert("Seleccione si es Perseo: Práctico, Control o Contable ");
-        }else{
-            $('#permisos').val(permisos)		
-            $(this).unbind('submit').submit(); 	
-        }	
+        
+        let inputPractico = $('#practico').prop('checked');
+        let inputControl = $('#control').prop('checked');
+        let inputContable = $('#contable').prop('checked');
+
+        if (inputPractico == false && inputControl == false && inputContable == false ) {
+            $.notify({
+            // options
+                message: 'Seleccione si es Perseo: Práctico, Control o Contable',
+            },{
+                // settings
+                showProgressbar: true,
+                delay: 2500,
+                mouse_over: "pause",
+                placement: {
+                from: "top",
+                align: "right",
+                },
+                animate: {
+                enter: "animated fadeInUp",
+                exit: "animated fadeOutDown",
+                },
+                ype: 'warning',
+            }); 
+        } else {
+            $('#permisos').val(permisos)
+            $(this).unbind('submit').submit();
+        }
     })
 
     $('#periodo').change(function(){

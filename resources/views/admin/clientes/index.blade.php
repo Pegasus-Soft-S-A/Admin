@@ -106,6 +106,13 @@
                                         <th data-priority="1">Identificación</th>
                                         <th data-priority="2">Nombres</th>
                                         <th>Celular</th>
+                                        <th data-priority="3">Producto</th>
+                                        <th data-priority="4">Tipo</th>
+                                        <th data-priority="5">Inicia</th>
+                                        <th data-priority="6">Caduca</th>
+                                        <th>Usuarios</th>
+                                        <th>Empresas</th>
+                                        <th>Móviles</th>
                                         <th class="no-exportar">Acciones</th>
                                     </tr>
                                 </thead>
@@ -157,7 +164,14 @@
                 {data: 'numerocontrato', name: 'numerocontrato',visible:false},
                 {data: 'identificacion', name: 'identificacion'},
                 {data: 'nombres', name: 'nombres'},
-                {data: 'telefono2', name: 'nombrecomercial'},
+                {data: 'telefono2', name: 'telefono2'},
+                {data: 'tipo_licencia', name: 'tipo_licencia'},
+                {data: 'producto', name: 'producto'},
+                {data: 'fechainicia', name: 'fechainicia'},
+                {data: 'fechacaduca', name: 'fechacaduca'},
+                {data: 'usuarios', name: 'usuarios',visible:false},
+                {data: 'empresas', name: 'empresas',visible:false},
+                {data: 'numeromoviles', name: 'numeromoviles',visible:false},
                 {data: 'action', name: 'action', orderable: false, searchable: false, className: "text-center"},
             ],
             

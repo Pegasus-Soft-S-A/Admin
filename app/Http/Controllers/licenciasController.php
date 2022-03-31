@@ -7,6 +7,7 @@ use App\Models\Clientes;
 use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\Facades\DataTables;
 
 class licenciasController extends Controller
@@ -17,33 +18,49 @@ class licenciasController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid')
-                ->where('sis_clientesid', $cliente->sis_clientesid);
+            $url = 'http://localhost:8026/registros/consulta_licencia';
+            $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                ->withOptions(["verify" => false])
+                ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
+                ->json();
 
-            return DataTables::of($data)
+            $data = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid')
+                ->where('sis_clientesid', $cliente->sis_clientesid)
+                ->get();
+
+            if (isset($resultado['licencias'])) {
+                $unir = array_merge($resultado['licencias'], $data->toArray());
+            } else {
+                $unir =  $data->toArray();
+            }
+
+            return DataTables::of($unir)
 
                 ->editColumn('numerocontrato', function ($data) {
-                    if ($data->tipo_licencia == 1) {
-                        return '<a class="text-primary" href="' . route('licencias.web.editar', [$data->sis_clientesid, $data->sis_licenciasid]) . '">' . $data->numerocontrato . ' </a>';
+                    if ($data['tipo_licencia'] == 1) {
+                        return '<a class="text-primary" href="' . route('licencias.web.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '">' . $data['numerocontrato'] . ' </a>';
                     } else {
-                        return '<a class="text-primary" href="' . route('licencias.pc.editar', [$data->sis_clientesid, $data->sis_licenciasid]) . '">' . $data->numerocontrato . ' </a>';
+                        return '<a class="text-primary" href="' . route('licencias.pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '">' . $data['numerocontrato'] . ' </a>';
                     }
                 })
                 ->editColumn('action', function ($data) {
-                    if ($data->tipo_licencia == 1) {
-                        return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.web.editar', [$data->sis_clientesid, $data->sis_licenciasid]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
-                            '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.web.eliminar', $data->sis_licenciasid) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
+                    if ($data['tipo_licencia'] == 1) {
+                        return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.web.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
+                            '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.web.eliminar', $data['sis_licenciasid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
                     } else {
-                        return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.pc.editar', [$data->sis_clientesid, $data->sis_licenciasid]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
-                            '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.pc.eliminar', $data->sis_licenciasid) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
+                        return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
+                            '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.pc.eliminar', $data['sis_licenciasid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
                     }
                 })
                 ->editColumn('tipo_licencia', function ($data) {
-                    if ($data->tipo_licencia == 1) {
+                    if ($data['tipo_licencia'] == 1) {
                         return 'Perseo Web';
                     } else {
                         return 'Perseo PC';
                     }
+                })
+                ->editColumn('fechacaduca', function ($data) {
+                    return date('d-m-Y', strtotime($data['fechacaduca']));
                 })
                 ->rawColumns(['action', 'numerocontrato', 'tipo_licencia'])
                 ->make(true);
@@ -69,10 +86,23 @@ class licenciasController extends Controller
         $contrato = $this->generarContrato();
         $existe = Licencias::where('numerocontrato', $contrato)->get();
 
+        $url = 'http://localhost:8026/registros/consulta_licencia';
+        $existeWeb = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($url, ['numerocontrato' => $contrato])
+            ->json();
+
+
+
         //Mientras exista en la base el numero de contrato seguira generando hasta que sea unico
-        while (count($existe) > 0) {
+        while (count($existe) > 0 || isset($existeWeb['licencias'])) {
             $contrato = $this->generarContrato();
             $existe = Licencias::where('numerocontrato', $contrato)->get();
+
+            $existeWeb = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                ->withOptions(["verify" => false])
+                ->post($url, ['numerocontrato' => $contrato])
+                ->json();
         }
 
         $licencia->numerocontrato = $contrato;
@@ -93,6 +123,7 @@ class licenciasController extends Controller
 
         return view('admin.licencias.web.crear', compact('cliente', 'licencia', 'modulos'));
     }
+
 
     public function crearPC(Clientes $cliente)
     {
@@ -124,7 +155,7 @@ class licenciasController extends Controller
             'nomina' => false,
             'activos' => false,
             'produccion' => false,
-            'restaurantes' => false,
+            'restaurante' => false,
             'talleres' => false,
             'garantias' => false,
             'operadoras' => false,
@@ -189,7 +220,7 @@ class licenciasController extends Controller
             'nomina' => $request['nomina'] = $request->nomina == 'on' ? true : false,
             'activos' => $request['activos'] = $request->activos == 'on' ? true : false,
             'produccion' => $request['produccion'] = $request->produccion == 'on' ? true : false,
-            'restaurantes' => $request['restaurantes'] = $request->restaurantes == 'on' ? true : false,
+            'restaurante' => $request['restaurantes'] = $request->restaurantes == 'on' ? true : false,
             'talleres' => $request['talleres'] = $request->talleres == 'on' ? true : false,
             'garantias' => $request['garantias'] = $request->garantias == 'on' ? true : false,
             'operadoras' => $request['tvcable'] = $request->tvcable == 'on' ? true : false,
@@ -207,7 +238,7 @@ class licenciasController extends Controller
             $request['nomina'],
             $request['activos'],
             $request['produccion'],
-            $request['restaurantes'],
+            $request['restaurante'],
             $request['talleres'],
             $request['garantias'],
             $request['tvcable'],
@@ -222,7 +253,6 @@ class licenciasController extends Controller
             $request['equifax'],
         );
         $request['modulos'] = json_encode([$modulos]);
-
         $licencia =   Licencias::create($request->all());
 
         $log = new Log();
@@ -240,14 +270,29 @@ class licenciasController extends Controller
     public function guardarWeb(Request $request)
     {
         //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
-        $request['fechacreacion'] = now();
+        $request['fechacreacion'] = date('Y-m-d H:i:s', strtotime(now()));
         $request['usuariocreacion'] = Auth::user()->nombres;
-        $request['fechainicia'] = date('Y-m-d', strtotime($request->fechainicia));
-        $request['fechacaduca'] = date('Y-m-d', strtotime($request->fechacaduca));
+        $request['fechainicia'] = date('Ymd', strtotime($request->fechainicia));
+        $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
         $request['tipo_licencia'] =  1;
         $request['sis_distribuidoresid'] =  Auth::user()->sis_distribuidoresid;
         $request['Identificador'] = $request['numerocontrato'];
         $request['fechaultimopago'] = $request['fechainicia'];
+
+        if ($request['producto'] == "6") {
+            $parametros_json = [];
+            $parametros_json = [
+                'Documentos' => "120",
+                'Productos' => "500",
+                'Almacenes' => "1",
+                'Nomina' => "3",
+                'Produccion' => "3",
+                'Activos' => "3",
+                'Talleres' => "3",
+                'Garantias' => "3",
+            ];
+            $request['parametros_json'] = json_encode($parametros_json);
+        }
 
         $xw = xmlwriter_open_memory();
         //xmlwriter_set_indent($xw, 1);
@@ -290,20 +335,38 @@ class licenciasController extends Controller
             $request['talleres'],
             $request['garantias'],
             $request['ecommerce'],
+            $request['tipo'],
         );
 
-        $licencia =   Licencias::create($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Licencia PC";
-        $log->tipooperacion = "Crear";
-        $log->fecha = now();
-        $log->detalle = $licencia;
-        $log->save();
+        $url = 'http://localhost:8026/registros/crear_licencias';
+        $licencia = $request->all();
 
-        flash('Guardado Correctamente')->success();
-        return redirect()->route('licencias.web.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
+        $crearLicenciaWeb = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($url, $licencia)
+            ->json();
+
+
+        if (isset($crearLicenciaWeb["licencias"])) {
+            $licenciaId = $crearLicenciaWeb["licencias"][0]['sis_licenciasid'];
+            $request['sis_licenciasid'] = $licenciaId;
+
+            $log = new Log();
+            $log->usuario = Auth::user()->nombres;
+            $log->pantalla = "Licencia PC";
+            $log->tipooperacion = "Crear";
+            $log->fecha = now();
+            $log->detalle = json_encode($request->all());
+            $log->save();
+
+
+            flash('Guardado Correctamente')->success();
+            return redirect()->route('licencias.web.editar', [$request['sis_clientesid'], $licenciaId]);
+        } else {
+            flash('Ocurrió un error vuelva a intentarlo')->warning();
+            return back();
+        }
     }
 
     public function editarPC(Clientes $cliente, Licencias $licencia)
@@ -314,11 +377,29 @@ class licenciasController extends Controller
         return view('admin.licencias.pc.editar', compact('cliente', 'licencia', 'modulos'));
     }
 
-    public function editarWeb(Clientes $cliente, Licencias $licencia)
+    public function editarWeb(Clientes $cliente, $licenciaid)
     {
-        //$licencia->fechainicia = date("d-m-Y", strtotime($licencia->fechainicia));
-        // $licencia->fechacaduca = date("d-m-Y", strtotime($licencia->fechacaduca));
-        $modulos = simplexml_load_string($licencia->modulos);
+        $url = 'http://localhost:8026/registros/consulta_licencia';
+        $licenciaConsulta = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($url, ['sis_licenciasid' => $licenciaid])
+            ->json();
+
+        $licenciaEnviar = $licenciaConsulta['licencias'][0];
+        $licenciaEnviar['fechainicia'] = date("d-m-Y", strtotime($licenciaEnviar['fechainicia']));
+        $licenciaEnviar['fechacaduca'] = date("d-m-Y", strtotime($licenciaEnviar['fechacaduca']));
+        $licenciaEnviar['fechacreacion'] = date("Y-m-d H:i:s", strtotime($licenciaEnviar['fechacreacion']));
+
+        if ($licenciaEnviar['fechamodificacion'] != "0000-00-00T00:00:00.000") {
+            $licenciaEnviar['fechamodificacion'] = date("Y-m-d H:i:s", strtotime($licenciaEnviar['fechamodificacion']));
+        } else {
+            $licenciaEnviar['fechamodificacion'] = "";
+        }
+
+        $modulos = simplexml_load_string($licenciaEnviar['modulos']);
+        $licenciaArray = json_encode($licenciaEnviar);
+        $licencia = json_decode($licenciaArray);
+
         return view('admin.licencias.web.editar', compact('cliente', 'licencia', 'modulos'));
     }
 
@@ -409,17 +490,43 @@ class licenciasController extends Controller
         return back();
     }
 
-    public function actualizarWeb(Request $request, Licencias $licencia)
+    public function actualizarWeb(Request $request, $licenciaid)
     {
 
+        $url = 'http://localhost:8026/registros/consulta_licencia';
+        $licenciaConsulta = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($url, ['sis_licenciasid' => $licenciaid])
+            ->json();
+        $licenciaEnviar = $licenciaConsulta['licencias'][0];
+        $licenciaArray = json_encode($licenciaEnviar);
+        $licencia = json_decode($licenciaArray);
+        //En caso de renovar mensual, anual o actualizar 
+        switch ($request->tipo) {
+            case 'mes':
+                $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 month"));
+                break;
+            case 'anual':
+                $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
+                break;
+            case 'recargar':
+                $parametros_json = json_decode($licencia->parametros_json);
+                $parametros_json->Documentos = $parametros_json->Documentos + 120;
+                $request['parametros_json'] = json_encode($parametros_json);
+                $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
+                break;
+            default:
+                $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
+                break;
+        }
+
         //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
-        $request['fechamodificacion'] = now();
+        $request['fechamodificacion'] = date('YmdHis', strtotime(now()));
         $request['usuariomodificacion'] = Auth::user()->nombres;
-        $request['fechacaduca'] = date('Y-m-d', strtotime($request->fechacaduca));
+        $request['fechainicia'] = date('Ymd', strtotime($request->fechainicia));
+
 
         $xw = xmlwriter_open_memory();
-        //xmlwriter_set_indent($xw, 1);
-        //xmlwriter_set_indent_string($xw, ' ');
         xmlwriter_start_document($xw, '1.0', 'UTF-8');
         xmlwriter_start_element($xw, 'modulos');
 
@@ -444,7 +551,6 @@ class licenciasController extends Controller
         xmlwriter_start_element($xw, 'ecommerce');
         xmlwriter_text($xw, $request->ecommerce == 'on' ? 1 : 0);
         xmlwriter_end_element($xw);
-
         xmlwriter_end_element($xw);
         xmlwriter_end_document($xw);
 
@@ -458,20 +564,36 @@ class licenciasController extends Controller
             $request['talleres'],
             $request['garantias'],
             $request['ecommerce'],
+            $request['tipo'],
         );
 
 
-        $licencia->update($request->all());
+        /* $licencia->update($request->all()); */
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Licencia Web";
-        $log->tipooperacion = "Modificar";
-        $log->fecha = now();
-        $log->detalle = $licencia;
-        $log->save();
+        $request['sis_licenciasid'] = $licenciaid;
 
-        flash('Actualizado Correctamente')->success();
+
+
+        $urlEditar = 'http://localhost:8026/registros/editar_licencia';
+        $licenciaEditar = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($urlEditar, $request->all())
+            ->json();
+
+        if (isset($licenciaEditar['licencias'])) {
+            $log = new Log();
+            $log->usuario = Auth::user()->nombres;
+            $log->pantalla = "Licencia Web";
+            $log->tipooperacion = "Modificar";
+            $log->fecha = now();
+            $log->detalle = json_encode($request->all());
+            $log->save();
+
+            flash('Actualizado Correctamente')->success();
+        } else {
+            flash('Ocurrió un error vuelva a intentarlo')->warning();
+        }
+
         return back();
     }
 
@@ -491,19 +613,34 @@ class licenciasController extends Controller
         return back();
     }
 
-    public function eliminarWeb(Licencias $licencia)
+    public function eliminarWeb($licenciaid)
     {
-        $licencia->delete();
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Licencia Web";
-        $log->tipooperacion = "Eliminar";
-        $log->fecha = now();
-        $log->detalle = $licencia;
-        $log->save();
+        $url = 'http://localhost:8026/registros/eliminar_licencia';
+        $urlConsulta = 'http://localhost:8026/registros/consulta_licencia';
+        $licenciaConsulta = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($urlConsulta, ['sis_licenciasid' => $licenciaid])
+            ->json();
+        $eliminarLicencia = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($url, ['sis_licenciasid' => $licenciaid])
+            ->json();
 
-        flash("Eliminado Correctamente")->success();
+        if (isset($eliminarLicencia['respuesta'])) {
+            $log = new Log();
+            $log->usuario = Auth::user()->nombres;
+            $log->pantalla = "Licencia Web";
+            $log->tipooperacion = "Eliminar";
+            $log->fecha = now();
+            $log->detalle = json_encode($licenciaConsulta['licencias'][0]);
+            $log->save();
+
+            flash("Eliminado Correctamente")->success();
+        } else {
+            flash('Ocurrió un error vuelva a intentarlo')->warning();
+        }
+
         return back();
     }
 }

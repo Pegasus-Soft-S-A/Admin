@@ -7,7 +7,7 @@
                 <div class="col-md-12">
                     <!--begin::Card-->
                     <form class="form" action="{{  route('licencias.web.actualizar', $licencia->sis_licenciasid)}}"
-                        method="POST">
+                        method="POST" id="formulario">
                         @method('PUT')
                         <div class="card card-custom card-sticky" id="kt_page_sticky_card">
                             <div class="card-header flex-wrap py-5">
@@ -28,6 +28,24 @@
                                             <a href="{{ route('licencias.web.crear',$cliente->sis_clientesid) }}"
                                                 class="btn btn-warning btn-icon" data-toggle="tooltip" title="Nuevo"><i
                                                     class="la la-user-plus"></i></a>
+
+                                            <a id="renovarmensual" href="#" class="btn btn-primary btn-icon"
+                                                data-toggle="tooltip" title="Renovar Mensual"><i
+                                                    class="la la-calendar-plus"></i></a>
+
+                                            <a id="renovaranual" href="#" class="btn btn-warning btn-icon"
+                                                data-toggle="tooltip" title="Renovar Anual"><i
+                                                    class="la la-calendar-plus"></i></a>
+
+                                            @if ($licencia->producto==6)
+                                            <a id="recargar" href="#" class="btn btn-success btn-icon"
+                                                data-toggle="tooltip" title="Recargar Documentos"><i
+                                                    class="la la-file-medical"></i></a>
+                                            @endif
+
+                                            <a href="{{ route('licencias.web.crear',$cliente->sis_clientesid) }}"
+                                                class="btn btn-primary btn-icon" data-toggle="tooltip"
+                                                title="Enviar Email"><i class="socicon-mail"></i></a>
                                         </div>
                                     </div>
                                 </div>
@@ -65,30 +83,4 @@
         </div>
     </div>
 </div>
-@endsection
-
-@section('script')
-<script>
-    $('#correo').tokenfield({
-        delimiter: [","],
-    });
-
-    function recuperarInformacion() {
-
-    var cad = document.getElementById('identificacion').value;
-        $("#spinner").addClass("spinner spinner-success spinner-right");
-        $.post('{{ route('recuperarInformacionPost') }}', {
-            _token: '{{ csrf_token() }}',
-            cedula: cad
-        }, function(data) {
-            $("#spinner").removeClass("spinner spinner-success spinner-right");
-            if (data.identificacion) {
-                $("#razonsocial").val(data.razon_social);
-                $("#nombrecomercial").val(data.nombrecomercial);
-                $("#direccion").val(data.direccion);
-                $("#correo").val(data.correo);
-            }
-        });
-    }
-</script>
 @endsection

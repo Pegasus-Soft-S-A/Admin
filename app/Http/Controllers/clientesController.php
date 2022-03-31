@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Clientes;
 use App\Models\Distribuidores;
 use App\Models\Log;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,20 +25,61 @@ class clientesController extends Controller
                 ->post($url, ['sis_distribuidoresid' => '0'])
                 ->json();
 
-            $data = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono2', 'sis_licencias.numerocontrato')
-                ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
+            $data = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono2', 'sis_licencias.numerocontrato', 'sis_licencias.fechainicia', 'sis_licencias.fechacaduca', 'sis_licencias.usuarios', 'sis_licencias.empresas', 'sis_licencias.numeromoviles', 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.modulopractico', 'sis_licencias.modulocontrol', 'sis_licencias.modulocontable')
+                ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                 ->get();
 
             $unir = array_merge($resultado['registro'], $data->toArray());
-
+            //dd($unir);
             return DataTables::of($unir)
-                // ->addIndexColumn()
                 ->editColumn('identificacion', function ($cliente) {
                     return '<a class="text-primary" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '">' . $cliente['identificacion'] . ' </a>';
                 })
                 ->editColumn('action', function ($cliente) {
                     return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
                         '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('clientes.eliminar', $cliente['sis_clientesid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
+                })
+                ->editColumn('fechainicia', function ($cliente) {
+                    return date('d-m-Y', strtotime($cliente['fechainicia']));
+                })
+                ->editColumn('fechacaduca', function ($cliente) {
+                    return date('d-m-Y', strtotime($cliente['fechacaduca']));
+                })
+                ->editColumn('tipo_licencia', function ($cliente) {
+                    return $cliente['tipo_licencia'] == 1 ? 'Web' : 'PC';
+                })
+                ->editColumn('producto', function ($cliente) {
+                    $producto = "";
+                    if ($cliente['tipo_licencia'] == 1) {
+                        switch ($cliente['producto']) {
+                            case '2':
+                                $producto = "Facturación";
+                                break;
+                            case '3':
+                                $producto = "Servicios";
+                                break;
+                            case '4':
+                                $producto = "Comercial";
+                                break;
+                            case '5':
+                                $producto = "Soy Contador Comercial";
+                                break;
+                            case '6':
+                                $producto = "Demo";
+                                break;
+                            case '7':
+                                $producto = "Total";
+                                break;
+                            case '8':
+                                $producto = "Soy Contador Servicios";
+                                break;
+                        }
+                    } else {
+                        if ($cliente['modulopractico'] == 1) $producto = "Práctico";
+                        if ($cliente['modulocontrol'] == 1) $producto = "Control";
+                        if ($cliente['modulocontable'] == 1) $producto = "Contable";
+                    }
+                    return $producto;
                 })
                 ->rawColumns(['action', 'identificacion'])
                 ->make(true);
