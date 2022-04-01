@@ -174,7 +174,11 @@
                 {data: 'numeromoviles', name: 'numeromoviles',visible:false},
                 {data: 'action', name: 'action', orderable: false, searchable: false, className: "text-center"},
             ],
-            
+            rowCallback: function( row, data, index ) {
+                if (data["numerocontrato"] == null) {
+                    //$(row).hide();
+                }
+            },
             //botones para exportar
             buttons: [
                 {

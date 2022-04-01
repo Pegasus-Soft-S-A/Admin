@@ -252,7 +252,7 @@
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <label>Clave de Activación:</label>
-                        <textarea class="form-control {{ $errors->has('key') ? 'is-invalid' : '' }}"
+                        <textarea rows="8" class="form-control {{ $errors->has('key') ? 'is-invalid' : '' }}"
                             placeholder="Clave de Activación" name="key" autocomplete="off"
                             id="key">{{$licencia->key}}</textarea>
                         @if ($errors->has('key'))
@@ -474,7 +474,7 @@
             <div class="tab-pane fade show" id="respaldos" role="tabpanel">
                 <div class="form-group row">
                     <label>Token Dropbox:</label>
-                    <textarea class="form-control {{ $errors->has('tokenrespaldo') ? 'is-invalid' : '' }}"
+                    <textarea rows="8" class="form-control {{ $errors->has('tokenrespaldo') ? 'is-invalid' : '' }}"
                         placeholder="Token Respaldo" name="tokenrespaldo" autocomplete="off"
                         id="tokenrespaldo">{{$licencia->tokenrespaldo}}</textarea>
                     @if ($errors->has('tokenrespaldo'))

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\DataTables as DataTables;
 
@@ -25,13 +26,24 @@ class clientesController extends Controller
                 ->post($url, ['sis_distribuidoresid' => '0'])
                 ->json();
 
-            $data = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono2', 'sis_licencias.numerocontrato', 'sis_licencias.fechainicia', 'sis_licencias.fechacaduca', 'sis_licencias.usuarios', 'sis_licencias.empresas', 'sis_licencias.numeromoviles', 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.modulopractico', 'sis_licencias.modulocontrol', 'sis_licencias.modulocontable')
+            $data = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.tipoidentificacion', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono1', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_clientes.sis_distribuidoresid', 'sis_clientes.sis_vendedoresid', 'sis_clientes.sis_revendedoresid', 'sis_clientes.red_origen', 'sis_clientes.usuariocreacion', 'sis_clientes.usuariomodificacion', 'sis_clientes.fechacreacion', 'sis_clientes.fechamodificacion', 'sis_licencias.sis_licenciasid', 'sis_licencias.usuarios', 'sis_licencias.empresas', 'sis_licencias.fechainicia', 'sis_licencias.fechacaduca', 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.numeromoviles', 'sis_licencias.numerocontrato',  'sis_licencias.modulopractico', 'sis_licencias.modulocontable', 'sis_licencias.modulocontrol')
                 ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                 ->get();
 
-            $unir = array_merge($resultado['registro'], $data->toArray());
-            //dd($unir);
-            return DataTables::of($unir)
+            $data2 = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.tipoidentificacion', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono1', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_clientes.sis_distribuidoresid', 'sis_clientes.sis_vendedoresid', 'sis_clientes.sis_revendedoresid', 'sis_clientes.red_origen', 'sis_clientes.usuariocreacion', 'sis_clientes.usuariomodificacion', 'sis_clientes.fechacreacion', 'sis_clientes.fechamodificacion', 'sis_licencias.sis_licenciasid', 'sis_licencias.usuarios', 'sis_licencias.empresas', 'sis_licencias.fechainicia', 'sis_licencias.fechacaduca', 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.numeromoviles', DB::raw('ifnull (sis_licencias.numerocontrato,0) as numerocontrato'),  'sis_licencias.modulopractico', 'sis_licencias.modulocontable', 'sis_licencias.modulocontrol')
+                ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
+                ->whereNull('sis_licencias.sis_clientesid')
+                ->get();
+
+            //dd($data2[0]);
+            $unir = array_merge($resultado['registro'], $data->toArray(), $data2->toArray());
+
+            $temp = array_unique(array_column($unir,  'numerocontrato'));
+
+            $unique_arr = array_intersect_key($unir, $temp);
+
+            //dd($unique_arr);
+            return DataTables::of($unique_arr)
                 ->editColumn('identificacion', function ($cliente) {
                     return '<a class="text-primary" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '">' . $cliente['identificacion'] . ' </a>';
                 })
@@ -40,10 +52,10 @@ class clientesController extends Controller
                         '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('clientes.eliminar', $cliente['sis_clientesid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
                 })
                 ->editColumn('fechainicia', function ($cliente) {
-                    return date('d-m-Y', strtotime($cliente['fechainicia']));
+                    return $cliente['fechainicia'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', strtotime($cliente['fechainicia']));
                 })
                 ->editColumn('fechacaduca', function ($cliente) {
-                    return date('d-m-Y', strtotime($cliente['fechacaduca']));
+                    return $cliente['fechacaduca'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', strtotime($cliente['fechacaduca']));
                 })
                 ->editColumn('tipo_licencia', function ($cliente) {
                     return $cliente['tipo_licencia'] == 1 ? 'Web' : 'PC';
