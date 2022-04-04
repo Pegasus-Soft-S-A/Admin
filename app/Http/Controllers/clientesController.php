@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Clientes;
 use App\Models\Distribuidores;
+use App\Models\Licencias;
 use App\Models\Log;
-use Carbon\Carbon;
-use Illuminate\Database\QueryException;
+use App\Models\Revendedores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,30 +20,70 @@ class clientesController extends Controller
 
         if ($request->ajax()) {
 
+            $tipo = $request->tipofecha;
+            $fecha = $request->fecha;
+            $distribuidor = $request->distribuidor;
+            $vendedor = $request->vendedor;
+            $origen = $request->origen;
+
+            $clientes = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.tipoidentificacion', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono1', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_clientes.sis_distribuidoresid', 'sis_clientes.sis_vendedoresid', 'sis_clientes.sis_revendedoresid', 'sis_clientes.red_origen', 'sis_clientes.usuariocreacion', 'sis_clientes.usuariomodificacion', 'sis_clientes.fechacreacion', 'sis_clientes.fechamodificacion', 'sis_licencias.sis_licenciasid', 'sis_licencias.usuarios', 'sis_licencias.empresas', DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'), 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.numeromoviles', 'sis_licencias.numerocontrato',  'sis_licencias.modulopractico', 'sis_licencias.modulocontable', 'sis_licencias.modulocontrol')
+                ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
+                ->groupBy('sis_clientes.sis_clientesid')
+                ->get();
+
             $url = 'http://localhost:8026/registros/consulta_cliente';
-            $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            $web1 = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                 ->withOptions(["verify" => false])
                 ->post($url, ['sis_distribuidoresid' => '0'])
                 ->json();
 
-            $data = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.tipoidentificacion', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono1', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_clientes.sis_distribuidoresid', 'sis_clientes.sis_vendedoresid', 'sis_clientes.sis_revendedoresid', 'sis_clientes.red_origen', 'sis_clientes.usuariocreacion', 'sis_clientes.usuariomodificacion', 'sis_clientes.fechacreacion', 'sis_clientes.fechamodificacion', 'sis_licencias.sis_licenciasid', 'sis_licencias.usuarios', 'sis_licencias.empresas', 'sis_licencias.fechainicia', 'sis_licencias.fechacaduca', 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.numeromoviles', 'sis_licencias.numerocontrato',  'sis_licencias.modulopractico', 'sis_licencias.modulocontable', 'sis_licencias.modulocontrol')
+            $pc = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.tipoidentificacion', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono1', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_clientes.sis_distribuidoresid', 'sis_clientes.sis_vendedoresid', 'sis_clientes.sis_revendedoresid', 'sis_clientes.red_origen', 'sis_clientes.usuariocreacion', 'sis_clientes.usuariomodificacion', 'sis_clientes.fechacreacion', 'sis_clientes.fechamodificacion', 'sis_licencias.sis_licenciasid', 'sis_licencias.usuarios', 'sis_licencias.empresas', DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'), 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.numeromoviles', 'sis_licencias.numerocontrato',  'sis_licencias.modulopractico', 'sis_licencias.modulocontable', 'sis_licencias.modulocontrol')
                 ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                 ->get();
+            //dd($pc);
+            $diferencia = removeDuplicate($clientes->toArray(), $web1['registro'], $pc->toArray(), 'sis_clientesid');
 
-            $data2 = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.tipoidentificacion', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono1', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_clientes.sis_distribuidoresid', 'sis_clientes.sis_vendedoresid', 'sis_clientes.sis_revendedoresid', 'sis_clientes.red_origen', 'sis_clientes.usuariocreacion', 'sis_clientes.usuariomodificacion', 'sis_clientes.fechacreacion', 'sis_clientes.fechamodificacion', 'sis_licencias.sis_licenciasid', 'sis_licencias.usuarios', 'sis_licencias.empresas', 'sis_licencias.fechainicia', 'sis_licencias.fechacaduca', 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.numeromoviles', DB::raw('ifnull (sis_licencias.numerocontrato,0) as numerocontrato'),  'sis_licencias.modulopractico', 'sis_licencias.modulocontable', 'sis_licencias.modulocontrol')
-                ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
-                ->whereNull('sis_licencias.sis_clientesid')
-                ->get();
-
-            //dd($data2[0]);
-            $unir = array_merge($resultado['registro'], $data->toArray(), $data2->toArray());
-
+            $unir = array_merge($web1['registro'], $pc->toArray());
             $temp = array_unique(array_column($unir,  'numerocontrato'));
-
             $unique_arr = array_intersect_key($unir, $temp);
 
-            //dd($unique_arr);
-            return DataTables::of($unique_arr)
+            $final = collect(array_merge($unique_arr, $diferencia));
+
+            //Filtrar por tipo fecha
+            if ($tipo != null) {
+                switch ($tipo) {
+                    case '1':
+                        $tipo_fecha = "fechainicia";
+                        break;
+                    case '2':
+                        $tipo_fecha = "fechacaduca";
+                        break;
+                    case '3':
+                        $tipo_fecha = "fechaactulizaciones";
+                        break;
+                }
+
+                //Si existe fecha en el filtro agrega condicion
+                if ($fecha) {
+                    $desde =  strtotime(explode(" / ", $fecha)[0]);
+                    $hasta =  strtotime(explode(" / ", $fecha)[1]);
+                    $final = $final->whereBetween($tipo_fecha, [$desde, $hasta]);
+                }
+            }
+
+            if ($distribuidor != null) {
+                $final = $final->where('sis_distribuidoresid', $distribuidor);
+            }
+
+            if ($vendedor != null) {
+                $final = $final->where('sis_vendedoresid', $vendedor);
+            }
+
+            if ($origen != null) {
+                $final = $final->where('red_origen', $origen);
+            }
+
+            return DataTables::of($final)
                 ->editColumn('identificacion', function ($cliente) {
                     return '<a class="text-primary" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '">' . $cliente['identificacion'] . ' </a>';
                 })
@@ -52,13 +92,19 @@ class clientesController extends Controller
                         '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('clientes.eliminar', $cliente['sis_clientesid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
                 })
                 ->editColumn('fechainicia', function ($cliente) {
-                    return $cliente['fechainicia'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', strtotime($cliente['fechainicia']));
+                    return $cliente['fechainicia'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechainicia']);
                 })
                 ->editColumn('fechacaduca', function ($cliente) {
-                    return $cliente['fechacaduca'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', strtotime($cliente['fechacaduca']));
+                    return $cliente['fechacaduca'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechacaduca']);
                 })
                 ->editColumn('tipo_licencia', function ($cliente) {
-                    return $cliente['tipo_licencia'] == 1 ? 'Web' : 'PC';
+                    $licencia = "";
+                    if ($cliente['tipo_licencia'] == 1) {
+                        $licencia = "Web";
+                    } elseif ($cliente['tipo_licencia'] == 2) {
+                        $licencia = "PC";
+                    }
+                    return $licencia;
                 })
                 ->editColumn('producto', function ($cliente) {
                     $producto = "";
@@ -97,7 +143,14 @@ class clientesController extends Controller
                 ->make(true);
         }
 
-        return view('admin.clientes.index');
+        if (Auth::user()->tipo == 1) {
+            $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->orderBy('sis_revendedores.razonsocial')->get();
+            $distribuidores = Distribuidores::all();
+        } else {
+            $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->where('sis_revendedores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->orderBy('sis_revendedores.razonsocial')->get();
+            $distribuidores = Distribuidores::where('sis_distribuidores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
+        }
+        return view('admin.clientes.index', compact('vendedores', 'distribuidores'));
     }
 
     public function crear()

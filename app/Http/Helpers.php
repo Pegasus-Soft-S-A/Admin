@@ -29,3 +29,26 @@ if (!function_exists('encrypt_openssl')) {
         return base64_encode($encryptedMessage);
     }
 }
+
+if (!function_exists('removeDuplicate')) {
+
+    function removeDuplicate($array1, $array2, $array3, $key)
+    {
+        $tmpArray = $array1;
+        foreach ($array1 as $data1k => $data1) {
+            foreach ($array2 as $data2) {
+                if ($data1[$key] === $data2[$key]) {
+                    unset($tmpArray[$data1k]);
+                    continue;
+                }
+            }
+            foreach ($array3 as $data3) {
+                if ($data1[$key] === $data3[$key]) {
+                    unset($tmpArray[$data1k]);
+                    continue;
+                }
+            }
+        }
+        return $tmpArray;
+    }
+}

@@ -20,6 +20,12 @@
 
                             </div>
                             <div class="card-toolbar">
+                                <a href="#" class="btn btn-primary font-weight-bolder" id="filtrar">
+                                    <span class="svg-icon svg-icon-md">
+                                        <i class="la la-filter"></i>
+                                    </span>Filtrar
+                                </a>
+
                                 <div class="dropdown dropdown-inline mr-2 ml-2">
                                     <button type="button"
                                         class="btn btn-md btn-light-primary font-weight-bolder dropdown-toggle"
@@ -85,7 +91,6 @@
                                     </div>
                                     <!--end::Dropdown Menu-->
                                 </div>
-
                                 <a href="{{route('clientes.crear')}}" class="btn btn-primary font-weight-bolder">
                                     <span class="svg-icon svg-icon-md">
                                         <i class="flaticon2-plus-1"></i>
@@ -96,6 +101,118 @@
 
                         </div>
                         <div class="card-body">
+                            <!--begin: Search Form-->
+                            <div class="mb-15" id="filtro" style="display: none;">
+                                <div class="row mb-8">
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Tipo Fecha:</label>
+                                        <select class="form-control datatable-input" id="tipofecha">
+                                            <option value="1">Fecha Inicio</option>
+                                            <option value="2">Fecha Caduca</option>
+                                            <option value="3">Fecha Actualizacion</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Tipo Licencia:</label>
+                                        <select class="form-control datatable-input" id="tipolicencia">
+                                            <option value="">Todos</option>
+                                            <option value="2">Web</option>
+                                            <option value="3">PC</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Fecha:</label>
+                                        <div class="input-group" id='kt_fecha'>
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="la la-calendar-check-o"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control" autocomplete="off"
+                                                placeholder="Rango de Fechas" id="fecha">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Periodo:</label>
+                                        <select class="form-control datatable-input" id="periodo" name="periodo">
+                                            <option value="">Todos</option>
+                                            <option value="1">Mensual</option>
+                                            <option value="2">Anual</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-8">
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Producto:</label>
+                                        <select class="form-control datatable-input" id="producto" name="producto">
+                                            <option value="">Todos</option>
+                                            <option value="2">Facturación</option>
+                                            <option value="3">Servicios</option>
+                                            <option value="4">Comercial</option>
+                                            <option value="5">Soy Contador Comercial</option>
+                                            <option value="8">Soy Contador Servicios</option>
+                                            <option value="6">Perseo Lite</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Distribuidor:</label>
+                                        <select class="form-control datatable-input select2" id="distribuidor"
+                                            name="distribuidor">
+                                            @if (Auth::user()->tipo == 1)
+                                            <option value="">Todos</option>
+                                            @endif
+                                            @foreach ($distribuidores as $distribuidor)
+                                            <option value="{{$distribuidor->sis_distribuidoresid}}">
+                                                {{$distribuidor->razonsocial}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Vendedor:</label>
+                                        <select class="form-control datatable-input select2" id="vendedor"
+                                            name="vendedor">
+                                            <option value="">Todos</option>
+                                            @foreach ($vendedores as $vendedor)
+                                            <option value="{{$vendedor->sis_revendedoresid}}">
+                                                {{$vendedor->razonsocial}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Origen:</label>
+                                        <select class="form-control datatable-input select2" id="origen" name="origen">
+                                            @if (Auth::user()->tipo == 1)
+                                            <option value="">Todos</option>
+                                            @endif
+                                            <option value="1">Perseo</option>
+                                            <option value="2">Contafácil</option>
+                                            <option value="3">UIO-01</option>
+                                            <option value="5">GYE-02</option>
+                                            <option value="6">CUE-01</option>
+                                            <option value="7">STO-01</option>
+                                            <option value="10">CNV-01</option>
+                                            <option value="11">MATRIZ</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row ">
+                                    <div class="col-lg-12">
+                                        <button class="btn btn-primary btn-primary--icon" id="kt_search">
+                                            <span>
+                                                <i class="la la-search"></i>
+                                                <span>Buscar</span>
+                                            </span>
+                                        </button>&#160;&#160;
+                                        <button class="btn btn-secondary btn-secondary--icon" id="kt_reset">
+                                            <span>
+                                                <i class="la la-close"></i>
+                                                <span>Reiniciar</span>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                             <!--begin: Datatable-->
                             <table class="table table-sm table-bordered table-head-custom table-hover"
                                 id="kt_datatable">
@@ -138,6 +255,60 @@
 <script>
     $(document).ready(function() {
 
+        //Inicializar rango de fechas
+        $('#kt_fecha').daterangepicker({
+            autoUpdateInput: false,
+            format: "DD-MM-YYYY",
+            locale: {
+                "separator": " - ",
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "DE",
+                "toLabel": "HASTA",
+                "customRangeLabel": "Personalizado",
+                "daysOfWeek": [
+                    "Dom",
+                    "Lun",
+                    "Mar",
+                    "Mie",
+                    "Jue",
+                    "Vie",
+                    "Sáb"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ],
+                "firstDay": 1
+            },
+            ranges: {
+            'Hoy': [moment(), moment()],
+            'Ultimos 7 días': [moment().subtract(6, 'days'), moment()],
+            'Ultimos 30 días ': [moment().subtract(29, 'days'), moment()],
+            'Mes Actual': [moment().startOf('month'), moment().endOf('month')],
+            'Mes Anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            'Año Actual': [moment().startOf('year'), moment().endOf('year')],
+            'Año Anterior': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+            },
+            buttonClasses: ' btn',
+            applyClass: 'btn-primary',
+            cancelClass: 'btn-secondary',
+            alwaysShowCalendars: true,
+            showDropdowns: true,
+        }, function(start, end, label) {
+            $('#kt_fecha .form-control').val( start.format('DD-MM-YYYY') + ' / ' + end.format('DD-MM-YYYY'));
+        });
+
         //inicializar datatable
         var table = $('#kt_datatable').DataTable({
             //Posicion de los elementos de la datatable f:filtering l:length t:table r:processing i:info p:pagination
@@ -157,7 +328,21 @@
             //Trabajar del lado del server
             serverSide: true,
             //Peticion ajax que devuelve los registros
-            ajax: "{{ route('clientes.index') }}",
+            ajax: {
+                url: "{{ route('clientes.index') }}",
+                //type: 'GET',
+                data: function (d) {
+                    //Valores de filtro a enviar a la ruta clientes.index
+                    d.tipofecha= $("#tipofecha").val();
+                    d.tipolicencia= $("#tipolicencia").val();
+                    d.fecha= $("#fecha").val();
+                    d.periodo= $("#periodo").val();
+                    d.producto= $("#producto").val();
+                    d.distribuidor= $("#distribuidor").val();
+                    d.vendedor= $("#vendedor").val();
+                    d.origen= $("#origen").val();
+                }
+            },
             //Columnas de la tabla (Debe contener misma cantidad que thead)
             columns: [
                 {data: 'sis_clientesid', name: 'sis_clientesid',visible:false},
@@ -174,11 +359,6 @@
                 {data: 'numeromoviles', name: 'numeromoviles',visible:false},
                 {data: 'action', name: 'action', orderable: false, searchable: false, className: "text-center"},
             ],
-            rowCallback: function( row, data, index ) {
-                if (data["numerocontrato"] == null) {
-                    //$(row).hide();
-                }
-            },
             //botones para exportar
             buttons: [
                 {
@@ -233,10 +413,29 @@
 			table.button(3).trigger();
 		});
 
+        //Clic en boton buscar
+        $('#kt_search').on('click', function(e) {
+			e.preventDefault();
+            table.draw();
+		});
+
+        //Clic en boton resetear
+		$('#kt_reset').on('click', function(e) {
+            $("#tipofecha").val('');
+            $("#tipolicencia").val('');
+            $("#fecha").val('');
+            $("#periodo").val('');
+            $("#producto").val('');
+            $("#distribuidor").val('');
+            $("#vendedor").val('');
+            $("#origen").val('');
+            table.draw();
+		});
+
         //Mostrar div de busqueda
         $('#filtrar').on('click', function(e) {
-        $("#filtro").toggle(500);
-        });
+            $("#filtro").toggle(500);
+		});
 
     });
  

@@ -71,7 +71,7 @@ class licenciasController extends Controller
     {
         $randomString = "";
         while (strlen($randomString) < 10) {
-            $numero = rand(1, 10);
+            $numero = rand(1, 9);
             $randomString = $randomString . $numero;
         }
 
