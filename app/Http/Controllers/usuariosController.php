@@ -38,13 +38,21 @@ class usuariosController extends Controller
                     }
                 })
                 ->editColumn('tipo', function ($usuario) {
-                    if ($usuario->tipo == 1) {
-                        return 'Admin';
-                    } elseif ($usuario->tipo == 2) {
-                        return 'Soporte';
-                    } elseif ($usuario->tipo == 3) {
-                        return 'Ventas';
+                    switch ($usuario->tipo) {
+                        case '1':
+                            $tipo = "Admin";
+                            break;
+                        case '2':
+                            $tipo = "Distribuidor";
+                            break;
+                        case '3':
+                            $tipo = "Soporte";
+                            break;
+                        case '4':
+                            $tipo = "Ventas";
+                            break;
                     }
+                    return $tipo;
                 })
                 ->filterColumn('estado', function ($query, $keyword) {
                     $estado = 2;

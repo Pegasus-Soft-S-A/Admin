@@ -1,19 +1,31 @@
+<style>
+    .disabled {
+        pointer-events: none;
+        opacity: 1;
+        background-color: #F3F6F9;
+    }
+</style>
+@php
+$rol=Auth::user()->tipo;
+$accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
+@endphp
 @csrf
 <div class="form-group row">
     <div class="col-lg-6">
         <input type="hidden" name="tipo" id="tipo">
         <input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
         <label>Numero Contrato:</label>
-        <input type="text" class="form-control {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
             placeholder="Contrato" name="numerocontrato" autocomplete="off" id="numerocontrato"
-            value="{{ old('numerocontrato', $licencia->numerocontrato) }}" readonly />
+            value="{{ old('numerocontrato', $licencia->numerocontrato) }}" />
         @if ($errors->has('numerocontrato'))
         <span class="text-danger">{{ $errors->first('numerocontrato') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
         <label>Producto:</label>
-        <select class="form-control" name="producto" id="producto">
+        <select class="form-control @if($rol!=1) disabled @endif" name="producto" id="producto">
             <option value="2" {{ old('producto', $licencia->producto) == '2' ? 'Selected': '' }}>Facturación</option>
             <option value="3" {{ old('producto', $licencia->producto) == '3' ? 'Selected': '' }}>Servicios</option>
             <option value="4" {{ old('producto', $licencia->producto) == '4' ? 'Selected': '' }}>Comercial</option>
@@ -31,17 +43,27 @@
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Periodo:</label>
-        <select class="form-control" name="periodo" id="periodo">
-            <option value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected': '' }}>Mensual</option>
-            <option value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected': '' }}>Anual</option>
-        </select>
-        @if ($errors->has('periodo'))
-        <span class="text-danger">{{ $errors->first('periodo') }}</span>
-        @endif
+        <div class="input-group">
+            <select class="form-control @if($rol!=1) disabled @endif" name="periodo" id="periodo">
+                <option value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected': '' }}>Mensual</option>
+                <option value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected': '' }}>Anual</option>
+            </select>
+            <div class="input-group-append">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false" @if($rol==3 || $rol==4) disabled @endif>
+                    Renovar
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#" id="renovarmensual">Renovar Mensual</a>
+                    <a class="dropdown-item" href="#" id="renovaranual">Renovar Anual</a>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-lg-6">
         <label>Precio:</label>
-        <input type="text" class="form-control {{ $errors->has('precio') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('precio') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Precio" id="precio" name="precio" autocomplete="off"
             value="{{ old('precio', $licencia->precio) }}" />
         @if ($errors->has('precio'))
@@ -52,7 +74,8 @@
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Fecha Inicia:</label>
-        <input type="text" class="form-control {{ $errors->has('fechainicia') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('fechainicia') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Fecha Caducidad" name="fechainicia" id="fechainicia" autocomplete="off"
             value="{{ old('fechainicia',$licencia->fechainicia) }}" />
         @if ($errors->has('fechainicia'))
@@ -61,7 +84,8 @@
     </div>
     <div class="col-lg-6">
         <label>Fecha Caduca:</label>
-        <input type="text" class="form-control {{ $errors->has('fechacaduca') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('fechacaduca') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Fecha Caducidad" name="fechacaduca" id="fechacaduca" autocomplete="off"
             value="{{ old('fechacaduca',$licencia->fechacaduca) }}" />
         @if ($errors->has('fechacaduca'))
@@ -72,7 +96,8 @@
 <div class="form-group row">
     <div class="col-lg-6">
         <label>N° Empresas:</label>
-        <input type="text" class="form-control {{ $errors->has('empresas') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('empresas') ? 'is-invalid' : '' }}"
             placeholder="N° Equipos" name="empresas" autocomplete="off" id="empresas"
             value="{{ old('empresas', $licencia->empresas) }}" />
         @if ($errors->has('empresas'))
@@ -81,7 +106,8 @@
     </div>
     <div class="col-lg-6">
         <label>N° Usuarios:</label>
-        <input type="text" class="form-control {{ $errors->has('usuarios') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('usuarios') ? 'is-invalid' : '' }}"
             placeholder="N° Equipos" name="usuarios" autocomplete="off" id="usuarios"
             value="{{ old('usuarios', $licencia->usuarios) }}" />
         @if ($errors->has('usuarios'))
@@ -92,7 +118,8 @@
 <div class="form-group row">
     <div class="col-lg-6">
         <label>N° Móviles:</label>
-        <input type="text" class="form-control {{ $errors->has('numeromoviles') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('numeromoviles') ? 'is-invalid' : '' }}"
             placeholder="N° Equipos" name="numeromoviles" autocomplete="off" id="numeromoviles"
             value="{{ old('numeromoviles', $licencia->numeromoviles) }}" />
         @if ($errors->has('numeromoviles'))
@@ -101,7 +128,8 @@
     </div>
     <div class="col-lg-6">
         <label>N° Sucursales:</label>
-        <input type="text" class="form-control {{ $errors->has('numerosucursales') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('numerosucursales') ? 'is-invalid' : '' }}"
             placeholder="N° Equipos" name="numerosucursales" autocomplete="off" id="numerosucursales"
             value="{{ old('numerosucursales', $licencia->numerosucursales) }}" />
         @if ($errors->has('numerosucursales'))
@@ -114,7 +142,8 @@
     <div class="col-2">
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
-                <input @if ($modulos->nomina== 1) checked="checked" @endif type="checkbox" name="nomina" id="nomina" />
+                <input @if ($modulos->nomina== 1) checked="checked" @endif type="checkbox" name="nomina" id="nomina"
+                @if($rol!=1) disabled @endif/>
                 <span></span>
             </label>
         </span>
@@ -124,7 +153,7 @@
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->activos== 1) checked="checked" @endif type="checkbox" name="activos" id="activos"
-                />
+                @if($rol!=1) disabled @endif/>
                 <span></span>
             </label>
         </span>
@@ -136,7 +165,7 @@
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->produccion== 1) checked="checked" @endif type="checkbox" name="produccion"
-                id="produccion" />
+                id="produccion" @if($rol!=1) disabled @endif/>
                 <span></span>
             </label>
         </span>
@@ -146,7 +175,7 @@
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->restaurantes== 1) checked="checked" @endif type="checkbox" name="restaurantes"
-                id="restaurantes" />
+                id="restaurantes" @if($rol!=1) disabled @endif/>
                 <span></span>
             </label>
         </span>
@@ -158,7 +187,7 @@
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->talleres== 1) checked="checked" @endif type="checkbox" name="talleres"
-                id="talleres" />
+                id="talleres" @if($rol!=1) disabled @endif/>
                 <span></span>
             </label>
         </span>
@@ -168,7 +197,7 @@
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->garantias== 1) checked="checked" @endif type="checkbox" name="garantias"
-                id="garantias" />
+                id="garantias" @if($rol!=1) disabled @endif/>
                 <span></span>
             </label>
         </span>
@@ -180,7 +209,7 @@
         <span class="switch switch-outline switch-icon switch-primary switch-sm">
             <label>
                 <input @if ($modulos->ecommerce== 1) checked="checked" @endif type="checkbox" name="ecommerce"
-                id="ecommerce" />
+                id="ecommerce" @if($rol!=1) disabled @endif/>
                 <span></span>
             </label>
         </span>
@@ -189,6 +218,17 @@
 
 @section('script')
 <script>
+    $('#formulario').submit(function(event) {
+        //Enviar swirch que estan disabled
+        $("#nomina").prop("disabled", false);
+        $("#activos").prop("disabled", false);
+        $("#produccion").prop("disabled", false);
+        $("#restaurantes").prop("disabled", false);
+        $("#talleres").prop("disabled", false);
+        $("#garantias").prop("disabled", false);
+        $("#ecommerce").prop("disabled", false);
+    });
+
     $("#renovarmensual").click(function(e) {
         confirmar('mes',"Está seguro de Renovar la Licencia?");
     });
@@ -235,11 +275,15 @@
                 $('#periodo').prop( "disabled", true );
             }
         }
-
+        
+    var estado= '{{ $rol }}';
+    if(estado!=1){
+        estado='disabled';
+    }
         //Iniciar input numerico
         $('#precio').TouchSpin({
-            buttondown_class: 'btn btn-secondary',
-            buttonup_class: 'btn btn-secondary',
+            buttondown_class: 'btn btn-secondary '+estado,
+            buttonup_class: 'btn btn-secondary '+estado,
             min: 0,
             max: 10000000,
             step: 1,

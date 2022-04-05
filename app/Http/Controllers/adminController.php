@@ -99,4 +99,63 @@ class adminController extends Controller
                 ->make(true);
         }
     }
+
+    public function productos($tipo)
+    {
+        switch ($tipo) {
+            case '2':
+                $producto = [
+                    [
+                        "id" => "",
+                        "nombre" => "Todos"
+                    ], [
+                        "id" => "2",
+                        "nombre" => "Facturación"
+                    ], [
+                        "id" => "3",
+                        "nombre" => "Servicios"
+                    ], [
+                        "id" => "4",
+                        "nombre" => "Comercial"
+                    ], [
+                        "id" => "5",
+                        "nombre" => "Soy Contador"
+                    ], [
+                        "id" => "7",
+                        "nombre" => "Total"
+                    ], [
+                        "id" => "6",
+                        "nombre" => "Perseo Lite"
+                    ]
+                ];
+                break;
+            case '3':
+                $producto = [
+                    [
+                        "id" => "",
+                        "nombre" => "Todos"
+                    ], [
+                        "id" => "1",
+                        "nombre" => "Práctico"
+                    ], [
+                        "id" => "2",
+                        "nombre" => "Control"
+                    ], [
+                        "id" => "3",
+                        "nombre" => "Contable"
+                    ]
+                ];
+                break;
+            default:
+                $producto = [
+                    [
+                        "id" => "",
+                        "nombre" => "Todos"
+                    ]
+                ];
+                break;
+        }
+
+        return with(["producto" => $producto]);
+    }
 }

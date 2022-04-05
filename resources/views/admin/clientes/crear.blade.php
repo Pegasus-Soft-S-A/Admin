@@ -43,6 +43,13 @@
 
 @section('script')
 <script>
+    $('#formulario').submit(function(event) {
+        $("#provinciasid").prop("disabled", false);
+        $("#distribuidor").prop("disabled", false);
+        $("#vendedor").prop("disabled", false);
+        $("#revendedor").prop("disabled", false);
+        $("#red_origen").prop("disabled", false);
+    });
     //Cargar select dependiendes del distribuidor
     $('#distribuidor').on('change', function(e){
 

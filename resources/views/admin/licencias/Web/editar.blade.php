@@ -22,28 +22,22 @@
                                                 class="btn btn-secondary btn-icon" data-toggle="tooltip"
                                                 title="Volver"><i class="la la-long-arrow-left"></i></a>
 
+                                            @if (Auth::user()->tipo==1 || Auth::user()->tipo==2)
                                             <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip"
                                                 title="Guardar"><i class="la la-save"></i></button>
 
                                             <a href="{{ route('licencias.web.crear',$cliente->sis_clientesid) }}"
                                                 class="btn btn-warning btn-icon" data-toggle="tooltip" title="Nuevo"><i
                                                     class="la la-user-plus"></i></a>
+                                            @endif
 
-                                            <a id="renovarmensual" href="#" class="btn btn-primary btn-icon"
-                                                data-toggle="tooltip" title="Renovar Mensual"><i
-                                                    class="la la-calendar-plus"></i></a>
-
-                                            <a id="renovaranual" href="#" class="btn btn-warning btn-icon"
-                                                data-toggle="tooltip" title="Renovar Anual"><i
-                                                    class="la la-calendar-plus"></i></a>
-
-                                            @if ($licencia->producto==6)
+                                            @if ($licencia->producto==6 && Auth::user()->tipo==1)
                                             <a id="recargar" href="#" class="btn btn-success btn-icon"
                                                 data-toggle="tooltip" title="Recargar Documentos"><i
                                                     class="la la-file-medical"></i></a>
                                             @endif
 
-                                            <a href="{{ route('licencias.web.crear',$cliente->sis_clientesid) }}"
+                                            <a href="{{ route('licencias.web.enviarEmail',$cliente->sis_clientesid) }}"
                                                 class="btn btn-primary btn-icon" data-toggle="tooltip"
                                                 title="Enviar Email"><i class="socicon-mail"></i></a>
                                         </div>

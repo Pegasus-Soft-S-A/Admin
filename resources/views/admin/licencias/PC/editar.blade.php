@@ -22,12 +22,14 @@
                                                 class="btn btn-secondary btn-icon" data-toggle="tooltip"
                                                 title="Volver"><i class="la la-long-arrow-left"></i></a>
 
+                                            @if(Auth::user()->tipo!=4)
                                             <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip"
                                                 title="Guardar"><i class="la la-save"></i></button>
 
                                             <a href="{{ route('licencias.pc.crear',$cliente->sis_clientesid) }}"
                                                 class="btn btn-warning btn-icon" data-toggle="tooltip" title="Nuevo"><i
                                                     class="la la-user-plus"></i></a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

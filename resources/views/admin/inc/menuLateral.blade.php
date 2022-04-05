@@ -32,8 +32,6 @@
             data-menu-dropdown-timeout="500">
             <ul class="menu-nav">
 
-
-
                 <li class="menu-item {{ areActiveRoutes(['clientes.index']) }} " aria-haspopup="true">
                     <a href="{{ route('clientes.index') }}" class="menu-link">
                         <i class="menu-icon fa fa-key"></i>
@@ -41,7 +39,7 @@
                     </a>
                 </li>
 
-
+                @if (Auth::user()->tipo==1)
                 <li class="menu-item {{ areActiveRoutes(['distribuidores.index']) }}" aria-haspopup="true">
                     <a href="{{ route('distribuidores.index') }}" class="menu-link">
                         <i class="menu-icon fa fa-users"></i>
@@ -61,6 +59,7 @@
                         <span class="menu-text">Usuarios</span>
                     </a>
                 </li>
+                @endif
 
             </ul>
         </div>

@@ -1,9 +1,21 @@
+<style>
+    .disabled {
+        pointer-events: none;
+        opacity: 1;
+        background-color: #F3F6F9;
+    }
+</style>
+@php
+$rol=Auth::user()->tipo;
+$accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
+@endphp
 @csrf
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Identificacion:</label>
         <div id="spinner">
-            <input type="text" class="form-control {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
+            <input type="text"
+                class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
                 placeholder="Ingrese identificacion" name="identificacion" autocomplete="off"
                 value="{{ old('identificacion', $cliente->identificacion) }}" id="identificacion"
                 onkeypress="return validarNumero(event)" onblur="validarIdentificacion()" />
@@ -15,7 +27,8 @@
     </div>
     <div class="col-lg-6">
         <label>Nombres:</label>
-        <input type="text" class="form-control {{ $errors->has('nombres') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('nombres') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Nombres" name="nombres" autocomplete="off"
             value="{{ old('nombres', $cliente->nombres) }}" id="nombres" />
         @if ($errors->has('nombres'))
@@ -27,7 +40,8 @@
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Dirección:</label>
-        <input type="text" class="form-control {{ $errors->has('direccion') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('direccion') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Dirección" name="direccion" autocomplete="off" id="direccion"
             value="{{ old('direccion', $cliente->direccion) }}" />
         @if ($errors->has('direccion'))
@@ -36,8 +50,10 @@
     </div>
     <div class="col-lg-6">
         <label>Correo:</label>
-        <input class="form-control {{ $errors->has('correos') ? 'is-invalid' : '' }}" placeholder="Ingrese Correo"
-            name="correos" autocomplete="off" value="{{ old('correos', $cliente->correos) }}" id="correo" />
+        <input
+            class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('correos') ? 'is-invalid' : '' }}"
+            placeholder="Ingrese Correo" name="correos" autocomplete="off"
+            value="{{ old('correos', $cliente->correos) }}" id="correo" />
         @if ($errors->has('correos'))
         <span class="text-danger">{{ $errors->first('correos') }}</span>
         @endif
@@ -47,7 +63,8 @@
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Provincia:</label>
-        <select class="form-control select2" name="provinciasid" id="provinciasid">
+        <select class="form-control select2" name="provinciasid" id="provinciasid" @if($rol!=1 && $accion=='Modificar' )
+            disabled @endif>
             <option value="">Seleccione una provincia</option>
             <option value="01" {{ old('provinciasid', $cliente->provinciasid) == '01' ? 'Selected' : '' }}>
                 Azuay
@@ -126,7 +143,8 @@
     </div>
     <div class="col-lg-3">
         <label>Convencional:</label>
-        <input type="text" class="form-control {{ $errors->has('telefono1') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('telefono1') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Numero Convencional" name="telefono1" onkeypress="return validarNumero(event)"
             autocomplete="off" value="{{ old('telefono1', $cliente->telefono1) }}" id="telefono1" />
         @if ($errors->has('telefono1'))
@@ -135,7 +153,8 @@
     </div>
     <div class="col-lg-3">
         <label>Celular:</label>
-        <input type="text" class="form-control {{ $errors->has('telefono2') ? 'is-invalid' : '' }}"
+        <input type="text"
+            class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('telefono2') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Numero Celular" onkeypress="return validarNumero(event)" name="telefono2"
             autocomplete="off" value="{{ old('telefono2', $cliente->telefono2) }}" id="telefono2" />
         @if ($errors->has('telefono2'))
@@ -147,7 +166,8 @@
 <div class="form-group row">
     <div class="col-lg-3">
         <label>Distribuidor:</label>
-        <select class="form-control select2" name="sis_distribuidoresid" id="distribuidor">
+        <select class="form-control select2 @if($rol!=1 && $accion=='Modificar') disabled @endif"
+            name="sis_distribuidoresid" id="distribuidor" @if($rol!=1 && $accion=='Modificar' ) disabled @endif>
             <option value="">Seleccione un distribuidor</option>
             @foreach ($distribuidores as $distribuidor)
             <option value="{{$distribuidor->sis_distribuidoresid}}" {{ old('sis_distribuidoresid', $distribuidor->
@@ -161,7 +181,8 @@
     </div>
     <div class="col-lg-3">
         <label>Vendedor:</label>
-        <select class="form-control select2" name="sis_vendedoresid" id="vendedor">
+        <select class="form-control select2 @if($rol!=1 && $accion=='Modificar') disabled @endif"
+            name="sis_vendedoresid" id="vendedor" @if($rol!=1 && $accion=='Modificar' ) disabled @endif>
             <option value="">Seleccione un Vendedor</option>
         </select>
         @if ($errors->has('sis_vendedoresid'))
@@ -170,7 +191,8 @@
     </div>
     <div class="col-lg-3">
         <label>Revendedor:</label>
-        <select class="form-control select2" name="sis_revendedoresid" id="revendedor">
+        <select class="form-control select2 @if($rol!=1 && $accion=='Modificar') disabled @endif"
+            name="sis_revendedoresid" id="revendedor" @if($rol!=1 && $accion=='Modificar' ) disabled @endif>
             <option value="">Seleccione un Revendedor</option>
         </select>
         @if ($errors->has('sis_revendedoresid'))
@@ -179,8 +201,9 @@
     </div>
     <div class="col-lg-3">
         <label>Origen:</label>
-        <select class="form-control select2" name="red_origen">
-            <option value="">Seleccione un Origen</option>
+        <select class="form-control select2 @if($rol!=1 && $accion=='Modificar') disabled @endif" id="red_origen"
+            name="red_origen" @if($rol!=1) disabled @endif>
+            {{-- <option value="">Seleccione un Origen</option> --}}
             <option value="1" {{ old('red_origen', $cliente->red_origen) == '1' ? 'Selected' : '' }}>Perseo</option>
             <option value="2" {{ old('red_origen', $cliente->red_origen) == '2' ? 'Selected' : '' }}>Contafácil</option>
             <option value="3" {{ old('red_origen', $cliente->red_origen) == '3' ? 'Selected' : '' }}>UIO-01</option>

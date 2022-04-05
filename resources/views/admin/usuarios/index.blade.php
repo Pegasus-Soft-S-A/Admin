@@ -126,11 +126,9 @@
                                         <th data-priority="1">Identificacion</th>
                                         <th data-priority="2">Nombres</th>
                                         <th>Correo</th>
-                                        <th>Estado</th>
-
                                         <th>Tipo</th>
+                                        <th>Estado</th>
                                         <th>Distribuidor</th>
-
                                         <th class="no-exportar">Acciones</th>
                                     </tr>
                                 </thead>
@@ -208,15 +206,13 @@
                      
                     },
                     {
+                        data: 'tipo',
+                        name: 'tipo',
+                    },
+                    {
                         data: 'estado',
                         name: 'estado',
                     
-                    },
-                    {
-                        data: 'tipo',
-                        name: 'tipo',
-                        searchable: false,
-                        visible: false
                     },
                     {
                         data: 'distribuidor',

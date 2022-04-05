@@ -91,12 +91,13 @@
                                     </div>
                                     <!--end::Dropdown Menu-->
                                 </div>
+                                @if (Auth::user()->tipo!=4)
                                 <a href="{{route('clientes.crear')}}" class="btn btn-primary font-weight-bolder">
                                     <span class="svg-icon svg-icon-md">
                                         <i class="flaticon2-plus-1"></i>
                                     </span>Nuevo
                                 </a>
-
+                                @endif
                             </div>
 
                         </div>
@@ -115,7 +116,7 @@
                                     <div class="col-lg-3 mb-lg-0 mb-6">
                                         <label>Tipo Licencia:</label>
                                         <select class="form-control datatable-input" id="tipolicencia">
-                                            <option value="">Todos</option>
+                                            <option value="1">Todos</option>
                                             <option value="2">Web</option>
                                             <option value="3">PC</option>
                                         </select>
@@ -146,12 +147,6 @@
                                         <label>Producto:</label>
                                         <select class="form-control datatable-input" id="producto" name="producto">
                                             <option value="">Todos</option>
-                                            <option value="2">Facturación</option>
-                                            <option value="3">Servicios</option>
-                                            <option value="4">Comercial</option>
-                                            <option value="5">Soy Contador Comercial</option>
-                                            <option value="8">Soy Contador Servicios</option>
-                                            <option value="6">Perseo Lite</option>
                                         </select>
                                     </div>
                                     <div class="col-lg-3 mb-lg-0 mb-6">
@@ -178,6 +173,7 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    @if (Auth::user()->tipo==1)
                                     <div class="col-lg-3 mb-lg-0 mb-6">
                                         <label>Origen:</label>
                                         <select class="form-control datatable-input select2" id="origen" name="origen">
@@ -194,6 +190,7 @@
                                             <option value="11">MATRIZ</option>
                                         </select>
                                     </div>
+                                    @endif
                                 </div>
 
                                 <div class="row ">
@@ -253,6 +250,23 @@
 @section('script')
 
 <script>
+    $('#tipolicencia').on('change', function(e){
+        var distribuidor = e.target.value;
+        var tipo= $('#tipolicencia').val();
+        $('#producto').empty();
+        $.ajax({
+            type:"GET",
+            url: '/productos/' + tipo ,
+            success: function(data){
+                $.each(data, function(fetch, producto){
+                    for(i = 0; i < producto.length; i++){
+                    $('#producto').append('<option value="'+ producto[i].id +'">'+ producto[i].nombre +'</option>');
+                    }
+                })
+            }
+        });
+    });
+    
     $(document).ready(function() {
 
         //Inicializar rango de fechas

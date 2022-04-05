@@ -3,8 +3,17 @@
     #aplicativos td {
         padding: 3px;
     }
-</style>
 
+    .disabled {
+        pointer-events: none;
+        opacity: 1;
+        background-color: #F3F6F9;
+    }
+</style>
+@php
+$rol=Auth::user()->tipo;
+$accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
+@endphp
 @if ($errors->has('correopropietario') || $errors->has('correoadministrador') || $errors->has('correocontador'))
 <div class="alert alert-custom alert-notice alert-light-danger fade show" role="alert">
     <div class="alert-icon"><i class="flaticon-warning"></i></div>
@@ -37,30 +46,58 @@
 </ul>
 <div class="tab-content mt-5" id="myTabContent">
     <div class="tab-pane fade show active" id="datoslicencia" role="tabpanel">
+        <input type="hidden" name="tipo" id="tipo">
         <input type="hidden" id="permisos" name="aplicaciones" value="{{$licencia->aplicaciones}}">
         <input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>Numero Contrato:</label>
-                <input type="text" class="form-control {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
+                <input type="text"
+                    class="form-control disabled {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
                     placeholder="Contrato" name="numerocontrato" autocomplete="off" id="numerocontrato"
-                    value="{{ old('numerocontrato', $licencia->numerocontrato) }}" readonly />
+                    value="{{ old('numerocontrato', $licencia->numerocontrato) }}" />
                 @if ($errors->has('numerocontrato'))
                 <span class="text-danger">{{ $errors->first('numerocontrato') }}</span>
                 @endif
             </div>
+            @if (isset($licencia->sis_licenciasid))
             <div class="col-lg-4">
                 <label>Fecha Caduca:</label>
-                <input type="text" class="form-control {{ $errors->has('fechacaduca') ? 'is-invalid' : '' }}"
+                <div class="input-group">
+                    <input type="text"
+                        class="form-control @if($rol!=1) disabled @endif {{ $errors->has('fechacaduca') ? 'is-invalid' : '' }}"
+                        placeholder="Ingrese Fecha Caducidad" name="fechacaduca" id="fechacaduca" autocomplete="off"
+                        value="{{ old('fechacaduca',$licencia->fechacaduca) }}" />
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-primary dropdown-toggle @if($rol==4) disabled @endif"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Renovar
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#" id="renovarmensual">Renovar Mensual</a>
+                            <a class="dropdown-item" href="#" id="renovaranual">Renovar Anual</a>
+                        </div>
+                    </div>
+                </div>
+                @if ($errors->has('fechacaduca'))
+                <span class="text-danger">{{ $errors->first('fechacaduca') }}</span>
+                @endif
+            </div>
+            @else
+            <div class="col-lg-4">
+                <label>Fecha Caduca:</label>
+                <input type="text"
+                    class="form-control @if($rol!=1) disabled @endif {{ $errors->has('fechacaduca') ? 'is-invalid' : '' }}"
                     placeholder="Ingrese Fecha Caducidad" name="fechacaduca" id="fechacaduca" autocomplete="off"
                     value="{{ old('fechacaduca',$licencia->fechacaduca) }}" />
                 @if ($errors->has('fechacaduca'))
                 <span class="text-danger">{{ $errors->first('fechacaduca') }}</span>
                 @endif
             </div>
+            @endif
             <div class="col-lg-4">
                 <label>Estado:</label>
-                <select class="form-control" name="estado" id="estado">
+                <select class="form-control @if($rol!=1) disabled @endif" name="estado" id="estado">
                     <option value="1" {{ old('estado', $licencia->estado) == '1' ? 'Selected': '' }}>Activo</option>
                     <option value="2" {{ old('estado', $licencia->estado) == '2' ? 'Selected': '' }}>Pendiente de pago
                     </option>
@@ -74,7 +111,8 @@
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>Identificador Servidor:</label>
-                <input type="text" class="form-control {{ $errors->has('Identificador') ? 'is-invalid' : '' }}"
+                <input type="text"
+                    class="form-control @if($rol==4) disabled @endif {{ $errors->has('Identificador') ? 'is-invalid' : '' }}"
                     placeholder="Identificador" name="Identificador" autocomplete="off" id="Identificador"
                     value="{{ old('Identificador', $licencia->Identificador) }}" />
                 @if ($errors->has('Identificador'))
@@ -83,7 +121,8 @@
             </div>
             <div class="col-lg-4">
                 <label>IP Servidor Local:</label>
-                <input type="text" class="form-control {{ $errors->has('ipservidor') ? 'is-invalid' : '' }}"
+                <input type="text"
+                    class="form-control @if($rol==4) disabled @endif {{ $errors->has('ipservidor') ? 'is-invalid' : '' }}"
                     placeholder="IP Servidor Local" name="ipservidor" autocomplete="off" id="ipservidor"
                     value="{{ old('ipservidor', $licencia->ipservidor) }}" />
                 @if ($errors->has('ipservidor'))
@@ -92,7 +131,8 @@
             </div>
             <div class="col-lg-4">
                 <label>IP Servidor Remoto:</label>
-                <input type="text" class="form-control {{ $errors->has('ipservidorremoto') ? 'is-invalid' : '' }}"
+                <input type="text"
+                    class="form-control @if($rol==4) disabled @endif {{ $errors->has('ipservidorremoto') ? 'is-invalid' : '' }}"
                     placeholder="IP Servidor Remoto" name="ipservidorremoto" autocomplete="off" id="ipservidorremoto"
                     value="{{ old('ipservidorremoto', $licencia->ipservidorremoto) }}" />
                 @if ($errors->has('ipservidorremoto'))
@@ -103,8 +143,9 @@
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>N° Equipos:</label>
-                <input type="text" class="form-control {{ $errors->has('numeroequipos') ? 'is-invalid' : '' }}"
-                    placeholder="N° Equipos" name="numeroequipos" autocomplete="off" id="numeroequipos"
+                <input type="text" class="form-control @if($rol!=1 && $accion == 'Modificar') disabled @endif {{
+                    $errors->has('numeroequipos') ? 'is-invalid' : '' }}" placeholder="N° Equipos" name="numeroequipos"
+                    autocomplete="off" id="numeroequipos"
                     value="{{ old('numeroequipos', $licencia->numeroequipos) }}" />
                 @if ($errors->has('numeroequipos'))
                 <span class="text-danger">{{ $errors->first('numeroequipos') }}</span>
@@ -112,7 +153,8 @@
             </div>
             <div class="col-lg-4">
                 <label>N° Móviles:</label>
-                <input type="text" class="form-control {{ $errors->has('numeromoviles') ? 'is-invalid' : '' }}"
+                <input type="text"
+                    class="form-control @if($rol!=1 && $accion == 'Modificar') disabled @endif {{ $errors->has('numeromoviles') ? 'is-invalid' : '' }}"
                     placeholder="N° Móviles" name="numeromoviles" autocomplete="off" id="numeromoviles"
                     value="{{ old('numeromoviles', $licencia->numeromoviles) }}" />
                 @if ($errors->has('numeromoviles'))
@@ -121,7 +163,8 @@
             </div>
             <div class="col-lg-4">
                 <label>N° Sucursales:</label>
-                <input type="text" class="form-control {{ $errors->has('numerosucursales') ? 'is-invalid' : '' }}"
+                <input type="text"
+                    class="form-control @if($rol!=1 && $accion == 'Modificar') disabled @endif {{ $errors->has('numerosucursales') ? 'is-invalid' : '' }}"
                     placeholder="N° Sucursales" name="numerosucursales" autocomplete="off" id="numerosucursales"
                     value="{{ old('numerosucursales', $licencia->numerosucursales) }}" />
                 @if ($errors->has('numerosucursales'))
@@ -132,7 +175,8 @@
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>Puerto BD:</label>
-                <input type="text" class="form-control {{ $errors->has('puerto') ? 'is-invalid' : '' }}"
+                <input type="text"
+                    class="form-control @if($rol!=1) disabled @endif {{ $errors->has('puerto') ? 'is-invalid' : '' }}"
                     placeholder="Puerto BD" name="puerto" autocomplete="off" id="puerto"
                     value="{{ old('puerto', $licencia->puerto) }}" />
                 @if ($errors->has('puerto'))
@@ -141,7 +185,8 @@
             </div>
             <div class="col-lg-4">
                 <label>Usuario BD:</label>
-                <input type="text" class="form-control {{ $errors->has('usuario') ? 'is-invalid' : '' }}"
+                <input type="text"
+                    class="form-control @if($rol!=1) disabled @endif {{ $errors->has('usuario') ? 'is-invalid' : '' }}"
                     placeholder="Usuario BD" name="usuario" autocomplete="off" id="usuario"
                     value="{{ old('usuario', $licencia->usuario) }}" />
                 @if ($errors->has('usuario'))
@@ -150,7 +195,8 @@
             </div>
             <div class="col-lg-4">
                 <label>Clave BD:</label>
-                <input type="text" class="form-control {{ $errors->has('clave') ? 'is-invalid' : '' }}"
+                <input type="text"
+                    class="form-control @if($rol!=1) disabled @endif {{ $errors->has('clave') ? 'is-invalid' : '' }}"
                     placeholder="Clave BD" name="clave" autocomplete="off" id="clave"
                     value="{{ old('clave', $licencia->clave) }}" />
                 @if ($errors->has('clave'))
@@ -186,7 +232,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($licencia->modulopractico== 1) checked="checked" @endif type="checkbox"
-                                name="modulopractico" id="practico" />
+                                name="modulopractico" id="practico" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -196,7 +243,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($licencia->modulocontrol== 1) checked="checked" @endif type="checkbox"
-                                name="modulocontrol" id="control" />
+                                name="modulocontrol" id="control" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -206,7 +254,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($licencia->modulocontable== 1) checked="checked" @endif type="checkbox"
-                                name="modulocontable" id="contable" />
+                                name="modulocontable" id="contable" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -218,15 +267,35 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($licencia->actulizaciones== 1) checked="checked" @endif type="checkbox"
-                                name="actulizaciones" id="actualiza" />
+                                name="actulizaciones" id="actualiza" @if($rol!=1) disabled @endif />
                                 <span></span>
                             </label>
                         </span>
                     </div>
+                    @if (isset($licencia->sis_licenciasid))
+                    <div class="col-lg-4">
+                        <label>Fecha Pagado Actualizaciones:</label>
+                        <div class="input-group">
+                            <input type="text"
+                                class="form-control @if($rol!=1) disabled @endif {{ $errors->has('fechaactulizaciones') ? 'is-invalid' : '' }}"
+                                placeholder="Ingrese Fecha Caducidad" name="fechaactulizaciones"
+                                id="fechaactulizaciones" autocomplete="off"
+                                value="{{ old('fechaactulizaciones',$licencia->fechaactulizaciones) }}" />
+                            <div class="input-group-append">
+                                <button class="btn btn-primary @if($rol==4) disabled @endif" type="button"
+                                    id="renovaractualizacion">Renovar
+                                    Anual</button>
+                            </div>
+                        </div>
+                        @if ($errors->has('fechaactulizaciones'))
+                        <span class="text-danger">{{ $errors->first('fechaactulizaciones') }}</span>
+                        @endif
+                    </div>
+                    @else
                     <div class="col-lg-4">
                         <label>Fecha Pagado Actualizaciones:</label>
                         <input type="text"
-                            class="form-control {{ $errors->has('fechaactulizaciones') ? 'is-invalid' : '' }}"
+                            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('fechaactulizaciones') ? 'is-invalid' : '' }}"
                             placeholder="Ingrese Fecha Caducidad" name="fechaactulizaciones" id="fechaactulizaciones"
                             autocomplete="off"
                             value="{{ old('fechaactulizaciones',$licencia->fechaactulizaciones) }}" />
@@ -234,9 +303,11 @@
                         <span class="text-danger">{{ $errors->first('fechaactulizaciones') }}</span>
                         @endif
                     </div>
+                    @endif
                     <div class="col-lg-4">
                         <label>Periodo:</label>
-                        <select class="form-control" name="periodo" id="periodo">
+                        <select class="form-control @if($rol!=1 && $accion == 'Modificar') disabled @endif"
+                            name="periodo" id="periodo">
                             <option value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected': '' }}>Mensual
                             </option>
                             <option value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected': '' }}>Anual
@@ -253,7 +324,7 @@
                     <div class="col-lg-12">
                         <label>Clave de Activación:</label>
                         <textarea rows="8" class="form-control {{ $errors->has('key') ? 'is-invalid' : '' }}"
-                            placeholder="Clave de Activación" name="key" autocomplete="off"
+                            placeholder="Clave de Activación" name="key" autocomplete="off" readonly
                             id="key">{{$licencia->key}}</textarea>
                         @if ($errors->has('key'))
                         <span class="text-danger">{{ $errors->first('key') }}</span>
@@ -269,7 +340,7 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->nomina== true) checked="checked" @endif type="checkbox"
-                                name="nomina" id="nomina" />
+                                name="nomina" id="nomina" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -279,7 +350,7 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->activos== true) checked="checked" @endif type="checkbox"
-                                name="activos" id="activos" />
+                                name="activos" id="activos" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -291,7 +362,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->produccion== true) checked="checked" @endif type="checkbox"
-                                name="produccion" id="produccion" />
+                                name="produccion" id="produccion" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -301,7 +373,7 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->operadoras== true) checked="checked" @endif type="checkbox"
-                                name="tvcable" id="tvcable" />
+                                name="tvcable" id="tvcable" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -313,7 +385,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->encomiendas== true) checked="checked" @endif type="checkbox"
-                                name="encomiendas" id="encomiendas" />
+                                name="encomiendas" id="encomiendas" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -323,7 +396,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->crm_cartera== true) checked="checked" @endif type="checkbox"
-                                name="crmcartera" id="crmcartera" />
+                                name="crmcartera" id="crmcartera" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -335,7 +409,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->api_whatsapp== true) checked="checked" @endif type="checkbox"
-                                name="apiwhatsapp" id="apiwhatsapp" />
+                                name="apiwhatsapp" id="apiwhatsapp" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -345,7 +420,7 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->perseo_hybrid== true) checked="checked" @endif type="checkbox"
-                                name="hybrid" id="hybrid" />
+                                name="hybrid" id="hybrid" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -357,7 +432,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->tienda_woocommerce== true) checked="checked" @endif
-                                type="checkbox" name="woocomerce" id="woocomerce" />
+                                type="checkbox" name="woocomerce" id="woocomerce" @if($rol!=1 && $accion == 'Modificar')
+                                disabled @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -367,7 +443,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->tienda_perseo_publico== true) checked="checked" @endif
-                                type="checkbox" name="tienda" id="tienda" />
+                                type="checkbox" name="tienda" id="tienda" @if($rol!=1 && $accion == 'Modificar')
+                                disabled @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -379,7 +456,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->restaurante== true) checked="checked" @endif type="checkbox"
-                                name="restaurantes" id="restaurantes" />
+                                name="restaurante" id="restaurante" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -389,7 +467,7 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->garantias== true) checked="checked" @endif type="checkbox"
-                                name="garantias" id="garantias" />
+                                name="garantias" id="garantias" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -401,7 +479,7 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->talleres== true) checked="checked" @endif type="checkbox"
-                                name="talleres" id="talleres" />
+                                name="talleres" id="talleres" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -411,7 +489,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->tienda_perseo_distribuidor== true) checked="checked" @endif
-                                type="checkbox" name="integraciones" id="integraciones" />
+                                type="checkbox" name="integraciones" id="integraciones" @if($rol!=1 && $accion ==
+                                'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -423,7 +502,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->cash_manager== true) checked="checked" @endif type="checkbox"
-                                name="cashmanager" id="cashmanager" />
+                                name="cashmanager" id="cashmanager" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -433,7 +513,8 @@
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if ($modulos[0]->reporte_equifax== true) checked="checked" @endif
-                                type="checkbox" name="equifax" id="equifax" />
+                                type="checkbox" name="equifax" id="equifax" @if($rol!=1 && $accion == 'Modificar')
+                                disabled @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -444,7 +525,8 @@
             <div class="tab-pane fade show" id="correos" role="tabpanel">
                 <div class="form-group row">
                     <label>Correo Propietario:</label>
-                    <input class="form-control {{ $errors->has('correopropietario') ? 'is-invalid' : '' }}"
+                    <input
+                        class="form-control @if($rol!=1 && $accion == 'Modificar') disabled @endif {{ $errors->has('correopropietario') ? 'is-invalid' : '' }}"
                         placeholder="Ingrese Correo" name="correopropietario" autocomplete="off"
                         value="{{ old('correopropietario', $licencia->correopropietario) }}" id="correo" />
                     @if ($errors->has('correopropietario'))
@@ -453,7 +535,8 @@
                 </div>
                 <div class="form-group row">
                     <label>Correo Administrador:</label>
-                    <input class="form-control {{ $errors->has('correoadministrador') ? 'is-invalid' : '' }}"
+                    <input
+                        class="form-control @if($rol!=1 && $accion == 'Modificar') disabled @endif {{ $errors->has('correoadministrador') ? 'is-invalid' : '' }}"
                         placeholder="Ingrese Correo" name="correoadministrador" autocomplete="off"
                         value="{{ old('correoadministrador', $licencia->correoadministrador) }}" id="correo" />
                     @if ($errors->has('correoadministrador'))
@@ -462,7 +545,8 @@
                 </div>
                 <div class="form-group row">
                     <label>Correo Contador:</label>
-                    <input class="form-control {{ $errors->has('correocontador') ? 'is-invalid' : '' }}"
+                    <input
+                        class="form-control @if($rol!=1 && $accion == 'Modificar') disabled @endif {{ $errors->has('correocontador') ? 'is-invalid' : '' }}"
                         placeholder="Ingrese Correo" name="correocontador" autocomplete="off"
                         value="{{ old('correocontador', $licencia->correocontador) }}" id="correo" />
                     @if ($errors->has('correocontador'))
@@ -474,7 +558,8 @@
             <div class="tab-pane fade show" id="respaldos" role="tabpanel">
                 <div class="form-group row">
                     <label>Token Dropbox:</label>
-                    <textarea rows="8" class="form-control {{ $errors->has('tokenrespaldo') ? 'is-invalid' : '' }}"
+                    <textarea rows="8"
+                        class="form-control @if($rol!=1) disabled @endif {{ $errors->has('tokenrespaldo') ? 'is-invalid' : '' }}"
                         placeholder="Token Respaldo" name="tokenrespaldo" autocomplete="off"
                         id="tokenrespaldo">{{$licencia->tokenrespaldo}}</textarea>
                     @if ($errors->has('tokenrespaldo'))
@@ -487,7 +572,8 @@
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <label>Motivo Bloqueo:</label>
-                        <input class="form-control {{ $errors->has('motivobloqueo') ? 'is-invalid' : '' }}"
+                        <input
+                            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('motivobloqueo') ? 'is-invalid' : '' }}"
                             placeholder="Motivo bloqueo" name="motivobloqueo" autocomplete="off" id="motivobloqueo"
                             value="{{ old('motivobloqueo', $licencia->motivobloqueo) }}" />
                         @if ($errors->has('motivobloqueo'))
@@ -498,7 +584,8 @@
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <label>Mensaje Entrar al Sistema:</label>
-                        <input class="form-control {{ $errors->has('mensaje') ? 'is-invalid' : '' }}"
+                        <input
+                            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('mensaje') ? 'is-invalid' : '' }}"
                             placeholder="Mensaje" name="mensaje" autocomplete="off" id="mensaje"
                             value="{{ old('mensaje', $licencia->mensaje) }}" />
                         @if ($errors->has('mensaje'))
@@ -509,7 +596,8 @@
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <label>Observaciones:</label>
-                        <input class="form-control {{ $errors->has('observacion') ? 'is-invalid' : '' }}"
+                        <input
+                            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('observacion') ? 'is-invalid' : '' }}"
                             placeholder="Observaciones" name="observacion" autocomplete="off" id="observacion"
                             value="{{ old('observacion', $licencia->observacion) }}" />
                         @if ($errors->has('observacion'))
@@ -538,8 +626,43 @@
 
 @section('script')
 <script>
+    $("#renovarmensual").click(function(e) {
+        confirmar('mes',"Está seguro de Renovar la Licencia?");
+    });
+
+    $("#renovaranual").click(function(e) {
+        confirmar('anual',"Está seguro de Renovar la Licencia?");
+    });
+
+    $("#renovaractualizacion").click(function(e) {
+        confirmar('actualizacion',"Está seguro de Renovar la Licencia?");
+    });
+
     //recorrer tabla de permisos y hacer una sola cadena con los ids 
     $('#formulario').submit(function(event) {
+
+        //Enviar swirch que estan disabled
+        $("#actualiza").prop("disabled", false);
+        $("#contable").prop("disabled", false);
+        $("#control").prop("disabled", false);
+        $("#practico").prop("disabled", false);
+        $("#nomina").prop("disabled", false);
+        $("#activos").prop("disabled", false);
+        $("#produccion").prop("disabled", false);
+        $("#tvcable").prop("disabled", false);
+        $("#encomiendas").prop("disabled", false);
+        $("#crmcartera").prop("disabled", false);
+        $("#apiwhatsapp").prop("disabled", false);
+        $("#hybrid").prop("disabled", false);
+        $("#woocomerce").prop("disabled", false);
+        $("#tienda").prop("disabled", false);
+        $("#restaurante").prop("disabled", false);
+        $("#garantias").prop("disabled", false);
+        $("#talleres").prop("disabled", false);
+        $("#integraciones").prop("disabled", false);
+        $("#cashmanager").prop("disabled", false);
+        $("#equifax").prop("disabled", false);
+
         event.preventDefault(); 
         permisos='';
         $("#aplicaciones tbody td input").each(function(){
@@ -702,8 +825,8 @@
         }
     });
 
-    $('#restaurantes').click(function(){
-        if ($('#restaurantes').prop('checked')) {
+    $('#restaurante').click(function(){
+        if ($('#restaurante').prop('checked')) {
             moduloPerseoRestaurantes(true);
         }else{
             moduloPerseoRestaurantes(false);
@@ -1117,11 +1240,28 @@
                 }
                 break;
         }
-        let fechaFormato = fecha.getDate() + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear() 
-        let fechaPagadoFormato = fechaPagado.getDate() + "-" + ("0" + (fechaPagado.getMonth()+1)).slice(-2) + "-" + fechaPagado.getFullYear() 
+        let fechaFormato = ("0"+(fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear() 
+        let fechaPagadoFormato = ("0"+(fechaPagado.getDate())).slice(-2) + "-" + ("0" + (fechaPagado.getMonth()+1)).slice(-2) + "-" + fechaPagado.getFullYear() 
 
         $('#fechacaduca').val(fechaFormato);
         $('#fechaactulizaciones').val(fechaPagadoFormato);
+    }
+
+    function confirmar(tipo,mensaje){
+        Swal.fire({
+            title: "Advertencia",
+            text: mensaje,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Confirmar",
+            cancelButtonText: "Cancelar",
+            reverseButtons: true
+        }).then(function(result) {
+            if (result.value) {
+                $('#tipo').val(tipo);
+                $("#formulario").submit();
+            } 
+        });
     }
 </script>
 @endsection

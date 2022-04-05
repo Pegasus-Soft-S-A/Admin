@@ -21,6 +21,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/menu', [adminController::class, 'cambiarMenu'])->name('cambiarMenu');
     Route::post('/recuperar-Post', [adminController::class, 'recuperarPost'])->name('recuperarInformacionPost');
     Route::get('/subcategorias', [adminController::class, 'subcategorias'])->name('subcategorias');
+    Route::get('/productos/{tipo}', [adminController::class, 'productos'])->name('productos');
 
     /* Clientes */
     Route::get('/clientes', [clientesController::class, 'index'])->name('clientes.index');
@@ -42,6 +43,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('/licenciasWeb/{licencia}', [licenciasController::class, 'actualizarWeb'])->name('licencias.web.actualizar');
     Route::delete('/licencias/eliminarPC/{licencia}', [licenciasController::class, 'eliminarPC'])->name('licencias.pc.eliminar');
     Route::delete('/licencias/eliminarWeb/{licencia}', [licenciasController::class, 'eliminarWeb'])->name('licencias.web.eliminar');
+    Route::get('/email/{cliente}', [licenciasController::class, 'enviarEmail'])->name('licencias.web.enviarEmail');
 
     /* Distribuidores */
     Route::get('/distribuidores', [distribuidoresController::class, 'index'])->name('distribuidores.index');

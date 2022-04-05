@@ -11,8 +11,8 @@
             <div class="row">
                 <div class="col-md-12">
                     <!--begin::Card-->
-                    <form class="form" action="{{ route('clientes.actualizar', $cliente->sis_clientesid) }}"
-                        method="POST">
+                    <form id="formulario" class="form"
+                        action="{{ route('clientes.actualizar', $cliente->sis_clientesid) }}" method="POST">
                         @method('PUT')
                         <div class="card card-custom card-sticky" id="kt_page_sticky_card">
                             <div class="card-header flex-wrap py-5">
@@ -27,11 +27,15 @@
                                                 data-toggle="tooltip" title="Volver"><i
                                                     class="la la-long-arrow-left"></i></a>
 
+                                            @if (Auth::user()->tipo==1)
                                             <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip"
                                                 title="Guardar"><i class="la la-save"></i></button>
+                                            @endif
 
+                                            @if (Auth::user()->tipo!=4)
                                             <a href="{{ route('clientes.crear') }}" class="btn btn-warning btn-icon"
                                                 data-toggle="tooltip" title="Nuevo"><i class="la la-user-plus"></i></a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -78,12 +82,16 @@
                             <div class="card-toolbar">
                                 <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="">
                                     <div class="btn-group" role="group" aria-label="First group">
+                                        @if (Auth::user()->tipo==1 || Auth::user()->tipo==2)
                                         <a href="{{ route('licencias.web.crear',$cliente->sis_clientesid) }}"
                                             class="btn btn-primary btn-icon" data-toggle="tooltip" title="Nuevo Web"><i
                                                 class="la la-cloud"></i></a>
+                                        @endif
+                                        @if (Auth::user()->tipo!=4)
                                         <a href="{{ route('licencias.pc.crear',$cliente->sis_clientesid) }}"
                                             class="btn btn-warning btn-icon" data-toggle="tooltip" title="Nuevo PC"><i
                                                 class="la la-tv"></i></a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -118,6 +126,14 @@
 
 @section('script')
 <script>
+    $('#formulario').submit(function(event) {
+        $("#provinciasid").prop("disabled", false);
+        $("#distribuidor").prop("disabled", false);
+        $("#vendedor").prop("disabled", false);
+        $("#revendedor").prop("disabled", false);
+        $("#red_origen").prop("disabled", false);
+    });
+    
     $(document).ready(function(){
         var distribuidor = '{{$cliente->sis_distribuidoresid}}';
         $('#vendedor').empty();
