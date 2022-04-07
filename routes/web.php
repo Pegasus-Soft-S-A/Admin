@@ -25,6 +25,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     /* Clientes */
     Route::get('/clientes', [clientesController::class, 'index'])->name('clientes.index');
+    Route::post('/clientes/tabla', [clientesController::class, 'cargarTabla'])->name('clientes.tabla');
     Route::get('/clientes/crear', [clientesController::class, 'crear'])->name('clientes.crear');
     Route::post('/clientes', [clientesController::class, 'guardar'])->name('clientes.guardar');
     Route::get('/clientes/editar/{cliente}', [clientesController::class, 'editar'])->name('clientes.editar');

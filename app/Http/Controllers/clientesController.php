@@ -17,7 +17,18 @@ class clientesController extends Controller
 {
     public function index(Request $request)
     {
+        if (Auth::user()->tipo == 1) {
+            $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->orderBy('sis_revendedores.razonsocial')->get();
+            $distribuidores = Distribuidores::all();
+        } else {
+            $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->where('sis_revendedores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->orderBy('sis_revendedores.razonsocial')->get();
+            $distribuidores = Distribuidores::where('sis_distribuidores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
+        }
+        return view('admin.clientes.index', compact('vendedores', 'distribuidores'));
+    }
 
+    public function cargarTabla(Request $request)
+    {
         if ($request->ajax()) {
 
             $tipo = $request->tipofecha;
@@ -196,15 +207,6 @@ class clientesController extends Controller
                 ->rawColumns(['action', 'identificacion'])
                 ->make(true);
         }
-
-        if (Auth::user()->tipo == 1) {
-            $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->orderBy('sis_revendedores.razonsocial')->get();
-            $distribuidores = Distribuidores::all();
-        } else {
-            $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->where('sis_revendedores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->orderBy('sis_revendedores.razonsocial')->get();
-            $distribuidores = Distribuidores::where('sis_distribuidores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
-        }
-        return view('admin.clientes.index', compact('vendedores', 'distribuidores'));
     }
 
     public function crear()

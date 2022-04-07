@@ -6,6 +6,7 @@ use App\Mail\EnviarLicencia;
 use App\Models\Licencias;
 use App\Models\Clientes;
 use App\Models\Log;
+use App\Models\Revendedores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -280,7 +281,11 @@ class licenciasController extends Controller
 
         $licencia =   Licencias::create($request->all());
 
-        $cliente = Clientes::select('nombres', 'identificacion', 'correos')->where('sis_clientesid', $licencia->sis_clientesid)->first();
+        $cliente = Clientes::select('sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor')
+            ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
+            ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+            ->where('sis_clientesid', $licencia->sis_clientesid)
+            ->first();
 
         $array['view'] = 'emails.licenciaPc';
         $array['from'] = env('MAIL_FROM_ADDRESS');
@@ -302,9 +307,25 @@ class licenciasController extends Controller
         $array['usuario'] = Auth::user()->nombres;
         $array['fecha'] = $request['fechacreacion'];
         $array['tipo'] = '2';
-        $emailsEnviar = 'llucia01394@gmail.com';
 
-        Mail::to($emailsEnviar)->queue(new EnviarLicencia($array));
+        $emails = explode(", ", $cliente->distribuidor);
+
+        $emails = array_merge($emails,  [
+            "comercializacion@perseo.ec",
+            "facturacion@perseo.ec",
+            $cliente->vendedor,
+            Auth::user()->correo,
+        ]);
+
+        $emails = array_diff($emails, array(" ", 0, null));
+
+        try {
+            Mail::to($emails)->queue(new EnviarLicencia($array));
+        } catch (\Exception $e) {
+            flash('Error enviando email')->error();
+            return back();
+        }
+
 
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
@@ -411,7 +432,12 @@ class licenciasController extends Controller
             $log->detalle = json_encode($request->all());
             $log->save();
 
-            $cliente = Clientes::select('nombres', 'identificacion', 'correos')->where('sis_clientesid', $licencia['sis_clientesid'])->first();
+            $cliente = Clientes::select('sis_clientes.correos as cliente', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor')
+                ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
+                ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+                ->join('sis_revendedores as revendedor', 'revendedor.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+                ->where('sis_clientesid', $request['sis_clientesid'])
+                ->first();
 
             $array['view'] = 'emails.licenciaWeb';
             $array['from'] = env('MAIL_FROM_ADDRESS');
@@ -433,9 +459,25 @@ class licenciasController extends Controller
             $array['usuario'] = Auth::user()->nombres;
             $array['fecha'] = $licencia['fechacreacion'];
             $array['tipo'] = '1';
-            $emailsEnviar = 'llucia01394@gmail.com';
 
-            Mail::to($emailsEnviar)->queue(new EnviarLicencia($array));
+            $emails = explode(", ", $cliente->distribuidor);
+
+            $emails = array_merge($emails,  [
+                "comercializacion@perseo.ec",
+                $cliente->vendedor,
+                $cliente->revendedor,
+                $cliente->cliente,
+                Auth::user()->correo,
+            ]);
+
+            $emails = array_diff($emails, array(" ", 0, null));
+
+            try {
+                Mail::to($emails)->queue(new EnviarLicencia($array));
+            } catch (\Exception $e) {
+                flash('Error enviando email')->error();
+                return back();
+            }
 
             flash('Guardado Correctamente')->success();
             return redirect()->route('licencias.web.editar', [$request['sis_clientesid'], $licenciaId]);
@@ -590,7 +632,12 @@ class licenciasController extends Controller
         $log->detalle = $licencia;
         $log->save();
 
-        $cliente = Clientes::select('nombres', 'identificacion', 'correos')->where('sis_clientesid', $licencia->sis_clientesid)->first();
+        $cliente = Clientes::select('sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor')
+            ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
+            ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+            ->where('sis_clientesid', $licencia->sis_clientesid)
+            ->first();
+
         $array['view'] = 'emails.licenciaPc';
         $array['from'] = env('MAIL_FROM_ADDRESS');
         $array['subject'] = 'Registro Licencia Pc';
@@ -611,9 +658,23 @@ class licenciasController extends Controller
         $array['modulopractico'] = $licencia->modulopractico;
         $array['modulocontable'] = $licencia->modulocontable;
         $array['modulocontrol'] = $licencia->modulocontrol;
-        $emailsEnviar = 'llucia01394@gmail.com';
 
-        Mail::to($emailsEnviar)->queue(new EnviarLicencia($array));
+        $emails = explode(", ", $cliente->distribuidor);
+
+        $emails = array_merge($emails,  [
+            "comercializacion@perseo.ec",
+            $cliente->vendedor,
+            Auth::user()->correo,
+        ]);
+
+        $emails = array_diff($emails, array(" ", 0, null));
+
+        try {
+            Mail::to($emails)->queue(new EnviarLicencia($array));
+        } catch (\Exception $e) {
+            flash('Error enviando email')->error();
+            return back();
+        }
 
         flash('Actualizado Correctamente')->success();
         return back();
@@ -704,7 +765,12 @@ class licenciasController extends Controller
             ->post($urlEditar, $request->all())
             ->json();
 
-        $cliente = Clientes::select('nombres', 'identificacion', 'correos')->where('sis_clientesid', $licencia->sis_clientesid)->first();
+        $cliente = Clientes::select('sis_clientes.correos as cliente', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor')
+            ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
+            ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+            ->join('sis_revendedores as revendedor', 'revendedor.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+            ->where('sis_clientesid', $request['sis_clientesid'])
+            ->first();
 
         if (isset($licenciaEditar['licencias'])) {
             $log = new Log();
@@ -735,9 +801,26 @@ class licenciasController extends Controller
             $array['usuario'] = Auth::user()->nombres;
             $array['fecha'] =  date("Y-m-d H:i:s", strtotime($request['fechamodificacion']));
             $array['tipo'] = '3';
-            $emailsEnviar = 'llucia01394@gmail.com';
 
-            Mail::to($emailsEnviar)->queue(new EnviarLicencia($array));
+            $emails = explode(", ", $cliente->distribuidor);
+
+            $emails = array_merge($emails,  [
+                "comercializacion@perseo.ec",
+                "facturacion@perseo.ec",
+                $cliente->vendedor,
+                $cliente->revendedor,
+                $cliente->cliente,
+                Auth::user()->correo,
+            ]);
+
+            $emails = array_diff($emails, array(" ", 0, null));
+
+            try {
+                Mail::to($emails)->queue(new EnviarLicencia($array));
+            } catch (\Exception $e) {
+                flash('Error enviando email')->error();
+                return back();
+            }
 
             flash('Actualizado Correctamente')->success();
         } else {
@@ -808,13 +891,18 @@ class licenciasController extends Controller
             $array['nombre'] = $cliente->nombres;
             $array['usuario'] = $cliente->identificacion;
             $array['tipo'] = 5;
-            //$emailsEnviar = 'jhusep95@gmail.com';
 
             $emails = explode(", ", $cliente->distribuidor);
             array_push($emails, $cliente->correos);
             $emails = array_diff($emails, array(" ", 0, null));
-            // dd($emails);
-            Mail::to($emails)->queue(new EnviarLicencia($array));
+
+            try {
+                Mail::to($emails)->queue(new EnviarLicencia($array));
+            } catch (\Exception $e) {
+                flash('Error enviando email')->error();
+                return back();
+            }
+
             flash('Correo Enviado Correctamente')->success();
             return back();
         }

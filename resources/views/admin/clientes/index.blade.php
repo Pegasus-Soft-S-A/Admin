@@ -220,6 +220,7 @@
                                         <th data-priority="1">Identificación</th>
                                         <th data-priority="2">Nombres</th>
                                         <th>Celular</th>
+                                        <th>Correos</th>
                                         <th data-priority="3">Producto</th>
                                         <th data-priority="4">Tipo</th>
                                         <th data-priority="5">Inicia</th>
@@ -323,6 +324,12 @@
             $('#kt_fecha .form-control').val( start.format('DD-MM-YYYY') + ' / ' + end.format('DD-MM-YYYY'));
         });
 
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
         //inicializar datatable
         var table = $('#kt_datatable').DataTable({
             //Posicion de los elementos de la datatable f:filtering l:length t:table r:processing i:info p:pagination
@@ -343,8 +350,8 @@
             serverSide: true,
             //Peticion ajax que devuelve los registros
             ajax: {
-                url: "{{ route('clientes.index') }}",
-                //type: 'GET',
+                url: "{{ route('clientes.tabla') }}",
+                type: 'POST',
                 data: function (d) {
                     //Valores de filtro a enviar a la ruta clientes.index
                     d.tipofecha= $("#tipofecha").val();
@@ -364,6 +371,7 @@
                 {data: 'identificacion', name: 'identificacion'},
                 {data: 'nombres', name: 'nombres'},
                 {data: 'telefono2', name: 'telefono2'},
+                {data: 'correos', name: 'correos',visible:false},
                 {data: 'tipo_licencia', name: 'tipo_licencia'},
                 {data: 'producto', name: 'producto'},
                 {data: 'fechainicia', name: 'fechainicia'},
