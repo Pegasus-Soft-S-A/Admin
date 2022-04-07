@@ -19,7 +19,6 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas Admin
     Route::post('/menu', [adminController::class, 'cambiarMenu'])->name('cambiarMenu');
-    Route::post('/recuperar-Post', [adminController::class, 'recuperarPost'])->name('recuperarInformacionPost');
     Route::get('/subcategorias', [adminController::class, 'subcategorias'])->name('subcategorias');
     Route::get('/productos/{tipo}', [adminController::class, 'productos'])->name('productos');
 

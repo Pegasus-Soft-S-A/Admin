@@ -56,14 +56,22 @@
     });
 
     function recuperarInformacion() {
+        
+        $.ajaxSetup({
+            headers: {
+                'usuario': 'perseo',
+                'clave':'Perseo1232*'
+            }
+        });
 
         var cad = document.getElementById('identificacion').value;
         $("#spinner").addClass("spinner spinner-success spinner-right");
-        $.post('{{ route('recuperarInformacionPost') }}', {
+        $.post('{{ route('identificaciones.index') }}', {
             _token: '{{ csrf_token() }}',
-            cedula: cad
+            identificacion: cad
         }, function(data) {
             $("#spinner").removeClass("spinner spinner-success spinner-right");
+            data=JSON.parse(data);
             if (data.identificacion) {
                 $("#razonsocial").val(data.razon_social);
                 $("#nombrecomercial").val(data.nombrecomercial);

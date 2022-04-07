@@ -59,6 +59,7 @@
         $('#revendedor').empty();
         $('#revendedor').append('<option value="">Seleccione un Revendedor</option>');
 
+        
         $.ajax({
             type:"GET",
             url: '/revendedoresDistribuidor/' + distribuidor + '/2',
@@ -85,13 +86,21 @@
 
     function recuperarInformacion() {
 
+        $.ajaxSetup({
+            headers: {
+                'usuario': 'perseo',
+                'clave':'Perseo1232*'
+            }
+        });
+
         var cad = document.getElementById('identificacion').value;
         $("#spinner").addClass("spinner spinner-success spinner-right");
-        $.post('{{ route('recuperarInformacionPost') }}', {
+        $.post('{{ route('identificaciones.index') }}', {
             _token: '{{ csrf_token() }}',
-            cedula: cad
+            identificacion: cad
         }, function(data) {
             $("#spinner").removeClass("spinner spinner-success spinner-right");
+            data=JSON.parse(data);
             if (data.identificacion) {
                 $("#nombres").val(data.razon_social);
                 $("#direccion").val(data.direccion);

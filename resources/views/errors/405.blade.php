@@ -1,3 +1,3 @@
 <script>
-	location.href="{{route('admin.login')}}"
+	location.href="{{route('login')}}"
 </script>
