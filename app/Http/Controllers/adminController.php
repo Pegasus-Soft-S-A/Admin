@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clientes;
+use App\Models\Servidores;
 use App\Models\Subcategorias;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
@@ -17,6 +19,30 @@ class adminController extends Controller
     {
         return view('admin.auth.login');
     }
+
+    public function migrar()
+    {
+        $clientes = Clientes::all();
+        $servidores = Servidores::all();
+        return view('admin.migrar', compact('clientes', 'servidores'));
+    }
+
+    public function licencia($servidorid, $clienteid)
+    {
+        $servidor = Servidores::where('sis_servidoresid', $servidorid)->first();
+        $url = $servidor->dominio . '/registros/consulta_licencia';
+        $licencia = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($url, ['sis_clientesid' => $clienteid])
+            ->json();
+
+        if (!isset($licencia["licencias"])) {
+            $licencia = ['licencias' => ['sis_licenciasid' => 0, 'numerocontrato' => 'Cliente sin Licencia']];
+        }
+
+        return with(["licencia" => $licencia["licencias"]]);
+    }
+
 
     public function post_login(Request $request)
     {
@@ -64,6 +90,7 @@ class adminController extends Controller
             //Aqui va el logout del contador
         }
     }
+
     public function cambiarMenu(Request $request)
     {
         Session::put('menu', $request->estado);

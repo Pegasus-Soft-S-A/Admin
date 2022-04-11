@@ -40,6 +40,7 @@
                 </li>
 
                 @if (Auth::user()->tipo==1)
+
                 <li class="menu-item {{ areActiveRoutes(['distribuidores.index']) }}" aria-haspopup="true">
                     <a href="{{ route('distribuidores.index') }}" class="menu-link">
                         <i class="menu-icon fa fa-users"></i>
@@ -53,12 +54,28 @@
                         <span class="menu-text">Revendedores</span>
                     </a>
                 </li>
+
                 <li class="menu-item {{ areActiveRoutes(['usuarios.index']) }} " aria-haspopup="true">
                     <a href="{{ route('usuarios.index') }}" class="menu-link">
                         <i class="menu-icon fa fa-user"></i>
                         <span class="menu-text">Usuarios</span>
                     </a>
                 </li>
+
+                <li class="menu-item {{ areActiveRoutes(['servidores.index']) }} " aria-haspopup="true">
+                    <a href="{{ route('servidores.index') }}" class="menu-link">
+                        <i class="menu-icon fa fa-server"></i>
+                        <span class="menu-text">Servidores</span>
+                    </a>
+                </li>
+
+                <li class="menu-item {{ areActiveRoutes(['migrar']) }} " aria-haspopup="true">
+                    <a href="{{ route('migrar') }}" class="menu-link">
+                        <i class="menu-icon fa fa-database"></i>
+                        <span class="menu-text">Migrar Servidor</span>
+                    </a>
+                </li>
+
                 @endif
 
             </ul>

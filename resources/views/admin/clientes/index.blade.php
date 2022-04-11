@@ -221,10 +221,20 @@
                                         <th data-priority="2">Nombres</th>
                                         <th>Celular</th>
                                         <th>Correos</th>
-                                        <th data-priority="3">Producto</th>
-                                        <th data-priority="4">Tipo</th>
+                                        <th data-priority="3">Tipo</th>
+                                        <th data-priority="4">Producto</th>
                                         <th data-priority="5">Inicia</th>
                                         <th data-priority="6">Caduca</th>
+                                        <th>Dias Hasta Vencer</th>
+                                        <th>Precio</th>
+                                        <th>Periodo</th>
+                                        <th>Producto</th>
+                                        <th>Fecha Ultimo Pago</th>
+                                        <th>Fecha Actualizaciones</th>
+                                        <th>Distribuidor</th>
+                                        <th>Vendedor</th>
+                                        <th>Revendedor</th>
+
                                         <th>Usuarios</th>
                                         <th>Empresas</th>
                                         <th>Móviles</th>
@@ -372,10 +382,20 @@
                 {data: 'nombres', name: 'nombres'},
                 {data: 'telefono2', name: 'telefono2'},
                 {data: 'correos', name: 'correos',visible:false},
-                {data: 'tipo_licencia', name: 'tipo_licencia'},
                 {data: 'producto', name: 'producto'},
+                {data: 'tipo_licencia', name: 'tipo_licencia'},
                 {data: 'fechainicia', name: 'fechainicia'},
                 {data: 'fechacaduca', name: 'fechacaduca'},
+                {data: 'diasvencer', name: 'diasvencer',visible:false},
+                {data: 'precio', name: 'precio',visible:false},
+                {data: 'periodo', name: 'periodo',visible:false},
+                {data: 'producto', name: 'producto',visible:false},
+                {data: 'fechaultimopago', name: 'fechaultimopago',visible:false},
+                {data: 'fechaactulizaciones', name: 'fechaactulizaciones',visible:false},
+                {data: 'sis_distribuidoresid', name: 'sis_distribuidoresid',visible:false},
+                {data: 'sis_vendedoresid', name: 'sis_vendedoresid',visible:false},
+                {data: 'sis_revendedoresid', name: 'sis_revendedoresid',visible:false},
+
                 {data: 'usuarios', name: 'usuarios',visible:false},
                 {data: 'empresas', name: 'empresas',visible:false},
                 {data: 'numeromoviles', name: 'numeromoviles',visible:false},

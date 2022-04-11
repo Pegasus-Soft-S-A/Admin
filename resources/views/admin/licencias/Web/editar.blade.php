@@ -6,7 +6,8 @@
             <div class="row">
                 <div class="col-md-12">
                     <!--begin::Card-->
-                    <form class="form" action="{{  route('licencias.web.actualizar', $licencia->sis_licenciasid)}}"
+                    <form class="form"
+                        action="{{  route('licencias.Web.actualizar', [$licencia->sis_servidoresid,$licencia->sis_licenciasid])}}"
                         method="POST" id="formulario">
                         @method('PUT')
                         <div class="card card-custom card-sticky" id="kt_page_sticky_card">
@@ -26,7 +27,7 @@
                                             <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip"
                                                 title="Guardar"><i class="la la-save"></i></button>
 
-                                            <a href="{{ route('licencias.web.crear',$cliente->sis_clientesid) }}"
+                                            <a href="{{ route('licencias.Web.crear',$cliente->sis_clientesid) }}"
                                                 class="btn btn-warning btn-icon" data-toggle="tooltip" title="Nuevo"><i
                                                     class="la la-user-plus"></i></a>
                                             @endif
@@ -37,7 +38,7 @@
                                                     class="la la-file-medical"></i></a>
                                             @endif
 
-                                            <a href="{{ route('licencias.web.enviarEmail',$cliente->sis_clientesid) }}"
+                                            <a href="{{ route('licencias.Web.enviaremail',$cliente->sis_clientesid) }}"
                                                 class="btn btn-primary btn-icon" data-toggle="tooltip"
                                                 title="Enviar Email"><i class="socicon-mail"></i></a>
                                         </div>
@@ -45,7 +46,7 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                @include('admin.licencias.web._form')
+                                @include('admin.licencias.Web._form')
                             </div>
 
                             <div class="card-footer pt-2 pb-2">

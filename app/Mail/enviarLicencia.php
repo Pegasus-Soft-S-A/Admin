@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class EnviarLicencia extends Mailable
+class enviarlicencia extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -29,14 +29,14 @@ class EnviarLicencia extends Mailable
      */
     public function build()
     {
-        if ($this->array['tipo'] == 1 || $this->array['tipo'] == 3) {
 
-            return $this->view('emails.licenciaWeb')
+        if ($this->array['tipo'] == 1 || $this->array['tipo'] == 3) {
+            return $this->view('emails.licenciaweb')
                 ->from($this->array['from'], env('MAIL_FROM_NAME'))
                 ->subject($this->array['subject']);
         } elseif ($this->array['tipo'] == 2 || $this->array['tipo'] == 4) {
 
-            return $this->view('emails.licenciaPc')
+            return $this->view('emails.licenciapc')
                 ->from($this->array['from'], env('MAIL_FROM_NAME'))
                 ->subject($this->array['subject']);
         }

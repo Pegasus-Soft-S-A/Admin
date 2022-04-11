@@ -39,36 +39,170 @@ class clientesController extends Controller
             $origen = $request->origen;
             $producto = $request->producto;
             $periodo = $request->periodo;
+            $distribuidores = Distribuidores::all()->toArray();
+            $vendedores = Revendedores::all()->toArray();
 
             if (Auth::user()->tipo == 1) {
-                $clientes = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.tipoidentificacion', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono1', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_clientes.sis_distribuidoresid', 'sis_clientes.sis_vendedoresid', 'sis_clientes.sis_revendedoresid', 'sis_clientes.red_origen', 'sis_clientes.usuariocreacion', 'sis_clientes.usuariomodificacion', 'sis_clientes.fechacreacion', 'sis_clientes.fechamodificacion', 'sis_licencias.sis_licenciasid', 'sis_licencias.usuarios', 'sis_licencias.empresas', DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'), 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.numeromoviles', 'sis_licencias.numerocontrato',  'sis_licencias.modulopractico', 'sis_licencias.modulocontable', 'sis_licencias.modulocontrol')
+                $clientes = Clientes::select(
+                    'sis_clientes.sis_clientesid',
+                    'sis_clientes.identificacion',
+                    'sis_clientes.nombres',
+                    'sis_clientes.telefono1',
+                    'sis_clientes.telefono2',
+                    'sis_clientes.correos',
+                    'sis_licencias.tipo_licencia',
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaultimopago) as fechaultimopago'),
+                    DB::RAW('DATEDIFF(sis_licencias.fechacaduca,NOW()) as diasvencer'),
+                    'sis_licencias.numerocontrato',
+                    'sis_licencias.precio',
+                    'sis_licencias.periodo',
+                    'sis_licencias.producto',
+                    'sis_clientes.red_origen',
+                    'sis_clientes.sis_distribuidoresid',
+                    'sis_clientes.sis_vendedoresid',
+                    'sis_clientes.sis_revendedoresid',
+                    'sis_clientes.provinciasid',
+                    'sis_licencias.empresas',
+                    'sis_licencias.usuarios',
+                    'sis_licencias.numeroequipos',
+                    'sis_licencias.numeromoviles',
+                    'sis_clientes.usuariocreacion',
+                    'sis_clientes.usuariomodificacion',
+                    'sis_clientes.fechacreacion',
+                    'sis_clientes.fechamodificacion',
+                    'sis_licencias.modulopractico',
+                    'sis_licencias.modulocontrol',
+                    'sis_licencias.modulocontable'
+                )
                     ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->groupBy('sis_clientes.sis_clientesid')
                     ->get();
 
-                $url = 'http://localhost:8026/registros/consulta_cliente';
+                $url = 'https://perseo-data-c2.app/registros/consulta_cliente';
                 $web1 = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                     ->withOptions(["verify" => false])
                     ->post($url, ['sis_distribuidoresid' => '0'])
                     ->json();
 
-                $pc = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.tipoidentificacion', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono1', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_clientes.sis_distribuidoresid', 'sis_clientes.sis_vendedoresid', 'sis_clientes.sis_revendedoresid', 'sis_clientes.red_origen', 'sis_clientes.usuariocreacion', 'sis_clientes.usuariomodificacion', 'sis_clientes.fechacreacion', 'sis_clientes.fechamodificacion', 'sis_licencias.sis_licenciasid', 'sis_licencias.usuarios', 'sis_licencias.empresas', DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'), 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.numeromoviles', 'sis_licencias.numerocontrato',  'sis_licencias.modulopractico', 'sis_licencias.modulocontable', 'sis_licencias.modulocontrol')
+                $pc = Clientes::select(
+                    'sis_clientes.sis_clientesid',
+                    'sis_clientes.identificacion',
+                    'sis_clientes.nombres',
+                    'sis_clientes.telefono1',
+                    'sis_clientes.telefono2',
+                    'sis_clientes.correos',
+                    'sis_licencias.tipo_licencia',
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaultimopago) as fechaultimopago'),
+                    DB::RAW('DATEDIFF(sis_licencias.fechacaduca,NOW()) as diasvencer'),
+                    'sis_licencias.numerocontrato',
+                    'sis_licencias.precio',
+                    'sis_licencias.periodo',
+                    'sis_licencias.producto',
+                    'sis_clientes.red_origen',
+                    'sis_clientes.sis_distribuidoresid',
+                    'sis_clientes.sis_vendedoresid',
+                    'sis_clientes.sis_revendedoresid',
+                    'sis_clientes.provinciasid',
+                    'sis_licencias.empresas',
+                    'sis_licencias.usuarios',
+                    'sis_licencias.numeroequipos',
+                    'sis_licencias.numeromoviles',
+                    'sis_clientes.usuariocreacion',
+                    'sis_clientes.usuariomodificacion',
+                    'sis_clientes.fechacreacion',
+                    'sis_clientes.fechamodificacion',
+                    'sis_licencias.modulopractico',
+                    'sis_licencias.modulocontrol',
+                    'sis_licencias.modulocontable'
+                )
                     ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->get();
             } else {
-                $clientes = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.tipoidentificacion', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono1', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_clientes.sis_distribuidoresid', 'sis_clientes.sis_vendedoresid', 'sis_clientes.sis_revendedoresid', 'sis_clientes.red_origen', 'sis_clientes.usuariocreacion', 'sis_clientes.usuariomodificacion', 'sis_clientes.fechacreacion', 'sis_clientes.fechamodificacion', 'sis_licencias.sis_licenciasid', 'sis_licencias.usuarios', 'sis_licencias.empresas', DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'), 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.numeromoviles', 'sis_licencias.numerocontrato',  'sis_licencias.modulopractico', 'sis_licencias.modulocontable', 'sis_licencias.modulocontrol')
+                $clientes = Clientes::select(
+                    'sis_clientes.sis_clientesid',
+                    'sis_clientes.identificacion',
+                    'sis_clientes.nombres',
+                    'sis_clientes.telefono1',
+                    'sis_clientes.telefono2',
+                    'sis_clientes.correos',
+                    'sis_licencias.tipo_licencia',
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaultimopago) as fechaultimopago'),
+                    DB::RAW('DATEDIFF(sis_licencias.fechacaduca,NOW()) as diasvencer'),
+                    'sis_licencias.numerocontrato',
+                    'sis_licencias.precio',
+                    'sis_licencias.periodo',
+                    'sis_licencias.producto',
+                    'sis_clientes.red_origen',
+                    'sis_clientes.sis_distribuidoresid',
+                    'sis_clientes.sis_vendedoresid',
+                    'sis_clientes.sis_revendedoresid',
+                    'sis_clientes.provinciasid',
+                    'sis_licencias.empresas',
+                    'sis_licencias.usuarios',
+                    'sis_licencias.numeroequipos',
+                    'sis_licencias.numeromoviles',
+                    'sis_clientes.usuariocreacion',
+                    'sis_clientes.usuariomodificacion',
+                    'sis_clientes.fechacreacion',
+                    'sis_clientes.fechamodificacion',
+                    'sis_licencias.modulopractico',
+                    'sis_licencias.modulocontrol',
+                    'sis_licencias.modulocontable'
+                )
                     ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->where('sis_clientes.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)
                     ->groupBy('sis_clientes.sis_clientesid')
                     ->get();
 
-                $url = 'http://localhost:8026/registros/consulta_cliente';
+                $url = 'https://perseo-data-c2.app/registros/consulta_cliente';
                 $web1 = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                     ->withOptions(["verify" => false])
                     ->post($url, ['sis_distribuidoresid' => Auth::user()->sis_distribuidoresid])
                     ->json();
 
-                $pc = Clientes::select('sis_clientes.sis_clientesid', 'sis_clientes.tipoidentificacion', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono1', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_clientes.sis_distribuidoresid', 'sis_clientes.sis_vendedoresid', 'sis_clientes.sis_revendedoresid', 'sis_clientes.red_origen', 'sis_clientes.usuariocreacion', 'sis_clientes.usuariomodificacion', 'sis_clientes.fechacreacion', 'sis_clientes.fechamodificacion', 'sis_licencias.sis_licenciasid', 'sis_licencias.usuarios', 'sis_licencias.empresas', DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'), DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'), 'sis_licencias.tipo_licencia', 'sis_licencias.producto', 'sis_licencias.numeromoviles', 'sis_licencias.numerocontrato',  'sis_licencias.modulopractico', 'sis_licencias.modulocontable', 'sis_licencias.modulocontrol')
+                $pc = Clientes::select(
+                    'sis_clientes.sis_clientesid',
+                    'sis_clientes.identificacion',
+                    'sis_clientes.nombres',
+                    'sis_clientes.telefono1',
+                    'sis_clientes.telefono2',
+                    'sis_clientes.correos',
+                    'sis_licencias.tipo_licencia',
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'),
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaultimopago) as fechaultimopago'),
+                    DB::RAW('DATEDIFF(sis_licencias.fechacaduca,NOW()) as diasvencer'),
+                    'sis_licencias.numerocontrato',
+                    'sis_licencias.precio',
+                    'sis_licencias.periodo',
+                    'sis_licencias.producto',
+                    'sis_clientes.red_origen',
+                    'sis_clientes.sis_distribuidoresid',
+                    'sis_clientes.sis_vendedoresid',
+                    'sis_clientes.sis_revendedoresid',
+                    'sis_clientes.provinciasid',
+                    'sis_licencias.empresas',
+                    'sis_licencias.usuarios',
+                    'sis_licencias.numeroequipos',
+                    'sis_licencias.numeromoviles',
+                    'sis_clientes.usuariocreacion',
+                    'sis_clientes.usuariomodificacion',
+                    'sis_clientes.fechacreacion',
+                    'sis_clientes.fechamodificacion',
+                    'sis_licencias.modulopractico',
+                    'sis_licencias.modulocontrol',
+                    'sis_licencias.modulocontable'
+                )
                     ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->where('sis_clientes.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)
                     ->get();
@@ -96,7 +230,7 @@ class clientesController extends Controller
                         break;
                 }
 
-                //Si existe fecha en el filtro agrega condicion
+
                 if ($fecha) {
                     $desde =  strtotime(explode(" / ", $fecha)[0]);
                     $hasta =  strtotime(explode(" / ", $fecha)[1]);
@@ -143,6 +277,7 @@ class clientesController extends Controller
                         break;
                 }
             }
+            // dd($final);
 
             return DataTables::of($final)
                 ->editColumn('identificacion', function ($cliente) {
@@ -156,11 +291,29 @@ class clientesController extends Controller
                         return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '" title="Editar"> <i class="la la-edit"></i> </a>';
                     }
                 })
+                ->editColumn('sis_distribuidoresid', function ($cliente) use ($distribuidores) {
+                    $posicion = array_search($cliente['sis_distribuidoresid'], array_column($distribuidores, 'sis_distribuidoresid'));
+                    return $distribuidores[$posicion]['razonsocial'];
+                })
+                ->editColumn('sis_vendedoresid', function ($cliente) use ($vendedores) {
+                    $posicion = array_search($cliente['sis_vendedoresid'], array_column($vendedores, 'sis_revendedoresid'));
+                    return $vendedores[$posicion]['razonsocial'];
+                })
+                ->editColumn('sis_revendedoresid', function ($cliente) use ($vendedores) {
+                    $posicion = array_search($cliente['sis_revendedoresid'], array_column($vendedores, 'sis_revendedoresid'));
+                    return $vendedores[$posicion]['razonsocial'];
+                })
                 ->editColumn('fechainicia', function ($cliente) {
                     return $cliente['fechainicia'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechainicia']);
                 })
                 ->editColumn('fechacaduca', function ($cliente) {
                     return $cliente['fechacaduca'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechacaduca']);
+                })
+                ->editColumn('fechaultimopago', function ($cliente) {
+                    return $cliente['fechaultimopago'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechaultimopago']);
+                })
+                ->editColumn('fechaactulizaciones', function ($cliente) {
+                    return $cliente['fechaactulizaciones'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechaactulizaciones']);
                 })
                 ->editColumn('tipo_licencia', function ($cliente) {
                     $licencia = "";
@@ -201,6 +354,123 @@ class clientesController extends Controller
                         if ($cliente['modulopractico'] == 1) $producto = "Práctico";
                         if ($cliente['modulocontrol'] == 1) $producto = "Control";
                         if ($cliente['modulocontable'] == 1) $producto = "Contable";
+                    }
+                    return $producto;
+                })
+                ->editColumn('red_origen', function ($cliente) {
+                    $origen = "";
+                    switch ($cliente['red_origen']) {
+                        case '1':
+                            $producto = "PERSEO";
+                            break;
+                        case '2':
+                            $producto = "CONTAFACIL";
+                            break;
+                        case '3':
+                            $producto = "UIO-01";
+                            break;
+                        case '4':
+                            $producto = "GYE-01";
+                            break;
+                        case '5':
+                            $producto = "GYE-02";
+                            break;
+                        case '6':
+                            $producto = "CUE-01";
+                            break;
+                        case '7':
+                            $producto = "STO-01";
+                            break;
+                        case '8':
+                            $producto = "UIO-02";
+                            break;
+                        case '9':
+                            $producto = "GYE-03";
+                            break;
+                        case '10':
+                            $producto = "CNV-01";
+                            break;
+                        case '11':
+                            $producto = "MATRIZ";
+                            break;
+                    }
+                    return $producto;
+                })
+                ->editColumn('provinciasid', function ($cliente) {
+                    $origen = "";
+                    switch ($cliente['provinciasid']) {
+                        case '1':
+                            $producto = "AZUAY";
+                            break;
+                        case '2':
+                            $producto = "BOLIVAR";
+                            break;
+                        case '3':
+                            $producto = "CAÑAR";
+                            break;
+                        case '4':
+                            $producto = "CARCHI";
+                            break;
+                        case '5':
+                            $producto = "CHIMBORAZO";
+                            break;
+                        case '6':
+                            $producto = "COTOPAXI";
+                            break;
+                        case '7':
+                            $producto = "EL ORO";
+                            break;
+                        case '8':
+                            $producto = "ESMERALDAS";
+                            break;
+                        case '9':
+                            $producto = "GUAYAS";
+                            break;
+                        case '10':
+                            $producto = "IMBABURA";
+                            break;
+                        case '11':
+                            $producto = "LOJA";
+                            break;
+                        case '12':
+                            $producto = "LOS RIOS";
+                            break;
+                        case '13':
+                            $producto = "MANABI";
+                            break;
+                        case '14':
+                            $producto = "MORONA SANTIAGO";
+                            break;
+                        case '15':
+                            $producto = "NAPO";
+                            break;
+                        case '16':
+                            $producto = "PASTAZA";
+                            break;
+                        case '17':
+                            $producto = "PICHINCHA";
+                            break;
+                        case '18':
+                            $producto = "TUNGURAHUA";
+                            break;
+                        case '19':
+                            $producto = "ZAMORA CHINCHIPE";
+                            break;
+                        case '20':
+                            $producto = "GALAPAGOS";
+                            break;
+                        case '21':
+                            $producto = "SUCUMBIOS";
+                            break;
+                        case '22':
+                            $producto = "ORELLANA";
+                            break;
+                        case '23':
+                            $producto = "SANTO DOMINGO DE LOS TSACHILAS";
+                            break;
+                        case '24':
+                            $producto = "SANTA ELENA";
+                            break;
                     }
                     return $producto;
                 })
@@ -258,7 +528,7 @@ class clientesController extends Controller
         $request['fechacreacion'] = now();
         $request['usuariocreacion'] = Auth::user()->nombres;
 
-        $url = 'http://localhost:8026/registros/crear_clientes';
+        $url = 'https://perseo-data-c2.app/registros/crear_clientes';
 
         DB::beginTransaction();
         try {
@@ -336,7 +606,7 @@ class clientesController extends Controller
             ],
         );
 
-        $urlEditar = 'http://localhost:8026/registros/editar_clientes';
+        $urlEditar = 'https://perseo-data-c2.app/registros/editar_clientes';
 
         DB::beginTransaction();
         try {
@@ -381,7 +651,7 @@ class clientesController extends Controller
         DB::beginTransaction();
         try {
             $buscarLicencias = Licencias::where('sis_clientesid', $cliente->sis_clientesid)->get();
-            $url = 'http://localhost:8026/registros/eliminar_cliente';
+            $url = 'https://perseo-data-c2.app/registros/eliminar_cliente';
             $eliminarCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
                 ->withOptions(["verify" => false])
                 ->post($url, ["sis_clientesid" => $cliente->sis_clientesid])

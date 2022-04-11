@@ -318,9 +318,9 @@
                                                                 Producción
                                                             </li>
                                                         @endif
-                                                        @if ($array['modulos'][0]->restaurantes != false)
+                                                        @if ($array['modulos'][0]->restaurante != false)
                                                             <li style="margin-top: 5px ">
-                                                                Restaurantes
+                                                                Restaurante
                                                             </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->talleres != false)

@@ -62,7 +62,7 @@
         
         $.ajax({
             type:"GET",
-            url: '/revendedoresDistribuidor/' + distribuidor + '/2',
+            url: '/revendedoresdistribuidor/' + distribuidor + '/2',
             success: function(data){
                 $.each(data, function(fetch, vendedor){
                     for(i = 0; i < vendedor.length; i++){
@@ -73,7 +73,7 @@
         });
         $.ajax({
             type:"GET",
-            url: '/revendedoresDistribuidor/' + distribuidor + '/1',
+            url: '/revendedoresdistribuidor/' + distribuidor + '/1',
             success: function(data){
                 $.each(data, function(fetch, vendedor){
                     for(i = 0; i < vendedor.length; i++){

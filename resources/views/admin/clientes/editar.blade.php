@@ -83,12 +83,12 @@
                                 <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="">
                                     <div class="btn-group" role="group" aria-label="First group">
                                         @if (Auth::user()->tipo==1 || Auth::user()->tipo==2)
-                                        <a href="{{ route('licencias.web.crear',$cliente->sis_clientesid) }}"
+                                        <a href="{{ route('licencias.Web.crear',$cliente->sis_clientesid) }}"
                                             class="btn btn-primary btn-icon" data-toggle="tooltip" title="Nuevo Web"><i
                                                 class="la la-cloud"></i></a>
                                         @endif
                                         @if (Auth::user()->tipo!=4)
-                                        <a href="{{ route('licencias.pc.crear',$cliente->sis_clientesid) }}"
+                                        <a href="{{ route('licencias.Pc.crear',$cliente->sis_clientesid) }}"
                                             class="btn btn-warning btn-icon" data-toggle="tooltip" title="Nuevo PC"><i
                                                 class="la la-tv"></i></a>
                                         @endif
@@ -103,6 +103,7 @@
                                 <thead>
                                     <tr>
                                         <th class="no-exportar">#</th>
+                                        <th class="no-exportar">Servidor</th>
                                         <th data-priority="1">Contrato</th>
                                         <th data-priority="2">Tipo</th>
                                         <th>Fecha Caduca</th>
@@ -143,7 +144,7 @@
 
         $.ajax({
             type:"GET",
-            url: '/revendedoresDistribuidor/' + distribuidor + '/2',
+            url: '/revendedoresdistribuidor/' + distribuidor + '/2',
             success: function(data){
                 $.each(data, function(fetch, vendedor){
                     for(i = 0; i < vendedor.length; i++){
@@ -156,7 +157,7 @@
         });
         $.ajax({
             type:"GET",
-            url: '/revendedoresDistribuidor/' + distribuidor + '/1',
+            url: '/revendedoresdistribuidor/' + distribuidor + '/1',
             success: function(data){
                 $.each(data, function(fetch, vendedor){
                     for(i = 0; i < vendedor.length; i++){
@@ -185,7 +186,7 @@
             //Orden inicial
             order: [[ 0, 'asc' ]],
             //Guardar pagina, busqueda, etc
-            stateSave: true,
+            stateSave: false,
             //Trabajar del lado del server
             serverSide: true,
             //Peticion ajax que devuelve los registros
@@ -193,6 +194,7 @@
             //Columnas de la tabla (Debe contener misma cantidad que thead)
             columns: [
                 {data: 'sis_licenciasid', name: 'sis_licenciasid',visible:false},
+                {data: 'sis_servidoresid', name: 'sis_servidoresid',visible:false},
                 {data: 'numerocontrato', name: 'numerocontrato'},
                 {data: 'tipo_licencia', name: 'tipo_licencia'},
                 {data: 'fechacaduca', name: 'fechacaduca'},

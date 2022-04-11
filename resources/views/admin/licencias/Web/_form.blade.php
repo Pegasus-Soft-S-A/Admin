@@ -15,8 +15,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         <input type="hidden" name="tipo" id="tipo">
         <input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
         <label>Numero Contrato:</label>
-        <input type="text"
-            class="form-control @if($rol!=1) disabled @endif {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
+        <input type="text" class="form-control disabled {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
             placeholder="Contrato" name="numerocontrato" autocomplete="off" id="numerocontrato"
             value="{{ old('numerocontrato', $licencia->numerocontrato) }}" />
         @if ($errors->has('numerocontrato'))
@@ -25,7 +24,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
     </div>
     <div class="col-lg-6">
         <label>Producto:</label>
-        <select class="form-control @if($rol!=1) disabled @endif" name="producto" id="producto">
+        <select class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif" name="producto" id="producto">
             <option value="2" {{ old('producto', $licencia->producto) == '2' ? 'Selected': '' }}>Facturación</option>
             <option value="3" {{ old('producto', $licencia->producto) == '3' ? 'Selected': '' }}>Servicios</option>
             <option value="4" {{ old('producto', $licencia->producto) == '4' ? 'Selected': '' }}>Comercial</option>
@@ -44,7 +43,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
     <div class="col-lg-6">
         <label>Periodo:</label>
         <div class="input-group">
-            <select class="form-control @if($rol!=1) disabled @endif" name="periodo" id="periodo">
+            <select class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif" name="periodo"
+                id="periodo">
                 <option value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected': '' }}>Mensual</option>
                 <option value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected': '' }}>Anual</option>
             </select>
@@ -134,6 +134,23 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             value="{{ old('numerosucursales', $licencia->numerosucursales) }}" />
         @if ($errors->has('numerosucursales'))
         <span class="text-danger">{{ $errors->first('numerosucursales') }}</span>
+        @endif
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-lg-6">
+        <label>Servidor:</label>
+        <select class="form-control @if($accion=='Modificar') disabled @endif" name="sis_servidoresid"
+            id="sis_servidoresid">
+            @foreach ($servidores as $servidor)
+            <option value="{{ $servidor->sis_servidoresid }}" {{ $servidor->sis_servidoresid ==
+                $licencia->sis_servidoresid ? 'selected' : '' }}>
+                {{ $servidor->descripcion }}
+            </option>
+            @endforeach
+        </select>
+        @if ($errors->has('sis_servidoresid'))
+        <span class="text-danger">{{ $errors->first('sis_servidoresid') }}</span>
         @endif
     </div>
 </div>

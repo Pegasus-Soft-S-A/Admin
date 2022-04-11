@@ -5,6 +5,7 @@ use App\Http\Controllers\clientesController;
 use App\Http\Controllers\distribuidoresController;
 use App\Http\Controllers\licenciasController;
 use App\Http\Controllers\revendedoresController;
+use App\Http\Controllers\servidoresController;
 use App\Http\Controllers\usuariosController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/menu', [adminController::class, 'cambiarMenu'])->name('cambiarMenu');
     Route::get('/subcategorias', [adminController::class, 'subcategorias'])->name('subcategorias');
     Route::get('/productos/{tipo}', [adminController::class, 'productos'])->name('productos');
+    Route::get('/migrar', [adminController::class, 'migrar'])->name('migrar');
+    Route::get('/licencia/{servidor}/{cliente}', [adminController::class, 'licencia'])->name('licencia');
 
     /* Clientes */
     Route::get('/clientes', [clientesController::class, 'index'])->name('clientes.index');
@@ -33,17 +36,17 @@ Route::group(['middleware' => 'auth'], function () {
 
     /* Licencias */
     Route::get('/licencias/{cliente}', [licenciasController::class, 'index'])->name('licencias.index');
-    Route::get('/licencias/{cliente}/crearWeb', [licenciasController::class, 'crearWeb'])->name('licencias.web.crear');
-    Route::get('/licencias/{cliente}/crearPC', [licenciasController::class, 'crearPC'])->name('licencias.pc.crear');
-    Route::post('/licenciasPC', [licenciasController::class, 'guardarPC'])->name('licencias.pc.guardar');
-    Route::post('/licenciasWeb', [licenciasController::class, 'guardarWeb'])->name('licencias.web.guardar');
-    Route::get('/licencias/editarWeb/{cliente}/{licencia}', [licenciasController::class, 'editarWeb'])->name('licencias.web.editar');
-    Route::get('/licencias/editarPC/{cliente}/{licencia}', [licenciasController::class, 'editarPC'])->name('licencias.pc.editar');
-    Route::put('/licenciasPC/{licencia}', [licenciasController::class, 'actualizarPC'])->name('licencias.pc.actualizar');
-    Route::put('/licenciasWeb/{licencia}', [licenciasController::class, 'actualizarWeb'])->name('licencias.web.actualizar');
-    Route::delete('/licencias/eliminarPC/{licencia}', [licenciasController::class, 'eliminarPC'])->name('licencias.pc.eliminar');
-    Route::delete('/licencias/eliminarWeb/{licencia}', [licenciasController::class, 'eliminarWeb'])->name('licencias.web.eliminar');
-    Route::get('/email/{cliente}', [licenciasController::class, 'enviarEmail'])->name('licencias.web.enviarEmail');
+    Route::get('/licencias/{cliente}/crearweb', [licenciasController::class, 'crearWeb'])->name('licencias.Web.crear');
+    Route::get('/licencias/{cliente}/crearpc', [licenciasController::class, 'crearPC'])->name('licencias.Pc.crear');
+    Route::post('/licenciaspc', [licenciasController::class, 'guardarPC'])->name('licencias.Pc.guardar');
+    Route::post('/licenciasweb', [licenciasController::class, 'guardarWeb'])->name('licencias.Web.guardar');
+    Route::get('/licencias/editarweb/{cliente}/{servidor}/{licencia}', [licenciasController::class, 'editarWeb'])->name('licencias.Web.editar');
+    Route::get('/licencias/editarpc/{cliente}/{licencia}', [licenciasController::class, 'editarPC'])->name('licencias.Pc.editar');
+    Route::put('/licenciaspc/{licencia}', [licenciasController::class, 'actualizarPC'])->name('licencias.Pc.actualizar');
+    Route::put('/licenciasweb/{servidor}/{licencia}', [licenciasController::class, 'actualizarWeb'])->name('licencias.Web.actualizar');
+    Route::delete('/licencias/eliminarpc/{licencia}', [licenciasController::class, 'eliminarPC'])->name('licencias.Pc.eliminar');
+    Route::delete('/licencias/eliminarweb/{servidor}/{licencia}', [licenciasController::class, 'eliminarWeb'])->name('licencias.Web.eliminar');
+    Route::get('/email/{cliente}', [licenciasController::class, 'enviarEmail'])->name('licencias.Web.enviaremail');
 
     /* Distribuidores */
     Route::get('/distribuidores', [distribuidoresController::class, 'index'])->name('distribuidores.index');
@@ -55,18 +58,26 @@ Route::group(['middleware' => 'auth'], function () {
 
     /* Revendedores */
     Route::get('/revendedores', [revendedoresController::class, 'index'])->name('revendedores.index');
-    Route::get('/revendedoresDistribuidor/{distribuidor}/{tipo}', [revendedoresController::class, 'revendedoresDistribuidor'])->name('revendedoresDistribuidor');
-    Route::get('/revendedoresCrear', [revendedoresController::class, 'crear'])->name('revendedores.crear');
-    Route::post('/revendedoresGuardar', [revendedoresController::class, 'guardar'])->name('revendedores.guardar');
-    Route::get('/revendedoresEditar/{revendedor}', [revendedoresController::class, 'editar'])->name('revendedores.editar');
-    Route::put('/revendedoresActualizar/{revendedor}', [revendedoresController::class, 'actualizar'])->name('revendedores.actualizar');
-    Route::delete('/revendedoresEliminar/{revendedor}', [revendedoresController::class, 'eliminar'])->name('revendedores.eliminar');
+    Route::get('/revendedoresdistribuidor/{distribuidor}/{tipo}', [revendedoresController::class, 'revendedoresDistribuidor'])->name('revendedoresDistribuidor');
+    Route::get('/revendedorescrear', [revendedoresController::class, 'crear'])->name('revendedores.crear');
+    Route::post('/revendedoresguardar', [revendedoresController::class, 'guardar'])->name('revendedores.guardar');
+    Route::get('/revendedoreseditar/{revendedor}', [revendedoresController::class, 'editar'])->name('revendedores.editar');
+    Route::put('/revendedoresactualizar/{revendedor}', [revendedoresController::class, 'actualizar'])->name('revendedores.actualizar');
+    Route::delete('/revendedoreseliminar/{revendedor}', [revendedoresController::class, 'eliminar'])->name('revendedores.eliminar');
 
     /* Usuarios */
     Route::get('/usuarios', [usuariosController::class, 'index'])->name('usuarios.index');
-    Route::get('/usuariosCrear', [usuariosController::class, 'crear'])->name('usuarios.crear');
-    Route::post('/usuariosGuardar', [usuariosController::class, 'guardar'])->name('usuarios.guardar');
-    Route::get('/usuariosEditar/{usuarios}', [usuariosController::class, 'editar'])->name('usuarios.editar');
-    Route::put('/usuariosActualizar/{usuarios}', [usuariosController::class, 'actualizar'])->name('usuarios.actualizar');
-    Route::delete('/usuariosEliminar/{usuarios}', [usuariosController::class, 'eliminar'])->name('usuarios.eliminar');
+    Route::get('/usuarioscrear', [usuariosController::class, 'crear'])->name('usuarios.crear');
+    Route::post('/usuariosguardar', [usuariosController::class, 'guardar'])->name('usuarios.guardar');
+    Route::get('/usuarioseditar/{usuarios}', [usuariosController::class, 'editar'])->name('usuarios.editar');
+    Route::put('/usuariosactualizar/{usuarios}', [usuariosController::class, 'actualizar'])->name('usuarios.actualizar');
+    Route::delete('/usuarioseliminar/{usuarios}', [usuariosController::class, 'eliminar'])->name('usuarios.eliminar');
+
+    /* Servidores */
+    Route::get('/servidores', [servidoresController::class, 'index'])->name('servidores.index');
+    Route::get('/servidorescrear', [servidoresController::class, 'crear'])->name('servidores.crear');
+    Route::post('/servidoresguardar', [servidoresController::class, 'guardar'])->name('servidores.guardar');
+    Route::get('/servidoreseditar/{servidores}', [servidoresController::class, 'editar'])->name('servidores.editar');
+    Route::put('/servidoresactualizar/{servidores}', [servidoresController::class, 'actualizar'])->name('servidores.actualizar');
+    Route::delete('/servidoreseliminar/{servidores}', [servidoresController::class, 'eliminar'])->name('servidores.eliminar');
 });
