@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -18,6 +19,56 @@ class adminController extends Controller
     public function login()
     {
         return view('admin.auth.login');
+    }
+
+    public function loginRedireccion()
+    {
+        return view('admin.auth.loginredireccion');
+    }
+
+    public function post_loginRedireccion(Request $request)
+    {
+        $identificacionIngresada = substr($request->identificacion, 0, 10);
+        $usuario = Clientes::select('sis_clientesid')->where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->first();
+        $url = 'https://perseo-data-c2.app/registros/consulta_licencia';
+        $url2 = 'https://perseo-data-c2.app/registros/consulta_licencia';
+        $verificarApiLicencias = 0;
+
+        if ($usuario) {
+            $var = 0;
+            $var2 = 0;
+
+            $verificarApiLicencias =   Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+                ->withOptions(["verify" => false])
+                ->post($url, ['sis_clientesid' => $usuario->sis_clientesid])
+                ->json();
+
+            $verificarApiLicencias2 =   Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+                ->withOptions(["verify" => false])
+                ->post($url, ['sis_clientesid' => 200])
+                ->json();
+
+            if (isset($verificarApiLicencias['licencias'])) {
+                $var = 1;
+            }
+            if (isset($verificarApiLicencias2['licencias'])) {
+                $var2 = 2;
+            }
+            $server1 = Servidores::where('sis_servidoresid', 1)->first();
+            $server2 = Servidores::where('sis_servidoresid', 2)->first();
+
+            if ($var == 1 && $var2 == 2) {
+
+                return [$server1, $server2];
+            } elseif ($var == 1) {
+
+                return [$server1];
+            } elseif ($var == 2) {
+                return [$server2];
+            }
+        } else {
+            return 'a';
+        }
     }
 
     public function migrar()
@@ -31,18 +82,43 @@ class adminController extends Controller
     {
         $servidor = Servidores::where('sis_servidoresid', $servidorid)->first();
         $url = $servidor->dominio . '/registros/consulta_licencia';
-        $licencia = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+        $licencias = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
             ->withOptions(["verify" => false])
             ->post($url, ['sis_clientesid' => $clienteid])
             ->json();
 
-        if (!isset($licencia["licencias"])) {
-            $licencia = ['licencias' => ['sis_licenciasid' => 0, 'numerocontrato' => 'Cliente sin Licencia']];
+        if (isset($licencias["licencias"])) {
+            foreach ($licencias["licencias"] as $key => $licencia) {
+                switch ($licencia['producto']) {
+                    case '2':
+                        $producto = "Facturación";
+                        break;
+                    case '3':
+                        $producto = "Servicios";
+                        break;
+                    case '4':
+                        $producto = "Comercial";
+                        break;
+                    case '5':
+                        $producto = "Soy Contador Comercial";
+                        break;
+                    case '6':
+                        $producto = "Perseo Lite";
+                        break;
+                    case '7':
+                        $producto = "Total";
+                        break;
+                    case '8':
+                        $producto = "Soy Contador Servicios";
+                        break;
+                }
+                $licencias["licencias"][$key]['producto'] = $producto;
+            }
+        } else {
+            $licencias = ['licencias' => [['sis_licenciasid' => 0, 'numerocontrato' => 'Cliente sin Licencia', 'producto' => '']]];
         }
-
-        return with(["licencia" => $licencia["licencias"]]);
+        return with(["licencia" => $licencias["licencias"]]);
     }
-
 
     public function post_login(Request $request)
     {

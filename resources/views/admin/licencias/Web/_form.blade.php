@@ -354,7 +354,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     break;
                 }
 
-                $('#periodo').prop( "disabled", false );
+                $('#periodo').removeClass( "disabled");
                 $('#usuarios').val('3');
                 $('#numeromoviles').val('1');
                 $('#ecommerce').prop('checked', false);
@@ -378,7 +378,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     break;
                 }
 
-                $('#periodo').prop( "disabled", false );
+                $('#periodo').removeClass( "disabled");
                 $('#usuarios').val('6');
                 $('#numeromoviles').val('2');
                 $('#ecommerce').prop('checked', false);
@@ -404,7 +404,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     break;
                 }
 
-                $('#periodo').prop( "disabled", false );
+                $('#periodo').removeClass( "disabled");
                 $('#usuarios').val('6');
                 $('#numeromoviles').val('2');
                 $('#ecommerce').prop('checked', true);
@@ -427,7 +427,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     break;
                 }
 
-                $('#periodo').prop( "disabled", false );
+                $('#periodo').removeClass( "disabled");
                 $('#usuarios').val('6');
                 $('#numeromoviles').val('0');
                 $('#ecommerce').prop('checked', false);
@@ -443,7 +443,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 fecha.setMonth(fecha.getMonth() + 12);
                 $('#precio').val('0');
                 $('#periodo').val('1');
-                $('#periodo').prop( "disabled", true );
+                $('#periodo').addClass( "disabled");
                 $('#usuarios').val('3');
                 $('#numeromoviles').val('1');
                 $('#ecommerce').prop('checked', false);
@@ -467,7 +467,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     break;
                 }
 
-                $('#periodo').prop( "disabled", false );
+                $('#periodo').removeClass( "disabled");
                 $('#usuarios').val('3');
                 $('#numeromoviles').val('0');
                 $('#ecommerce').prop('checked', false);

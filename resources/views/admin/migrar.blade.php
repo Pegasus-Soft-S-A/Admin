@@ -1,5 +1,12 @@
 @extends('admin.layouts.app')
 @section('contenido')
+<style>
+    .disabled {
+        pointer-events: none;
+        opacity: 1;
+        background-color: #F3F6F9;
+    }
+</style>
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
     <div class="d-flex flex-column-fluid">
         <div class="container-fluid">
@@ -21,7 +28,7 @@
                                     <div class="col-lg-12">
                                         <label>Cliente:</label>
                                         <select class="form-control select2" id="sis_clientesid" name="sis_clientesid">
-                                            <option value="">
+                                            <option value="0">
                                                 Seleccione un cliente
                                             </option>
                                             @foreach ($clientes as $cliente)
@@ -35,8 +42,8 @@
                                 <div class="form-group row">
                                     <div class="col-lg-6">
                                         <label>Servidor Origen:</label>
-                                        <select class="form-control" id="servidororigen" name="servidororigen">
-                                            <option value="">
+                                        <select class="form-control disabled" id="servidororigen" name="servidororigen">
+                                            <option value="0">
                                                 Seleccione Servidor
                                             </option>
                                             @foreach ($servidores as $servidor)
@@ -48,8 +55,8 @@
                                     </div>
                                     <div class="col-lg-6">
                                         <label>Licencia Origen:</label>
-                                        <select class="form-control" id="licenciaorigen" name="licenciaorigen">
-                                            <option value="">
+                                        <select class="form-control disabled" id="licenciaorigen" name="licenciaorigen">
+                                            <option value="0">
                                                 Seleccione Licencia
                                             </option>
                                         </select>
@@ -58,8 +65,9 @@
                                 <div class="form-group row">
                                     <div class="col-lg-6">
                                         <label>Servidor Destino:</label>
-                                        <select class="form-control" id="servidorodestino" name="servidorodestino">
-                                            <option value="">
+                                        <select class="form-control disabled" id="servidordestino"
+                                            name="servidorodestino">
+                                            <option value="0">
                                                 Seleccione Servidor
                                             </option>
                                             @foreach ($servidores as $servidor)
@@ -71,8 +79,9 @@
                                     </div>
                                     <div class="col-lg-6">
                                         <label>Licencia Destino:</label>
-                                        <select class="form-control" id="licenciaodestino" name="licenciaodestino">
-                                            <option value="">
+                                        <select class="form-control disabled" id="licenciadestino"
+                                            name="licenciaodestino">
+                                            <option value="0">
                                                 Seleccione Licencia
                                             </option>
                                         </select>
@@ -96,24 +105,62 @@
 @section('script')
 <script>
     $('#servidororigen').on('change', function(e){
-
-        var servidororigen = e.target.value;
-        var cliente = $('#sis_clientesid').val();
-
         $('#licenciaorigen').empty();
-        //$('#licenciaorigen').append('<option value="">Seleccione Licencia</option>');
-        
+        if($('#servidororigen').val()==0){
+            $('#licenciaorigen').addClass( "disabled");
+            $('#licenciaorigen').append('<option value="0">Seleccione Licencia</option>');
+        }else{  
+            $('#licenciaorigen').removeClass( "disabled");
+            llenarLicencias($('#servidororigen').val(),1);
+        }
+    });
+
+    $('#servidordestino').on('change', function(e){
+        $('#licenciadestino').empty();
+        if($('#servidordestino').val()==0){
+            $('#licenciadestino').addClass( "disabled");
+            $('#licenciadestino').append('<option value="0">Seleccione Licencia</option>');
+        }else{  
+            $('#licenciadestino').removeClass( "disabled");
+            llenarLicencias($('#servidordestino').val(),2);
+        }
+    });
+
+    $('#sis_clientesid').on('change', function(e){
+        if($('#sis_clientesid').val()!=0){
+            $('#servidororigen').removeClass( "disabled");
+            $('#servidordestino').removeClass( "disabled");
+        }else{
+            $('#servidororigen').addClass( "disabled");
+            $('#licenciaorigen').addClass( "disabled");
+            $('#servidordestino').addClass( "disabled");
+            $('#licenciadestino').addClass( "disabled");
+        }
+        $('#servidororigen').val(0);
+        $('#licenciaorigen').empty();
+        $('#licenciaorigen').append('<option value="0">Seleccione Licencia</option>'); 
+        $('#servidordestino').val(0);
+        $('#licenciadestino').empty();
+        $('#licenciadestino').append('<option value="0">Seleccione Licencia</option>');  
+    });
+
+    function llenarLicencias(servidor,tipo){
+
         $.ajax({
             type:"GET",
-            url: '/licencia/' + servidororigen + '/' + cliente,
+            url: '/licencia/' + servidor + '/' + $('#sis_clientesid').val(),
             success: function(data){
                 $.each(data, function(fetch, licencia){
                     for(i = 0; i < licencia.length; i++){
-                    $('#licenciaorigen').append('<option value="'+ licencia[i].sis_licenciasid +'">'+ licencia[i].numerocontrato +'</option>');
+                        if(tipo==1){
+                            $('#licenciaorigen').append('<option value="'+ licencia[i].sis_licenciasid +'">'+ licencia[i].numerocontrato + '-' + licencia[i].producto +'</option>');
+                        }else{
+                            $('#licenciadestino').append('<option value="'+ licencia[i].sis_licenciasid +'">'+ licencia[i].numerocontrato + '-' + licencia[i].producto +'</option>');
+                        }
                     }
                 })
             }
         });
-    });
+    }
 </script>
 @endsection

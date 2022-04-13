@@ -341,7 +341,7 @@ class clientesController extends Controller
                                 $producto = "Soy Contador Comercial";
                                 break;
                             case '6':
-                                $producto = "Demo";
+                                $producto = "Perseo Lite";
                                 break;
                             case '7':
                                 $producto = "Total";

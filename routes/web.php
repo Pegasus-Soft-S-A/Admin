@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [adminController::class, 'login']);
 Route::get('/login', [adminController::class, 'login'])->name('login');
 Route::post('/login', [adminController::class, 'post_login'])->name('post_login');
+Route::get('/loginredireccion', [adminController::class, 'loginRedireccion'])->name('loginredireccion');
+Route::post('/loginredireccion', [adminController::class, 'post_loginRedireccion'])->name('post_loginredireccion');
 
 Route::group(['middleware' => 'auth'], function () {
 

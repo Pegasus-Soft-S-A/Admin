@@ -220,24 +220,24 @@
                                         <th data-priority="1">Identificación</th>
                                         <th data-priority="2">Nombres</th>
                                         <th>Celular</th>
-                                        <th>Correos</th>
+                                        <th style="display:none">Correos</th>
                                         <th data-priority="3">Tipo</th>
                                         <th data-priority="4">Producto</th>
                                         <th data-priority="5">Inicia</th>
                                         <th data-priority="6">Caduca</th>
-                                        <th>Dias Hasta Vencer</th>
-                                        <th>Precio</th>
-                                        <th>Periodo</th>
-                                        <th>Producto</th>
-                                        <th>Fecha Ultimo Pago</th>
-                                        <th>Fecha Actualizaciones</th>
-                                        <th>Distribuidor</th>
-                                        <th>Vendedor</th>
-                                        <th>Revendedor</th>
+                                        <th style="display:none">Dias Hasta Vencer</th>
+                                        <th style="display:none">Precio</th>
+                                        <th style="display:none">Periodo</th>
+                                        <th style="display:none">Producto</th>
+                                        <th style="display:none">Fecha Ultimo Pago</th>
+                                        <th style="display:none">Fecha Actualizaciones</th>
+                                        <th style="display:none">Distribuidor</th>
+                                        <th style="display:none">Vendedor</th>
+                                        <th style="display:none">Revendedor</th>
 
-                                        <th>Usuarios</th>
-                                        <th>Empresas</th>
-                                        <th>Móviles</th>
+                                        <th style="display:none">Usuarios</th>
+                                        <th style="display:none">Empresas</th>
+                                        <th style="display:none">Móviles</th>
                                         <th class="no-exportar">Acciones</th>
                                     </tr>
                                 </thead>
