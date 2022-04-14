@@ -28,6 +28,9 @@
                                                     class="la la-long-arrow-left"></i></a>
 
                                             @if (Auth::user()->tipo==1)
+                                            <a class="btn btn-danger btn-icon confirm-delete" href="javascript:void(0)"
+                                                data-href="{{route('clientes.eliminar', $cliente->sis_clientesid)}}"
+                                                data-toggle="tooltip" title="Eliminar"> <i class="la la-trash"></i> </a>
                                             <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip"
                                                 title="Guardar"><i class="la la-save"></i></button>
                                             @endif
@@ -144,7 +147,7 @@
 
         $.ajax({
             type:"GET",
-            url: '/revendedoresdistribuidor/' + distribuidor + '/2',
+            url: '/admin/revendedoresdistribuidor/' + distribuidor + '/2',
             success: function(data){
                 $.each(data, function(fetch, vendedor){
                     for(i = 0; i < vendedor.length; i++){
@@ -157,7 +160,7 @@
         });
         $.ajax({
             type:"GET",
-            url: '/revendedoresdistribuidor/' + distribuidor + '/1',
+            url: '/admin/revendedoresdistribuidor/' + distribuidor + '/1',
             success: function(data){
                 $.each(data, function(fetch, vendedor){
                     for(i = 0; i < vendedor.length; i++){
@@ -214,7 +217,7 @@
 
         $.ajax({
             type:"GET",
-            url: '/revendedoresDistribuidor/' + distribuidor + '/2',
+            url: '/admin/revendedoresdistribuidor/' + distribuidor + '/2',
             success: function(data){
                 $.each(data, function(fetch, vendedor){
                     for(i = 0; i < vendedor.length; i++){
@@ -225,7 +228,7 @@
         });
         $.ajax({
             type:"GET",
-            url: '/revendedoresDistribuidor/' + distribuidor + '/1',
+            url: '/admin/revendedoresdistribuidor/' + distribuidor + '/1',
             success: function(data){
                 $.each(data, function(fetch, vendedor){
                     for(i = 0; i < vendedor.length; i++){

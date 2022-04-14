@@ -30,47 +30,33 @@ class adminController extends Controller
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
         $usuario = Clientes::select('sis_clientesid')->where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->first();
-        $url = 'https://perseo-data-c2.app/registros/consulta_licencia';
-        $url2 = 'https://perseo-data-c2.app/registros/consulta_licencia';
-        $verificarApiLicencias = 0;
+        $servidores = Servidores::all();
+        $web = [];
+        $array = [];
 
         if ($usuario) {
-            $var = 0;
-            $var2 = 0;
+            foreach ($servidores as  $servidor) {
+                $url = $servidor->dominio . '/registros/consulta_licencia';
+                $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                    ->withOptions(["verify" => false])
+                    ->post($url, ['sis_clientesid' => $usuario->sis_clientesid])
+                    ->json();
 
-            $verificarApiLicencias =   Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-                ->withOptions(["verify" => false])
-                ->post($url, ['sis_clientesid' => $usuario->sis_clientesid])
-                ->json();
+                if (isset($resultado['licencias'])) {
+                    $web = array_merge($web, $resultado['licencias']);
 
-            $verificarApiLicencias2 =   Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-                ->withOptions(["verify" => false])
-                ->post($url, ['sis_clientesid' => 200])
-                ->json();
-
-            if (isset($verificarApiLicencias['licencias'])) {
-                $var = 1;
+                    $array = ["descripcion" => $servidor->descripcion, "dominio" => $servidor->dominio];
+                }
             }
-            if (isset($verificarApiLicencias2['licencias'])) {
-                $var2 = 2;
-            }
-            $server1 = Servidores::where('sis_servidoresid', 1)->first();
-            $server2 = Servidores::where('sis_servidoresid', 2)->first();
-
-            if ($var == 1 && $var2 == 2) {
-
-                return [$server1, $server2];
-            } elseif ($var == 1) {
-
-                return [$server1];
-            } elseif ($var == 2) {
-                return [$server2];
+            if (count($array) > 0) {
+                return $array;
+            } else {
+                return 0;
             }
         } else {
             return 'a';
         }
     }
-
     public function migrar()
     {
         $clientes = Clientes::all();
@@ -250,5 +236,38 @@ class adminController extends Controller
         }
 
         return with(["producto" => $producto]);
+    }
+
+    public function publicidad()
+    {
+        return view('admin.publicidad.crear');
+    }
+
+    public function publicidadGuardar(Request $request)
+    {
+        $request->validate(
+            [
+                'imagen' => 'required',
+            ],
+            [
+                'imagen.required' => 'Ingrese una imagen ',
+            ],
+        );
+
+
+        if ($request->Hasfile('imagen')) {
+
+            $imagen = $request->file("imagen");
+            $ruta = public_path("assets/media/");
+
+            if (copy($imagen->getRealPath(), $ruta . 'login-fondo.png')) {
+                $imagen = 'login-fondo.png';
+                flash('Imagen Guardada Correctamente')->success();
+                return back();
+            } else {
+                flash('Ocurrió un error, vuelva a intentarlo')->warning();
+                return back();
+            }
+        }
     }
 }

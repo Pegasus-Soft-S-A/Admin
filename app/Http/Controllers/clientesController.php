@@ -7,6 +7,7 @@ use App\Models\Distribuidores;
 use App\Models\Licencias;
 use App\Models\Log;
 use App\Models\Revendedores;
+use App\Models\Servidores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,9 @@ class clientesController extends Controller
 
     public function cargarTabla(Request $request)
     {
+        $servidores = Servidores::where('estado', 1)->get();
+        $web = [];
+
         if ($request->ajax()) {
 
             $tipo = $request->tipofecha;
@@ -81,11 +85,16 @@ class clientesController extends Controller
                     ->groupBy('sis_clientes.sis_clientesid')
                     ->get();
 
-                $url = 'https://perseo-data-c2.app/registros/consulta_cliente';
-                $web1 = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($url, ['sis_distribuidoresid' => '0'])
-                    ->json();
+                foreach ($servidores as  $servidor) {
+                    $url = $servidor->dominio . '/registros/consulta_cliente';
+                    $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                        ->withOptions(["verify" => false])
+                        ->post($url, ['sis_distribuidoresid' => '0'])
+                        ->json();
+                    if (isset($resultado['registro'])) {
+                        $web = array_merge($web, $resultado['registro']);
+                    }
+                }
 
                 $pc = Clientes::select(
                     'sis_clientes.sis_clientesid',
@@ -163,11 +172,16 @@ class clientesController extends Controller
                     ->groupBy('sis_clientes.sis_clientesid')
                     ->get();
 
-                $url = 'https://perseo-data-c2.app/registros/consulta_cliente';
-                $web1 = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($url, ['sis_distribuidoresid' => Auth::user()->sis_distribuidoresid])
-                    ->json();
+                foreach ($servidores as  $servidor) {
+                    $url = $servidor->dominio . '/registros/consulta_cliente';
+                    $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                        ->withOptions(["verify" => false])
+                        ->post($url, ['sis_distribuidoresid' => Auth::user()->sis_distribuidoresid])
+                        ->json();
+                    if (isset($resultado['registro'])) {
+                        $web = array_merge($web, $resultado['registro']);
+                    }
+                }
 
                 $pc = Clientes::select(
                     'sis_clientes.sis_clientesid',
@@ -208,9 +222,9 @@ class clientesController extends Controller
                     ->get();
             }
 
-            $diferencia = removeDuplicate($clientes->toArray(), $web1['registro'], $pc->toArray(), 'sis_clientesid');
+            $diferencia = removeDuplicate($clientes->toArray(), $web, $pc->toArray(), 'sis_clientesid');
 
-            $unir = array_merge($web1['registro'], $pc->toArray());
+            $unir = array_merge($web, $pc->toArray());
             $temp = array_unique(array_column($unir,  'numerocontrato'));
             $unique_arr = array_intersect_key($unir, $temp);
 
@@ -285,8 +299,7 @@ class clientesController extends Controller
                 })
                 ->editColumn('action', function ($cliente) {
                     if (Auth::user()->tipo == 1) {
-                        return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
-                            '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('clientes.eliminar', $cliente['sis_clientesid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
+                        return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '" title="Editar"> <i class="la la-edit"></i> </a>';
                     } else {
                         return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '" title="Editar"> <i class="la la-edit"></i> </a>';
                     }
@@ -528,10 +541,11 @@ class clientesController extends Controller
         $request['fechacreacion'] = now();
         $request['usuariocreacion'] = Auth::user()->nombres;
 
-        $url = 'https://perseo-data-c2.app/registros/crear_clientes';
 
         DB::beginTransaction();
         try {
+            $servidores = Servidores::where('estado', 1)->get();
+
             $cliente =   Clientes::create($request->all());
             $log = new Log();
             $log->usuario = Auth::user()->nombres;
@@ -542,18 +556,19 @@ class clientesController extends Controller
             $log->save();
             $request['sis_clientesid'] = $cliente->sis_clientesid;
 
-            $crearCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-                ->withOptions(["verify" => false])
-                ->post($url, $request->all())
-                ->json();
-            if (isset($crearCliente['sis_clientes'])) {
-                flash('Guardado Correctamente')->success();
-            } else {
-                DB::rollBack();
-
-                flash('Ocurrió un error vuelva a intentarlo')->warning();
-                return back();
+            foreach ($servidores as $servidor) {
+                $url = $servidor->dominio . '/registros/crear_clientes';
+                $crearCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+                    ->withOptions(["verify" => false])
+                    ->post($url, $request->all())
+                    ->json();
+                if (!isset($crearCliente['sis_clientes'])) {
+                    DB::rollBack();
+                    flash('Ocurrió un error vuelva a intentarlo')->warning();
+                    return back();
+                }
             }
+            flash('Guardado Correctamente')->success();
             DB::commit();
             return redirect()->route('clientes.editar', $cliente->sis_clientesid);
         } catch (\Exception $e) {
@@ -606,10 +621,11 @@ class clientesController extends Controller
             ],
         );
 
-        $urlEditar = 'https://perseo-data-c2.app/registros/editar_clientes';
 
         DB::beginTransaction();
         try {
+            $servidores = Servidores::where('estado', 1)->get();
+
             $request['fechamodificacion'] =  now();
             $request['usuariomodificacion'] = Auth::user()->nombres;
             $cliente->update($request->all());
@@ -624,19 +640,22 @@ class clientesController extends Controller
 
             $request['sis_clientesid'] = $cliente->sis_clientesid;
             $request['fechamodificacion'] =   date('YmdHis', strtotime($request['fechamodificacion']));
-            $clienteEditar = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                ->withOptions(["verify" => false])
-                ->post($urlEditar, $request->all())
-                ->json();
 
-            if (isset($clienteEditar['sis_clientes'])) {
-                flash('Guardado Correctamente')->success();
-            } else {
-                DB::rollBack();
-                flash('Ocurrió un error vuelva a intentarlo')->warning();
-                return back();
+            foreach ($servidores as $servidor) {
+
+                $urlEditar = $servidor->dominio . '/registros/editar_clientes';
+                $clienteEditar = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                    ->withOptions(["verify" => false])
+                    ->post($urlEditar, $request->all())
+                    ->json();
+
+                if (!isset($clienteEditar['sis_clientes'])) {
+                    DB::rollBack();
+                    flash('Ocurrió un error vuelva a intentarlo')->warning();
+                    return back();
+                }
             }
-
+            flash('Guardado Correctamente')->success();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -650,40 +669,39 @@ class clientesController extends Controller
 
         DB::beginTransaction();
         try {
-            $buscarLicencias = Licencias::where('sis_clientesid', $cliente->sis_clientesid)->get();
-            $url = 'https://perseo-data-c2.app/registros/eliminar_cliente';
-            $eliminarCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-                ->withOptions(["verify" => false])
-                ->post($url, ["sis_clientesid" => $cliente->sis_clientesid])
-                ->json();
+            $servidores = Servidores::where('estado', 1)->get();
 
-            if (count($buscarLicencias) > 0) {
-                for ($i = 0; $i < count($buscarLicencias); $i++) {
-                    $buscarLicencias[$i]->delete();
+            foreach ($servidores as $servidor) {
+                $url = $servidor->dominio . '/registros/eliminar_cliente';
+                $eliminarCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+                    ->withOptions(["verify" => false])
+                    ->post($url, ["sis_clientesid" => $cliente->sis_clientesid])
+                    ->json();
+
+                if (!isset($eliminarCliente['respuesta'])) {
+                    DB::rollBack();
+                    flash('Ocurrió un error vuelva a intentarlo')->warning();
+                    return back();
                 }
             }
 
-            if (isset($eliminarCliente['respuesta'])) {
-                $cliente->delete();
-                $log = new Log();
-                $log->usuario = Auth::user()->nombres;
-                $log->pantalla = "Cliente";
-                $log->tipooperacion = "Eliminar";
-                $log->fecha = now();
-                $log->detalle = $cliente;
-                $log->save();
-                flash('Eliminado Correctamente')->success();
-            } else {
-                DB::rollBack();
-                flash('Ocurrió un error vuelva a intentarlo')->warning();
-                return back();
-            }
+            Licencias::where('sis_clientesid', $cliente->sis_clientesid)->delete();
 
+            $cliente->delete();
+            $log = new Log();
+            $log->usuario = Auth::user()->nombres;
+            $log->pantalla = "Cliente";
+            $log->tipooperacion = "Eliminar";
+            $log->fecha = now();
+            $log->detalle = $cliente;
+            $log->save();
+            flash('Eliminado Correctamente')->success();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             flash('Ocurrió un error vuelva a intentarlo')->warning();
+            return back();
         };
-        return back();
+        return redirect()->route('clientes.index');
     }
 }

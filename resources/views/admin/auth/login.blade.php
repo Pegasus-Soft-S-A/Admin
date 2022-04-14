@@ -45,7 +45,7 @@ License: You must have a valid license purchased only from themeforest(the above
                 <div class="d-flex flex-column-auto flex-column pt-lg-10 pt-15">
                     <!--begin::Aside header-->
                     <a href="#" class="text-center mb-5 mx-auto">
-                        <img src="{{ asset('assets/media/login.png') }}" height="130px" " alt="" />
+                        <img src="{{ asset('assets/media/login-admin.png') }}" height="130px" " alt="" />
                     </a>
                     <!--end::Aside header-->
                     <!--begin::Aside title-->
@@ -57,7 +57,7 @@ License: You must have a valid license purchased only from themeforest(the above
                 <!--end::Aside Top-->
                 <!--begin::Aside Bottom-->
                 <div class="d-flex flex-row-fluid bgi-no-repeat bgi-position-y-bottom bgi-position-x-center"
-                    style="background-image: url({{ asset('assets/media/login-fondo.png') }})">
+                    style="background-image: url({{ asset('assets/media/login-fondo-admin.png') }})">
                 </div>
                 <!--end::Aside Bottom-->
             </div>

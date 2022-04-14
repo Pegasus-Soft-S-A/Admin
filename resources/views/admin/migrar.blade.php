@@ -148,7 +148,7 @@
 
         $.ajax({
             type:"GET",
-            url: '/licencia/' + servidor + '/' + $('#sis_clientesid').val(),
+            url: '/admin/licencia/' + servidor + '/' + $('#sis_clientesid').val(),
             success: function(data){
                 $.each(data, function(fetch, licencia){
                     for(i = 0; i < licencia.length; i++){

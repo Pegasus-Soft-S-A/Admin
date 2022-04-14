@@ -22,18 +22,26 @@ class licenciasController extends Controller
 
         if ($request->ajax()) {
 
-            $url = 'https://perseo-data-c2.app/registros/consulta_licencia';
-            $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                ->withOptions(["verify" => false])
-                ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
-                ->json();
+            $servidores = Servidores::where('estado', 1)->get();
+            $web = [];
+
+            foreach ($servidores as  $servidor) {
+                $url = $servidor->dominio . '/registros/consulta_licencia';
+                $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                    ->withOptions(["verify" => false])
+                    ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
+                    ->json();
+                if (isset($resultado['licencias'])) {
+                    $web = array_merge($web, $resultado['licencias']);
+                }
+            }
 
             $data = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
                 ->where('sis_clientesid', $cliente->sis_clientesid)
                 ->get();
 
-            if (isset($resultado['licencias'])) {
-                $unir = array_merge($resultado['licencias'], $data->toArray());
+            if ($web) {
+                $unir = array_merge($web, $data->toArray());
             } else {
                 $unir =  $data->toArray();
             }
@@ -93,25 +101,37 @@ class licenciasController extends Controller
     public function crearWeb(Clientes $cliente)
     {
         $licencia = new Licencias();
+        $servidores = Servidores::where('estado', 1)->get();
         $contrato = $this->generarContrato();
-        $existe = Licencias::where('numerocontrato', $contrato)->get();
-        $servidores = Servidores::all();
+        $existepc = Licencias::where('numerocontrato', $contrato)->get();
+        $existeweb = [];
 
-        $url = 'https://perseo-data-c2.app/registros/consulta_licencia';
-        $existeWeb = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-            ->withOptions(["verify" => false])
-            ->post($url, ['numerocontrato' => $contrato])
-            ->json();
-
-        //Mientras exista en la base el numero de contrato seguira generando hasta que sea unico
-        while (count($existe) > 0 || isset($existeWeb['licencias'])) {
-            $contrato = $this->generarContrato();
-            $existe = Licencias::where('numerocontrato', $contrato)->get();
-
-            $existeWeb = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+        foreach ($servidores as $servidor) {
+            $url = $servidor->dominio . '/registros/consulta_licencia';
+            $existe = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                 ->withOptions(["verify" => false])
                 ->post($url, ['numerocontrato' => $contrato])
                 ->json();
+            if (isset($existe['licencias'])) {
+                $existeweb = array_merge($existeweb, $existe['licencias']);
+            }
+        }
+
+        //Mientras exista en la base el numero de contrato seguira generando hasta que sea unico
+        while (count($existepc) > 0 || count($existeweb) > 0) {
+            $contrato = $this->generarContrato();
+            $existe = Licencias::where('numerocontrato', $contrato)->get();
+
+            foreach ($servidores as $servidor) {
+                $url = $servidor->dominio . '/registros/consulta_licencia';
+                $existe = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                    ->withOptions(["verify" => false])
+                    ->post($url, ['numerocontrato' => $contrato])
+                    ->json();
+                if (isset($existe['licencias'])) {
+                    $existeweb = array_merge($existeweb, $existe['licencias']);
+                }
+            }
         }
 
         $licencia->numerocontrato = $contrato;
@@ -765,7 +785,7 @@ class licenciasController extends Controller
 
         $request['sis_licenciasid'] = $licenciaid;
 
-        $urlEditar = 'https://perseo-data-c2.app/registros/editar_licencia';
+        $urlEditar = $servidor->dominio . '/registros/editar_licencia';
         $licenciaEditar = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
             ->withOptions(["verify" => false])
             ->post($urlEditar, $request->all())
@@ -856,7 +876,7 @@ class licenciasController extends Controller
     {
         $servidor = Servidores::where('sis_servidoresid', $servidorid)->first();
         $url = $servidor->dominio . '/registros/eliminar_licencia';
-        $urlConsulta = 'https://perseo-data-c2.app/registros/consulta_licencia';
+        $urlConsulta = $servidor->dominio . '/registros/consulta_licencia';
         $licenciaConsulta = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
             ->withOptions(["verify" => false])
             ->post($urlConsulta, ['sis_licenciasid' => $licenciaid])

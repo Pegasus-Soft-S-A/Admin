@@ -76,6 +76,20 @@
                     </a>
                 </li>
 
+                <li class="menu-item {{ areActiveRoutes(['publicidad.index']) }} " aria-haspopup="true">
+                    <a href="{{ route('publicidad.index') }}" class="menu-link">
+                        <i class="menu-icon fa fa-file-image"></i>
+                        <span class="menu-text">Publicidad</span>
+                    </a>
+                </li>
+
+                <li class="menu-item {{ areActiveRoutes(['agrupados.index']) }} " aria-haspopup="true">
+                    <a href="{{ route('agrupados.index') }}" class="menu-link">
+                        <i class="menu-icon fa fa-users"></i>
+                        <span class="menu-text">Agrupados</span>
+                    </a>
+                </li>
+
                 @endif
 
             </ul>

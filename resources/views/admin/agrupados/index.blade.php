@@ -14,12 +14,12 @@
                     <div class="card card-custom card-sticky" id="kt_page_sticky_card">
                         <div class="card-header ">
                             <div class="card-title">
-                                <h3 class="card-label">Servidores</h3>
+                                <h3 class="card-label">Agrupados</h3>
 
                             </div>
                             <div class="card-toolbar">
 
-                                <a href="{{ route('servidores.crear') }}" class="btn btn-primary font-weight-bolder">
+                                <a href="{{ route('agrupados.crear') }}" class="btn btn-primary font-weight-bolder">
                                     <span class="svg-icon svg-icon-md">
                                         <i class="flaticon2-plus-1"></i>
                                     </span>Nuevo
@@ -34,8 +34,13 @@
                                 <thead>
                                     <tr>
                                         <th class="no-exportar">#</th>
-                                        <th data-priority="1">Descripción</th>
-                                        <th data-priority="2">Dominio</th>
+                                        <th data-priority="1">Codigo</th>
+                                        <th data-priority="1">Clientes</th>
+                                        <th data-priority="2">Fecha Inicio</th>
+                                        <th data-priority="3">Fecha Caduca</th>
+                                        <th data-priority="3">Precio</th>
+                                        <th data-priority="3">Empresas</th>
+
                                         <th class="no-exportar">Acciones</th>
                                     </tr>
                                 </thead>
@@ -71,32 +76,51 @@
                 pageLength: 15,
                 //Orden inicial
                 order: [
-                    [0, 'asc']
+                    [0, 'desc']
                 ],
                 //Guardar pagina, busqueda, etc
-                stateSave: false,
+                stateSave: true,
                 //Trabajar del lado del server
                 serverSide: true,
                 //Peticion ajax que devuelve los registros
                 ajax: {
-                    url: "{{ route('servidores.index') }}",
+                    url: "{{ route('agrupados.index') }}",
                     type: 'GET',
                 },
                 columns: [{
-                        data: 'sis_servidoresid',
-                        name: 'sis_servidoresid',
+                        data: 'sis_agrupadosid',
+                        name: 'sis_agrupadosid',
                         searchable: false,
                         visible: false
                     },
                     {
-                        data: 'descripcion',
-                        name: 'descripcion',
-                        
+                        data: 'codigo',
+                        name: 'codigo',
+
                     },
                     {
-                        data: 'dominio',
-                        name: 'dominio',
-                        
+                        data: 'nombres',
+                        name: 'clientes.nombres',
+
+                    },
+                    {
+                        data: 'fechainicio',
+                        name: 'fechainicio',
+
+                    },
+                    {
+                        data: 'fechacaduca',
+                        name: 'fechacaduca',
+
+                    },
+                    {
+                        data: 'precio',
+                        name: 'precio',
+
+                    }, {
+                        data: 'empresas',
+                        name: 'empresas',
+
                     },
                     {
                         data: 'action',

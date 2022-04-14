@@ -267,7 +267,7 @@
         $('#producto').empty();
         $.ajax({
             type:"GET",
-            url: '/productos/' + tipo ,
+            url: '/admin/productos/' + tipo ,
             success: function(data){
                 $.each(data, function(fetch, producto){
                     for(i = 0; i < producto.length; i++){
