@@ -11,6 +11,18 @@ use Yajra\DataTables\DataTables as DataTables;
 
 class agrupadosController extends Controller
 {
+
+    public function generarContrato()
+    {
+        $randomString = "";
+        while (strlen($randomString) < 10) {
+            $numero = rand(1, 9);
+            $randomString = $randomString . $numero;
+        }
+
+        return $randomString;
+    }
+
     public function index(Request $request)
     {
 
@@ -42,8 +54,19 @@ class agrupadosController extends Controller
 
     public function crear()
     {
-
         $agrupados = new Agrupados();
+        $codigo = $this->generarContrato();
+        $existe = Agrupados::where('codigo', $codigo)->get();
+
+        //Mientras exista en la base el numero seguira generando hasta que sea unico
+        while (count($existe) > 0) {
+            $codigo = $this->generarContrato();
+            $existe = Agrupados::where('codigo', $codigo)->get();
+        }
+        $agrupados->codigo = $codigo;
+        $agrupados->fechainicio = date("d-m-Y", strtotime(date("d-m-Y")));
+        $agrupados->fechacaduca = date("d-m-Y", strtotime(date("d-m-Y")));
+
         return view('admin.agrupados.crear', compact('agrupados'));
     }
 

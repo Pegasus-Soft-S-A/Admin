@@ -30,7 +30,7 @@ class adminController extends Controller
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
         $usuario = Clientes::select('sis_clientesid')->where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->first();
-        $servidores = Servidores::all();
+        $servidores = Servidores::where('estado', 1)->get();
         $web = [];
         $array = [];
 

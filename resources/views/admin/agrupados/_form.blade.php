@@ -1,6 +1,12 @@
+<style>
+    .disabled {
+        pointer-events: none;
+        opacity: 1;
+        background-color: #F3F6F9;
+    }
+</style>
 @php
 $listadoClientes = App\Models\Clientes::select('sis_clientesid', 'nombres')->get();
-
 @endphp
 @csrf
 <div class="form-group row">

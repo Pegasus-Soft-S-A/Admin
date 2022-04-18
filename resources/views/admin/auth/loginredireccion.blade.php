@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="text-center">
-                    <a href="" id="redireccion" target="_blank">
+                    <a href="" id="redireccion">
                         <button type="button" disabled="disabled" class="btn btn-lg btn-primary w-100 mb-5"
                             id="ingresar">
                             <span class="indicator-label">INGRESAR</span>
