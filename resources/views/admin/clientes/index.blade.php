@@ -20,6 +20,7 @@
 
                             </div>
                             <div class="card-toolbar">
+
                                 <a href="#" class="btn btn-primary font-weight-bolder" id="filtrar">
                                     <span class="svg-icon svg-icon-md">
                                         <i class="la la-filter"></i>
@@ -91,6 +92,7 @@
                                     </div>
                                     <!--end::Dropdown Menu-->
                                 </div>
+
                                 @if (Auth::user()->tipo!=4)
                                 <a href="{{route('clientes.crear')}}" class="btn btn-primary font-weight-bolder">
                                     <span class="svg-icon svg-icon-md">

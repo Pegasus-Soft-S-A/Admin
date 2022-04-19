@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clientes;
 use App\Models\Identificaciones;
+use App\Models\Servidores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class IdentificacionesController extends Controller
 {
@@ -60,6 +63,38 @@ class IdentificacionesController extends Controller
 
             $buscar->save();
             return json_encode($buscar);
+        }
+    }
+
+    public function servidores(Request $request)
+    {
+        $identificacionIngresada = substr($request->identificacion, 0, 10);
+        $usuario = Clientes::select('sis_clientesid')->where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->first();
+        $servidores = Servidores::where('estado', 1)->get();
+        $array = [];
+        if ($usuario) {
+            foreach ($servidores as  $servidor) {
+                $url = $servidor->dominio . '/registros/consulta_licencia';
+                $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                    ->withOptions(["verify" => false])
+                    ->post($url, ['sis_clientesid' => $usuario->sis_clientesid])
+                    ->json();
+
+                if (isset($resultado['licencias'])) {
+
+                    $array[] = ["sis_servidoresid" => $servidor->sis_servidoresid, "descripcion" => $servidor->descripcion, "dominio" => $servidor->dominio];
+                }
+            }
+
+            if (count($array) > 0) {
+
+                $servidoresJson = json_encode(["servidor" => $array]);
+                return $servidoresJson;
+            } else {
+                return json_encode(["servidor" => 0]);
+            }
+        } else {
+            return json_encode(["servidor" => 0]);
         }
     }
 }

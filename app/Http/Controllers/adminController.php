@@ -31,7 +31,6 @@ class adminController extends Controller
         $identificacionIngresada = substr($request->identificacion, 0, 10);
         $usuario = Clientes::select('sis_clientesid')->where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->first();
         $servidores = Servidores::where('estado', 1)->get();
-        $web = [];
         $array = [];
 
         if ($usuario) {
@@ -43,9 +42,7 @@ class adminController extends Controller
                     ->json();
 
                 if (isset($resultado['licencias'])) {
-                    $web = array_merge($web, $resultado['licencias']);
-
-                    $array = ["descripcion" => $servidor->descripcion, "dominio" => $servidor->dominio];
+                    $array[] = ["sis_servidoresid" => $servidor->sis_servidoresid, "descripcion" => $servidor->descripcion, "dominio" => $servidor->dominio . '/sistema?identificacion=' . $identificacionIngresada];
                 }
             }
             if (count($array) > 0) {

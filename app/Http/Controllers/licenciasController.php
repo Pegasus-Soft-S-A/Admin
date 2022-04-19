@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\enviarlicencia;
+use App\Models\Agrupados;
 use App\Models\Licencias;
 use App\Models\Clientes;
 use App\Models\Log;
@@ -101,6 +102,9 @@ class licenciasController extends Controller
     public function crearWeb(Clientes $cliente)
     {
         $licencia = new Licencias();
+        $agrupados = Agrupados::select('sis_agrupados.sis_agrupadosid', 'sis_clientes.nombres', 'sis_agrupados.codigo')
+            ->join('sis_clientes', 'sis_clientes.sis_clientesid', 'sis_agrupados.sis_clientesid')
+            ->get();
         $servidores = Servidores::where('estado', 1)->get();
         $contrato = $this->generarContrato();
         $existepc = Licencias::where('numerocontrato', $contrato)->get();
@@ -150,7 +154,7 @@ class licenciasController extends Controller
         $modulos = json_encode($modulos);
         $modulos = json_decode($modulos);
 
-        return view('admin.licencias.Web.crear', compact('cliente', 'licencia', 'modulos', 'servidores'));
+        return view('admin.licencias.Web.crear', compact('cliente', 'licencia', 'modulos', 'servidores', 'agrupados'));
     }
 
     public function crearPC(Clientes $cliente)
@@ -269,6 +273,7 @@ class licenciasController extends Controller
             'tienda_woocommerce' => $request['woocomerce'] = $request->woocomerce == 'on' ? true : false,
             'api_whatsapp' => $request['apiwhatsapp'] = $request->apiwhatsapp == 'on' ? true : false,
             'cash_manager' => $request['cashmanager'] = $request->cashmanager == 'on' ? true : false,
+            'cash_debito' => $request['cashdebito'] = $request->cashdebito == 'on' ? true : false,
             'reporte_equifax' => $request['equifax'] = $request->equifax == 'on' ? true : false,
         ];
         unset(
@@ -287,6 +292,7 @@ class licenciasController extends Controller
             $request['woocomerce'],
             $request['apiwhatsapp'],
             $request['cashmanager'],
+            $request['cashdebito'],
             $request['equifax'],
             $request['tipo'],
         );
@@ -342,7 +348,7 @@ class licenciasController extends Controller
         $emails = array_diff($emails, array(" ", 0, null));
 
         try {
-            Mail::to($emails)->queue(new enviarlicencia($array));
+            // Mail::to($emails)->queue(new enviarlicencia($array));
         } catch (\Exception $e) {
 
             flash('Error enviando email')->error();
@@ -520,6 +526,9 @@ class licenciasController extends Controller
 
     public function editarWeb(Clientes $cliente, $servidorid, $licenciaid)
     {
+        $agrupados = Agrupados::select('sis_agrupados.sis_agrupadosid', 'sis_clientes.nombres', 'sis_agrupados.codigo')
+            ->join('sis_clientes', 'sis_clientes.sis_clientesid', 'sis_agrupados.sis_clientesid')
+            ->get();
         $servidor = Servidores::where('sis_servidoresid', $servidorid)->first();
         $url = $servidor->dominio . '/registros/consulta_licencia';
         $licenciaConsulta = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
@@ -543,7 +552,7 @@ class licenciasController extends Controller
         $licencia = json_decode($licenciaArray);
         $servidores = Servidores::all();
 
-        return view('admin.licencias.Web.editar', compact('cliente', 'licencia', 'modulos', 'servidores'));
+        return view('admin.licencias.Web.editar', compact('cliente', 'licencia', 'modulos', 'servidores', 'agrupados'));
     }
 
     public function actualizarPC(Request $request, Licencias $licencia)
@@ -615,6 +624,7 @@ class licenciasController extends Controller
             'tienda_woocommerce' => $request['woocomerce'] = $request->woocomerce == 'on' ? true : false,
             'api_whatsapp' => $request['apiwhatsapp'] = $request->apiwhatsapp == 'on' ? true : false,
             'cash_manager' => $request['cashmanager'] = $request->cashmanager == 'on' ? true : false,
+            'cash_debito' => $request['cashdebito'] = $request->cashdebito == 'on' ? true : false,
             'reporte_equifax' => $request['equifax'] = $request->equifax == 'on' ? true : false,
         ];
         unset(
@@ -633,6 +643,7 @@ class licenciasController extends Controller
             $request['woocomerce'],
             $request['apiwhatsapp'],
             $request['cashmanager'],
+            $request['cashdebito'],
             $request['equifax'],
             $request['tipo'],
         );
@@ -695,7 +706,7 @@ class licenciasController extends Controller
         $emails = array_diff($emails, array(" ", 0, null));
 
         try {
-            Mail::to($emails)->queue(new enviarlicencia($array));
+            //Mail::to($emails)->queue(new enviarlicencia($array));
         } catch (\Exception $e) {
 
             flash('Error enviando email')->error();

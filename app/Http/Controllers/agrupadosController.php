@@ -32,8 +32,8 @@ class agrupadosController extends Controller
 
             return DataTables::of($data)
 
-                ->editColumn('descripcion', function ($agrupado) {
-                    return '<a class="text-primary" href="' . route('agrupados.editar', $agrupado->sis_agrupadosid) . '">' . $agrupado->nombres . ' </a>';
+                ->editColumn('codigo', function ($agrupado) {
+                    return '<a class="text-primary" href="' . route('agrupados.editar', $agrupado->sis_agrupadosid) . '">' . $agrupado->codigo . ' </a>';
                 })
 
                 ->editColumn('action', function ($agrupado) {
@@ -46,7 +46,7 @@ class agrupadosController extends Controller
                 ->editColumn('fechacaduca', function ($agrupado) {
                     return date('d-m-Y', strtotime($agrupado['fechacaduca']));
                 })
-                ->rawColumns(['action', 'descripcion'])
+                ->rawColumns(['action', 'codigo'])
                 ->make(true);
         }
         return view('admin.agrupados.index');
@@ -111,6 +111,7 @@ class agrupadosController extends Controller
         $agrupados->fechainicio = date("d-m-Y", strtotime($agrupados->fechainicio));
         return view('admin.agrupados.editar', compact('agrupados'));
     }
+
     public function actualizar(Agrupados $agrupados, Request $request)
     {
 
@@ -147,6 +148,7 @@ class agrupadosController extends Controller
         flash('Actualizado Correctamente')->success();
         return back();
     }
+
     public function eliminar(Agrupados $agrupados)
     {
         $agrupados->delete();

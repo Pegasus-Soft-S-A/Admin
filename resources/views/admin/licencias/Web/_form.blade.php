@@ -153,6 +153,21 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         <span class="text-danger">{{ $errors->first('sis_servidoresid') }}</span>
         @endif
     </div>
+    <div class="col-lg-6">
+        <label>Agrupados:</label>
+        <select class="form-control select2" name="sis_agrupadosid" id="sis_agrupadosid">
+            <option value="0">Sin grupo</option>
+            @foreach ($agrupados as $agrupado)
+            <option value="{{ $agrupado->sis_agrupadosid }}" {{ $agrupado->sis_agrupadosid ==
+                $licencia->sis_agrupadosid ? 'selected' : '' }}>
+                {{ $agrupado->codigo }}-{{ $agrupado->nombres }}
+            </option>
+            @endforeach
+        </select>
+        @if ($errors->has('sis_servidoresid'))
+        <span class="text-danger">{{ $errors->first('sis_servidoresid') }}</span>
+        @endif
+    </div>
 </div>
 <div class="form-group row">
     <label class="col-4 col-form-label">Nómina</label>
