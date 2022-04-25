@@ -3,12 +3,11 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Perseo | Redireccion</title>
+    <title>Perseo Sistema Contable</title>
     <meta name="description" content="Perseo" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-    {{--
-    <link href="{{ asset('assets/css/login-1.css') }}" rel="stylesheet" type="text/css" /> --}}
+    {{-- <link href="{{ asset('assets/css/login-1.css') }}" rel="stylesheet" type="text/css" /> --}}
     <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/plugins/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/media/logoP.png') }}">
@@ -30,17 +29,24 @@
                 </div>
 
                 <div class="fv-row mb-10">
-                    <label class="form-label fs-6 fw-bolder text-dark">Cliente: </label>
-                    <input
-                        class="form-control form-control-lg form-control-solid  {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
-                        type="text" name="identificacion" id="identificacion" autocomplete="off"
-                        onblur="verificarLogin()" value="{{ old('identificacion') }}"
-                        onkeypress="return validarEnter(event)" />
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <li class="fa fa-user"></li>
+                            </span>
+                        </div>
+                        <input
+                            class="form-control form-control-lg {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
+                            type="text" name="identificacion" id="identificacion" autocomplete="off"
+                            onblur="verificarLogin()" value="{{ old('identificacion') }}"
+                            placeholder="Ingrese Identificaci&#243;n" onkeypress="return validarEnter(event)" />
+                    </div>
+
+                    <span>Ingrese identificaci&#243;n y presione <b>ENTER</b></span>
                     @if ($errors->has('identificacion'))
-                    <span class=" text-danger">{{ $errors->first('identificacion') }}</span>
+                        <span class=" text-danger">{{ $errors->first('identificacion') }}</span>
                     @endif
                 </div>
-
                 <div class="fv-row mb-10 d-none" id="perfilEscoger">
                     <div class="d-flex flex-stack mb-2">
                         <label class="form-label fw-bolder text-dark fs-6 mb-0">Escoja el perfil con el
@@ -50,7 +56,6 @@
                     <select class="form-control  form-control-solid" id="perfil" name="perfil">
                     </select>
                 </div>
-
                 <div class="text-center">
                     <a href="" id="redireccion">
                         <button type="button" disabled="disabled" class="btn btn-lg btn-primary w-100 mb-5"
@@ -94,60 +99,83 @@
 
         function verificarLogin() {
             let identificacion = $('#identificacion').val();
-            var select = document.getElementById("perfil");
 
-            $.post('{{ route('post_loginredireccion') }}', {
-                _token: '{{ csrf_token() }}',
-                identificacion
+            if (identificacion.length > 0) {
+                var select = document.getElementById("perfil");
+                $.post('{{ route('post_loginredireccion') }}', {
+                    _token: '{{ csrf_token() }}',
+                    identificacion
 
-            }, function(resultado) {
+                }, function(resultado) {
 
-                if (resultado != 'a' && resultado != 0) {
-                    $('#perfilEscoger').removeClass('d-none');
-                    $('#perfil').empty();
-                    if (resultado.length == 1) {
-                        jQuery("#redireccion").attr("href", resultado[0].dominio);
-                        jQuery("#ingresar").removeAttr("disabled");
-                        $('#perfilEscoger').addClass('d-none');
+                    if (resultado != 'a' && resultado != 0) {
+                        $('#perfilEscoger').removeClass('d-none');
+                        $('#perfil').empty();
+                        if (resultado.length == 1) {
+                            jQuery("#redireccion").attr("href", resultado[0].dominio);
+                            jQuery("#ingresar").removeAttr("disabled");
+                            $('#perfilEscoger').addClass('d-none');
+                            $('#ingresar').click();
+                        } else {
+                            for (var i = 0; i < resultado.length; i++) {
+
+
+                                var option = document.createElement("option");
+                                option.setAttribute("value", resultado[i].dominio);
+                                let optionTexto = document.createTextNode(resultado[i].descripcion);
+                                option.appendChild(optionTexto);
+                                select.appendChild(option);
+                                jQuery("#ingresar").removeAttr("disabled");
+                                jQuery("#redireccion").attr("href", resultado[0].dominio);
+
+                            }
+                        }
 
                     } else {
-                        for (var i = 0; i < resultado.length; i++) {
-
-
-                            var option = document.createElement("option");
-                            option.setAttribute("value", resultado[i].dominio);
-                            let optionTexto = document.createTextNode(resultado[i].descripcion);
-                            option.appendChild(optionTexto);
-                            select.appendChild(option);
-                            jQuery("#ingresar").removeAttr("disabled");
-                            jQuery("#redireccion").attr("href", resultado[0].dominio);
-
-                        }
+                        $.notify({
+                            // options
+                            message: 'El cliente no existe o no tiene licencias',
+                        }, {
+                            // settings
+                            showProgressbar: true,
+                            delay: 2500,
+                            mouse_over: "pause",
+                            placement: {
+                                from: "top",
+                                align: "right",
+                            },
+                            animate: {
+                                enter: "animated fadeInUp",
+                                exit: "animated fadeOutDown",
+                            },
+                            type: 'warning',
+                        });
+                        $('#perfilEscoger').addClass('d-none');
+                        jQuery("#ingresar").attr("disabled", "disabled");
                     }
-
-                } else {
-                    $.notify({
-                        // options
-                        message: 'El cliente no existe o no tiene licencias',
-                    }, {
-                        // settings
-                        showProgressbar: true,
-                        delay: 2500,
-                        mouse_over: "pause",
-                        placement: {
-                            from: "top",
-                            align: "right",
-                        },
-                        animate: {
-                            enter: "animated fadeInUp",
-                            exit: "animated fadeOutDown",
-                        },
-                        type: 'warning',
-                    });
-                    $('#perfilEscoger').addClass('d-none');
-                    jQuery("#ingresar").attr("disabled", "disabled");
-                }
-            })
+                })
+            } else {
+                $.notify({
+                    // options
+                    message: 'Ingrese una identificaci&#243;n',
+                }, {
+                    // settings
+                    showProgressbar: true,
+                    delay: 2500,
+                    mouse_over: "pause",
+                    placement: {
+                        from: "top",
+                        align: "right",
+                    },
+                    animate: {
+                        enter: "animated fadeInUp",
+                        exit: "animated fadeOutDown",
+                    },
+                    type: 'warning',
+                });
+                $('#perfilEscoger').addClass('d-none');
+                jQuery("#ingresar").attr("disabled", "disabled");
+            }
         }
         $("#perfil").change(function() {
             var escoger = $("#perfil").val();

@@ -297,8 +297,8 @@ class licenciasController extends Controller
             $request['tipo'],
         );
         $request['modulos'] = json_encode([$modulos]);
-
-        $urlLicencia = 'https://perseo-data-c2.app/registros/generador_licencia';
+        $servidor = Servidores::where('estado', 1)->first();
+        $urlLicencia = $servidor->dominio . '/registros/generador_licencia';
 
         $urlLicencia = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
             ->withOptions(["verify" => false])
@@ -348,7 +348,7 @@ class licenciasController extends Controller
         $emails = array_diff($emails, array(" ", 0, null));
 
         try {
-            // Mail::to($emails)->queue(new enviarlicencia($array));
+            Mail::to($emails)->queue(new enviarlicencia($array));
         } catch (\Exception $e) {
 
             flash('Error enviando email')->error();
@@ -501,7 +501,7 @@ class licenciasController extends Controller
             $emails = array_diff($emails, array(" ", 0, null));
 
             try {
-                // Mail::to($emails)->queue(new enviarlicencia($array));
+                Mail::to($emails)->queue(new enviarlicencia($array));
             } catch (\Exception $e) {
 
                 flash('Error enviando email')->error();
@@ -706,7 +706,7 @@ class licenciasController extends Controller
         $emails = array_diff($emails, array(" ", 0, null));
 
         try {
-            //Mail::to($emails)->queue(new enviarlicencia($array));
+            Mail::to($emails)->queue(new enviarlicencia($array));
         } catch (\Exception $e) {
 
             flash('Error enviando email')->error();
@@ -853,7 +853,7 @@ class licenciasController extends Controller
             $emails = array_diff($emails, array(" ", 0, null));
 
             try {
-                // Mail::to($emails)->queue(new enviarlicencia($array));
+                Mail::to($emails)->queue(new enviarlicencia($array));
             } catch (\Exception $e) {
                 flash('Error enviando email')->error();
                 return back();

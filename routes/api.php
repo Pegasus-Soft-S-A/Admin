@@ -7,4 +7,5 @@ Route::group(['prefix' => 'datos', 'middleware' => 'authAPI'], function () {
     Route::post('/datos_consulta', [IdentificacionesController::class, 'index'])->name('identificaciones.index');
     Route::post('/datos_actualiza', [IdentificacionesController::class, 'actualiza'])->name('identificaciones.actualizar');
     Route::post('/datos_servidores', [IdentificacionesController::class, 'servidores'])->name('identificaciones.servidores');
+    Route::post('/servidores', [IdentificacionesController::class, 'servidores_activos'])->name('identificaciones.servidores.activos');
 });

@@ -38,13 +38,13 @@ class revendedoresController extends Controller
                     return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('revendedores.editar', $revendedor->sis_revendedoresid) . '"  title="Editar"> <i class="la la-edit"></i> </a>' .
                         '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('revendedores.eliminar', $revendedor->sis_revendedoresid) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
                 })
-                ->editColumn('tipo', function ($revendedor) {
-                    if ($revendedor->tipo == 1) {
-                        return 'Contador';
-                    } else {
-                        return 'Vendedor';
-                    }
-                })
+                // ->editColumn('tipo', function ($revendedor) {
+                //     if ($revendedor->tipo == 1) {
+                //         return 'Contador';
+                //     } else {
+                //         return 'Vendedor';
+                //     }
+                // })
                 ->filterColumn('tipo', function ($query, $keyword) {
                     $tipo = 0;
 

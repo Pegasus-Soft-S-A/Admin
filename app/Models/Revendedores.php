@@ -12,4 +12,13 @@ class Revendedores extends Model
     protected $primaryKey = 'sis_revendedoresid';
     public $timestamps = false;
     protected $guarded = [];
+
+    public function getTipoAttribute($value)
+    {
+        if ($value == 1) {
+            return 'Contador';
+        } else {
+            return 'Vendedor';
+        }
+    }
 }

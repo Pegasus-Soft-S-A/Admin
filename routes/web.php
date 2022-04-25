@@ -10,10 +10,18 @@ use App\Http\Controllers\servidoresController;
 use App\Http\Controllers\usuariosController;
 use Illuminate\Support\Facades\Route;
 
+//Rutas login 
 Route::get('/inicio', [adminController::class, 'loginRedireccion'])->name('loginredireccion');
 Route::post('/inicio', [adminController::class, 'post_loginRedireccion'])->name('post_loginredireccion');
 
-//Rutas login 
+Route::get('/sistema', function () {
+    return redirect()->route('loginredireccion');
+});
+
+Route::get('/registro', function () {
+    return redirect('https://perseo-data-c3.app/registro');
+});
+
 Route::group(['prefix' => 'admin'], function () {
 
     Route::get('/', [adminController::class, 'login']);

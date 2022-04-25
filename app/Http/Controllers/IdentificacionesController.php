@@ -97,4 +97,10 @@ class IdentificacionesController extends Controller
             return json_encode(["servidor" => 0]);
         }
     }
+
+    public function servidores_activos()
+    {
+        $servidores = Servidores::where('estado', 1)->get();
+        return json_encode($servidores);
+    }
 }

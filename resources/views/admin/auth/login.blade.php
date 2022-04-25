@@ -80,7 +80,7 @@ License: You must have a valid license purchased only from themeforest(the above
                             <!--begin::Title-->
                             <!--begin::Form group-->
                             <div class="form-group">
-                                <label class="font-size-h6 font-weight-bolder text-dark">Identificacion</label>
+                                <label class="font-size-h6 font-weight-bolder text-dark">Identificaci&#243;n</label>
                                 <input
                                     class="form-control form-control-lg form-control-solid h-auto py-6 px-6 rounded-lg {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
                                     type="text" name="identificacion" autocomplete="off"

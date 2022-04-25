@@ -29,31 +29,39 @@ class adminController extends Controller
     public function post_loginRedireccion(Request $request)
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
-        $usuario = Clientes::select('sis_clientesid')->where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->first();
         $servidores = Servidores::where('estado', 1)->get();
         $array = [];
 
-        if ($usuario) {
-            foreach ($servidores as  $servidor) {
-                $url = $servidor->dominio . '/registros/consulta_licencia';
+
+        foreach ($servidores as  $servidor) {
+            $url = $servidor->dominio . '/registros/consulta_licencia';
+
+            $urlUsuario = $servidor->dominio . '/registros/consulta_usuario';
+
+            $usuario = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                ->withOptions(["verify" => false])
+                ->post($urlUsuario, ['identificacion' => $identificacionIngresada])
+                ->json();
+
+
+            if (isset($usuario['usuario'])) {
                 $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                     ->withOptions(["verify" => false])
-                    ->post($url, ['sis_clientesid' => $usuario->sis_clientesid])
+                    ->post($url, ['sis_clientesid' => $usuario['usuario'][0]['sis_clientesid']])
                     ->json();
 
                 if (isset($resultado['licencias'])) {
                     $array[] = ["sis_servidoresid" => $servidor->sis_servidoresid, "descripcion" => $servidor->descripcion, "dominio" => $servidor->dominio . '/sistema?identificacion=' . $identificacionIngresada];
                 }
             }
-            if (count($array) > 0) {
-                return $array;
-            } else {
-                return 0;
-            }
+        }
+        if (count($array) > 0) {
+            return $array;
         } else {
-            return 'a';
+            return 0;
         }
     }
+
     public function migrar()
     {
         $clientes = Clientes::all();
