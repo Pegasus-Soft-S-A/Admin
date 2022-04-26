@@ -10,17 +10,18 @@ use App\Http\Controllers\servidoresController;
 use App\Http\Controllers\usuariosController;
 use Illuminate\Support\Facades\Route;
 
-//Rutas login 
+//Rutas Inicio 
 Route::get('/inicio', [adminController::class, 'loginRedireccion'])->name('loginredireccion');
 Route::post('/inicio', [adminController::class, 'post_loginRedireccion'])->name('post_loginredireccion');
+
+//Rutas Registro
+Route::get('/registro', [adminController::class, 'registro'])->name('registro');
+Route::post('/registro', [adminController::class, 'post_registro'])->name('post_registro');
 
 Route::get('/sistema', function () {
     return redirect()->route('loginredireccion');
 });
 
-Route::get('/registro', function () {
-    return redirect('https://perseo-data-c3.app/registro');
-});
 
 Route::group(['prefix' => 'admin'], function () {
 
@@ -53,6 +54,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::delete('/clientes/{cliente}', [clientesController::class, 'eliminar'])->name('clientes.eliminar');
 
         /* Licencias */
+        Route::get('/licencias/actividad/{servidor}/{licencia}', [licenciasController::class, 'actividad'])->name('licencias.actividad');
         Route::get('/licencias/{cliente}', [licenciasController::class, 'index'])->name('licencias.index');
         Route::get('/licencias/{cliente}/crearweb', [licenciasController::class, 'crearWeb'])->name('licencias.Web.crear');
         Route::get('/licencias/{cliente}/crearpc', [licenciasController::class, 'crearPC'])->name('licencias.Pc.crear');

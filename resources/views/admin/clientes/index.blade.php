@@ -236,6 +236,7 @@
                                         <th style="display:none">Distribuidor</th>
                                         <th style="display:none">Vendedor</th>
                                         <th style="display:none">Revendedor</th>
+                                        <th style="display:none">Origen</th>
 
                                         <th style="display:none">Usuarios</th>
                                         <th style="display:none">Empresas</th>
@@ -397,6 +398,7 @@
                 {data: 'sis_distribuidoresid', name: 'sis_distribuidoresid',visible:false},
                 {data: 'sis_vendedoresid', name: 'sis_vendedoresid',visible:false},
                 {data: 'sis_revendedoresid', name: 'sis_revendedoresid',visible:false},
+                {data: 'red_origen', name: 'red_origen',visible:false},
 
                 {data: 'usuarios', name: 'usuarios',visible:false},
                 {data: 'empresas', name: 'empresas',visible:false},

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Clientes;
 use App\Models\Identificaciones;
+use App\Models\Licencias;
 use App\Models\Servidores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -100,7 +101,23 @@ class IdentificacionesController extends Controller
 
     public function servidores_activos()
     {
-        $servidores = Servidores::where('estado', 1)->get();
+        $servidores = Servidores::where('estado', 1)
+            ->where('sis_servidoresid', '!=', 3)
+            ->get();
         return json_encode($servidores);
+    }
+
+    public function licencia_consulta(Request $request)
+    {
+        $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
+        return json_encode(["licencia" => [$licencia]]);
+    }
+
+    public function licencia_actualiza(Request $request)
+    {
+        $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
+        $licencia->tokenrespaldo = $request->token;
+        $licencia->save();
+        return json_encode(["licencia" => [$licencia]]);
     }
 }

@@ -275,4 +275,45 @@ class adminController extends Controller
             }
         }
     }
+
+    public function registro()
+    {
+        return view('admin.auth.registro');
+    }
+
+    public function post_registro(Request $request)
+    {
+        dd($request);
+        $request->validate(
+            [
+                'identificacion' => ['required', 'unique:sis_clientes'],
+                'nombres' => 'required',
+                'direccion' => 'required',
+                'correos' => 'required',
+                'provinciasid' => 'required',
+                'telefono1' => 'required',
+                'telefono2' => 'required',
+            ],
+            [
+                'identificacion.required' => 'Ingrese su cédula o RUC ',
+                'identificacion.unique' => 'Su RUC ya se encuentra registrado',
+                'nombres.required' => 'Ingrese una Razón Social',
+                'direccion.required' => 'Ingrese una Dirección',
+                'correos.required' => 'Ingrese un Correo',
+                'correos.email' => 'Ingrese un Correo válido',
+                'provinciasid.required' => 'Seleccione una Provincia',
+                'telefono1.required' => 'Ingrese Convencional',
+                'telefono2.required' => 'Ingrese Whatsapp',
+            ],
+        );
+
+        // $contadorIdentificacion = strlen($request->identificacion);
+        // $request['tipoidentificacion'] = $contadorIdentificacion == 10 ? 'C' : 'R';
+        // $request['fechacreacion'] = now();
+        // $request['usuariocreacion'] = Auth::user()->nombres;
+        // $revendedor = Revendedores::create($request->all());
+
+        flash('Registrado Correctamente')->success();
+        return redirect()->route('revendedores.editar', $revendedor->sis_revendedoresid);
+    }
 }

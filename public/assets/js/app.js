@@ -22,7 +22,7 @@ $(document).ready(function () {
     //Inicializar Lenguaje Español Datatables
     $.extend(true, $.fn.dataTable.defaults, {
         "language": {
-            "processing": "Procesando...",
+            "processing": "<button type='button' class='btn btn-primary spinner spinner-white spinner-right'>Cargando</button>",
             "lengthMenu": "Mostrar _MENU_ registros",
             "zeroRecords": "No se encontraron resultados",
             "emptyTable": "Ningún dato disponible en esta tabla",
@@ -238,6 +238,28 @@ $(document).on('click', '.confirm-delete', function (e) {
     $("#delete-link").attr("action", url);
 });
 
+$(document).on('click', '.actividad', function (e) {
+    e.preventDefault();
+    var url = $(this).data("href");
+
+    $.ajax({
+        type: "GET",
+        url: url,
+        success: function (data) {
+            $.each(data, function (fetch, actividades) {
+                $('#actividad-modal tbody tr').remove();
+                var table = $('#actividad-modal').find('.table tbody');
+                if (actividades.length == 0) {
+                    table.append('<tr><td colspan="5">No se encontraron datos</td></tr>');
+                }
+                for (i = 0; i < actividades.length; i++) {
+                    table.append('<tr><td>' + actividades[i].descripcionsubcategoria + '</td><td>' + actividades[i].accion + '</td><td>' + actividades[i].fecha + '</td><td>' + actividades[i].nombrecorto + '</td><td>' + actividades[i].nombrecomercial + '</td></tr>');
+                }
+            })
+            $("#actividad-modal").modal("show");
+        }
+    });
+});
 
 
 function validarNumero(e) {

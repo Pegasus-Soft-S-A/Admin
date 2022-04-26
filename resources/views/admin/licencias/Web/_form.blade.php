@@ -12,6 +12,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
 @csrf
 <div class="form-group row">
     <div class="col-lg-6">
+        <input type="hidden" name="sis_distribuidoresid" value="{{$licencia->sis_distribuidoresid}}">
         <input type="hidden" name="tipo" id="tipo">
         <input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
         <label>Numero Contrato:</label>
@@ -40,6 +41,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
     </div>
 </div>
 <div class="form-group row">
+    @if (isset($licencia->sis_licenciasid))
     <div class="col-lg-6">
         <label>Periodo:</label>
         <div class="input-group">
@@ -60,6 +62,18 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             </div>
         </div>
     </div>
+    @else
+    <div class="col-lg-6">
+        <label>Periodo:</label>
+        <div class="input-group">
+            <select class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif" name="periodo"
+                id="periodo">
+                <option value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected': '' }}>Mensual</option>
+                <option value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected': '' }}>Anual</option>
+            </select>
+        </div>
+    </div>
+    @endif
     <div class="col-lg-6">
         <label>Precio:</label>
         <input type="text"
@@ -292,7 +306,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             let fechaFin = ("0" +(fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear() 
             $('#fechacaduca').val(fechaFin);
 
-            $('#precio').val('11.40');
+            $('#precio').val('9.50');
             $('#usuarios').val('3');
             $('#numeromoviles').val('1');
             $('#ecommerce').prop('checked', false);
@@ -360,12 +374,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             case '2':
                 switch($('#periodo').val()){
                     case '1':
-                        $('#precio').val('11.40');
+                        $('#precio').val('9.50');
                         fecha.setDate(fecha.getDate() + 30);
                     break;
                     case '2':
-                        $('#precio').val('86.40');
-                        fecha.setMonth(fecha.getMonth() + 12);
+                        $('#precio').val('72');
+                        fecha.setMonth(fecha.getMonth() + 15);
                     break;
                 }
 
@@ -384,12 +398,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             case '3':
                 switch($('#periodo').val()){
                     case '1':
-                        $('#precio').val('20.40');
+                        $('#precio').val('17');
                         fecha.setDate(fecha.getDate() + 30);
                     break;
                     case '2':
-                        $('#precio').val('180');
-                        fecha.setMonth(fecha.getMonth() + 12);
+                        $('#precio').val('150');
+                        fecha.setMonth(fecha.getMonth() + 15);
                     break;
                 }
 
@@ -408,13 +422,13 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             case '4':
                 switch($('#periodo').val()){
                     case '1':
-                        $('#precio').val('28.80');
+                        $('#precio').val('24');
                         fecha.setDate(fecha.getDate() + 30);
                         $('#activos').prop('checked', false);
                     break;
                     case '2':
-                        $('#precio').val('228');
-                        fecha.setMonth(fecha.getMonth() + 12);
+                        $('#precio').val('190');
+                        fecha.setMonth(fecha.getMonth() + 15);
                         $('#activos').prop('checked', true);
                     break;
                 }

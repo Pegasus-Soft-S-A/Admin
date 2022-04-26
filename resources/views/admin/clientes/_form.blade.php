@@ -201,10 +201,10 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
     </div>
     <div class="col-lg-3">
         <label>Origen:</label>
-        <select class="form-control select2 @if($rol!=1 && $accion=='Modificar') disabled @endif" id="red_origen"
-            name="red_origen" @if($rol!=1) disabled @endif>
+        <select class="form-control select2" id="red_origen" name="red_origen">
             {{-- <option value="">Seleccione un Origen</option> --}}
             <option value="1" {{ old('red_origen', $cliente->red_origen) == '1' ? 'Selected' : '' }}>Perseo</option>
+            @if($rol==1)
             <option value="2" {{ old('red_origen', $cliente->red_origen) == '2' ? 'Selected' : '' }}>Contafácil</option>
             <option value="3" {{ old('red_origen', $cliente->red_origen) == '3' ? 'Selected' : '' }}>UIO-01</option>
             <option value="5" {{ old('red_origen', $cliente->red_origen) == '5' ? 'Selected' : '' }}>GYE-02</option>
@@ -212,6 +212,7 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
             <option value="7" {{ old('red_origen', $cliente->red_origen) == '7' ? 'Selected' : '' }}>STO-01</option>
             <option value="10" {{ old('red_origen', $cliente->red_origen) == '10' ? 'Selected' : '' }}>CNV-01</option>
             <option value="11" {{ old('red_origen', $cliente->red_origen) == '11' ? 'Selected' : '' }}>MATRIZ</option>
+            @endif
         </select>
         @if ($errors->has('red_origen'))
         <span class="text-danger">{{ $errors->first('red_origen') }}</span>

@@ -59,10 +59,12 @@ class licenciasController extends Controller
                 ->editColumn('action', function ($data) {
                     if ($data['tipo_licencia'] == 1) {
                         if (Auth::user()->tipo == 1) {
-                            return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
+                            return '<a class="btn btn-icon btn-light btn-hover-primary btn-sm mr-2 actividad" href="javascript:void(0)" data-href="' . route('licencias.actividad', [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Actividad"> <i class="la la-eye"></i> </a>' .
+                                '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
                                 '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.Web.eliminar',  [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
                         } else {
-                            return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>';
+                            return '<a class="btn btn-icon btn-light btn-hover-primary btn-sm mr-2 actividad" href="javascript:void(0)" data-href="' . route('licencias.actividad', [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Actividad"> <i class="la la-eye"></i> </a>' .
+                                '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>';
                         }
                     } else {
                         if (Auth::user()->tipo == 1) {
@@ -141,6 +143,8 @@ class licenciasController extends Controller
         $licencia->numerocontrato = $contrato;
         $licencia->numerosucursales = 0;
         $licencia->empresas = 1;
+        $licencia->sis_distribuidoresid = Auth::user()->sis_distribuidoresid;
+
         $modulos = [
             'nomina' => false,
             'activos' => false,
@@ -171,6 +175,7 @@ class licenciasController extends Controller
         $licencia->actulizaciones = 1;
         $licencia->aplicaciones = " s";
         $licencia->fechaactulizaciones = date("d-m-Y", strtotime(date("d-m-Y") . "+ 1 month"));
+        $licencia->sis_distribuidoresid = Auth::user()->sis_distribuidoresid;
 
         $contrato = $this->generarContrato();
         $existe = Licencias::where('numerocontrato', $contrato)->get();
@@ -251,10 +256,14 @@ class licenciasController extends Controller
         $request['modulocontrol'] = $request->modulocontrol == 'on' ? 1 : 0;
         $request['modulocontable'] = $request->modulocontable == 'on' ? 1 : 0;
         $request['actulizaciones'] = $request->actulizaciones == 'on' ? 1 : 0;
+        $request['ipservidorremoto'] = $request->ipservidorremoto == '' ? '' : $request->ipservidorremoto;
+        $request['motivobloqueo'] = $request->motivobloqueo == '' ? '' : $request->motivobloqueo;
+        $request['mensaje'] = $request->mensaje == '' ? '' : $request->mensaje;
+        $request['observacion'] = $request->observacion == '' ? '' : $request->observacion;
+        $request['ipservidorremoto'] = $request->ipservidorremoto == '' ? '' : $request->ipservidorremoto;
         $request['numerogratis'] =  0;
         $request['tokenrespaldo'] =  $request['tokenrespaldo'] == "" ? "" : $request['tokenrespaldo'];
         $request['tipo_licencia'] =  2;
-        $request['sis_distribuidoresid'] =  Auth::user()->sis_distribuidoresid;
 
         $modulos = [];
         $modulos = [
@@ -309,7 +318,7 @@ class licenciasController extends Controller
 
         $licencia =   Licencias::create($request->all());
 
-        $cliente = Clientes::select('sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor')
+        $cliente = Clientes::select('sis_clientes.correos', 'sis_distribuidores.correos AS distribuidor', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_revendedores.correo AS vendedor')
             ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
             ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
             ->where('sis_clientesid', $licencia->sis_clientesid)
@@ -376,7 +385,6 @@ class licenciasController extends Controller
         $request['fechainicia'] = date('Ymd', strtotime($request->fechainicia));
         $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
         $request['tipo_licencia'] =  1;
-        $request['sis_distribuidoresid'] =  Auth::user()->sis_distribuidoresid;
         $request['Identificador'] = $request['numerocontrato'];
         $request['fechaultimopago'] = $request['fechainicia'];
 
@@ -460,7 +468,7 @@ class licenciasController extends Controller
             $log->detalle = json_encode($request->all());
             $log->save();
 
-            $cliente = Clientes::select('sis_clientes.correos as cliente', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor')
+            $cliente = Clientes::select('sis_clientes.correos', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor')
                 ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
                 ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
                 ->join('sis_revendedores as revendedor', 'revendedor.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
@@ -606,6 +614,11 @@ class licenciasController extends Controller
         $request['modulocontable'] = $request->modulocontable == 'on' ? 1 : 0;
         $request['actulizaciones'] = $request->actulizaciones == 'on' ? 1 : 0;
         $request['tokenrespaldo'] =  $request['tokenrespaldo'] == "" ? "" : $request['tokenrespaldo'];
+        $request['ipservidorremoto'] = $request->ipservidorremoto == '' ? '' : $request->ipservidorremoto;
+        $request['motivobloqueo'] = $request->motivobloqueo == '' ? '' : $request->motivobloqueo;
+        $request['mensaje'] = $request->mensaje == '' ? '' : $request->mensaje;
+        $request['observacion'] = $request->observacion == '' ? '' : $request->observacion;
+
 
         $modulos = [];
         $modulos = [
@@ -668,7 +681,7 @@ class licenciasController extends Controller
         $log->detalle = $licencia;
         $log->save();
 
-        $cliente = Clientes::select('sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor')
+        $cliente = Clientes::select('sis_clientes.correos', 'sis_distribuidores.correos AS distribuidor', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_revendedores.correo AS vendedor')
             ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
             ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
             ->where('sis_clientesid', $licencia->sis_clientesid)
@@ -802,7 +815,7 @@ class licenciasController extends Controller
             ->post($urlEditar, $request->all())
             ->json();
 
-        $cliente = Clientes::select('sis_clientes.correos as cliente', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor')
+        $cliente = Clientes::select('sis_clientes.correos', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor')
             ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
             ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
             ->join('sis_revendedores as revendedor', 'revendedor.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
@@ -943,6 +956,22 @@ class licenciasController extends Controller
 
             flash('Correo Enviado Correctamente')->success();
             return back();
+        }
+    }
+
+    public function actividad($servidorid, $licenciaid)
+    {
+        $servidor = Servidores::where('sis_servidoresid', $servidorid)->first();
+
+        $url = $servidor->dominio . '/registros/consulta_actividades';
+        $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($url, ['sis_licenciasid' => $licenciaid])
+            ->json();
+        if (isset($resultado['actividades'])) {
+            return with($resultado);
+        } else {
+            return with(["actividades" => []]);
         }
     }
 }

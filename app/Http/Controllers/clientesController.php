@@ -487,6 +487,15 @@ class clientesController extends Controller
                     }
                     return $producto;
                 })
+                ->editColumn('periodo', function ($cliente) {
+                    $periodo = "";
+                    if ($cliente['periodo'] == 1) {
+                        $periodo = "Mensual";
+                    } elseif ($cliente['periodo'] == 2) {
+                        $periodo = "Anual";
+                    }
+                    return $periodo;
+                })
                 ->rawColumns(['action', 'identificacion'])
                 ->make(true);
         }
@@ -495,7 +504,11 @@ class clientesController extends Controller
     public function crear()
     {
         $cliente = new Clientes();
-        $distribuidores = Distribuidores::all();
+        if (Auth::user()->tipo == 1) {
+            $distribuidores = Distribuidores::all();
+        } else {
+            $distribuidores = Distribuidores::where('sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
+        }
 
         return view('admin.clientes.crear', compact('cliente', 'distribuidores'));
     }

@@ -46,6 +46,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
 </ul>
 <div class="tab-content mt-5" id="myTabContent">
     <div class="tab-pane fade show active" id="datoslicencia" role="tabpanel">
+        <input type="hidden" name="sis_distribuidoresid" value="{{$licencia->sis_distribuidoresid}}">
         <input type="hidden" name="tipo" id="tipo">
         <input type="hidden" id="permisos" name="aplicaciones" value="{{$licencia->aplicaciones}}">
         <input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
@@ -60,7 +61,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 <span class="text-danger">{{ $errors->first('numerocontrato') }}</span>
                 @endif
             </div>
-            @if (isset($licencia->sis_licenciasid))
+            @if (isset($licencia->sis_licenciasid) && $licencia->periodo!=3)
             <div class="col-lg-4">
                 <label>Fecha Caduca:</label>
                 <div class="input-group">
@@ -69,7 +70,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         placeholder="Ingrese Fecha Caducidad" name="fechacaduca" id="fechacaduca" autocomplete="off"
                         value="{{ old('fechacaduca',$licencia->fechacaduca) }}" />
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-primary dropdown-toggle @if($rol==4) disabled @endif"
+                        <button type="button"
+                            class="btn btn-primary dropdown-toggle @if($rol==4 || $rol==3) disabled @endif"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Renovar
                         </button>
@@ -272,7 +274,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                             </label>
                         </span>
                     </div>
-                    @if (isset($licencia->sis_licenciasid))
+                    @if (isset($licencia->sis_licenciasid) && $licencia->periodo==3)
                     <div class="col-lg-4">
                         <label>Fecha Pagado Actualizaciones:</label>
                         <div class="input-group">
@@ -282,7 +284,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                                 id="fechaactulizaciones" autocomplete="off"
                                 value="{{ old('fechaactulizaciones',$licencia->fechaactulizaciones) }}" />
                             <div class="input-group-append">
-                                <button class="btn btn-primary @if($rol==4) disabled @endif" type="button"
+                                <button class="btn btn-primary @if($rol==4 || $rol==3) disabled @endif" type="button"
                                     id="renovaractualizacion">Renovar
                                     Anual</button>
                             </div>
@@ -339,8 +341,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->nomina) && $modulos[0]->nomina== true) checked="checked"
-                                @endif type="checkbox"
+                                <input @if (isset($modulos[0]->nomina)) @if( $modulos[0]->nomina== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="nomina" id="nomina" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
@@ -350,8 +352,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->activos) && $modulos[0]->activos== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->activos)) @if ($modulos[0]->activos== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="activos" id="activos" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
@@ -363,8 +365,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->produccion) && $modulos[0]->produccion== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->produccion)) @if ($modulos[0]->produccion== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="produccion" id="produccion" @if($rol!=1 && $accion == 'Modificar') disabled
                                 @endif/>
                                 <span></span>
@@ -375,8 +377,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->operadoras) && $modulos[0]->operadoras== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->operadoras)) @if ($modulos[0]->operadoras== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="tvcable" id="tvcable" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
@@ -388,8 +390,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->encomiendas) && $modulos[0]->encomiendas== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->encomiendas)) @if ($modulos[0]->encomiendas== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="encomiendas" id="encomiendas" @if($rol!=1 && $accion == 'Modificar') disabled
                                 @endif/>
                                 <span></span>
@@ -400,8 +402,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->crm_cartera) && $modulos[0]->crm_cartera== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->crm_cartera)) @if ($modulos[0]->crm_cartera== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="crmcartera" id="crmcartera" @if($rol!=1 && $accion == 'Modificar') disabled
                                 @endif/>
                                 <span></span>
@@ -414,8 +416,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->api_whatsapp) && $modulos[0]->api_whatsapp== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->api_whatsapp)) @if ($modulos[0]->api_whatsapp== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="apiwhatsapp" id="apiwhatsapp" @if($rol!=1 && $accion == 'Modificar') disabled
                                 @endif/>
                                 <span></span>
@@ -426,8 +428,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->perseo_hybrid) && $modulos[0]->perseo_hybrid== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->perseo_hybrid)) @if ($modulos[0]->perseo_hybrid== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="hybrid" id="hybrid" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
@@ -439,8 +441,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->tienda_woocommerce) && $modulos[0]->tienda_woocommerce==
-                                true) checked="checked" @endif
+                                <input @if (isset($modulos[0]->tienda_woocommerce))
+                                @if($modulos[0]->tienda_woocommerce==true)) checked="checked" @endif @endif
                                 type="checkbox" name="woocomerce" id="woocomerce" @if($rol!=1 && $accion == 'Modificar')
                                 disabled @endif/>
                                 <span></span>
@@ -451,8 +453,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->tienda_perseo_publico) &&
-                                $modulos[0]->tienda_perseo_publico== true) checked="checked" @endif
+                                <input @if (isset($modulos[0]->tienda_perseo_publico))
+                                @if( $modulos[0]->tienda_perseo_publico== true) )checked="checked" @endif @endif
                                 type="checkbox" name="tienda" id="tienda" @if($rol!=1 && $accion == 'Modificar')
                                 disabled @endif/>
                                 <span></span>
@@ -465,8 +467,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->restaurante) && $modulos[0]->restaurante== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->restaurante)) @if ($modulos[0]->restaurante== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="restaurante" id="restaurante" @if($rol!=1 && $accion == 'Modificar') disabled
                                 @endif/>
                                 <span></span>
@@ -477,8 +479,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->garantias) && $modulos[0]->garantias== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->garantias)) @if ($modulos[0]->garantias== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="garantias" id="garantias" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
@@ -490,8 +492,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->talleres) && $modulos[0]->talleres== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->talleres)) @if ($modulos[0]->talleres== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="talleres" id="talleres" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
                             </label>
@@ -501,8 +503,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->tienda_perseo_distribuidor) &&
-                                $modulos[0]->tienda_perseo_distribuidor== true) checked="checked" @endif
+                                <input @if (isset($modulos[0]->tienda_perseo_distribuidor))
+                                @if ( $modulos[0]->tienda_perseo_distribuidor== true) )checked="checked" @endif @endif
                                 type="checkbox" name="integraciones" id="integraciones" @if($rol!=1 && $accion ==
                                 'Modificar') disabled @endif/>
                                 <span></span>
@@ -515,8 +517,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->cash_manager) && $modulos[0]->cash_manager== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->cash_manager)) @if ($modulos[0]->cash_manager== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="cashmanager" id="cashmanager" @if($rol!=1 && $accion == 'Modificar') disabled
                                 @endif/>
                                 <span></span>
@@ -527,8 +529,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->cash_debito) && $modulos[0]->cash_debito== true)
-                                checked="checked" @endif type="checkbox"
+                                <input @if (isset($modulos[0]->cash_debito)) @if ($modulos[0]->cash_debito== true))
+                                checked="checked" @endif @endif type="checkbox"
                                 name="cashdebito" id="cashdebito" @if($rol!=1 && $accion == 'Modificar') disabled
                                 @endif/>
                                 <span></span>
@@ -541,8 +543,9 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->reporte_equifax) && $modulos[0]->reporte_equifax== true)
-                                checked="checked" @endif
+                                <input @if (isset($modulos[0]->reporte_equifax)) @if ($modulos[0]->reporte_equifax==
+                                true))
+                                checked="checked" @endif @endif
                                 type="checkbox" name="equifax" id="equifax" @if($rol!=1 && $accion == 'Modificar')
                                 disabled @endif/>
                                 <span></span>

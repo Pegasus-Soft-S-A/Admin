@@ -128,6 +128,33 @@
 @include('modals.delete_modal')
 @endsection
 
+<div id="actividad-modal" class="modal fade">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title h6">Actividad</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            </div>
+            <div class="modal-body text-center">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <td>Módulo</td>
+                            <td>Accion</td>
+                            <td>Fecha</td>
+                            <td>Usuario</td>
+                            <td>Empresa</td>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section('script')
 <script>
     $('#formulario').submit(function(event) {
@@ -137,7 +164,7 @@
         $("#revendedor").prop("disabled", false);
         $("#red_origen").prop("disabled", false);
     });
-    
+
     $(document).ready(function(){
         var distribuidor = '{{$cliente->sis_distribuidoresid}}';
         $('#vendedor').empty();

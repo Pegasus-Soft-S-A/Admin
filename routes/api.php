@@ -9,3 +9,8 @@ Route::group(['prefix' => 'datos', 'middleware' => 'authAPI'], function () {
     Route::post('/datos_servidores', [IdentificacionesController::class, 'servidores'])->name('identificaciones.servidores');
     Route::post('/servidores', [IdentificacionesController::class, 'servidores_activos'])->name('identificaciones.servidores.activos');
 });
+
+Route::group(['middleware' => 'authAPILicencia'], function () {
+    Route::post('/licencia_actualiza', [IdentificacionesController::class, 'licencia_actualiza'])->name('licencia.actualiza');
+    Route::post('/licencia_consulta', [IdentificacionesController::class, 'licencia_consulta'])->name('licencia.consulta');
+});
