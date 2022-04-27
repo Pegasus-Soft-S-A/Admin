@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Clientes;
+use App\Models\Licencias;
+use App\Models\Log;
 use App\Models\Servidores;
 use App\Models\Subcategorias;
 use App\Models\User;
@@ -278,42 +280,169 @@ class adminController extends Controller
 
     public function registro()
     {
-        return view('admin.auth.registro');
+        $identificacion = 0;
+        return view('admin.auth.registro', compact('identificacion'));
     }
 
     public function post_registro(Request $request)
     {
-        dd($request);
         $request->validate(
             [
-                'identificacion' => ['required', 'unique:sis_clientes'],
+                'identificacion' => ['required', 'unique:sis_clientes', 'size:13'],
                 'nombres' => 'required',
                 'direccion' => 'required',
-                'correos' => 'required',
+                'correos' => ['required', 'email:rfc,dns'],
                 'provinciasid' => 'required',
-                'telefono1' => 'required',
                 'telefono2' => 'required',
             ],
             [
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
                 'identificacion.unique' => 'Su RUC ya se encuentra registrado',
+                'identificacion.size' => 'Ingrese 13 dígitos',
                 'nombres.required' => 'Ingrese una Razón Social',
                 'direccion.required' => 'Ingrese una Dirección',
                 'correos.required' => 'Ingrese un Correo',
                 'correos.email' => 'Ingrese un Correo válido',
                 'provinciasid.required' => 'Seleccione una Provincia',
-                'telefono1.required' => 'Ingrese Convencional',
                 'telefono2.required' => 'Ingrese Whatsapp',
             ],
         );
+        //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
+        $request['fechacreacion'] = now();
+        $request['usuariocreacion'] = "Perseo Lite";
+        $request['tipoidentificacion'] = "R";
+        $request['sis_distribuidoresid'] = $request['red_origen'] == 2 ? 1 : 6;
+        $request['sis_revendedoresid'] = 1;
+        $request['sis_vendedoresid'] = 405;
 
-        // $contadorIdentificacion = strlen($request->identificacion);
-        // $request['tipoidentificacion'] = $contadorIdentificacion == 10 ? 'C' : 'R';
-        // $request['fechacreacion'] = now();
-        // $request['usuariocreacion'] = Auth::user()->nombres;
-        // $revendedor = Revendedores::create($request->all());
 
-        flash('Registrado Correctamente')->success();
-        return redirect()->route('revendedores.editar', $revendedor->sis_revendedoresid);
+        DB::beginTransaction();
+        try {
+            $servidores = Servidores::where('estado', 1)->get();
+
+            $cliente =   Clientes::create($request->all());
+            $log = new Log();
+            $log->usuario = "Perseo Lite";
+            $log->pantalla = "Clientes";
+            $log->tipooperacion = "Crear";
+            $log->fecha = now();
+            $log->detalle = $cliente;
+            $log->save();
+            $request['sis_clientesid'] = $cliente->sis_clientesid;
+
+            //Crear clientes en todos los servidores
+            foreach ($servidores as $servidor) {
+                $url = $servidor->dominio . '/registros/crear_clientes';
+                $crearCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+                    ->withOptions(["verify" => false])
+                    ->post($url, $request->all())
+                    ->json();
+                if (!isset($crearCliente['sis_clientes'])) {
+                    DB::rollBack();
+                    flash('Ocurrió un error vuelva a intentarlo')->warning();
+                    return back();
+                }
+            }
+
+            //Verificar que no se exista el numero de contrato
+            $contrato = $this->generarContrato();
+            $existepc = Licencias::where('numerocontrato', $contrato)->get();
+            $existeweb = [];
+
+            foreach ($servidores as $servidor) {
+                $url = $servidor->dominio . '/registros/consulta_licencia';
+                $existe = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                    ->withOptions(["verify" => false])
+                    ->post($url, ['numerocontrato' => $contrato])
+                    ->json();
+                if (isset($existe['licencias'])) {
+                    $existeweb = array_merge($existeweb, $existe['licencias']);
+                }
+            }
+
+            //Mientras exista en la base el numero de contrato seguira generando hasta que sea unico
+            while (count($existepc) > 0 || count($existeweb) > 0) {
+                $contrato = $this->generarContrato();
+                $existe = Licencias::where('numerocontrato', $contrato)->get();
+
+                foreach ($servidores as $servidor) {
+                    $url = $servidor->dominio . '/registros/consulta_licencia';
+                    $existe = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                        ->withOptions(["verify" => false])
+                        ->post($url, ['numerocontrato' => $contrato])
+                        ->json();
+                    if (isset($existe['licencias'])) {
+                        $existeweb = array_merge($existeweb, $existe['licencias']);
+                    }
+                }
+            }
+
+            $parametros_json = [];
+            $parametros_json = [
+                'Documentos' => "120",
+                'Productos' => "500",
+                'Almacenes' => "1",
+                'Nomina' => "3",
+                'Produccion' => "3",
+                'Activos' => "3",
+                'Talleres' => "3",
+                'Garantias' => "3",
+            ];
+
+            //Registrar licencia en el servidor lite
+            $url = 'https://perseo-data-c3.app/registros/crear_licencias';
+            $licencia = [
+                "sis_servidoresid" => 3,
+                "sis_clientesid" => $cliente->sis_clientesid,
+                "sis_distribuidoresid" => $cliente->sis_distribuidoresid,
+                "tipo_licencia" => 1,
+                "numerocontrato" => $contrato,
+                "Identificador" => $contrato,
+                "fechainicia" => date('Ymd', strtotime(now())),
+                "fechacaduca" => date("Ymd", strtotime(date("Ymd") . "+ 1 year")),
+                "empresas" => 1,
+                "usuarios" => 3,
+                "periodo" => 1,
+                "producto" => 6,
+                "estado" => 1,
+                "precio" => 0,
+                "numeromoviles" => 1,
+                "fechaultimopago" => date('Ymd', strtotime(now())),
+                "fechacreacion" => now(),
+                "modulos" => '<modulos><nomina>1</nomina><activos>1</activos><produccion>1</produccion><restaurantes>1</restaurantes><talleres>1</talleres><garantias>1</garantias><ecommerce>0</ecommerce></modulos>',
+                "parametros_json" => json_encode($parametros_json),
+            ];
+            $crearLicenciaWeb = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                ->withOptions(["verify" => false])
+                ->post($url, $licencia)
+                ->json();
+
+            if (isset($crearLicenciaWeb["licencias"])) {
+                flash('Guardado Correctamente')->success();
+                DB::commit();
+                return view('admin.auth.registro')->with(['identificacion' => substr($request->identificacion, 0, 10)]);
+                //return back();
+                // return redirect('https://perseo-data-c3.app/sistema');
+            } else {
+                DB::rollBack();
+                flash('Ocurrió un error vuelva a intentarlo')->warning();
+                return back();
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            flash('Ocurrió un error vuelva a intentarlo')->warning();
+            return back();
+        }
+    }
+
+    public function generarContrato()
+    {
+        $randomString = "";
+        while (strlen($randomString) < 10) {
+            $numero = rand(1, 9);
+            $randomString = $randomString . $numero;
+        }
+
+        return $randomString;
     }
 }

@@ -13,6 +13,9 @@
 
 </head>
 
+@php
+$id=request()->id;
+@endphp
 
 <body>
     <div class="row h-100 w-100 mx-auto">
@@ -22,22 +25,23 @@
         </div>
         <div class="mx-auto col-md-4 m-0 p-0 d-flex align-items-center">
             <div class="login-form login-signin mx-auto">
-                <form action="{{ route('post_registro') }}" method="POST">
+                <form action="{{ route('post_registro') }}" method="POST" id="formulario">
                     @csrf
                     <div class="text-center mb-10">
                         <img src="{{ asset('assets/media/login.png') }}" height="105px" alt="" />
                     </div>
                     <div class="fv-row mb-5">
-                        <div class="input-group">
+                        <div class="input-group" id="spinner">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">
+                                <span class="input-group-text" style="width:45px">
                                     <i class="far fa-address-card"></i>
                                 </span>
                             </div>
                             <input
                                 class="form-control form-control-lg {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
                                 type="text" name="identificacion" id="identificacion" autocomplete="off"
-                                value="{{ old('identificacion') }}" placeholder="Ingrese RUC" />
+                                value="{{ old('identificacion') }}" placeholder="Ingrese RUC"
+                                onblur="recuperarInformacion()" />
                         </div>
                         @if ($errors->has('identificacion'))
                         <span class=" text-danger">{{ $errors->first('identificacion') }}</span>
@@ -47,7 +51,7 @@
                     <div class="fv-row mb-5">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">
+                                <span class="input-group-text" style="width:45px">
                                     <i class="fa fa-user"></i>
                                 </span>
                             </div>
@@ -64,7 +68,7 @@
                     <div class="fv-row mb-5">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">
+                                <span class="input-group-text" style="width:45px">
                                     <i class="fa fa-home"></i>
                                 </span>
                             </div>
@@ -81,7 +85,7 @@
                     <div class="fv-row mb-5">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">
+                                <span class="input-group-text" style="width:45px">
                                     <i class="fa fa-city"></i>
                                 </span>
                             </div>
@@ -167,24 +171,7 @@
                     <div class="fv-row mb-5">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">
-                                    <i class="fa fa-phone"></i>
-                                </span>
-                            </div>
-                            <input
-                                class="form-control form-control-lg {{ $errors->has('telefono1') ? 'is-invalid' : '' }}"
-                                type="text" name="telefono1" id="telefono1" autocomplete="off"
-                                value="{{ old('telefono1') }}" placeholder="Ingrese Convencional" />
-                        </div>
-                        @if ($errors->has('telefono1'))
-                        <span class=" text-danger">{{ $errors->first('telefono1') }}</span>
-                        @endif
-                    </div>
-
-                    <div class="fv-row mb-5">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">
+                                <span class="input-group-text" style="width:45px">
                                     <i class="fab fa-whatsapp"></i>
                                 </span>
                             </div>
@@ -201,7 +188,7 @@
                     <div class="fv-row mb-5">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">
+                                <span class="input-group-text" style="width:45px">
                                     <i class="socicon-mail"></i>
                                 </span>
                             </div>
@@ -215,6 +202,64 @@
                         @endif
                     </div>
 
+                    <div class="fv-row mb-5 d-none">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" style="width:45px">
+                                    <i class="socicon-mail"></i>
+                                </span>
+                            </div>
+                            <select class="form-control form-control-lg" name="red_origen" id="red_origen">
+                                <option value="1" {{$id=='' ? 'Selected' : '' }}>
+                                    PERSEO
+                                </option>
+                                <option value="2" {{$id=='contafacil' ? 'Selected' : '' }}>
+                                    CONTAFACIL
+                                </option>
+                                <option value="3" {{$id=='UIO-01' ? 'Selected' : '' }}>
+                                    UIO-01
+                                </option>
+                                <option value="4" {{$id=='GYE-02' ? 'Selected' : '' }}>
+                                    GYE-02
+                                </option>
+                                <option value="5" {{$id=='CUE-01' ? 'Selected' : '' }}>
+                                    CUE-01
+                                </option>
+                                <option value="6" {{$id=='STO-01' ? 'Selected' : '' }}>
+                                    STO-01
+                                </option>
+                                <option value="7" {{$id=='CNV-01' ? 'Selected' : '' }}>
+                                    CNV-01
+                                </option>
+                                <option value="8" {{$id=='MATRIZ' ? 'Selected' : '' }}>
+                                    MATRIZ
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card card-custom gutter-b" style="height: 150px">
+                        <div class="card-body">
+                            <span class="svg-icon svg-icon-3x svg-icon-success">
+                                <!--begin::Svg Icon | path:assets/media/svg/icons/Communication/Group.svg-->
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <polygon points="0 0 24 0 24 24 0 24"></polygon>
+                                        <path
+                                            d="M18,14 C16.3431458,14 15,12.6568542 15,11 C15,9.34314575 16.3431458,8 18,8 C19.6568542,8 21,9.34314575 21,11 C21,12.6568542 19.6568542,14 18,14 Z M9,11 C6.790861,11 5,9.209139 5,7 C5,4.790861 6.790861,3 9,3 C11.209139,3 13,4.790861 13,7 C13,9.209139 11.209139,11 9,11 Z"
+                                            fill="#000000" fill-rule="nonzero" opacity="0.3"></path>
+                                        <path
+                                            d="M17.6011961,15.0006174 C21.0077043,15.0378534 23.7891749,16.7601418 23.9984937,20.4 C24.0069246,20.5466056 23.9984937,21 23.4559499,21 L19.6,21 C19.6,18.7490654 18.8562935,16.6718327 17.6011961,15.0006174 Z M0.00065168429,20.1992055 C0.388258525,15.4265159 4.26191235,13 8.98334134,13 C13.7712164,13 17.7048837,15.2931929 17.9979143,20.2 C18.0095879,20.3954741 17.9979143,21 17.2466999,21 C13.541124,21 8.03472472,21 0.727502227,21 C0.476712155,21 -0.0204617505,20.45918 0.00065168429,20.1992055 Z"
+                                            fill="#000000" fill-rule="nonzero"></path>
+                                    </g>
+                                </svg>
+                                <!--end::Svg Icon-->
+                            </span>
+                            <div class="text-dark font-weight-bolder font-size-h2 mt-3">8,600</div>
+                            <a href="#" class="text-muted text-hover-primary font-weight-bold font-size-lg mt-1">New
+                                Customers</a>
+                        </div>
+                    </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-lg btn-primary w-100 mb-5" id="ingresar">
                             <span class="indicator-label">Registrarse</span>
@@ -227,36 +272,82 @@
 
     <!--end::Main-->
     <script src="{{ asset('assets/plugins/plugins.bundle.js') }}"></script>
+    <script src="{{ asset('assets/plugins/scripts.bundle.js') }}"></script>
     <script>
         //Notificaciones
         @foreach (session('flash_notification', collect())->toArray() as $message)
-            $.notify({
-                // options
-                message: '{{ $message['message'] }}',
+            $.notify(
+                {
+                    // options
+                    message: '{{ $message['message'] }}',
                 },
                 {
-                // settings
-                showProgressbar: true,
-                delay: 2500,
-                mouse_over: "pause",
-                placement: {
-                from: "top",
-                align: "right",
-                },
-                animate: {
-                enter: "animated fadeInUp",
-                exit: "animated fadeOutDown",
-                },
-                type: '{{ $message['level'] }}',
-            });
-        @endforeach
+                    // settings
+                    showProgressbar: true,
+                    delay: 2500,
+                    mouse_over: "pause",
+                    placement: {
+                        from: "top",
+                        align: "right",
+                    },
+                    animate: {
+                        enter: "animated fadeInUp",
+                        exit: "animated fadeOutDown",
+                    },
+                    type: '{{$message['level']}}',
+                }
+            );
+	    @endforeach
 
         $(document).ready(function () {
             //Iniciar select2
             $('.select2').select2({
                 width: '100%'
             });
+
+            if('{{$identificacion!=0}}'==true){
+                setTimeout(function() {
+                    window.location.href = "https://perseo-data-c3.app/sistema?identificacion="+'{{$identificacion}}';
+                }, 1000);
+            }
         });
+
+        function recuperarInformacion() {
+
+            $.ajaxSetup({
+                headers: {
+                    'usuario': 'perseo',
+                    'clave': 'Perseo1232*'
+                }
+            });
+
+            var cad = document.getElementById('identificacion').value;
+            $("#spinner").addClass("spinner spinner-success spinner-right");
+            $.post('{{ route('identificaciones.index') }}', {
+                _token: '{{ csrf_token() }}',
+                identificacion: cad
+            }, function(data) {
+                $("#spinner").removeClass("spinner spinner-success spinner-right");
+                data = JSON.parse(data);
+                if (data.identificacion) {
+                    $("#nombres").val(data.razon_social);
+                    $("#direccion").val(data.direccion);
+                    $("#correo").val(data.correo);
+                    $("#telefono1").val(data.telefono1);
+                    $("#telefono2").val(data.telefono2);
+                    $('#provinciasid').val(data.provinciasid);
+
+                }
+            });
+        }
+
+        $('#ingresar').click(function(event) {
+            KTApp.blockPage({
+                overlayColor: '#f3f6f9',
+                state: 'primary',
+                message: 'Registrando'
+            }); 
+        })
     </script>
 </body>
 
