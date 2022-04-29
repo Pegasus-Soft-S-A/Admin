@@ -7,7 +7,8 @@
     <meta name="description" content="Perseo" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-    {{-- <link href="{{ asset('assets/css/login-1.css') }}" rel="stylesheet" type="text/css" /> --}}
+    {{--
+    <link href="{{ asset('assets/css/login-1.css') }}" rel="stylesheet" type="text/css" /> --}}
     <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/plugins/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/media/logoP.png') }}">
@@ -24,47 +25,50 @@
 
         <div class="mx-auto col-md-4 m-0 p-0 d-flex align-items-center">
             <div class="login-form login-signin mx-auto">
-                <div class="text-center mb-10">
-                    <img src="{{ asset('assets/media/login.png') }}" height="105px" alt="" />
-                </div>
-
-                <div class="fv-row mb-10">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <li class="fa fa-user"></li>
-                            </span>
+                <div class="card card-custom">
+                    <div class="card-body">
+                        <div class="text-center mb-10">
+                            <img src="{{ asset('assets/media/login.png') }}" height="105px" alt="" />
                         </div>
-                        <input
-                            class="form-control form-control-lg {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
-                            type="text" name="identificacion" id="identificacion" autocomplete="off"
-                            onblur="verificarLogin()" value="{{ old('identificacion') }}"
-                            placeholder="Ingrese Identificaci&#243;n" onkeypress="return validarEnter(event)" />
-                    </div>
 
-                    <span>Ingrese identificaci&#243;n y presione <b>ENTER</b></span>
-                    @if ($errors->has('identificacion'))
-                        <span class=" text-danger">{{ $errors->first('identificacion') }}</span>
-                    @endif
-                </div>
-                <div class="fv-row mb-10 d-none" id="perfilEscoger">
-                    <div class="d-flex flex-stack mb-2">
-                        <label class="form-label fw-bolder text-dark fs-6 mb-0">Escoja el perfil con el
-                            que
-                            desea ingresar: </label>
-                    </div>
-                    <select class="form-control  form-control-solid" id="perfil" name="perfil">
-                    </select>
-                </div>
-                <div class="text-center">
-                    <a href="" id="redireccion">
-                        <button type="button" disabled="disabled" class="btn btn-lg btn-primary w-100 mb-5"
-                            id="ingresar">
-                            <span class="indicator-label">INGRESAR</span>
-                        </button>
-                    </a>
-                </div>
+                        <div class="fv-row mb-10">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <li class="fa fa-user"></li>
+                                    </span>
+                                </div>
+                                <input
+                                    class="form-control form-control-lg {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
+                                    type="text" name="identificacion" id="identificacion" autocomplete="off"
+                                    onblur="verificarLogin()" value="{{ old('identificacion') }}"
+                                    placeholder="Ingrese Identificaci&#243;n" onkeypress="return validarEnter(event)" />
+                            </div>
 
+                            <span>Ingrese identificaci&#243;n y presione <b>ENTER</b></span>
+                            @if ($errors->has('identificacion'))
+                            <span class=" text-danger">{{ $errors->first('identificacion') }}</span>
+                            @endif
+                        </div>
+                        <div class="fv-row mb-10 d-none" id="perfilEscoger">
+                            <div class="d-flex flex-stack mb-2">
+                                <label class="form-label fw-bolder text-dark fs-6 mb-0">Escoja el perfil con el
+                                    que
+                                    desea ingresar: </label>
+                            </div>
+                            <select class="form-control  form-control-solid" id="perfil" name="perfil">
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <a href="" id="redireccion">
+                                <button type="button" disabled="disabled" class="btn btn-lg btn-primary w-100 mb-5"
+                                    id="ingresar">
+                                    <span class="indicator-label">INGRESAR</span>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

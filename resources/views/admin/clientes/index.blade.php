@@ -17,9 +17,10 @@
                         <div class="card-header ">
                             <div class="card-title">
                                 <h3 class="card-label">Clientes</h3>
-                            </div>
 
+                            </div>
                             <div class="card-toolbar">
+
                                 <a href="#" class="btn btn-primary font-weight-bolder" id="filtrar">
                                     <span class="svg-icon svg-icon-md">
                                         <i class="la la-filter"></i>
@@ -92,8 +93,8 @@
                                     <!--end::Dropdown Menu-->
                                 </div>
 
-                                @if (Auth::user()->tipo!=4)
-                                <a href="{{route('clientes.crear')}}" class="btn btn-primary font-weight-bolder">
+                                @if (Auth::user()->tipo != 4)
+                                <a href="{{ route('clientes.crear') }}" class="btn btn-primary font-weight-bolder">
                                     <span class="svg-icon svg-icon-md">
                                         <i class="flaticon2-plus-1"></i>
                                     </span>Nuevo
@@ -160,8 +161,8 @@
                                             <option value="">Seleccione</option>
                                             @endif
                                             @foreach ($distribuidores as $distribuidor)
-                                            <option value="{{$distribuidor->sis_distribuidoresid}}">
-                                                {{$distribuidor->razonsocial}}</option>
+                                            <option value="{{ $distribuidor->sis_distribuidoresid }}">
+                                                {{ $distribuidor->razonsocial }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -171,12 +172,91 @@
                                             name="vendedor">
                                             <option value="">Todos</option>
                                             @foreach ($vendedores as $vendedor)
-                                            <option value="{{$vendedor->sis_revendedoresid}}">
-                                                {{$vendedor->razonsocial}}</option>
+                                            <option value="{{ $vendedor->sis_revendedoresid }}">
+                                                {{ $vendedor->razonsocial }}</option>
                                             @endforeach
                                         </select>
                                     </div>
-                                    @if (Auth::user()->tipo==1)
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Provincias:</label>
+                                        <select class="form-control datatable-input select2" id="provinciasid"
+                                            name="provinciasid">
+                                            <option value="">Seleccione una provincia</option>
+                                            <option value="01">
+                                                Azuay
+                                            </option>
+                                            <option value="02">
+                                                Bolivar
+                                            </option>
+                                            <option value="03">
+                                                Cañar
+                                            </option>
+                                            <option value="04">
+                                                Carchi
+                                            </option>
+                                            <option value="05">
+                                                Chimborazo
+                                            </option>
+                                            <option value="06">
+                                                Cotopaxi
+                                            </option>
+                                            <option value="07">
+                                                El Oro
+                                            </option>
+                                            <option value="08">
+                                                Esmeraldas
+                                            </option>
+                                            <option value="09">
+                                                Guayas
+                                            </option>
+                                            <option value="20">
+                                                Galapagos
+                                            </option>
+                                            <option value="10">
+                                                Imbabura
+                                            </option>
+                                            <option value="11">
+                                                Loja</option>
+                                            <option value="12">
+                                                Los Rios
+                                            </option>
+                                            <option value="13">
+                                                Manabi
+                                            </option>
+                                            <option value="14">
+                                                Morona
+                                                Santiago</option>
+                                            <option value="15">
+                                                Napo</option>
+                                            <option value="22">
+                                                Orellana
+                                            </option>
+                                            <option value="16">
+                                                Pastaza
+                                            </option>
+                                            <option value="17">
+                                                Pichincha
+                                            </option>
+                                            <option value="24">
+                                                Santa Elena
+                                            </option>
+                                            <option value="23">
+                                                Santo Domingo
+                                                De Los Tsachilas</option>
+                                            <option value="21">
+                                                Sucumbios
+                                            </option>
+                                            <option value="18">
+                                                Tungurahua
+                                            </option>
+                                            <option value="19">
+                                                Zamora
+                                                Chinchipe</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-8">
+                                    @if (Auth::user()->tipo == 1)
                                     <div class="col-lg-3 mb-lg-0 mb-6">
                                         <label>Origen:</label>
                                         <select class="form-control datatable-input select2" id="origen" name="origen">
@@ -220,7 +300,7 @@
                                     <tr>
                                         <th class="no-exportar">#</th>
                                         <th>Contrato</th>
-                                        <th data-priority="1">Identificación</th>
+                                        <th data-priority="1">Identificacion</th>
                                         <th data-priority="2">Nombres</th>
                                         <th data-priority="3">Distribuidor</th>
                                         <th>Celular</th>
@@ -238,11 +318,13 @@
                                         <th style="display:none">Vendedor</th>
                                         <th style="display:none">Revendedor</th>
                                         <th style="display:none">Origen</th>
+                                        <th style="display:none">Provincia</th>
 
                                         <th style="display:none">Usuarios</th>
                                         <th style="display:none">Empresas</th>
-                                        <th style="display:none">Móviles</th>
+                                        <th style="display:none">MÃ³viles</th>
                                         <th class="no-exportar">Acciones</th>
+
                                     </tr>
                                 </thead>
                             </table>
@@ -256,6 +338,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('modal')
@@ -376,6 +459,7 @@
                     d.distribuidor= $("#distribuidor").val();
                     d.vendedor= $("#vendedor").val();
                     d.origen= $("#origen").val();
+                    d.provinciasid = $("#provinciasid").val();
                 }
             },
             //Columnas de la tabla (Debe contener misma cantidad que thead)
@@ -400,7 +484,7 @@
                 {data: 'sis_vendedoresid', name: 'sis_vendedoresid',visible:false},
                 {data: 'sis_revendedoresid', name: 'sis_revendedoresid',visible:false},
                 {data: 'red_origen', name: 'red_origen',visible:false},
-
+                {data: 'provinciasid',name: 'provinciasid',visible: false},
                 {data: 'usuarios', name: 'usuarios',visible:false},
                 {data: 'empresas', name: 'empresas',visible:false},
                 {data: 'numeromoviles', name: 'numeromoviles',visible:false},
@@ -408,13 +492,6 @@
             ],
             //botones para exportar
             buttons: [
-                {
-                    extend: 'print',
-                    title: 'Clientes',
-                    exportOptions: {
-                        columns: ':not(.no-exportar)'
-                    }
-                },
                 {
                     extend: 'copyHtml5',
                     title: 'Clientes',
@@ -429,35 +506,18 @@
                         columns: ':not(.no-exportar)'
                     }
                 },
-                {
-                    extend: 'pdfHtml5',
-                    title: 'Clientes',
-                    exportOptions: {
-                        columns: ':not(.no-exportar)'
-                    }
-                },
             ],
         });
 
         //Al hacer clic en los botones para exportar 
-        $('#export_print').on('click', function(e) {
+        $('#export_copy').on('click', function(e) {
 			e.preventDefault();
 			table.button(0).trigger();
 		});
 
-		$('#export_copy').on('click', function(e) {
-			e.preventDefault();
-			table.button(1).trigger();
-		});
-
 		$('#export_excel').on('click', function(e) {
 			e.preventDefault();
-			table.button(2).trigger();
-		});
-
-		$('#export_pdf').on('click', function(e) {
-			e.preventDefault();
-			table.button(3).trigger();
+			table.button(1).trigger();
 		});
 
         //Clic en boton buscar
@@ -476,6 +536,7 @@
             $("#distribuidor").val('');
             $("#vendedor").val('');
             $("#origen").val('');
+            $("#provinciasid").val('');
             table.draw();
 		});
 

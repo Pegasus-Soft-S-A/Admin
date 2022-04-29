@@ -18,9 +18,9 @@ $licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
         <input type="hidden" name="tipo" id="tipo">
         <input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
         <label>Numero Contrato:</label>
-        <input type="text" class="form-control disabled {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
+        <input type="text" class="form-control {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
             placeholder="Contrato" name="numerocontrato" autocomplete="off" id="numerocontrato"
-            value="{{ old('numerocontrato', $licencia->numerocontrato) }}" />
+            value="{{ old('numerocontrato', $licencia->numerocontrato) }}" readonly />
         @if ($errors->has('numerocontrato'))
         <span class="text-danger">{{ $errors->first('numerocontrato') }}</span>
         @endif

@@ -43,6 +43,7 @@ class clientesController extends Controller
             $origen = $request->origen;
             $producto = $request->producto;
             $periodo = $request->periodo;
+            $provinciasid = $request->provinciasid;
             $distribuidores = Distribuidores::all()->toArray();
             $vendedores = Revendedores::all()->toArray();
 
@@ -260,6 +261,10 @@ class clientesController extends Controller
 
             if ($origen != null) {
                 $final = $final->where('red_origen', $origen);
+            }
+
+            if ($provinciasid != null) {
+                $final = $final->where('provinciasid', $provinciasid);
             }
 
             if ($tipolicencia != 1) {
