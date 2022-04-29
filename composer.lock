@@ -4,8 +4,75 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "176f9bc2e9268b51711f104068b06a13",
+    "content-hash": "92b79122735aff19556d03b60421db25",
     "packages": [
+        {
+            "name": "ashallendesign/laravel-mailboxlayer",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ash-jc-allen/laravel-mailboxlayer.git",
+                "reference": "07b2810bd943c09b8451a1236b24e7cfd3a5b683"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ash-jc-allen/laravel-mailboxlayer/zipball/07b2810bd943c09b8451a1236b24e7cfd3a5b683",
+                "reference": "07b2810bd943c09b8451a1236b24e7cfd3a5b683",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.3|^7.0",
+                "illuminate/container": "^7.0|^8.0",
+                "php": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "nunomaduro/larastan": "^0.6.11",
+                "orchestra/testbench": "^4.0|^5.0|^6.0",
+                "phpunit/phpunit": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AshAllenDesign\\MailboxLayer\\Providers\\MailboxLayerProvider"
+                    ],
+                    "aliases": {
+                        "MailboxLayer": "AshAllenDesign\\MailboxLayer\\Facades\\MailboxLayer"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AshAllenDesign\\MailboxLayer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ash Allen",
+                    "email": "mail@ashallendesign.co.uk"
+                }
+            ],
+            "description": "A lightweight Laravel package for validating emails using the Mailbox Layer API.",
+            "homepage": "https://github.com/ash-jc-allen/laravel-mailboxlayer",
+            "keywords": [
+                "ashallendesign",
+                "email",
+                "laravel",
+                "laravel-package",
+                "mailboxlayer",
+                "validation"
+            ],
+            "support": {
+                "issues": "https://github.com/ash-jc-allen/laravel-mailboxlayer/issues",
+                "source": "https://github.com/ash-jc-allen/laravel-mailboxlayer/tree/v1.0.1"
+            },
+            "time": "2020-12-31T01:29:14+00:00"
+        },
         {
             "name": "asm89/stack-cors",
             "version": "v2.1.1",

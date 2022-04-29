@@ -31,10 +31,11 @@
                                             <a class="btn btn-danger btn-icon confirm-delete" href="javascript:void(0)"
                                                 data-href="{{route('clientes.eliminar', $cliente->sis_clientesid)}}"
                                                 data-toggle="tooltip" title="Eliminar"> <i class="la la-trash"></i> </a>
+                                            @endif
+                                            @if (Auth::user()->tipo==1 || Auth::user()->tipo==2)
                                             <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip"
                                                 title="Guardar"><i class="la la-save"></i></button>
                                             @endif
-
                                             @if (Auth::user()->tipo!=4)
                                             <a href="{{ route('clientes.crear') }}" class="btn btn-warning btn-icon"
                                                 data-toggle="tooltip" title="Nuevo"><i class="la la-user-plus"></i></a>
@@ -268,26 +269,26 @@
 
     function recuperarInformacion() {
 
-        $.ajaxSetup({
+        var cad = document.getElementById('identificacion').value;
+        $.ajax({
+            url: '{{ route('identificaciones.index') }}',
             headers: {
                 'usuario': 'perseo',
-                'clave':'Perseo1232*'
-            }
-        });
-
-    var cad = document.getElementById('identificacion').value;
-        $("#spinner").addClass("spinner spinner-success spinner-right");
-        $.post('{{ route('identificaciones.index') }}', {
-            _token: '{{ csrf_token() }}',
-            identificacion: cad
-        }, function(data) {
-            $("#spinner").removeClass("spinner spinner-success spinner-right");
-            data=JSON.parse(data);
-            if (data.identificacion) {
-                $("#nombres").val(data.razon_social);
-                $("#nombrecomercial").val(data.nombrecomercial);
-                $("#direccion").val(data.direccion);
-                $("#correo").val(data.correo);
+                'clave': 'Perseo1232*'
+            },
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                identificacion: cad
+            },
+            success: function(data){
+                $("#spinner").removeClass("spinner spinner-success spinner-right");
+                data = JSON.parse(data);
+                if (data.identificacion) {
+                    $("#nombres").val(data.razon_social);
+                    $("#direccion").val(data.direccion);
+                    $("#correo").val(data.correo);
+                }
             }
         });
     }

@@ -21,7 +21,7 @@ $id=request()->id;
     <div class="row h-100 w-100 mx-auto">
 
         <div class="col-md-8 d-none d-xl-block"
-            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/login-fondo.png') }}); background-size: 100% 100%; ">
+            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-lite.jpg') }}); background-size: 100% 100%; ">
         </div>
         <div class="mx-auto col-md-4 m-0 p-0 d-flex align-items-center">
             <div class="login-form login-signin mx-auto">
@@ -40,9 +40,12 @@ $id=request()->id;
                             <input
                                 class="form-control form-control-lg {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
                                 type="text" name="identificacion" id="identificacion" autocomplete="off"
-                                value="{{ old('identificacion') }}" placeholder="Ingrese RUC"
-                                onblur="recuperarInformacion()" />
+                                value="{{ old('identificacion') }}" placeholder="Ingrese RUC" onblur="verificarruc()"
+                                onkeypress="return validarNumero(event)" />
+                            <div id="spinner">
+                            </div>
                         </div>
+                        <span class="text-danger d-none" id="mensajeBandera">El Ruc no es válido</span>
                         @if ($errors->has('identificacion'))
                         <span class=" text-danger">{{ $errors->first('identificacion') }}</span>
                         @endif
@@ -178,7 +181,8 @@ $id=request()->id;
                             <input
                                 class="form-control form-control-lg {{ $errors->has('telefono2') ? 'is-invalid' : '' }}"
                                 type="text" name="telefono2" id="telefono2" autocomplete="off"
-                                value="{{ old('telefono2') }}" placeholder="Ingrese Whatsapp" />
+                                value="{{ old('telefono2') }}" placeholder="Ingrese Whatsapp"
+                                onkeypress="return validarNumero(event)" />
                         </div>
                         @if ($errors->has('telefono2'))
                         <span class=" text-danger">{{ $errors->first('telefono2') }}</span>
@@ -237,7 +241,7 @@ $id=request()->id;
                             </select>
                         </div>
                     </div>
-                    <div class="card card-custom gutter-b" style="height: 150px">
+                    {{-- <div class="card card-custom gutter-b" style="height: 150px">
                         <div class="card-body">
                             <span class="svg-icon svg-icon-3x svg-icon-success">
                                 <!--begin::Svg Icon | path:assets/media/svg/icons/Communication/Group.svg-->
@@ -256,10 +260,11 @@ $id=request()->id;
                                 <!--end::Svg Icon-->
                             </span>
                             <div class="text-dark font-weight-bolder font-size-h2 mt-3">8,600</div>
-                            <a href="#" class="text-muted text-hover-primary font-weight-bold font-size-lg mt-1">New
-                                Customers</a>
+                            <a href="#"
+                                class="text-muted text-hover-primary font-weight-bold font-size-lg mt-1">Clientes
+                                Activos</a>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="text-center">
                         <button type="submit" class="btn btn-lg btn-primary w-100 mb-5" id="ingresar">
                             <span class="indicator-label">Registrarse</span>
@@ -273,6 +278,7 @@ $id=request()->id;
     <!--end::Main-->
     <script src="{{ asset('assets/plugins/plugins.bundle.js') }}"></script>
     <script src="{{ asset('assets/plugins/scripts.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
     <script>
         //Notificaciones
         @foreach (session('flash_notification', collect())->toArray() as $message)
@@ -308,37 +314,72 @@ $id=request()->id;
             if('{{$identificacion!=0}}'==true){
                 setTimeout(function() {
                     window.location.href = "https://perseo-data-c3.app/sistema?identificacion="+'{{$identificacion}}';
-                }, 1000);
+                }, 2000);
             }
         });
 
+        function verificarruc() {
+            var cad = document.getElementById('identificacion').value;
+
+            var longitud = cad.length;
+            if (longitud == 13 && cad !== "") {
+                var extraer = cad.substr(10, 3);
+                if (extraer == "001") {
+                    recuperarInformacion(cad);
+                    $('#mensajeBandera').addClass("d-none");
+                    $('#identificacion').removeClass("is-invalid");
+                } else {
+                    $('#identificacion').focus();
+                    $('#mensajeBandera').removeClass("d-none");
+                    $('#identificacion').addClass("is-invalid");
+                    camposvacios();
+                }
+            } else {
+                $('#identificacion').focus();
+                $('#mensajeBandera').removeClass("d-none");
+                $('#identificacion').addClass("is-invalid");
+                camposvacios();
+            }
+        }
+
         function recuperarInformacion() {
 
-            $.ajaxSetup({
-                headers: {
-                    'usuario': 'perseo',
-                    'clave': 'Perseo1232*'
-                }
-            });
 
             var cad = document.getElementById('identificacion').value;
             $("#spinner").addClass("spinner spinner-success spinner-right");
-            $.post('{{ route('identificaciones.index') }}', {
-                _token: '{{ csrf_token() }}',
-                identificacion: cad
-            }, function(data) {
-                $("#spinner").removeClass("spinner spinner-success spinner-right");
-                data = JSON.parse(data);
-                if (data.identificacion) {
-                    $("#nombres").val(data.razon_social);
-                    $("#direccion").val(data.direccion);
-                    $("#correo").val(data.correo);
-                    $("#telefono1").val(data.telefono1);
-                    $("#telefono2").val(data.telefono2);
-                    $('#provinciasid').val(data.provinciasid);
+            $.ajax({
+                url: '{{ route('identificaciones.index') }}',
+                headers: {
+                    'usuario': 'perseo',
+                    'clave': 'Perseo1232*'
+                },
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    identificacion: cad
+                },
+                success: function(data){
+                    $("#spinner").removeClass("spinner spinner-success spinner-right");
+                    data = JSON.parse(data);
+                    if (data.identificacion) {
+                        $("#nombres").val(data.razon_social);
+                        $("#direccion").val(data.direccion);
+                        $("#correo").val(data.correo);
+                        $("#telefono1").val(data.telefono1);
+                        $("#telefono2").val(data.telefono2);
+                        $('#provinciasid').val(data.provinciasid);
 
+                    }
                 }
             });
+        }
+
+        function camposvacios() {
+            $("#nombres").val('');
+            $("#direccion").val('');
+            $("#correo").val('');
+            $("#telefono2").val('');
+            $('#provinciasid').val('');
         }
 
         $('#ingresar').click(function(event) {

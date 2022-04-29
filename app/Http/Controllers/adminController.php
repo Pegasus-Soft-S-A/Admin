@@ -2,18 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\enviarlicencia;
 use App\Models\Clientes;
 use App\Models\Licencias;
 use App\Models\Log;
 use App\Models\Servidores;
 use App\Models\Subcategorias;
 use App\Models\User;
+use App\Rules\ValidarCelular;
+use App\Rules\ValidarCorreo;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\Facades\DataTables;
+use AshAllenDesign\MailboxLayer\Facades\MailboxLayer;
+use Illuminate\Support\Facades\Mail;
 
 class adminController extends Controller
 {
@@ -291,9 +296,9 @@ class adminController extends Controller
                 'identificacion' => ['required', 'unique:sis_clientes', 'size:13'],
                 'nombres' => 'required',
                 'direccion' => 'required',
-                'correos' => ['required', 'email:rfc,dns'],
+                'correos' => ['required', 'email', new ValidarCorreo],
                 'provinciasid' => 'required',
-                'telefono2' => 'required',
+                'telefono2' => ['required', new ValidarCelular],
             ],
             [
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
@@ -302,11 +307,12 @@ class adminController extends Controller
                 'nombres.required' => 'Ingrese una Razón Social',
                 'direccion.required' => 'Ingrese una Dirección',
                 'correos.required' => 'Ingrese un Correo',
-                'correos.email' => 'Ingrese un Correo válido',
+                'correos.email' => 'Ingrese un Correo Válido',
                 'provinciasid.required' => 'Seleccione una Provincia',
                 'telefono2.required' => 'Ingrese Whatsapp',
             ],
         );
+
         //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
         $request['fechacreacion'] = now();
         $request['usuariocreacion'] = "Perseo Lite";
@@ -418,11 +424,25 @@ class adminController extends Controller
                 ->json();
 
             if (isset($crearLicenciaWeb["licencias"])) {
-                flash('Guardado Correctamente')->success();
                 DB::commit();
-                return view('admin.auth.registro')->with(['identificacion' => substr($request->identificacion, 0, 10)]);
-                //return back();
-                // return redirect('https://perseo-data-c3.app/sistema');
+
+                $array['view'] = 'emails.registro_demos';
+                $array['from'] = env('MAIL_FROM_ADDRESS');
+                $array['subject'] = 'Registro Demo';
+                $array['nombre'] =  $cliente->nombres;
+                $array['usuario'] =  substr($cliente->identificacion, 0, 10);
+                $array['clave'] = '123';
+                $array['tipo'] = '6';
+
+                try {
+                    Mail::to($cliente->correos)->queue(new enviarlicencia($array));
+                } catch (\Exception $e) {
+                    flash('Error enviando email')->error();
+                    return back();
+                }
+
+                flash('Registrado Correctamente')->success();
+                return view('admin.auth.registro')->with(['identificacion' => substr($cliente->identificacion, 0, 10)]);
             } else {
                 DB::rollBack();
                 flash('Ocurrió un error vuelva a intentarlo')->warning();

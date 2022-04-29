@@ -17,10 +17,9 @@
                         <div class="card-header ">
                             <div class="card-title">
                                 <h3 class="card-label">Clientes</h3>
-
                             </div>
-                            <div class="card-toolbar">
 
+                            <div class="card-toolbar">
                                 <a href="#" class="btn btn-primary font-weight-bolder" id="filtrar">
                                     <span class="svg-icon svg-icon-md">
                                         <i class="la la-filter"></i>
@@ -157,6 +156,8 @@
                                             name="distribuidor">
                                             @if (Auth::user()->tipo == 1)
                                             <option value="">Todos</option>
+                                            @else
+                                            <option value="">Seleccione</option>
                                             @endif
                                             @foreach ($distribuidores as $distribuidor)
                                             <option value="{{$distribuidor->sis_distribuidoresid}}">
@@ -221,19 +222,19 @@
                                         <th>Contrato</th>
                                         <th data-priority="1">Identificación</th>
                                         <th data-priority="2">Nombres</th>
+                                        <th data-priority="3">Distribuidor</th>
                                         <th>Celular</th>
                                         <th style="display:none">Correos</th>
-                                        <th data-priority="3">Tipo</th>
-                                        <th data-priority="4">Producto</th>
-                                        <th data-priority="5">Inicia</th>
-                                        <th data-priority="6">Caduca</th>
+                                        <th data-priority="4">Tipo</th>
+                                        <th data-priority="5">Producto</th>
+                                        <th data-priority="6">Inicia</th>
+                                        <th data-priority="7">Caduca</th>
                                         <th style="display:none">Dias Hasta Vencer</th>
                                         <th style="display:none">Precio</th>
                                         <th style="display:none">Periodo</th>
                                         <th style="display:none">Producto</th>
                                         <th style="display:none">Fecha Ultimo Pago</th>
                                         <th style="display:none">Fecha Actualizaciones</th>
-                                        <th style="display:none">Distribuidor</th>
                                         <th style="display:none">Vendedor</th>
                                         <th style="display:none">Revendedor</th>
                                         <th style="display:none">Origen</th>
@@ -383,6 +384,7 @@
                 {data: 'numerocontrato', name: 'numerocontrato',visible:false},
                 {data: 'identificacion', name: 'identificacion'},
                 {data: 'nombres', name: 'nombres'},
+                {data: 'sis_distribuidoresid', name: 'sis_distribuidoresid'},
                 {data: 'telefono2', name: 'telefono2'},
                 {data: 'correos', name: 'correos',visible:false},
                 {data: 'producto', name: 'producto'},
@@ -395,7 +397,6 @@
                 {data: 'producto', name: 'producto',visible:false},
                 {data: 'fechaultimopago', name: 'fechaultimopago',visible:false},
                 {data: 'fechaactulizaciones', name: 'fechaactulizaciones',visible:false},
-                {data: 'sis_distribuidoresid', name: 'sis_distribuidoresid',visible:false},
                 {data: 'sis_vendedoresid', name: 'sis_vendedoresid',visible:false},
                 {data: 'sis_revendedoresid', name: 'sis_revendedoresid',visible:false},
                 {data: 'red_origen', name: 'red_origen',visible:false},

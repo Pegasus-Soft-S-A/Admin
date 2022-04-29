@@ -41,6 +41,12 @@
                                             <a href="{{ route('licencias.Web.enviaremail',$cliente->sis_clientesid) }}"
                                                 class="btn btn-primary btn-icon" data-toggle="tooltip"
                                                 title="Enviar Email"><i class="socicon-mail"></i></a>
+
+                                            @if (Auth::user()->tipo==1 || Auth::user()->tipo==2)
+                                            <a id="resetear" href="#" class="btn btn-success btn-icon"
+                                                data-toggle="tooltip" title="Resetear Clave"><i
+                                                    class="la la-user-lock"></i></a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

@@ -40,7 +40,6 @@
             display: block;
             margin: 13px 0;
         }
-
     </style>
 
     <style type="text/css">
@@ -50,21 +49,18 @@
                 max-width: 100%;
             }
         }
-
     </style>
     <style media="screen and (min-width:480px)">
         .moz-text-html .mj-column-per-100 {
             width: 100% !important;
             max-width: 100%;
         }
-
     </style>
     <style type="text/css">
         [owa] .mj-column-per-100 {
             width: 100% !important;
             max-width: 100%;
         }
-
     </style>
     <style type="text/css">
         @media only screen and (max-width:480px) {
@@ -76,7 +72,6 @@
                 width: auto !important;
             }
         }
-
     </style>
 </head>
 
@@ -165,15 +160,15 @@
                                                     <p class="text-build-content" data-testid="JnKFIFS0T"
                                                         style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
                                                         @if ($array['tipo'] == 2)
-                                                            <span style="font-family:Arial; text-color:#000000">Se ha
-                                                                registrado una nueva
-                                                                licencia de
-                                                            </span>
+                                                        <span style="font-family:Arial; text-color:#000000">Se ha
+                                                            registrado una nueva
+                                                            licencia de
+                                                        </span>
                                                         @endif
                                                         @if ($array['tipo'] == 4)
-                                                            <span style="font-family:Arial; text-color:#000000">Se ha
-                                                                modificado una licencia de
-                                                            </span>
+                                                        <span style="font-family:Arial; text-color:#000000">Se ha
+                                                            modificado una licencia de
+                                                        </span>
                                                         @endif
                                                         <span
                                                             style="font-family:Arial;font-size:16px;text-color:#000000"><b>
@@ -233,17 +228,26 @@
                                                                     </tr>
                                                                     <tr>
                                                                         <td style="padding-top: 8px">
+                                                                            Fecha Actualizaciones
+                                                                        </td>
+                                                                        <td>
+                                                                            {{ $array['fechaactulizaciones'] }}
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td style="padding-top: 8px">
                                                                             Tipo
                                                                         </td>
                                                                         <td>
                                                                             @if ($array['modulopractico'] == 1)
-                                                                              Perseo Práctico
+                                                                            Perseo Práctico
                                                                             @endif
                                                                             @if ($array['modulocontable'] == 1)
-                                                                               Perseo Contable
+                                                                            Perseo Contable
                                                                             @endif
                                                                             @if ($array['modulocontrol'] == 1)
-                                                                                Perseo Control 
+                                                                            Perseo Control
                                                                             @endif
                                                                         </td>
                                                                     </tr>
@@ -304,97 +308,97 @@
                                                     <ul>
 
                                                         @if ($array['modulos'][0]->nomina != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Nómina
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Nómina
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->activos != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Activos Fijos
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Activos Fijos
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->produccion != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Producción
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Producción
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->restaurante != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Restaurante
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Restaurante
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->talleres != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Servicio Técnico Talleres Vehículos
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Servicio Técnico Talleres Vehículos
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->garantias != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Servicio Técnico/Garantías
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Servicio Técnico/Garantías
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->operadoras != false)
-                                                            <li style="margin-top: 5px ">
-                                                                TV-Cable e Internet
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            TV-Cable e Internet
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->encomiendas != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Servicio de Encomiendas
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Servicio de Encomiendas
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->crm_cartera != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Crm de Cartera
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Crm de Cartera
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->tienda_perseo_distribuidor != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Integraciones
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Integraciones
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->tienda_perseo_publico != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Tienda Perseo
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Tienda Perseo
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->perseo_hybrid != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Perseo Hybrid
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Perseo Hybrid
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->tienda_woocommerce != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Plugin Woocomerce
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Plugin Woocomerce
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->api_whatsapp != false)
-                                                            <li style="margin-top: 5px ">
-                                                                API Whatsapp
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            API Whatsapp
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->cash_manager != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Cash Manager
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Cash Manager
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos'][0]->reporte_equifax != false)
-                                                            <li style="margin-top: 5px ">
-                                                                Reporte Equifax
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Reporte Equifax
+                                                        </li>
                                                         @endif
                                                     </ul>
                                                     @if ($array['tipo'] == 2)
-                                                        <p
-                                                            style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center">
-                                                            <b>Creación</b>
-                                                        </p>
+                                                    <p
+                                                        style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center">
+                                                        <b>Creación</b>
+                                                    </p>
                                                     @endif
                                                     @if ($array['tipo'] == 4)
-                                                        <p
-                                                            style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center">
-                                                            <b>Modificación</b>
-                                                        </p>
+                                                    <p
+                                                        style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center">
+                                                        <b>Modificación</b>
+                                                    </p>
                                                     @endif
                                                     <ul class="list-group">
                                                         <table style="width: 60%;">

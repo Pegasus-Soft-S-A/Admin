@@ -11,6 +11,7 @@ use App\Http\Controllers\usuariosController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas Inicio 
+Route::get('/', [adminController::class, 'loginRedireccion'])->name('loginredireccion');
 Route::get('/inicio', [adminController::class, 'loginRedireccion'])->name('loginredireccion');
 Route::post('/inicio', [adminController::class, 'post_loginRedireccion'])->name('post_loginredireccion');
 
@@ -67,6 +68,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::delete('/licencias/eliminarpc/{licencia}', [licenciasController::class, 'eliminarPC'])->name('licencias.Pc.eliminar');
         Route::delete('/licencias/eliminarweb/{servidor}/{licencia}', [licenciasController::class, 'eliminarWeb'])->name('licencias.Web.eliminar');
         Route::get('/email/{cliente}', [licenciasController::class, 'enviarEmail'])->name('licencias.Web.enviaremail');
+        Route::get('/licencias/editarclave/{cliente}/{servidor}/{licencia}', [licenciasController::class, 'editarClave'])->name('editar_clave');
 
         /* Distribuidores */
         Route::get('/distribuidores', [distribuidoresController::class, 'index'])->name('distribuidores.index');

@@ -46,7 +46,7 @@ class clientesController extends Controller
             $distribuidores = Distribuidores::all()->toArray();
             $vendedores = Revendedores::all()->toArray();
 
-            if (Auth::user()->tipo == 1) {
+            if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2) {
                 $clientes = Clientes::select(
                     'sis_clientes.sis_clientesid',
                     'sis_clientes.identificacion',
@@ -84,7 +84,6 @@ class clientesController extends Controller
                     ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->groupBy('sis_clientes.sis_clientesid')
                     ->get();
-
                 foreach ($servidores as  $servidor) {
                     $url = $servidor->dominio . '/registros/consulta_cliente';
                     $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
@@ -223,7 +222,6 @@ class clientesController extends Controller
             }
 
             $diferencia = removeDuplicate($clientes->toArray(), $web, $pc->toArray(), 'sis_clientesid');
-
             $unir = array_merge($web, $pc->toArray());
             $temp = array_unique(array_column($unir,  'numerocontrato'));
             $unique_arr = array_intersect_key($unir, $temp);
@@ -291,16 +289,17 @@ class clientesController extends Controller
                         break;
                 }
             }
-            // dd($final);
 
             return DataTables::of($final)
                 ->editColumn('identificacion', function ($cliente) {
-                    return '<a class="text-primary" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '">' . $cliente['identificacion'] . ' </a>';
+                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente['sis_distribuidoresid']))) {
+                        return '<a class="text-primary" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '">' . $cliente['identificacion'] . ' </a>';
+                    } else {
+                        return $cliente['identificacion'];
+                    }
                 })
                 ->editColumn('action', function ($cliente) {
-                    if (Auth::user()->tipo == 1) {
-                        return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '" title="Editar"> <i class="la la-edit"></i> </a>';
-                    } else {
+                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente['sis_distribuidoresid']))) {
                         return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '" title="Editar"> <i class="la la-edit"></i> </a>';
                     }
                 })
@@ -336,6 +335,15 @@ class clientesController extends Controller
                         $licencia = "PC";
                     }
                     return $licencia;
+                })
+                ->editColumn('telefono2', function ($cliente) {
+                    $telefono = "";
+                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente['sis_distribuidoresid']))) {
+                        $telefono = $cliente['telefono2'];
+                    } else {
+                        $telefono = "";
+                    }
+                    return $telefono;
                 })
                 ->editColumn('producto', function ($cliente) {
                     $producto = "";
@@ -410,82 +418,82 @@ class clientesController extends Controller
                     return $producto;
                 })
                 ->editColumn('provinciasid', function ($cliente) {
-                    $origen = "";
+                    $provincia = "";
                     switch ($cliente['provinciasid']) {
                         case '1':
-                            $producto = "AZUAY";
+                            $provincia = "AZUAY";
                             break;
                         case '2':
-                            $producto = "BOLIVAR";
+                            $provincia = "BOLIVAR";
                             break;
                         case '3':
-                            $producto = "CAÑAR";
+                            $provincia = "CAÑAR";
                             break;
                         case '4':
-                            $producto = "CARCHI";
+                            $provincia = "CARCHI";
                             break;
                         case '5':
-                            $producto = "CHIMBORAZO";
+                            $provincia = "CHIMBORAZO";
                             break;
                         case '6':
-                            $producto = "COTOPAXI";
+                            $provincia = "COTOPAXI";
                             break;
                         case '7':
-                            $producto = "EL ORO";
+                            $provincia = "EL ORO";
                             break;
                         case '8':
-                            $producto = "ESMERALDAS";
+                            $provincia = "ESMERALDAS";
                             break;
                         case '9':
-                            $producto = "GUAYAS";
+                            $provincia = "GUAYAS";
                             break;
                         case '10':
-                            $producto = "IMBABURA";
+                            $provincia = "IMBABURA";
                             break;
                         case '11':
-                            $producto = "LOJA";
+                            $provincia = "LOJA";
                             break;
                         case '12':
-                            $producto = "LOS RIOS";
+                            $provincia = "LOS RIOS";
                             break;
                         case '13':
-                            $producto = "MANABI";
+                            $provincia = "MANABI";
                             break;
                         case '14':
-                            $producto = "MORONA SANTIAGO";
+                            $provincia = "MORONA SANTIAGO";
                             break;
                         case '15':
-                            $producto = "NAPO";
+                            $provincia = "NAPO";
                             break;
                         case '16':
-                            $producto = "PASTAZA";
+                            $provincia = "PASTAZA";
                             break;
                         case '17':
-                            $producto = "PICHINCHA";
+                            $provincia = "PICHINCHA";
                             break;
                         case '18':
-                            $producto = "TUNGURAHUA";
+                            $provincia = "TUNGURAHUA";
                             break;
                         case '19':
-                            $producto = "ZAMORA CHINCHIPE";
+                            $provincia = "ZAMORA CHINCHIPE";
                             break;
                         case '20':
-                            $producto = "GALAPAGOS";
+                            $provincia = "GALAPAGOS";
                             break;
                         case '21':
-                            $producto = "SUCUMBIOS";
+                            $provincia = "SUCUMBIOS";
                             break;
                         case '22':
-                            $producto = "ORELLANA";
+                            $provincia = "ORELLANA";
                             break;
                         case '23':
-                            $producto = "SANTO DOMINGO DE LOS TSACHILAS";
+                            $provincia = "SANTO DOMINGO DE LOS TSACHILAS";
                             break;
                         case '24':
-                            $producto = "SANTA ELENA";
+                            $provincia = "SANTA ELENA";
                             break;
                     }
-                    return $producto;
+                    return $provincia;
                 })
                 ->editColumn('periodo', function ($cliente) {
                     $periodo = "";

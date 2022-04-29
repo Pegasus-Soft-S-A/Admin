@@ -8,6 +8,8 @@
 @php
 $rol=Auth::user()->tipo;
 $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
+$servidoresid=isset($licencia->sis_licenciasid) ? $licencia->sis_servidoresid : 0;
+$licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
 @endphp
 @csrf
 <div class="form-group row">
@@ -169,7 +171,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
     </div>
     <div class="col-lg-6">
         <label>Agrupados:</label>
-        <select class="form-control select2" name="sis_agrupadosid" id="sis_agrupadosid">
+        <select class="form-control select2" name="sis_agrupadosid" id="sis_agrupadosid" @if($rol!=1) disabled @endif>
             <option value="0">Sin grupo</option>
             @foreach ($agrupados as $agrupado)
             <option value="{{ $agrupado->sis_agrupadosid }}" {{ $agrupado->sis_agrupadosid ==
@@ -266,6 +268,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
 <script>
     $('#formulario').submit(function(event) {
         //Enviar swirch que estan disabled
+        $("#sis_agrupadosid").prop("disabled", false);
         $("#nomina").prop("disabled", false);
         $("#activos").prop("disabled", false);
         $("#produccion").prop("disabled", false);
@@ -285,6 +288,41 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
 
     $("#recargar").click(function(e) {
         confirmar('recargar',"Esta Seguro de Recargar 120 Documentos Adicionales a la Licencia?");
+    });
+
+    $("#resetear").click(function(e) {
+        Swal.fire({
+            title: "Advertencia",
+            text: 'Esta seguro de resetear la clave del usuario?',
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Confirmar",
+            cancelButtonText: "Cancelar",
+            reverseButtons: true
+        }).then(function(result) {
+            if (result.value) {
+                $.get('{{ route('editar_clave',[$cliente->sis_clientesid,$servidoresid,$licenciasid]) }}', function(data) {
+                    $.notify({
+                            message: data.mensaje,
+                        },
+                        {
+                            showProgressbar: true,
+                            delay: 2500,
+                            mouse_over: "pause",
+                            placement: {
+                                from: "top",
+                                align: "right",
+                            },
+                            animate: {
+                                enter: "animated fadeInUp",
+                                exit: "animated fadeOutDown",
+                            },
+                            type: data.tipo,
+                        }
+                    );
+                });
+            } 
+        });
     });
 
     $('#periodo').change(function(){

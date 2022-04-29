@@ -326,7 +326,7 @@ class licenciasController extends Controller
 
         $array['view'] = 'emails.licenciapc';
         $array['from'] = env('MAIL_FROM_ADDRESS');
-        $array['subject'] = 'Registro Licencia Pc';
+        $array['subject'] = 'Nuevo Registro Licencia Pc';
         $array['cliente'] =  $cliente->nombres;
         $array['identificacion'] = $cliente->identificacion;
         $array['correo'] = $cliente->correos;
@@ -477,7 +477,7 @@ class licenciasController extends Controller
 
             $array['view'] = 'emails.licenciaweb';
             $array['from'] = env('MAIL_FROM_ADDRESS');
-            $array['subject'] = 'Registro Licencia Web';
+            $array['subject'] = 'Nuevo Registro Licencia Web';
             $array['cliente'] = $cliente->nombres;
             $array['identificacion'] = $cliente->identificacion;
             $array['correos'] = $cliente->correos;
@@ -590,18 +590,22 @@ class licenciasController extends Controller
             case 'mes':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 month"));
                 $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones));
+                $asunto = "Renovacion Mensual Perseo PC";
                 break;
             case 'anual':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
                 $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones));
+                $asunto = "Renovacion Anual Perseo PC";
                 break;
             case 'actualizacion':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca));
                 $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones . "+ 1 year"));
+                $asunto = "Actualizacion Anual Perseo PC";
                 break;
             default:
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
                 $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones));
+                $asunto = "Modificacion Registro Licencia Pc";
                 break;
         }
 
@@ -689,7 +693,7 @@ class licenciasController extends Controller
 
         $array['view'] = 'emails.licenciapc';
         $array['from'] = env('MAIL_FROM_ADDRESS');
-        $array['subject'] = 'Registro Licencia Pc';
+        $array['subject'] = $asunto;
         $array['cliente'] =  $cliente->nombres;
         $array['identificacion'] = $cliente->identificacion;
         $array['correo'] = $cliente->correos;
@@ -707,11 +711,13 @@ class licenciasController extends Controller
         $array['modulopractico'] = $licencia->modulopractico;
         $array['modulocontable'] = $licencia->modulocontable;
         $array['modulocontrol'] = $licencia->modulocontrol;
+        $array['fechaactulizaciones'] = $licencia->fechaactulizaciones;
 
         $emails = explode(", ", $cliente->distribuidor);
 
         $emails = array_merge($emails,  [
             "comercializacion@perseo.ec",
+            "facturacion@perseo.ec",
             $cliente->vendedor,
             Auth::user()->correo,
         ]);
@@ -745,18 +751,24 @@ class licenciasController extends Controller
         switch ($request->tipo) {
             case 'mes':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 month"));
+                $asunto = 'Renovacion Mensual Licencia Web';
+                $request['periodo'] = 1;
                 break;
             case 'anual':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
+                $asunto = 'Renovacion Anual Licencia Web';
+                $request['periodo'] = 2;
                 break;
             case 'recargar':
                 $parametros_json = json_decode($licencia->parametros_json);
                 $parametros_json->Documentos = $parametros_json->Documentos + 120;
                 $request['parametros_json'] = json_encode($parametros_json);
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
+                $asunto = 'Recarga Lite Perseo Web';
                 break;
             default:
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
+                $asunto = 'Modificar Licencia Web';
                 break;
         }
 
@@ -833,7 +845,7 @@ class licenciasController extends Controller
 
             $array['view'] = 'emails.licenciaweb';
             $array['from'] = env('MAIL_FROM_ADDRESS');
-            $array['subject'] = 'Modificar Licencia Web';
+            $array['subject'] = $asunto;
             $array['cliente'] = $cliente->nombres;
             $array['identificacion'] = $cliente->identificacion;
             $array['correos'] = $cliente->correos;
@@ -973,5 +985,20 @@ class licenciasController extends Controller
         } else {
             return with(["actividades" => []]);
         }
+    }
+
+    public function editarClave(Clientes $cliente, Servidores $servidor, $licenciaid)
+    {
+        $url = $servidor->dominio . '/registros/restaurar_clave_usuario';
+        $usuario = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($url, ['sis_licenciasid' => $licenciaid, 'identificacion' => substr($cliente->identificacion, 0, 10)])
+            ->json();
+        if (isset($usuario['respuesta'])) {
+            $resultado = ['mensaje' => "Clave Reseteada Correctamente", "tipo" => 'success'];
+        } else {
+            $resultado = ['mensaje' => $usuario['fault']['detail'], "tipo" => 'warning'];
+        }
+        return $resultado;
     }
 }

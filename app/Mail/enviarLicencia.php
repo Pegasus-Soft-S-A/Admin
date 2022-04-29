@@ -46,5 +46,11 @@ class enviarlicencia extends Mailable
                 ->from($this->array['from'], env('MAIL_FROM_NAME'))
                 ->subject($this->array['subject'])->attach(public_path() . '/assets/media/Procedimiento Ingreso.pdf')->attach(public_path() . '/assets/media/Términos y Condiciones.pdf');
         }
+
+        if ($this->array['tipo'] == 6) {
+            return $this->view('emails.registro_demos')
+                ->from($this->array['from'], env('MAIL_FROM_NAME'))
+                ->subject($this->array['subject'])->attach(public_path() . '/assets/media/Procedimiento Ingreso.pdf')->attach(public_path() . '/assets/media/Términos y Condiciones.pdf');
+        }
     }
 }

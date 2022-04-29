@@ -53,7 +53,8 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
         <input
             class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('correos') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Correo" name="correos" autocomplete="off"
-            value="{{ old('correos', $cliente->correos) }}" id="correo" />
+            value="{{ old('correos', $cliente->correos) }}" id="correos" onblur="validarCorreo()" />
+        <span class="text-danger d-none" id="errorCorreo">El Correo Ingresado No Es Válido</span>
         @if ($errors->has('correos'))
         <span class="text-danger">{{ $errors->first('correos') }}</span>
         @endif
@@ -156,7 +157,9 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
         <input type="text"
             class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('telefono2') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Numero Celular" onkeypress="return validarNumero(event)" name="telefono2"
-            autocomplete="off" value="{{ old('telefono2', $cliente->telefono2) }}" id="telefono2" />
+            autocomplete="off" value="{{ old('telefono2', $cliente->telefono2) }}" id="telefono2"
+            onblur="validarCelular()" />
+        <span class="text-danger d-none" id="errorCelular">El Celular Ingresado No Es Válido</span>
         @if ($errors->has('telefono2'))
         <span class="text-danger">{{ $errors->first('telefono2') }}</span>
         @endif
@@ -181,8 +184,8 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
     </div>
     <div class="col-lg-3">
         <label>Vendedor:</label>
-        <select class="form-control select2 @if($rol!=1 && $accion=='Modificar') disabled @endif"
-            name="sis_vendedoresid" id="vendedor" @if($rol!=1 && $accion=='Modificar' ) disabled @endif>
+        <select class="form-control select2" name="sis_vendedoresid" id="vendedor" @if(($rol!=1 && $rol!=2) &&
+            $accion=='Modificar' ) disabled @endif>
             <option value="">Seleccione un Vendedor</option>
         </select>
         @if ($errors->has('sis_vendedoresid'))
@@ -191,8 +194,8 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
     </div>
     <div class="col-lg-3">
         <label>Revendedor:</label>
-        <select class="form-control select2 @if($rol!=1 && $accion=='Modificar') disabled @endif"
-            name="sis_revendedoresid" id="revendedor" @if($rol!=1 && $accion=='Modificar' ) disabled @endif>
+        <select class="form-control select2" name="sis_revendedoresid" id="revendedor" @if(($rol!=1 && $rol!=2) &&
+            $accion=='Modificar' ) disabled @endif>
             <option value="">Seleccione un Revendedor</option>
         </select>
         @if ($errors->has('sis_revendedoresid'))
