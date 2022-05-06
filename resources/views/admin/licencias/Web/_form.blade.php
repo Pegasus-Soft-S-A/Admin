@@ -156,8 +156,7 @@ $licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Servidor:</label>
-        <select class="form-control @if($accion=='Modificar') disabled @endif" name="sis_servidoresid"
-            id="sis_servidoresid">
+        <select class="form-control" name="sis_servidoresid" id="sis_servidoresid" disabled>
             @foreach ($servidores as $servidor)
             <option value="{{ $servidor->sis_servidoresid }}" {{ $servidor->sis_servidoresid ==
                 $licencia->sis_servidoresid ? 'selected' : '' }}>
@@ -269,6 +268,7 @@ $licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
     $('#formulario').submit(function(event) {
         //Enviar swirch que estan disabled
         $("#sis_agrupadosid").prop("disabled", false);
+        $("#sis_servidoresid").prop("disabled", false);
         $("#nomina").prop("disabled", false);
         $("#activos").prop("disabled", false);
         $("#produccion").prop("disabled", false);
@@ -347,6 +347,7 @@ $licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
             $('#precio').val('9.50');
             $('#usuarios').val('3');
             $('#numeromoviles').val('1');
+            $('#sis_servidoresid').val('1');
             $('#ecommerce').prop('checked', false);
             $('#produccion').prop('checked', true);
             $('#nomina').prop('checked', false);
@@ -420,7 +421,7 @@ $licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
                         fecha.setMonth(fecha.getMonth() + 15);
                     break;
                 }
-
+                $('#sis_servidoresid').val('1');
                 $('#periodo').removeClass( "disabled");
                 $('#usuarios').val('3');
                 $('#numeromoviles').val('1');
@@ -444,7 +445,7 @@ $licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
                         fecha.setMonth(fecha.getMonth() + 15);
                     break;
                 }
-
+                $('#sis_servidoresid').val('1');
                 $('#periodo').removeClass( "disabled");
                 $('#usuarios').val('6');
                 $('#numeromoviles').val('2');
@@ -470,7 +471,7 @@ $licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
                         $('#activos').prop('checked', true);
                     break;
                 }
-
+                $('#sis_servidoresid').val('1');
                 $('#periodo').removeClass( "disabled");
                 $('#usuarios').val('6');
                 $('#numeromoviles').val('2');
@@ -493,7 +494,7 @@ $licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
                         fecha.setMonth(fecha.getMonth() + 12);
                     break;
                 }
-
+                $('#sis_servidoresid').val('1');
                 $('#periodo').removeClass( "disabled");
                 $('#usuarios').val('6');
                 $('#numeromoviles').val('0');
@@ -508,6 +509,7 @@ $licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
             //Perseo Lite
             case '6':
                 fecha.setMonth(fecha.getMonth() + 12);
+                $('#sis_servidoresid').val('3');
                 $('#precio').val('0');
                 $('#periodo').val('1');
                 $('#periodo').addClass( "disabled");
@@ -533,7 +535,7 @@ $licenciasid=isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
                         fecha.setMonth(fecha.getMonth() + 12);
                     break;
                 }
-
+                $('#sis_servidoresid').val('1');
                 $('#periodo').removeClass( "disabled");
                 $('#usuarios').val('3');
                 $('#numeromoviles').val('0');

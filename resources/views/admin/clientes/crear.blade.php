@@ -110,38 +110,5 @@
         });
     }
 
-    // function validarCelular() {
-    //     celular = $('#telefono2').val();
-    //     if (celular.length > 0) {
-    //         $.getJSON("https://phonevalidation.abstractapi.com/v1/?api_key=7678748c57244785bc99109520e35d5f&phone=593" +
-    //             celular,
-    //             function(data) {
-    //                 if (data.valid != true) {
-    //                     $('#errorCelular').removeClass("d-none");
-    //                     $('#telefono2').addClass("is-invalid");
-    //                 } else {
-    //                         $('#errorCelular').addClass("d-none");
-    //                         $('#telefono2').removeClass("is-invalid");
-    //                 }
-    //         })
-    //     }
-    // }
-
-    // function validarCorreo() {
-    //     correo = $('#correos').val();
-    //     if (correo.length > 0) {
-    //         $.getJSON("https://emailvalidation.abstractapi.com/v1/?api_key=fae435e4569b4c93ac34e0701100778c&email=" +
-    //             correo,
-    //             function(data) {
-    //                 if (data.deliverability != "DELIVERABLE") {
-    //                     $('#errorCorreo').removeClass("d-none");
-    //                     $('#correos').addClass("is-invalid");
-    //                 } else {
-    //                     $('#errorCorreo').addClass("d-none");
-    //                     $('#correos').removeClass("is-invalid");
-    //                 }
-    //         })
-    //     }
-    // }
 </script>
 @endsection

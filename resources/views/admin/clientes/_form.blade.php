@@ -14,11 +14,11 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
     <div class="col-lg-6">
         <label>Identificacion:</label>
         <div id="spinner">
-            <input type="text"
-                class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
+            <input type="text" class="form-control {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
                 placeholder="Ingrese identificacion" name="identificacion" autocomplete="off"
                 value="{{ old('identificacion', $cliente->identificacion) }}" id="identificacion"
-                onkeypress="return validarNumero(event)" onblur="validarIdentificacion()" />
+                onkeypress="return validarNumero(event)" @if($rol!=1 && $accion=='Modificar' ) readonly @else
+                onblur="validarIdentificacion()" @endif />
         </div>
         <span class="text-danger d-none" id="mensajeBandera">La cédula o Ruc no es válido</span>
         @if ($errors->has('identificacion'))
@@ -27,10 +27,10 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
     </div>
     <div class="col-lg-6">
         <label>Nombres:</label>
-        <input type="text"
-            class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('nombres') ? 'is-invalid' : '' }}"
+        <input type="text" class="form-control {{ $errors->has('nombres') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Nombres" name="nombres" autocomplete="off"
-            value="{{ old('nombres', $cliente->nombres) }}" id="nombres" />
+            value="{{ old('nombres', $cliente->nombres) }}" id="nombres" @if($rol!=1 && $accion=='Modificar' ) readonly
+            @endif />
         @if ($errors->has('nombres'))
         <span class="text-danger">{{ $errors->first('nombres') }}</span>
         @endif
@@ -40,21 +40,18 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Dirección:</label>
-        <input type="text"
-            class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('direccion') ? 'is-invalid' : '' }}"
+        <input type="text" class="form-control {{ $errors->has('direccion') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Dirección" name="direccion" autocomplete="off" id="direccion"
-            value="{{ old('direccion', $cliente->direccion) }}" />
+            value="{{ old('direccion', $cliente->direccion) }}" @if($rol!=1 && $accion=='Modificar' ) readonly @endif />
         @if ($errors->has('direccion'))
         <span class="text-danger">{{ $errors->first('direccion') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
         <label>Correo:</label>
-        <input
-            class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('correos') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Correo" name="correos" autocomplete="off"
-            value="{{ old('correos', $cliente->correos) }}" id="correos" onblur="validarCorreo()" />
-        <span class="text-danger d-none" id="errorCorreo">El Correo Ingresado No Es Válido</span>
+        <input class="form-control {{ $errors->has('correos') ? 'is-invalid' : '' }}" placeholder="Ingrese Correo"
+            name="correos" autocomplete="off" value="{{ old('correos', $cliente->correos) }}" id="correos" @if($rol!=1
+            && $accion=='Modificar' ) readonly @endif />
         @if ($errors->has('correos'))
         <span class="text-danger">{{ $errors->first('correos') }}</span>
         @endif
@@ -144,22 +141,20 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
     </div>
     <div class="col-lg-3">
         <label>Convencional:</label>
-        <input type="text"
-            class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('telefono1') ? 'is-invalid' : '' }}"
+        <input type="text" class="form-control {{ $errors->has('telefono1') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Numero Convencional" name="telefono1" onkeypress="return validarNumero(event)"
-            autocomplete="off" value="{{ old('telefono1', $cliente->telefono1) }}" id="telefono1" />
+            autocomplete="off" value="{{ old('telefono1', $cliente->telefono1) }}" id="telefono1" @if($rol!=1 &&
+            $accion=='Modificar' ) readonly @endif />
         @if ($errors->has('telefono1'))
         <span class="text-danger">{{ $errors->first('telefono1') }}</span>
         @endif
     </div>
     <div class="col-lg-3">
         <label>Celular:</label>
-        <input type="text"
-            class="form-control @if($rol!=1 && $accion=='Modificar') disabled @endif {{ $errors->has('telefono2') ? 'is-invalid' : '' }}"
+        <input type="text" class="form-control {{ $errors->has('telefono2') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Numero Celular" onkeypress="return validarNumero(event)" name="telefono2"
-            autocomplete="off" value="{{ old('telefono2', $cliente->telefono2) }}" id="telefono2"
-            onblur="validarCelular()" />
-        <span class="text-danger d-none" id="errorCelular">El Celular Ingresado No Es Válido</span>
+            autocomplete="off" value="{{ old('telefono2', $cliente->telefono2) }}" id="telefono2" @if($rol!=1 &&
+            $accion=='Modificar' ) readonly @endif />
         @if ($errors->has('telefono2'))
         <span class="text-danger">{{ $errors->first('telefono2') }}</span>
         @endif
@@ -210,7 +205,6 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
             @if($rol==1)
             <option value="2" {{ old('red_origen', $cliente->red_origen) == '2' ? 'Selected' : '' }}>Contafácil</option>
             <option value="3" {{ old('red_origen', $cliente->red_origen) == '3' ? 'Selected' : '' }}>UIO-01</option>
-            <option value="5" {{ old('red_origen', $cliente->red_origen) == '5' ? 'Selected' : '' }}>GYE-02</option>
             <option value="6" {{ old('red_origen', $cliente->red_origen) == '6' ? 'Selected' : '' }}>CUE-01</option>
             <option value="7" {{ old('red_origen', $cliente->red_origen) == '7' ? 'Selected' : '' }}>STO-01</option>
             <option value="10" {{ old('red_origen', $cliente->red_origen) == '10' ? 'Selected' : '' }}>CNV-01</option>

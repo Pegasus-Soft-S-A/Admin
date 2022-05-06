@@ -18,6 +18,8 @@ class IdentificacionesController extends Controller
         $buscar = Identificaciones::where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->first();
         if (!$buscar) {
             $buscar = array("razon_social" => "");
+        } else {
+            $buscar->parametros_json = json_decode($buscar->parametros_json);
         }
         return json_encode($buscar);
     }
@@ -38,6 +40,7 @@ class IdentificacionesController extends Controller
             $buscar->telefono3 = $request->telefono3 == null ? "" : $request->telefono3;
 
             $buscar->save();
+            $buscar->parametros_json = json_decode($buscar->parametros_json);
             return json_encode($buscar);
         } else {
             $buscar = new Identificaciones();
@@ -63,6 +66,7 @@ class IdentificacionesController extends Controller
             $buscar->obligado = $request->obligado == null ? "" : $request->obligado;
 
             $buscar->save();
+            $buscar->parametros_json = json_decode($buscar->parametros_json);
             return json_encode($buscar);
         }
     }

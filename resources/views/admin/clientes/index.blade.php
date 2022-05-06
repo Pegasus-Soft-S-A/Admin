@@ -322,7 +322,7 @@
 
                                         <th style="display:none">Usuarios</th>
                                         <th style="display:none">Empresas</th>
-                                        <th style="display:none">MÃ³viles</th>
+                                        <th style="display:none">Moviles</th>
                                         <th class="no-exportar">Acciones</th>
 
                                     </tr>

@@ -10,7 +10,7 @@
     <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/plugins/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/media/logoP.png') }}">
-
+    <meta property="og:image" content="{{ asset('assets/media/imagenperseo.jpg') }}" />
 </head>
 
 @php
@@ -29,8 +29,23 @@ $id=request()->id;
                     <div class="card-body">
                         <form action="{{ route('post_registro') }}" method="POST" id="formulario">
                             @csrf
+
                             <div class="text-center mb-10">
                                 <img src="{{ asset('assets/media/login.png') }}" height="105px" alt="" />
+                            </div>
+                            <div class="card card-custom card-stretch gutter-b">
+                                <!--begin::Body-->
+                                <div class="card-body d-flex align-items-center py-0 mt-8">
+                                    <div class="d-flex flex-column flex-grow-1 py-2 py-lg-5">
+                                        <span id="contador" href="#"
+                                            class="card-title font-weight-bolder text-dark-75 font-size-h1 mb-2"
+                                            data-stop="{{App\Models\Clientes::count()}}">0</span>
+                                        <span class="font-weight-bold text-muted font-size-lg">Clientes Activos</span>
+                                    </div>
+                                    <img src="{{ asset('assets/media/user.svg') }}" alt=""
+                                        class="align-self-end h-100px">
+                                </div>
+                                <!--end::Body-->
                             </div>
                             <div class="fv-row mb-5">
                                 <div class="input-group" id="spinner">
@@ -225,49 +240,22 @@ $id=request()->id;
                                         <option value="3" {{$id=='UIO-01' ? 'Selected' : '' }}>
                                             UIO-01
                                         </option>
-                                        <option value="4" {{$id=='GYE-02' ? 'Selected' : '' }}>
-                                            GYE-02
-                                        </option>
-                                        <option value="5" {{$id=='CUE-01' ? 'Selected' : '' }}>
+                                        <option value="6" {{$id=='CUE-01' ? 'Selected' : '' }}>
                                             CUE-01
                                         </option>
-                                        <option value="6" {{$id=='STO-01' ? 'Selected' : '' }}>
+                                        <option value="7" {{$id=='STO-01' ? 'Selected' : '' }}>
                                             STO-01
                                         </option>
-                                        <option value="7" {{$id=='CNV-01' ? 'Selected' : '' }}>
+                                        <option value="10" {{$id=='CNV-01' ? 'Selected' : '' }}>
                                             CNV-01
                                         </option>
-                                        <option value="8" {{$id=='MATRIZ' ? 'Selected' : '' }}>
+                                        <option value="11" {{$id=='MATRIZ' ? 'Selected' : '' }}>
                                             MATRIZ
                                         </option>
                                     </select>
                                 </div>
                             </div>
-                            {{-- <div class="card card-custom gutter-b" style="height: 150px">
-                                <div class="card-body">
-                                    <span class="svg-icon svg-icon-3x svg-icon-success">
-                                        <!--begin::Svg Icon | path:assets/media/svg/icons/Communication/Group.svg-->
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
-                                            viewBox="0 0 24 24" version="1.1">
-                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                <polygon points="0 0 24 0 24 24 0 24"></polygon>
-                                                <path
-                                                    d="M18,14 C16.3431458,14 15,12.6568542 15,11 C15,9.34314575 16.3431458,8 18,8 C19.6568542,8 21,9.34314575 21,11 C21,12.6568542 19.6568542,14 18,14 Z M9,11 C6.790861,11 5,9.209139 5,7 C5,4.790861 6.790861,3 9,3 C11.209139,3 13,4.790861 13,7 C13,9.209139 11.209139,11 9,11 Z"
-                                                    fill="#000000" fill-rule="nonzero" opacity="0.3"></path>
-                                                <path
-                                                    d="M17.6011961,15.0006174 C21.0077043,15.0378534 23.7891749,16.7601418 23.9984937,20.4 C24.0069246,20.5466056 23.9984937,21 23.4559499,21 L19.6,21 C19.6,18.7490654 18.8562935,16.6718327 17.6011961,15.0006174 Z M0.00065168429,20.1992055 C0.388258525,15.4265159 4.26191235,13 8.98334134,13 C13.7712164,13 17.7048837,15.2931929 17.9979143,20.2 C18.0095879,20.3954741 17.9979143,21 17.2466999,21 C13.541124,21 8.03472472,21 0.727502227,21 C0.476712155,21 -0.0204617505,20.45918 0.00065168429,20.1992055 Z"
-                                                    fill="#000000" fill-rule="nonzero"></path>
-                                            </g>
-                                        </svg>
-                                        <!--end::Svg Icon-->
-                                    </span>
-                                    <div class="text-dark font-weight-bolder font-size-h2 mt-3">8,600</div>
-                                    <a href="#"
-                                        class="text-muted text-hover-primary font-weight-bold font-size-lg mt-1">Clientes
-                                        Activos</a>
-                                </div>
-                            </div> --}}
+
                             <div class="text-center">
                                 <button type="submit" class="btn btn-lg btn-primary w-100 mb-5" id="ingresar">
                                     <span class="indicator-label">Registrarse</span>
@@ -311,6 +299,15 @@ $id=request()->id;
 	    @endforeach
 
         $(document).ready(function () {
+            var $this = $($('#contador'));
+            jQuery({ Counter: 0 }).animate({ Counter: $this.attr('data-stop') }, {
+                duration: 1000,
+                easing: 'swing',
+                step: function (now) {
+                $this.text(Math.ceil(now));
+                }
+            });
+
             //Iniciar select2
             $('.select2').select2({
                 width: '100%'
@@ -394,7 +391,10 @@ $id=request()->id;
                 message: 'Registrando'
             }); 
         })
+
     </script>
+
+
 </body>
 
 

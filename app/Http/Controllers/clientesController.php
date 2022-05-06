@@ -8,6 +8,8 @@ use App\Models\Licencias;
 use App\Models\Log;
 use App\Models\Revendedores;
 use App\Models\Servidores;
+use App\Rules\ValidarCelular;
+use App\Rules\ValidarCorreo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -534,10 +536,10 @@ class clientesController extends Controller
                 'identificacion' => ['required', 'unique:sis_clientes'],
                 'nombres' => 'required',
                 'direccion' => 'required',
-                'correos' => ['required', 'email'],
+                'correos' => ['required', 'email', new ValidarCorreo],
                 'provinciasid' => 'required',
                 'telefono1' => ['required', 'min:7|max:10'],
-                'telefono2' => ['required', 'size:10'],
+                'telefono2' => ['required', 'size:10', new ValidarCelular],
                 'sis_distribuidoresid' => 'required',
                 'sis_vendedoresid' => 'required',
                 'sis_revendedoresid' => 'required',
@@ -618,10 +620,10 @@ class clientesController extends Controller
                 'identificacion' => ['required', 'unique:sis_clientes,identificacion,' . $cliente->sis_clientesid . ',sis_clientesid'],
                 'nombres' => 'required',
                 'direccion' => 'required',
-                'correos' => ['required', 'email'],
+                'correos' => ['required', 'email', new ValidarCorreo],
                 'provinciasid' => 'required',
                 'telefono1' => ['required', 'min:7|max:10'],
-                'telefono2' => ['required', 'size:10'],
+                'telefono2' => ['required', 'size:10', new ValidarCelular],
                 'sis_distribuidoresid' => 'required',
                 'sis_vendedoresid' => 'required',
                 'sis_revendedoresid' => 'required',
