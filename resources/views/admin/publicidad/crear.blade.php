@@ -41,5 +41,7 @@
 @section('script')
 <script>
     var publicidad = new KTImageInput('imagen');
+    var publicidad_admin = new KTImageInput('imagen-admin');
+    var publicidad_registro = new KTImageInput('imagen-registro');
 </script>
 @endsection

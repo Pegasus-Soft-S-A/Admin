@@ -20,7 +20,7 @@
     <div class="row h-100 w-100 mx-auto">
 
         <div class="col-md-8 d-none d-xl-block"
-            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/login-fondo.png') }}); background-size: 100% 100%; ">
+            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-inicio.jpg') }}); background-size: 100% 100%; ">
         </div>
 
         <div class="mx-auto col-md-4 m-0 p-0 d-flex align-items-center">
@@ -76,6 +76,7 @@
     <!--end::Main-->
     <script src="{{ asset('assets/plugins/plugins.bundle.js') }}"></script>
     <script>
+        document.getElementById("identificacion").focus();
         //Notificaciones
         @foreach (session('flash_notification', collect())->toArray() as $message)
             $.notify(

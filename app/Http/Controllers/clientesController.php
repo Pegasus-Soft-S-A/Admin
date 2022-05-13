@@ -568,6 +568,7 @@ class clientesController extends Controller
         //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
         $request['fechacreacion'] = now();
         $request['usuariocreacion'] = Auth::user()->nombres;
+        $request['validado'] = 1;
 
 
         DB::beginTransaction();
@@ -575,6 +576,7 @@ class clientesController extends Controller
             $servidores = Servidores::where('estado', 1)->get();
 
             $cliente =   Clientes::create($request->all());
+
             $log = new Log();
             $log->usuario = Auth::user()->nombres;
             $log->pantalla = "Clientes";

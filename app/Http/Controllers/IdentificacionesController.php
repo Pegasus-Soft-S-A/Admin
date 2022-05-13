@@ -111,6 +111,90 @@ class IdentificacionesController extends Controller
         return json_encode($servidores);
     }
 
+    public function consultar_validado(Request $request)
+    {
+        $identificacionIngresada = substr($request->identificacion, 0, 10);
+        $cliente = Clientes::where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)
+            ->first();
+        return json_encode($cliente);
+    }
+
+    public function validar_datos(Request $request)
+    {
+        $respuesta = [];
+
+        $url = 'https://emailvalidation.abstractapi.com/v1/?api_key=fae435e4569b4c93ac34e0701100778c&email=' . $request->correo;
+        $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->get($url)
+            ->json();
+        if ($correo['deliverability'] != "DELIVERABLE") {
+            if ($correo['is_valid_format']['value'] == true &&  (substr($request->correo, strpos($request->correo, '@') + 1, strlen($request->correo)) == 'hotmail.com') || substr($request->correo, strpos($request->correo, '@') + 1, strlen($request->correo)) == 'outlook.com') {
+                //consultar api2 si es hotmail
+                $url = 'https://api.debounce.io/v1/?email=' . rawurlencode($request->correo) . '&api=6269b53f06aeb';
+                $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                    ->withOptions(["verify" => false])
+                    ->get($url)
+                    ->json();
+                if ($correo['debounce']['result'] != "Safe to Send") {
+                    $respuesta = ["resultado" => "El correo ingresado no es válido"];
+                    return json_encode($respuesta);
+                }
+            } else {
+                $respuesta = ["resultado" => "El correo ingresado no es válido"];
+                return json_encode($respuesta);
+            }
+        }
+
+        //consultar api1
+        $url = 'https://phonevalidation.abstractapi.com/v1/?api_key=7678748c57244785bc99109520e35d5f&phone=593' . $request->celular;
+        $celular = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->get($url)
+            ->json();
+
+        if (!isset($celular['resultado'])) {
+            if ($celular['valid'] != true) {
+                $respuesta = ["resultado" => "El celular ingresado no es válido"];
+                return json_encode($respuesta);
+            }
+        }
+
+        //Actualizar 
+        DB::beginTransaction();
+        try {
+            $servidores = Servidores::where('estado', 1)->get();
+            $cliente = Clientes::where('sis_clientesid', $request->sis_clientesid)->first();
+            $cliente->correos = $request->correo;
+            $cliente->telefono2 = $request->celular;
+            $cliente->validado = 1;
+            $cliente->save();
+
+            foreach ($servidores as $servidor) {
+
+                $urlEditar = $servidor->dominio . '/registros/editar_clientes';
+                $clienteEditar = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                    ->withOptions(["verify" => false])
+                    ->post($urlEditar, $cliente->toArray())
+                    ->json();
+
+                if (!isset($clienteEditar['sis_clientes'])) {
+                    DB::rollBack();
+                    $respuesta = ["resultado" => "Ocurrió un error, vuelta a intentarlo"];
+                    return json_encode($respuesta);
+                }
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $respuesta = ["resultado" => "Ocurrió un error, vuelta a intentarlo"];
+            return json_encode($respuesta);
+        };
+
+        $respuesta = ["resultado" => "Ok"];
+        return json_encode($respuesta);
+    }
+
     public function licencia_consulta(Request $request)
     {
         $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();

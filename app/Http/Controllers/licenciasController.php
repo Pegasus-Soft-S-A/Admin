@@ -356,15 +356,6 @@ class licenciasController extends Controller
 
         $emails = array_diff($emails, array(" ", 0, null));
 
-        try {
-            Mail::to($emails)->queue(new enviarlicencia($array));
-        } catch (\Exception $e) {
-
-            flash('Error enviando email')->error();
-            return back();
-        }
-
-
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
         $log->pantalla = "Licencia PC";
@@ -372,6 +363,14 @@ class licenciasController extends Controller
         $log->fecha = now();
         $log->detalle = $licencia;
         $log->save();
+
+        try {
+            Mail::to($emails)->queue(new enviarlicencia($array));
+        } catch (\Exception $e) {
+
+            flash('Error enviando email')->error();
+            return redirect()->route('licencias.Pc.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
+        }
 
         flash('Guardado Correctamente')->success();
         return redirect()->route('licencias.Pc.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
@@ -513,7 +512,7 @@ class licenciasController extends Controller
             } catch (\Exception $e) {
 
                 flash('Error enviando email')->error();
-                return back();
+                return redirect()->route('licencias.Web.editar', [$request['sis_clientesid'], $request->sis_servidoresid, $licenciaId]);
             }
 
             flash('Guardado Correctamente')->success();
@@ -727,7 +726,7 @@ class licenciasController extends Controller
         try {
             Mail::to($emails)->queue(new enviarlicencia($array));
         } catch (\Exception $e) {
-
+            dd($e);
             flash('Error enviando email')->error();
             return back();
         }

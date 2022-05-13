@@ -21,7 +21,7 @@ $id=request()->id;
     <div class="row h-100 w-100 mx-auto">
 
         <div class="col-md-8 d-none d-xl-block"
-            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-lite.jpg') }}); background-size: 100% 100%; ">
+            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-registro.jpg') }}); background-size: 100% 100%; ">
         </div>
         <div class="mx-auto col-md-4 m-0 p-0 d-flex align-items-center">
             <div class="login-form login-signin mx-auto">

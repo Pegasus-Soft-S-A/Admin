@@ -257,31 +257,49 @@ class adminController extends Controller
 
     public function publicidadGuardar(Request $request)
     {
-        $request->validate(
-            [
-                'imagen' => 'required',
-            ],
-            [
-                'imagen.required' => 'Ingrese una imagen ',
-            ],
-        );
 
+        $ruta = public_path("assets/media/");
 
         if ($request->Hasfile('imagen')) {
 
             $imagen = $request->file("imagen");
-            $ruta = public_path("assets/media/");
+            if (copy($imagen->getRealPath(), $ruta . 'perseo-inicio.jpg')) {
 
-            if (copy($imagen->getRealPath(), $ruta . 'login-fondo.png')) {
-                $imagen = 'login-fondo.png';
                 flash('Imagen Guardada Correctamente')->success();
-                return back();
             } else {
                 flash('Ocurrió un error, vuelva a intentarlo')->warning();
-                return back();
             }
         }
+
+        if ($request->Hasfile('imagen-admin')) {
+            $imagen = $request->file("imagen-admin");
+
+
+            if (copy($imagen->getRealPath(), $ruta . 'perseo-admin.jpg')) {
+                flash('Imagen Guardada Correctamente')->success();
+            } else {
+                flash('Ocurrió un error, vuelva a intentarlo')->warning();
+            }
+        }
+
+
+        if ($request->Hasfile('imagen-registro')) {
+
+            $imagen = $request->file("imagen-registro");
+
+
+            if (copy($imagen->getRealPath(), $ruta . 'perseo-registro.jpg')) {
+
+                flash('Imagen Guardada Correctamente')->success();
+            } else {
+                flash('Ocurrió un error, vuelva a intentarlo')->warning();
+            }
+        }
+        return back();
     }
+
+
+
 
     public function registro()
     {
@@ -320,6 +338,7 @@ class adminController extends Controller
         $request['sis_distribuidoresid'] = $request['red_origen'] == 2 ? 1 : 6;
         $request['sis_revendedoresid'] = 1;
         $request['sis_vendedoresid'] = 405;
+        $request['validado'] = 1;
 
 
         DB::beginTransaction();
