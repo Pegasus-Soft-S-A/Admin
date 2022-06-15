@@ -40,6 +40,7 @@ class clientesController extends Controller
             $tipo = $request->tipofecha;
             $tipolicencia = $request->tipolicencia;
             $fecha = $request->fecha;
+            $fecha_modificacion = $request->fecha_modificacion;
             $distribuidor = $request->distribuidor;
             $vendedor = $request->vendedor;
             $origen = $request->origen;
@@ -82,7 +83,8 @@ class clientesController extends Controller
                     'sis_clientes.fechamodificacion',
                     'sis_licencias.modulopractico',
                     'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable'
+                    'sis_licencias.modulocontable',
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechamodificacion) as licenciamodificacion'),
                 )
                     ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->groupBy('sis_clientes.sis_clientesid')
@@ -130,7 +132,8 @@ class clientesController extends Controller
                     'sis_clientes.fechamodificacion',
                     'sis_licencias.modulopractico',
                     'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable'
+                    'sis_licencias.modulocontable',
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechamodificacion) as licenciamodificacion'),
                 )
                     ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->get();
@@ -167,7 +170,8 @@ class clientesController extends Controller
                     'sis_clientes.fechamodificacion',
                     'sis_licencias.modulopractico',
                     'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable'
+                    'sis_licencias.modulocontable',
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechamodificacion) as licenciamodificacion'),
                 )
                     ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->where('sis_clientes.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)
@@ -217,7 +221,8 @@ class clientesController extends Controller
                     'sis_clientes.fechamodificacion',
                     'sis_licencias.modulopractico',
                     'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable'
+                    'sis_licencias.modulocontable',
+                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechamodificacion) as licenciamodificacion'),
                 )
                     ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->where('sis_clientes.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)
@@ -251,6 +256,12 @@ class clientesController extends Controller
                     $hasta =  strtotime(explode(" / ", $fecha)[1]);
                     $final = $final->whereBetween($tipo_fecha, [$desde, $hasta]);
                 }
+            }
+
+            if ($fecha_modificacion) {
+                $desde =  strtotime(explode(" / ", $fecha_modificacion)[0]);
+                $hasta =  strtotime(explode(" / ", $fecha_modificacion)[1]);
+                $final = $final->whereBetween('licenciamodificacion', [$desde, $hasta]);
             }
 
             if ($distribuidor != null) {

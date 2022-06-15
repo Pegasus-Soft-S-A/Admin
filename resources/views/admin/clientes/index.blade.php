@@ -273,6 +273,18 @@
                                             <option value="11">MATRIZ</option>
                                         </select>
                                     </div>
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Fecha Modificacion:</label>
+                                        <div class="input-group" id='kt_fecha_modificacion'>
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="la la-calendar-check-o"></i>
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control" autocomplete="off"
+                                                placeholder="Rango de Fechas" id="fecha_modificacion">
+                                        </div>
+                                    </div>
                                     @endif
                                 </div>
 
@@ -421,6 +433,61 @@
             $('#kt_fecha .form-control').val( start.format('DD-MM-YYYY') + ' / ' + end.format('DD-MM-YYYY'));
         });
 
+        $('#kt_fecha_modificacion').daterangepicker({
+            autoUpdateInput: false,
+            format: "DD-MM-YYYY",
+            locale: {
+                "separator": " - ",
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "DE",
+                "toLabel": "HASTA",
+                "customRangeLabel": "Personalizado",
+                "daysOfWeek": [
+                    "Dom",
+                    "Lun",
+                    "Mar",
+                    "Mie",
+                    "Jue",
+                    "Vie",
+                    "Sáb"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Septiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ],
+                "firstDay": 1
+            },
+            ranges: {
+            'Hoy': [moment(), moment()],
+            'Ultimos 7 días': [moment().subtract(6, 'days'), moment()],
+            'Ultimos 30 días ': [moment().subtract(29, 'days'), moment()],
+            'Mes Actual': [moment().startOf('month'), moment().endOf('month')],
+            'Mes Anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            'Año Actual': [moment().startOf('year'), moment().endOf('year')],
+            'Año Anterior': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
+            },
+            buttonClasses: ' btn',
+            applyClass: 'btn-primary',
+            cancelClass: 'btn-secondary',
+            alwaysShowCalendars: true,
+            showDropdowns: true,
+            timePicker: true,
+            timePicker24Hour: true,
+        }, function(start, end, label) {
+            $('#kt_fecha_modificacion .form-control').val( start.format('DD-MM-YYYY H:mm') + ' / ' + end.format('DD-MM-YYYY H:mm'));
+        });
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -454,6 +521,7 @@
                     d.tipofecha= $("#tipofecha").val();
                     d.tipolicencia= $("#tipolicencia").val();
                     d.fecha= $("#fecha").val();
+                    d.fecha_modificacion= $("#fecha_modificacion").val();
                     d.periodo= $("#periodo").val();
                     d.producto= $("#producto").val();
                     d.distribuidor= $("#distribuidor").val();
@@ -531,6 +599,7 @@
             $("#tipofecha").val('');
             $("#tipolicencia").val('');
             $("#fecha").val('');
+            $("#fecha_modificacion").val('');
             $("#periodo").val('');
             $("#producto").val('');
             $("#distribuidor").val('');

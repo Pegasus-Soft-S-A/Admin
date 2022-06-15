@@ -562,7 +562,7 @@
                                                                                         <tr>
                                                                                             <td
                                                                                                 style="padding:0px 0px 0px 0px;font-size:0;height:27;vertical-align:middle;width:27;">
-                                                                                                <a href="https://www.facebook.com/sistemaperseo/"
+                                                                                                <a href="https://www.facebook.com/sistemacontableperseoec"
                                                                                                     target="_blank"><img
                                                                                                         height="27"
                                                                                                         src="{{ $message->embed(public_path() . '/assets/media/facebook.png') }}"
@@ -618,7 +618,7 @@
                                                                                         <tr>
                                                                                             <td
                                                                                                 style="padding:0px 0px 0px 0px;font-size:0;height:27;vertical-align:middle;width:27;">
-                                                                                                <a href="https://www.instagram.com/perseo.sistema.contable/?hl=es"
+                                                                                                <a href="https://www.instagram.com/sistemacontableperseoec/?hl=es"
                                                                                                     target="_blank"><img
                                                                                                         height="27"
                                                                                                         src="{{ $message->embed(public_path() . '/assets/media/instagram.png') }}"

@@ -216,3 +216,15 @@ $accion=isset($cliente->sis_clientesid) ? "Modificar" : "Crear";
         @endif
     </div>
 </div>
+
+@if ($accion=="Modificar")
+<div class="form-group row">
+    <div class="col-lg-3">
+        <label class="checkbox checkbox-disabled">
+            <input type="checkbox" disabled="disabled" @if($cliente->validado==1) checked @endif />
+            <span></span>
+            &nbsp;&nbsp;Datos Validados
+        </label>
+    </div>
+</div>
+@endif

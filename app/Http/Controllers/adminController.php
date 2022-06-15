@@ -41,9 +41,8 @@ class adminController extends Controller
 
 
         foreach ($servidores as  $servidor) {
-            $url = $servidor->dominio . '/registros/consulta_licencia';
-
             $urlUsuario = $servidor->dominio . '/registros/consulta_usuario';
+            $url = $servidor->dominio . '/registros/consulta_licencia';
 
             $usuario = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                 ->withOptions(["verify" => false])

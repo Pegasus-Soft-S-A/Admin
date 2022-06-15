@@ -74,10 +74,11 @@ class IdentificacionesController extends Controller
     public function servidores(Request $request)
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
-        $usuario = Clientes::select('sis_clientesid')->where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->first();
+        $cliente = Clientes::select('sis_clientesid')->where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->get();
         $servidores = Servidores::where('estado', 1)->get();
         $array = [];
-        if ($usuario) {
+
+        foreach ($cliente as $usuario) {
             foreach ($servidores as  $servidor) {
                 $url = $servidor->dominio . '/registros/consulta_licencia';
                 $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
@@ -86,18 +87,14 @@ class IdentificacionesController extends Controller
                     ->json();
 
                 if (isset($resultado['licencias'])) {
-
                     $array[] = ["sis_servidoresid" => $servidor->sis_servidoresid, "descripcion" => $servidor->descripcion, "dominio" => $servidor->dominio];
                 }
             }
+        }
 
-            if (count($array) > 0) {
-
-                $servidoresJson = json_encode(["servidor" => $array]);
-                return $servidoresJson;
-            } else {
-                return json_encode(["servidor" => 0]);
-            }
+        if (count($array) > 0) {
+            $servidoresJson = json_encode(["servidor" => $array]);
+            return $servidoresJson;
         } else {
             return json_encode(["servidor" => 0]);
         }
@@ -107,6 +104,13 @@ class IdentificacionesController extends Controller
     {
         $servidores = Servidores::where('estado', 1)
             ->where('sis_servidoresid', '!=', 3)
+            ->get();
+        return json_encode($servidores);
+    }
+
+    public function servidores_activos1()
+    {
+        $servidores = Servidores::where('estado', 1)
             ->get();
         return json_encode($servidores);
     }
