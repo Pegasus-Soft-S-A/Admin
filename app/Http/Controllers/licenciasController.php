@@ -433,8 +433,8 @@ class licenciasController extends Controller
         xmlwriter_end_element($xw);
         xmlwriter_end_document($xw);
 
+        dd($request->produccion);
         $request['modulos'] = xmlwriter_output_memory($xw);
-
         unset(
             $request['nomina'],
             $request['activos'],
@@ -588,7 +588,7 @@ class licenciasController extends Controller
         switch ($request->tipo) {
             case 'mes':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 month"));
-                $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones));
+                $request['fechaactulizaciones'] = date('Ymd', strtotime($request->fechaactulizaciones . "+ 1 month"));
                 $asunto = "Renovacion Mensual Perseo PC";
                 break;
             case 'anual':
