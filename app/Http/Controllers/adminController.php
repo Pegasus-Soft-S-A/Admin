@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\enviarlicencia;
+use App\Models\Ciudades;
 use App\Models\Clientes;
 use App\Models\Licencias;
 use App\Models\Log;
@@ -100,13 +101,22 @@ class adminController extends Controller
                         $producto = "Soy Contador Comercial";
                         break;
                     case '6':
-                        $producto = "Perseo Lite";
+                        $producto = "Perseo Lite Anterior";
                         break;
                     case '7':
                         $producto = "Total";
                         break;
                     case '8':
                         $producto = "Soy Contador Servicios";
+                        break;
+                    case '9':
+                        $producto = "Perseo Lite";
+                        break;
+                    case '10':
+                        $producto = "Emprendedor";
+                        break;
+                    case '11':
+                        $producto = "Socio Perseo";
                         break;
                 }
                 $licencias["licencias"][$key]['producto'] = $producto;
@@ -297,9 +307,6 @@ class adminController extends Controller
         return back();
     }
 
-
-
-
     public function registro()
     {
         $identificacion = 0;
@@ -315,7 +322,9 @@ class adminController extends Controller
                 'direccion' => 'required',
                 'correos' => ['required', 'email', new ValidarCorreo],
                 'provinciasid' => 'required',
+                'ciudadesid' => 'required',
                 'telefono2' => ['required', new ValidarCelular],
+                'grupo' => 'required'
             ],
             [
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
@@ -326,7 +335,9 @@ class adminController extends Controller
                 'correos.required' => 'Ingrese un Correo',
                 'correos.email' => 'Ingrese un Correo Válido',
                 'provinciasid.required' => 'Seleccione una Provincia',
+                'ciudadesid.required' => 'Seleccione una Ciudad',
                 'telefono2.required' => 'Ingrese Whatsapp',
+                'grupo.required' => 'Seleccione un Tipo de Negocio'
             ],
         );
 
@@ -403,8 +414,8 @@ class adminController extends Controller
 
             $parametros_json = [];
             $parametros_json = [
-                'Documentos' => "120",
-                'Productos' => "500",
+                'Documentos' => "30",
+                'Productos' => "100",
                 'Almacenes' => "1",
                 'Nomina' => "3",
                 'Produccion' => "3",
@@ -425,15 +436,15 @@ class adminController extends Controller
                 "fechainicia" => date('Ymd', strtotime(now())),
                 "fechacaduca" => date("Ymd", strtotime(date("Ymd") . "+ 1 year")),
                 "empresas" => 1,
-                "usuarios" => 3,
+                "usuarios" => 6,
                 "periodo" => 1,
-                "producto" => 6,
+                "producto" => 9,
                 "estado" => 1,
                 "precio" => 0,
                 "numeromoviles" => 1,
                 "fechaultimopago" => date('Ymd', strtotime(now())),
                 "fechacreacion" => now(),
-                "modulos" => '<modulos><nomina>1</nomina><activos>1</activos><produccion>1</produccion><restaurantes>1</restaurantes><talleres>1</talleres><garantias>1</garantias><ecommerce>0</ecommerce></modulos>',
+                "modulos" => '<modulos><nomina>1</nomina><activos>1</activos><produccion>1</produccion><restaurantes>1</restaurantes><talleres>1</talleres><garantias>1</garantias><ecommerce>1</ecommerce></modulos>',
                 "parametros_json" => json_encode($parametros_json),
             ];
             $crearLicenciaWeb = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
@@ -482,5 +493,11 @@ class adminController extends Controller
         }
 
         return $randomString;
+    }
+
+    public function recuperarciudades(Request $request)
+    {
+        $ciudades = Ciudades::where('ciudadesid', 'like', $request->id . '%')->get();
+        return $ciudades;
     }
 }

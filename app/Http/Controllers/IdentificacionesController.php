@@ -15,7 +15,7 @@ class IdentificacionesController extends Controller
     public function index(Request $request)
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
-        $buscar = Identificaciones::where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->first();
+        $buscar = Identificaciones::where('identificacion', $identificacionIngresada)->first();
         if (!$buscar) {
             $buscar = array("razon_social" => "");
         } else {

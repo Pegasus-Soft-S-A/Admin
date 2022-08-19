@@ -44,71 +44,98 @@
 @section('script')
 <script>
     $('#formulario').submit(function(event) {
-        $("#provinciasid").prop("disabled", false);
-        $("#distribuidor").prop("disabled", false);
-        $("#vendedor").prop("disabled", false);
-        $("#revendedor").prop("disabled", false);
-        $("#red_origen").prop("disabled", false);
-    });
-    //Cargar select dependiendes del distribuidor
-    $('#distribuidor').on('change', function(e){
-
-        var distribuidor = e.target.value;
-        $('#vendedor').empty();
-        $('#vendedor').append('<option value="">Seleccione un Vendedor</option>');
-        $('#revendedor').empty();
-        $('#revendedor').append('<option value="">Seleccione un Revendedor</option>');
-
-        
-        $.ajax({
-            type:"GET",
-            url: '/admin/revendedoresdistribuidor/' + distribuidor + '/2',
-            success: function(data){
-                $.each(data, function(fetch, vendedor){
-                    for(i = 0; i < vendedor.length; i++){
-                    $('#vendedor').append('<option value="'+ vendedor[i].sis_revendedoresid +'">'+ vendedor[i].razonsocial +'</option>');
-                    }
-                })
-            }
+            $("#provinciasid").prop("disabled", false);
+            $("#distribuidor").prop("disabled", false);
+            $("#vendedor").prop("disabled", false);
+            $("#revendedor").prop("disabled", false);
+            $("#red_origen").prop("disabled", false);
         });
-        $.ajax({
-            type:"GET",
-            url: '/admin/revendedoresdistribuidor/' + distribuidor + '/1',
-            success: function(data){
-                $.each(data, function(fetch, vendedor){
-                    for(i = 0; i < vendedor.length; i++){
-                    $('#revendedor').append('<option value="'+ vendedor[i].sis_revendedoresid +'">'+ vendedor[i].razonsocial +'</option>');
-                    }
-                })
-            }
-        });
-    });
+        //Cargar select dependiendes del distribuidor
+        $('#distribuidor').on('change', function(e) {
 
-    function recuperarInformacion() {
+            var distribuidor = e.target.value;
+            $('#vendedor').empty();
+            $('#vendedor').append('<option value="">Seleccione un Vendedor</option>');
+            $('#revendedor').empty();
+            $('#revendedor').append('<option value="">Seleccione un Revendedor</option>');
 
-        var cad = document.getElementById('identificacion').value;
-        $.ajax({
-            url: '{{ route('identificaciones.index') }}',
-            headers: {
-                'usuario': 'perseo',
-                'clave': 'Perseo1232*'
-            },
-            method: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                identificacion: cad
-            },
-            success: function(data){
-                $("#spinner").removeClass("spinner spinner-success spinner-right");
-                data = JSON.parse(data);
-                if (data.identificacion) {
-                    $("#nombres").val(data.razon_social);
-                    $("#direccion").val(data.direccion);
-                    $("#correo").val(data.correo);
+
+            $.ajax({
+                type: "GET",
+                url: '/admin/revendedoresdistribuidor/' + distribuidor + '/2',
+                success: function(data) {
+                    $.each(data, function(fetch, vendedor) {
+                        for (i = 0; i < vendedor.length; i++) {
+                            $('#vendedor').append('<option value="' + vendedor[i]
+                                .sis_revendedoresid + '">' + vendedor[i].razonsocial +
+                                '</option>');
+                        }
+                    })
                 }
-            }
+            });
+            $.ajax({
+                type: "GET",
+                url: '/admin/revendedoresdistribuidor/' + distribuidor + '/1',
+                success: function(data) {
+                    $.each(data, function(fetch, vendedor) {
+                        for (i = 0; i < vendedor.length; i++) {
+                            $('#revendedor').append('<option value="' + vendedor[i]
+                                .sis_revendedoresid + '">' + vendedor[i].razonsocial +
+                                '</option>');
+                        }
+                    })
+                }
+            });
         });
-    }
+        
 
+
+        function cambiarCiudad(id) {
+
+            $.ajax({
+                url: '{{ route('registro.recuperarciudades') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: id.value
+                },
+                success: function(data) {
+                    $('#ciudadesid').empty();
+
+
+                    data.map(ciudades =>
+                        $('#ciudadesid').append('<option value="' + ciudades.ciudadesid + '">' + ciudades
+                            .ciudad + '</option>')
+                    );
+                }
+            })
+        }
+
+
+        function recuperarInformacion() {
+
+            var cad = document.getElementById('identificacion').value;
+            $.ajax({
+                url: '{{ route('identificaciones.index') }}',
+                headers: {
+                    'usuario': 'perseo',
+                    'clave': 'Perseo1232*'
+                },
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    identificacion: cad
+                },
+                success: function(data) {
+                    $("#spinner").removeClass("spinner spinner-success spinner-right");
+                    data = JSON.parse(data);
+                    if (data.identificacion) {
+                        $("#nombres").val(data.razon_social);
+                        $("#direccion").val(data.direccion);
+                        $("#correo").val(data.correo);
+                    }
+                }
+            });
+        }
 </script>
 @endsection

@@ -41,7 +41,6 @@
             display: block;
             margin: 13px 0;
         }
-
     </style>
 
     <style type="text/css">
@@ -61,7 +60,6 @@
                 max-width: 67%;
             }
         }
-
     </style>
     <style media="screen and (min-width:480px)">
         .moz-text-html .mj-column-per-100 {
@@ -78,7 +76,6 @@
             width: 67% !important;
             max-width: 67%;
         }
-
     </style>
     <style type="text/css">
         [owa] .mj-column-per-100 {
@@ -95,7 +92,6 @@
             width: 67% !important;
             max-width: 67%;
         }
-
     </style>
     <style type="text/css">
         @media only screen and (max-width:480px) {
@@ -107,7 +103,6 @@
                 width: auto !important;
             }
         }
-
     </style>
 </head>
 
@@ -173,7 +168,8 @@
                                                                         style="text-align: center; margin: 10px 0; margin-top: 10px; margin-bottom: 10px;"
                                                                         data-testid="YImpwe_iQflo"><span
                                                                             style="color:#1d6ea9;font-family:Arial;font-size:19px;"><b>¡HOLA,
-                                                                                &nbsp;{{$array['nombre']}}!</b></span></p>
+                                                                                &nbsp;{{$array['nombre']}}!</b></span>
+                                                                    </p>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -341,8 +337,8 @@
                                                                             class="link-build-content"
                                                                             style="color:inherit;; text-decoration: none;"
                                                                             target="_blank"
-                                                                            href="https://tutoriales.perseo.ec/"><span
-                                                                                style="color:#7597d2;"><u>https://tutoriales.perseo.ec/</u></span></a>
+                                                                            href="https://academy.perseo.ec/"><span
+                                                                                style="color:#7597d2;"><u>https://academy.perseo.ec/</u></span></a>
                                                                     </p>
                                                                     <p class="text-build-content"
                                                                         style="line-height: 23px; margin: 10px 0;"

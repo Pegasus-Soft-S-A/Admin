@@ -180,7 +180,7 @@ class licenciasController extends Controller
         $contrato = $this->generarContrato();
         $existe = Licencias::where('numerocontrato', $contrato)->get();
 
-        $url = 'https://perseo-data-c2.app/registros/consulta_licencia';
+        $url = 'https://perseo-data-c1.app/registros/consulta_licencia';
         $existeWeb = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
             ->withOptions(["verify" => false])
             ->post($url, ['numerocontrato' => $contrato])
@@ -387,24 +387,70 @@ class licenciasController extends Controller
         $request['Identificador'] = $request['numerocontrato'];
         $request['fechaultimopago'] = $request['fechainicia'];
 
-        if ($request['producto'] == "6") {
-            $parametros_json = [];
-            $parametros_json = [
-                'Documentos' => "120",
-                'Productos' => "500",
-                'Almacenes' => "1",
-                'Nomina' => "3",
-                'Produccion' => "3",
-                'Activos' => "3",
-                'Talleres' => "3",
-                'Garantias' => "3",
-            ];
-            $request['parametros_json'] = json_encode($parametros_json);
+        switch ($request['producto']) {
+                //Lite anterior
+            case '6':
+                $parametros_json = [];
+                $parametros_json = [
+                    'Documentos' => "120",
+                    'Productos' => "500",
+                    'Almacenes' => "1",
+                    'Nomina' => "3",
+                    'Produccion' => "3",
+                    'Activos' => "3",
+                    'Talleres' => "3",
+                    'Garantias' => "3",
+                ];
+                $request['parametros_json'] = json_encode($parametros_json);
+                break;
+                //Lite
+            case '9':
+                $parametros_json = [];
+                $parametros_json = [
+                    'Documentos' => "30",
+                    'Productos' => "100",
+                    'Almacenes' => "1",
+                    'Nomina' => "3",
+                    'Produccion' => "3",
+                    'Activos' => "3",
+                    'Talleres' => "3",
+                    'Garantias' => "3",
+                ];
+                $request['parametros_json'] = json_encode($parametros_json);
+                break;
+                //Emprendedor
+            case '10':
+                $parametros_json = [];
+                $parametros_json = [
+                    'Documentos' => "120",
+                    'Productos' => "0",
+                    'Almacenes' => "0",
+                    'Nomina' => "0",
+                    'Produccion' => "0",
+                    'Activos' => "0",
+                    'Talleres' => "0",
+                    'Garantias' => "0",
+                ];
+                $request['parametros_json'] = json_encode($parametros_json);
+                break;
+                //Socio
+            case '11':
+                $parametros_json = [];
+                $parametros_json = [
+                    'Documentos' => "5",
+                    'Productos' => "0",
+                    'Almacenes' => "0",
+                    'Nomina' => "0",
+                    'Produccion' => "0",
+                    'Activos' => "0",
+                    'Talleres' => "0",
+                    'Garantias' => "0",
+                ];
+                $request['parametros_json'] = json_encode($parametros_json);
+                break;
         }
 
         $xw = xmlwriter_open_memory();
-        //xmlwriter_set_indent($xw, 1);
-        //xmlwriter_set_indent_string($xw, ' ');
         xmlwriter_start_document($xw, '1.0', 'UTF-8');
         xmlwriter_start_element($xw, 'modulos');
 
@@ -433,8 +479,8 @@ class licenciasController extends Controller
         xmlwriter_end_element($xw);
         xmlwriter_end_document($xw);
 
-        dd($request->produccion);
         $request['modulos'] = xmlwriter_output_memory($xw);
+
         unset(
             $request['nomina'],
             $request['activos'],
@@ -665,7 +711,7 @@ class licenciasController extends Controller
         );
         $request['modulos'] = json_encode([$modulos]);
 
-        $urlLicencia = 'https://perseo-data-c2.app/registros/generador_licencia';
+        $urlLicencia = 'https://perseo-data-c1.app/registros/generador_licencia';
 
         $urlLicencia = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
             ->withOptions(["verify" => false])
@@ -763,7 +809,14 @@ class licenciasController extends Controller
                 $parametros_json->Documentos = $parametros_json->Documentos + 120;
                 $request['parametros_json'] = json_encode($parametros_json);
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
-                $asunto = 'Recarga Lite Perseo Web';
+                $asunto = $licencia->producto == 9 ? 'Recarga 120 Documentos Perseo Web Lite ' : 'Recarga 120 Documentos Perseo Web Emprendedor';
+                break;
+            case 'recargar240':
+                $parametros_json = json_decode($licencia->parametros_json);
+                $parametros_json->Documentos = $parametros_json->Documentos + 240;
+                $request['parametros_json'] = json_encode($parametros_json);
+                $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
+                $asunto =  'Recarga 240 Documentos Perseo Web Emprendedor';
                 break;
             default:
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
@@ -826,7 +879,7 @@ class licenciasController extends Controller
             ->post($urlEditar, $request->all())
             ->json();
 
-        $cliente = Clientes::select('sis_clientes.correos', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor')
+        $cliente = Clientes::select('sis_clientes.correos', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor', 'sis_revendedores.razonsocial')
             ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
             ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
             ->join('sis_revendedores as revendedor', 'revendedor.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
@@ -846,6 +899,7 @@ class licenciasController extends Controller
             $array['from'] = env('MAIL_FROM_ADDRESS');
             $array['subject'] = $asunto;
             $array['cliente'] = $cliente->nombres;
+            $array['vendedor'] = $cliente->razonsocial;
             $array['identificacion'] = $cliente->identificacion;
             $array['correos'] = $cliente->correos;
             $array['numerocontrato'] = $request['numerocontrato'];
@@ -879,6 +933,7 @@ class licenciasController extends Controller
             try {
                 Mail::to($emails)->queue(new enviarlicencia($array));
             } catch (\Exception $e) {
+                dd($e);
                 flash('Error enviando email')->error();
                 return back();
             }

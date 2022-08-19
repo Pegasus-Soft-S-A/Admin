@@ -53,7 +53,7 @@ class servidoresController extends Controller
             ],
         );
 
-
+        $request['estado'] = $request->estado == 'on' ? 1 : 0;
         $servidores =   Servidores::create($request->all());
 
         $log = new Log();
@@ -85,7 +85,7 @@ class servidoresController extends Controller
             ],
         );
 
-
+        $request['estado'] = $request->estado == 'on' ? 1 : 0;
         $servidores->update($request->all());
 
         $log = new Log();

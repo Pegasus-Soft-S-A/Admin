@@ -40,7 +40,6 @@
             display: block;
             margin: 13px 0;
         }
-
     </style>
 
     <style type="text/css">
@@ -50,21 +49,18 @@
                 max-width: 100%;
             }
         }
-
     </style>
     <style media="screen and (min-width:480px)">
         .moz-text-html .mj-column-per-100 {
             width: 100% !important;
             max-width: 100%;
         }
-
     </style>
     <style type="text/css">
         [owa] .mj-column-per-100 {
             width: 100% !important;
             max-width: 100%;
         }
-
     </style>
     <style type="text/css">
         @media only screen and (max-width:480px) {
@@ -76,7 +72,6 @@
                 width: auto !important;
             }
         }
-
     </style>
 </head>
 
@@ -165,16 +160,16 @@
                                                     <p class="text-build-content" data-testid="JnKFIFS0T"
                                                         style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
                                                         @if ($array['tipo'] == 1)
-                                                            <span style="font-family:Arial; text-color:#000000">Se ha
-                                                                registrado una nueva
-                                                                licencia de
-                                                            </span>
+                                                        <span style="font-family:Arial; text-color:#000000">Se ha
+                                                            registrado una nueva
+                                                            licencia de
+                                                        </span>
                                                         @endif
                                                         @if ($array['tipo'] == 3)
-                                                            <span style="font-family:Arial; text-color:#000000">Se ha
-                                                                modificado una licencia de licencia de
+                                                        <span style="font-family:Arial; text-color:#000000">Se ha
+                                                            modificado una licencia de licencia de
 
-                                                            </span>
+                                                        </span>
                                                         @endif
 
                                                         <span
@@ -231,17 +226,23 @@
                                                                         </td>
                                                                         <td>
                                                                             @if ($array['producto'] == 2)
-                                                                                Facturación
+                                                                            Facturación
                                                                             @elseif($array['producto'] == 3)
-                                                                                Servicios
+                                                                            Servicios
                                                                             @elseif ($array['producto'] == 4)
-                                                                                Comercial
+                                                                            Comercial
                                                                             @elseif($array['producto'] == 5)
-                                                                                Soy Contador Comercial
+                                                                            Soy Contador Comercial
                                                                             @elseif($array['producto'] == 6)
-                                                                                Perseo Lite
+                                                                            Perseo Lite
                                                                             @elseif($array['producto'] == 8)
-                                                                                Soy Contador Servicios
+                                                                            Soy Contador Servicios
+                                                                            @elseif($array['producto'] == 9)
+                                                                            Perseo Lite
+                                                                            @elseif($array['producto'] == 10)
+                                                                            Emprendedor
+                                                                            @elseif($array['producto'] == 11)
+                                                                            Socio Perseo
                                                                             @endif
 
                                                                         </td>
@@ -298,6 +299,16 @@
                                                                             {{ $array['usuarios'] }}
                                                                         </td>
                                                                     </tr>
+
+                                                                    <tr>
+                                                                        <td style="padding-top: 8px">
+
+                                                                            Vendedor:
+                                                                        </td>
+                                                                        <td>
+                                                                            {{ $array['vendedor'] }}
+                                                                        </td>
+                                                                    </tr>
                                                                 </table>
 
 
@@ -312,53 +323,53 @@
                                                     <ul>
 
                                                         @if ($array['modulos']->nomina != 0)
-                                                            <li style="margin-top: 5px ">
-                                                                Nómina
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Nómina
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos']->activos != 0)
-                                                            <li style="margin-top: 5px ">
-                                                                Activos Fijos
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Activos Fijos
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos']->produccion != 0)
-                                                            <li style="margin-top: 5px " >
-                                                                Producción
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Producción
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos']->restaurantes != 0)
-                                                            <li style="margin-top: 5px " >
-                                                                Restaurantes
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Restaurantes
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos']->talleres != 0)
-                                                            <li style="margin-top: 5px " > 
-                                                                Talleres
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Talleres
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos']->garantias != 0)
-                                                            <li style="margin-top: 5px ">
-                                                                Garantias
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Garantias
+                                                        </li>
                                                         @endif
                                                         @if ($array['modulos']->ecommerce != 0)
-                                                            <li style="margin-top: 5px ">
-                                                                Ecommerce
-                                                            </li>
+                                                        <li style="margin-top: 5px ">
+                                                            Ecommerce
+                                                        </li>
                                                         @endif
                                                     </ul>
                                                     @if ($array['tipo'] == 1)
-                                                        <p
-                                                            style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center">
-                                                            <b>Creación</b>
-                                                        </p>
+                                                    <p
+                                                        style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center">
+                                                        <b>Creación</b>
+                                                    </p>
                                                     @endif
 
                                                     @if ($array['tipo'] == 3)
-                                                        <p
-                                                            style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center">
-                                                            <b>Modificación</b>
-                                                        </p>
+                                                    <p
+                                                        style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center">
+                                                        <b>Modificación</b>
+                                                    </p>
                                                     @endif
 
                                                     <ul class="list-group">

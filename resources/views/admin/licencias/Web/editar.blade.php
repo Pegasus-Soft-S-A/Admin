@@ -32,9 +32,17 @@
                                                     class="la la-user-plus"></i></a>
                                             @endif
 
-                                            @if ($licencia->producto==6 && Auth::user()->tipo==1)
+                                            @if (($licencia->producto==9 || $licencia->producto==6 ||
+                                            $licencia->producto==10) &&
+                                            Auth::user()->tipo==1)
                                             <a id="recargar" href="#" class="btn btn-success btn-icon"
-                                                data-toggle="tooltip" title="Recargar Documentos"><i
+                                                data-toggle="tooltip" title="Recargar 120 Documentos"><i
+                                                    class="la la-file-medical"></i></a>
+                                            @endif
+
+                                            @if ($licencia->producto==10 && Auth::user()->tipo==1)
+                                            <a id="recargar240" href="#" class="btn btn-warning btn-icon"
+                                                data-toggle="tooltip" title="Recargar 240 Documentos"><i
                                                     class="la la-file-medical"></i></a>
                                             @endif
 

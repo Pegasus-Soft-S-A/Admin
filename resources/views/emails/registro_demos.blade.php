@@ -364,8 +364,8 @@
                                                                             class="link-build-content"
                                                                             style="color:inherit;; text-decoration: none;"
                                                                             target="_blank"
-                                                                            href="https://tutoriales.perseo.ec/"><span
-                                                                                style="color:#7597d2;"><u>https://tutoriales.perseo.ec/</u></span></a>
+                                                                            href="https://academy.perseo.ec/"><span
+                                                                                style="color:#7597d2;"><u>https://academy.perseo.ec/</u></span></a>
                                                                     </p>
                                                                     <p class="text-build-content"
                                                                         style="line-height: 23px; margin: 10px 0;"

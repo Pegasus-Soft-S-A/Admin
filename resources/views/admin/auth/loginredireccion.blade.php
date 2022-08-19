@@ -59,13 +59,77 @@
                             <select class="form-control  form-control-solid" id="perfil" name="perfil">
                             </select>
                         </div>
-                        <div class="text-center">
+                        <div class="text-center ">
                             <a href="" id="redireccion">
                                 <button type="button" disabled="disabled" class="btn btn-lg btn-primary w-100 mb-5"
                                     id="ingresar">
                                     <span class="indicator-label">INGRESAR</span>
                                 </button>
                             </a>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+                <div>
+                    <div class="card card-custom gutter-b mt-5">
+                        <div class="bg-success-o-50 p-0 pl-3">
+                            <label class="mt-2" style="font-size: 13px; font-weight:bold">
+                                Aplicación de Escritorio
+                            </label>
+                        </div>
+                        <div class="p-2">
+                            <div class="row">
+                                <div class="col-6  text-center">
+                                    <a target="_blank"
+                                        href="https://www.dropbox.com/s/ktrp760pelxndc8/Instalador%20Perseo%20Web.exe?dl=1"
+                                        style="color:black">
+                                        <i class="fab fa-windows">
+                                        </i>
+                                        Windows
+                                    </a>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <a target="_blank"
+                                        href="https://www.dropbox.com/s/jwl78lilc5su0hj/Perseo-Software-Web.dmg?dl=1"
+                                        style="color:black">
+                                        <i class="fab fa-apple">
+                                        </i>
+                                        Mac OS
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-custom ">
+                        <div class="bg-primary-o-50 p-0 pl-3">
+                            <label class="mt-1" style="font-size: 13px;font-weight:bold">
+                                Aplicación Móvil
+                            </label>
+                        </div>
+                        <div class="p-2">
+                            <div class="row">
+                                <div class="col-6  text-center">
+                                    <a target="_blank"
+                                        href="https://play.google.com/store/apps/details?id=com.perseo.perseomovil"
+                                        style="color:black">
+                                        <i class="fab fa-google-play">
+                                        </i>
+                                        Google Play
+                                    </a>
+                                </div>
+                                <div class="col-6  text-center">
+                                    <a target="_blank" href="https://apps.apple.com/us/app/perseo-movil/id1571805731"
+                                        style="color:black">
+                                        <i class="fab fa-apple">
+                                        </i>
+                                        App Store
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -7,21 +7,23 @@
     <meta name="description" content="Perseo" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-    <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/plugins/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/media/logoP.png') }}">
     <meta property="og:image" content="{{ asset('assets/media/imagenperseo.jpg') }}" />
+    <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/plugins/custom/tag.min.css') }}" rel="stylesheet" type="text/css" />
 </head>
 
 @php
-$id=request()->id;
+$id = request()->id;
+$grupos = App\Models\Grupos::get();
 @endphp
 
 <body>
     <div class="row h-100 w-100 mx-auto">
 
-        <div class="col-md-8 d-none d-xl-block"
-            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-registro.jpg') }}); background-size: 100% 100%; ">
+        <div class="col-md-8 d-none d-xl-block bg-danger"
+            style="width : 100%;min-height : 100%;background-image: url({{ asset('assets/media/perseo-registro.jpg') }}); background-size: 100% 100%; background-repeat:no-repeat;">
         </div>
         <div class="mx-auto col-md-4 m-0 p-0 d-flex align-items-center">
             <div class="login-form login-signin mx-auto">
@@ -30,24 +32,24 @@ $id=request()->id;
                         <form action="{{ route('post_registro') }}" method="POST" id="formulario">
                             @csrf
 
-                            <div class="text-center mb-10">
+                            <div class="text-center mb-3">
                                 <img src="{{ asset('assets/media/login.png') }}" height="105px" alt="" />
                             </div>
-                            <div class="card card-custom card-stretch gutter-b">
+                            <div class="card card-custom card-stretch mb-3">
                                 <!--begin::Body-->
-                                <div class="card-body d-flex align-items-center py-0 mt-8">
+                                <div class="card-body d-flex align-items-center py-0 mt-3">
                                     <div class="d-flex flex-column flex-grow-1 py-2 py-lg-5">
                                         <span id="contador" href="#"
-                                            class="card-title font-weight-bolder text-dark-75 font-size-h1 mb-2"
-                                            data-stop="{{App\Models\Clientes::count()}}">0</span>
+                                            class="card-title font-weight-bolder text-dark-75 font-size-h2 mb-2"
+                                            data-stop="{{ App\Models\Clientes::count() }}">0</span>
                                         <span class="font-weight-bold text-muted font-size-lg">Clientes Activos</span>
                                     </div>
                                     <img src="{{ asset('assets/media/user.svg') }}" alt=""
-                                        class="align-self-end h-100px">
+                                        class="align-self-end h-80px">
                                 </div>
                                 <!--end::Body-->
                             </div>
-                            <div class="fv-row mb-5">
+                            <div class="fv-row mb-3">
                                 <div class="input-group" id="spinner">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" style="width:45px">
@@ -55,7 +57,7 @@ $id=request()->id;
                                         </span>
                                     </div>
                                     <input
-                                        class="form-control form-control-lg {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
+                                        class="form-control form-control-sm {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
                                         type="text" name="identificacion" id="identificacion" autocomplete="off"
                                         value="{{ old('identificacion') }}" placeholder="Ingrese RUC"
                                         onblur="verificarruc()" onkeypress="return validarNumero(event)" />
@@ -68,7 +70,7 @@ $id=request()->id;
                                 @endif
                             </div>
 
-                            <div class="fv-row mb-5">
+                            <div class="fv-row mb-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" style="width:45px">
@@ -76,7 +78,7 @@ $id=request()->id;
                                         </span>
                                     </div>
                                     <input
-                                        class="form-control form-control-lg {{ $errors->has('nombres') ? 'is-invalid' : '' }}"
+                                        class="form-control form-control-sm {{ $errors->has('nombres') ? 'is-invalid' : '' }}"
                                         type="text" name="nombres" id="nombres" autocomplete="off"
                                         value="{{ old('nombres') }}" placeholder="Ingrese Nombres" />
                                 </div>
@@ -85,7 +87,23 @@ $id=request()->id;
                                 @endif
                             </div>
 
-                            <div class="fv-row mb-5">
+                            <style>
+                                .select2 {
+                                    max-width: 300px !important;
+                                }
+
+                                .select2-container .select2-selection--single {
+                                    max-height: 32px !important;
+                                    border-radius: 0px 4px 4px 0px !important;
+
+                                }
+
+                                .select2-selection__rendered {
+
+                                    font-size: 0.925rem;
+                                }
+                            </style>
+                            <div class="fv-row mb-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" style="width:45px">
@@ -93,7 +111,7 @@ $id=request()->id;
                                         </span>
                                     </div>
                                     <input
-                                        class="form-control form-control-lg {{ $errors->has('direccion') ? 'is-invalid' : '' }}"
+                                        class="form-control form-control-sm {{ $errors->has('direccion') ? 'is-invalid' : '' }}"
                                         type="text" name="direccion" id="direccion" autocomplete="off"
                                         value="{{ old('direccion') }}" placeholder="Ingrese Dirección" />
                                 </div>
@@ -102,83 +120,85 @@ $id=request()->id;
                                 @endif
                             </div>
 
-                            <div class="fv-row mb-5">
+                            <div class="fv-row mb-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" style="width:45px">
-                                            <i class="fa fa-city"></i>
+                                            <i class="fas fa-map-marker-alt"></i>
                                         </span>
                                     </div>
-                                    <select class="form-control form-control-lg" name="provinciasid" id="provinciasid">
-                                        <option value="">Seleccione una provincia</option>
-                                        <option value="01" {{ old('provinciasid')=='01' ? 'Selected' : '' }}>
+
+                                    <select class="form-control selectDespegable" name="provinciasid" id="provinciasid"
+                                        onchange="cambiarCiudad(this)">
+                                        <option value=""></option>
+                                        <option value="01">
                                             Azuay
                                         </option>
-                                        <option value="02" {{ old('provinciasid')=='02' ? 'Selected' : '' }}>
+                                        <option value="02">
                                             Bolivar
                                         </option>
-                                        <option value="03" {{ old('provinciasid')=='03' ? 'Selected' : '' }}>
+                                        <option value="03">
                                             Cañar
                                         </option>
-                                        <option value="04" {{ old('provinciasid')=='04' ? 'Selected' : '' }}>
+                                        <option value="04">
                                             Carchi
                                         </option>
-                                        <option value="05" {{ old('provinciasid')=='05' ? 'Selected' : '' }}>
+                                        <option value="05">
                                             Chimborazo
                                         </option>
-                                        <option value="06" {{ old('provinciasid')=='06' ? 'Selected' : '' }}>
+                                        <option value="06">
                                             Cotopaxi
                                         </option>
-                                        <option value="07" {{ old('provinciasid')=='07' ? 'Selected' : '' }}>
+                                        <option value="07">
                                             El Oro
                                         </option>
-                                        <option value="08" {{ old('provinciasid')=='08' ? 'Selected' : '' }}>
+                                        <option value="08">
                                             Esmeraldas
                                         </option>
-                                        <option value="09" {{ old('provinciasid')=='09' ? 'Selected' : '' }}>
+                                        <option value="09">
                                             Guayas
                                         </option>
-                                        <option value="20" {{ old('provinciasid')=='20' ? 'Selected' : '' }}>
+                                        <option value="20">
                                             Galapagos
                                         </option>
-                                        <option value="10" {{ old('provinciasid')=='10' ? 'Selected' : '' }}>
+                                        <option value="10">
                                             Imbabura
                                         </option>
-                                        <option value="11" {{ old('provinciasid')=='11' ? 'Selected' : '' }}>
+                                        <option value="11">
                                             Loja</option>
-                                        <option value="12" {{ old('provinciasid')=='12' ? 'Selected' : '' }}>
+                                        <option value="12">
                                             Los Rios
                                         </option>
-                                        <option value="13" {{ old('provinciasid')=='13' ? 'Selected' : '' }}>
+                                        <option value="13">
                                             Manabi
                                         </option>
-                                        <option value="14" {{ old('provinciasid')=='14' ? 'Selected' : '' }}>
+                                        <option value="14">
                                             Morona
                                             Santiago</option>
-                                        <option value="15" {{ old('provinciasid')=='15' ? 'Selected' : '' }}>
+                                        <option value="15">
                                             Napo</option>
-                                        <option value="22" {{ old('provinciasid')=='22' ? 'Selected' : '' }}>
+                                        <option value="22">
                                             Orellana
                                         </option>
-                                        <option value="16" {{ old('provinciasid')=='16' ? 'Selected' : '' }}>
+                                        <option value="16">
                                             Pastaza
                                         </option>
-                                        <option value="17" {{ old('provinciasid')=='17' ? 'Selected' : '' }}>
+                                        <option value="17">
                                             Pichincha
                                         </option>
-                                        <option value="24" {{ old('provinciasid')=='24' ? 'Selected' : '' }}>
+                                        <option value="24">
                                             Santa Elena
                                         </option>
-                                        <option value="23" {{ old('provinciasid')=='23' ? 'Selected' : '' }}>
+                                        <option value="23">
                                             Santo Domingo
                                             De Los Tsachilas</option>
-                                        <option value="21" {{ old('provinciasid')=='21' ? 'Selected' : '' }}>
+                                        <option value="21">
                                             Sucumbios
                                         </option>
-                                        <option value="18" {{ old('provinciasid')=='18' ? 'Selected' : '' }}>
+                                        <option value="18">
                                             Tungurahua
                                         </option>
-                                        <option value="19" {{ old('provinciasid')=='19' ? 'Selected' : '' }}>
+                                        <option value="19">
                                             Zamora
                                             Chinchipe</option>
                                     </select>
@@ -188,7 +208,51 @@ $id=request()->id;
                                 @endif
                             </div>
 
-                            <div class="fv-row mb-5">
+
+                            <div class="fv-row mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" style="width:45px">
+                                            <i class="fa fa-city"></i>
+                                        </span>
+                                    </div>
+                                    <select class="form-control selectDespegable" name="ciudadesid" id="ciudadesid">
+                                        <option value="">Seleccione una ciudad</option>
+
+                                    </select>
+                                </div>
+
+                                @if ($errors->has('ciudadesid'))
+                                <span class=" text-danger">{{ $errors->first('ciudadesid') }}</span>
+                                @endif
+
+                            </div>
+
+                            <div class="fv-row mb-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" style="width:45px">
+                                            <i class="fa fa-fas fa-briefcase"></i>
+                                        </span>
+                                    </div>
+                                    <select class="form-control selectDespegable" name="grupo" id="grupo">
+                                        <option value=""></option>
+                                        @foreach ($grupos as $grupo)
+                                        <option value="{{ $grupo->gruposid }}" {{ old('grupo')==$grupo->gruposid ?
+                                            'selected' : '' }}>
+                                            {{ $grupo->descripcion }}</option>
+                                        @endforeach
+
+                                    </select>
+                                </div>
+
+                                @if ($errors->has('grupo'))
+                                <span class=" text-danger">{{ $errors->first('grupo') }}</span>
+                                @endif
+
+                            </div>
+
+                            <div class="fv-row mb-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" style="width:45px">
@@ -196,7 +260,7 @@ $id=request()->id;
                                         </span>
                                     </div>
                                     <input
-                                        class="form-control form-control-lg {{ $errors->has('telefono2') ? 'is-invalid' : '' }}"
+                                        class="form-control form-control-sm {{ $errors->has('telefono2') ? 'is-invalid' : '' }}"
                                         type="text" name="telefono2" id="telefono2" autocomplete="off"
                                         value="{{ old('telefono2') }}" placeholder="Ingrese Whatsapp"
                                         onkeypress="return validarNumero(event)" />
@@ -206,7 +270,7 @@ $id=request()->id;
                                 @endif
                             </div>
 
-                            <div class="fv-row mb-5">
+                            <div class="fv-row mb-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" style="width:45px">
@@ -214,7 +278,7 @@ $id=request()->id;
                                         </span>
                                     </div>
                                     <input
-                                        class="form-control form-control-lg {{ $errors->has('correos') ? 'is-invalid' : '' }}"
+                                        class="form-control form-control-sm {{ $errors->has('correos') ? 'is-invalid' : '' }}"
                                         type="text" name="correos" id="correos" autocomplete="off"
                                         value="{{ old('correos') }}" placeholder="Ingrese Correo" />
                                 </div>
@@ -223,33 +287,33 @@ $id=request()->id;
                                 @endif
                             </div>
 
-                            <div class="fv-row mb-5 d-none">
+                            <div class="fv-row mb-3 d-none">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" style="width:45px">
                                             <i class="socicon-mail"></i>
                                         </span>
                                     </div>
-                                    <select class="form-control form-control-lg" name="red_origen" id="red_origen">
-                                        <option value="1" {{$id=='' ? 'Selected' : '' }}>
+                                    <select class="form-control form-control-sm" name="red_origen" id="red_origen">
+                                        <option value="1" {{ $id=='' ? 'Selected' : '' }}>
                                             PERSEO
                                         </option>
-                                        <option value="2" {{$id=='contafacil' ? 'Selected' : '' }}>
+                                        <option value="2" {{ $id=='contafacil' ? 'Selected' : '' }}>
                                             CONTAFACIL
                                         </option>
-                                        <option value="3" {{$id=='UIO-01' ? 'Selected' : '' }}>
+                                        <option value="3" {{ $id=='UIO-01' ? 'Selected' : '' }}>
                                             UIO-01
                                         </option>
-                                        <option value="6" {{$id=='CUE-01' ? 'Selected' : '' }}>
+                                        <option value="6" {{ $id=='CUE-01' ? 'Selected' : '' }}>
                                             CUE-01
                                         </option>
-                                        <option value="7" {{$id=='STO-01' ? 'Selected' : '' }}>
+                                        <option value="7" {{ $id=='STO-01' ? 'Selected' : '' }}>
                                             STO-01
                                         </option>
-                                        <option value="10" {{$id=='CNV-01' ? 'Selected' : '' }}>
+                                        <option value="10" {{ $id=='CNV-01' ? 'Selected' : '' }}>
                                             CNV-01
                                         </option>
-                                        <option value="11" {{$id=='MATRIZ' ? 'Selected' : '' }}>
+                                        <option value="11" {{ $id=='MATRIZ' ? 'Selected' : '' }}>
                                             MATRIZ
                                         </option>
                                     </select>
@@ -257,7 +321,7 @@ $id=request()->id;
                             </div>
 
                             <div class="text-center">
-                                <button type="submit" class="btn btn-lg btn-primary w-100 mb-5" id="ingresar">
+                                <button type="submit" class="btn btn-lg btn-primary w-100 mb-2" id="ingresar">
                                     <span class="indicator-label">Registrarse</span>
                                 </button>
                             </div>
@@ -268,54 +332,71 @@ $id=request()->id;
         </div>
     </div>
 
+
     <!--end::Main-->
     <script src="{{ asset('assets/plugins/plugins.bundle.js') }}"></script>
     <script src="{{ asset('assets/plugins/scripts.bundle.js') }}"></script>
+    <script src="{{ asset('assets/plugins/custom/tag.min.js') }}"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
     <script>
         //Notificaciones
         @foreach (session('flash_notification', collect())->toArray() as $message)
-            $.notify(
-                {
-                    // options
-                    message: '{{ $message['message'] }}',
+            $.notify({
+                // options
+                message: '{{ $message['message'] }}',
+            }, {
+                // settings
+                showProgressbar: true,
+                delay: 2500,
+                mouse_over: "pause",
+                placement: {
+                    from: "top",
+                    align: "right",
                 },
-                {
-                    // settings
-                    showProgressbar: true,
-                    delay: 2500,
-                    mouse_over: "pause",
-                    placement: {
-                        from: "top",
-                        align: "right",
-                    },
-                    animate: {
-                        enter: "animated fadeInUp",
-                        exit: "animated fadeOutDown",
-                    },
-                    type: '{{$message['level']}}',
-                }
-            );
-	    @endforeach
+                animate: {
+                    enter: "animated fadeInUp",
+                    exit: "animated fadeOutDown",
+                },
+                type: '{{ $message['level'] }}',
+            });
+        @endforeach
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             var $this = $($('#contador'));
-            jQuery({ Counter: 0 }).animate({ Counter: $this.attr('data-stop') }, {
+            jQuery({
+                Counter: 0
+            }).animate({
+                Counter: $this.attr('data-stop')
+            }, {
                 duration: 1000,
                 easing: 'swing',
-                step: function (now) {
-                $this.text(Math.ceil(now));
+                step: function(now) {
+                    $this.text(Math.ceil(now));
                 }
             });
 
             //Iniciar select2
-            $('.select2').select2({
-                width: '100%'
+
+            $('#provinciasid').select2({
+                placeholder: 'Seleccione una Provincia',
+
             });
 
-            if('{{$identificacion!=0}}'==true){
+
+            $('#ciudadesid').select2({
+                placeholder: 'Seleccione una Ciudad',
+
+            });
+
+            $('#grupo').select2({
+                placeholder: 'Seleccione un Tipo de Negocio',
+
+            });
+
+            if ('{{ $identificacion != 0 }}' == true) {
                 setTimeout(function() {
-                    window.location.href = "https://perseo-data-c3.app/sistema?identificacion="+'{{$identificacion}}';
+                    window.location.href = "https://perseo-data-c3.app/sistema?identificacion=" +
+                        '{{ $identificacion }}';
                 }, 2000);
             }
         });
@@ -360,7 +441,7 @@ $id=request()->id;
                     _token: '{{ csrf_token() }}',
                     identificacion: cad
                 },
-                success: function(data){
+                success: function(data) {
                     $("#spinner").removeClass("spinner spinner-success spinner-right");
                     data = JSON.parse(data);
                     if (data.identificacion) {
@@ -376,6 +457,29 @@ $id=request()->id;
             });
         }
 
+        function cambiarCiudad(id) {
+
+            $.ajax({
+                url: '{{ route('registro.recuperarciudades') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: id.value
+                },
+                success: function(data) {
+                    $('#ciudadesid').empty();
+
+
+                    data.map(ciudades =>
+                        $('#ciudadesid').append('<option value="' + ciudades.ciudadesid + '">' + ciudades
+                            .ciudad + '</option>')
+                    );
+                }
+            })
+        }
+
+
+
         function camposvacios() {
             $("#nombres").val('');
             $("#direccion").val('');
@@ -389,9 +493,8 @@ $id=request()->id;
                 overlayColor: '#f3f6f9',
                 state: 'primary',
                 message: 'Registrando'
-            }); 
+            });
         })
-
     </script>
 
 

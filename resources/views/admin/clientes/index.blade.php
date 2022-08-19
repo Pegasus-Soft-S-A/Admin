@@ -13,6 +13,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <!--begin::Card-->
+
                     <div class="card card-custom card-sticky" id="kt_page_sticky_card">
                         <div class="card-header ">
                             <div class="card-title">
@@ -273,18 +274,6 @@
                                             <option value="11">MATRIZ</option>
                                         </select>
                                     </div>
-                                    <div class="col-lg-3 mb-lg-0 mb-6">
-                                        <label>Fecha Modificacion:</label>
-                                        <div class="input-group" id='kt_fecha_modificacion'>
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">
-                                                    <i class="la la-calendar-check-o"></i>
-                                                </span>
-                                            </div>
-                                            <input type="text" class="form-control" autocomplete="off"
-                                                placeholder="Rango de Fechas" id="fecha_modificacion">
-                                        </div>
-                                    </div>
                                     @endif
                                 </div>
 
@@ -433,61 +422,6 @@
             $('#kt_fecha .form-control').val( start.format('DD-MM-YYYY') + ' / ' + end.format('DD-MM-YYYY'));
         });
 
-        $('#kt_fecha_modificacion').daterangepicker({
-            autoUpdateInput: false,
-            format: "DD-MM-YYYY",
-            locale: {
-                "separator": " - ",
-                "applyLabel": "Aplicar",
-                "cancelLabel": "Cancelar",
-                "fromLabel": "DE",
-                "toLabel": "HASTA",
-                "customRangeLabel": "Personalizado",
-                "daysOfWeek": [
-                    "Dom",
-                    "Lun",
-                    "Mar",
-                    "Mie",
-                    "Jue",
-                    "Vie",
-                    "Sáb"
-                ],
-                "monthNames": [
-                    "Enero",
-                    "Febrero",
-                    "Marzo",
-                    "Abril",
-                    "Mayo",
-                    "Junio",
-                    "Julio",
-                    "Agosto",
-                    "Septiembre",
-                    "Octubre",
-                    "Noviembre",
-                    "Diciembre"
-                ],
-                "firstDay": 1
-            },
-            ranges: {
-            'Hoy': [moment(), moment()],
-            'Ultimos 7 días': [moment().subtract(6, 'days'), moment()],
-            'Ultimos 30 días ': [moment().subtract(29, 'days'), moment()],
-            'Mes Actual': [moment().startOf('month'), moment().endOf('month')],
-            'Mes Anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-            'Año Actual': [moment().startOf('year'), moment().endOf('year')],
-            'Año Anterior': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')],
-            },
-            buttonClasses: ' btn',
-            applyClass: 'btn-primary',
-            cancelClass: 'btn-secondary',
-            alwaysShowCalendars: true,
-            showDropdowns: true,
-            timePicker: true,
-            timePicker24Hour: true,
-        }, function(start, end, label) {
-            $('#kt_fecha_modificacion .form-control').val( start.format('DD-MM-YYYY H:mm') + ' / ' + end.format('DD-MM-YYYY H:mm'));
-        });
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -509,7 +443,7 @@
             //Orden inicial
             order: [[ 0, 'desc' ]],
             //Guardar pagina, busqueda, etc
-            stateSave: true,
+            stateSave: false,
             //Trabajar del lado del server
             serverSide: true,
             //Peticion ajax que devuelve los registros
@@ -521,7 +455,6 @@
                     d.tipofecha= $("#tipofecha").val();
                     d.tipolicencia= $("#tipolicencia").val();
                     d.fecha= $("#fecha").val();
-                    d.fecha_modificacion= $("#fecha_modificacion").val();
                     d.periodo= $("#periodo").val();
                     d.producto= $("#producto").val();
                     d.distribuidor= $("#distribuidor").val();
@@ -553,6 +486,7 @@
                 {data: 'sis_revendedoresid', name: 'sis_revendedoresid',visible:false},
                 {data: 'red_origen', name: 'red_origen',visible:false},
                 {data: 'provinciasid',name: 'provinciasid',visible: false},
+                
                 {data: 'usuarios', name: 'usuarios',visible:false},
                 {data: 'empresas', name: 'empresas',visible:false},
                 {data: 'numeromoviles', name: 'numeromoviles',visible:false},
@@ -599,7 +533,6 @@
             $("#tipofecha").val('');
             $("#tipolicencia").val('');
             $("#fecha").val('');
-            $("#fecha_modificacion").val('');
             $("#periodo").val('');
             $("#producto").val('');
             $("#distribuidor").val('');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ciudades;
 use App\Models\Clientes;
 use App\Models\Distribuidores;
 use App\Models\Licencias;
@@ -40,7 +41,6 @@ class clientesController extends Controller
             $tipo = $request->tipofecha;
             $tipolicencia = $request->tipolicencia;
             $fecha = $request->fecha;
-            $fecha_modificacion = $request->fecha_modificacion;
             $distribuidor = $request->distribuidor;
             $vendedor = $request->vendedor;
             $origen = $request->origen;
@@ -73,6 +73,7 @@ class clientesController extends Controller
                     'sis_clientes.sis_vendedoresid',
                     'sis_clientes.sis_revendedoresid',
                     'sis_clientes.provinciasid',
+                    'sis_clientes.ciudadesid',
                     'sis_licencias.empresas',
                     'sis_licencias.usuarios',
                     'sis_licencias.numeroequipos',
@@ -83,8 +84,7 @@ class clientesController extends Controller
                     'sis_clientes.fechamodificacion',
                     'sis_licencias.modulopractico',
                     'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable',
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechamodificacion) as licenciamodificacion'),
+                    'sis_licencias.modulocontable'
                 )
                     ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->groupBy('sis_clientes.sis_clientesid')
@@ -122,6 +122,7 @@ class clientesController extends Controller
                     'sis_clientes.sis_vendedoresid',
                     'sis_clientes.sis_revendedoresid',
                     'sis_clientes.provinciasid',
+                    'sis_clientes.ciudadesid',
                     'sis_licencias.empresas',
                     'sis_licencias.usuarios',
                     'sis_licencias.numeroequipos',
@@ -132,8 +133,7 @@ class clientesController extends Controller
                     'sis_clientes.fechamodificacion',
                     'sis_licencias.modulopractico',
                     'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable',
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechamodificacion) as licenciamodificacion'),
+                    'sis_licencias.modulocontable'
                 )
                     ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->get();
@@ -160,6 +160,7 @@ class clientesController extends Controller
                     'sis_clientes.sis_vendedoresid',
                     'sis_clientes.sis_revendedoresid',
                     'sis_clientes.provinciasid',
+                    'sis_clientes.ciudadesid',
                     'sis_licencias.empresas',
                     'sis_licencias.usuarios',
                     'sis_licencias.numeroequipos',
@@ -170,8 +171,7 @@ class clientesController extends Controller
                     'sis_clientes.fechamodificacion',
                     'sis_licencias.modulopractico',
                     'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable',
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechamodificacion) as licenciamodificacion'),
+                    'sis_licencias.modulocontable'
                 )
                     ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->where('sis_clientes.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)
@@ -211,6 +211,7 @@ class clientesController extends Controller
                     'sis_clientes.sis_vendedoresid',
                     'sis_clientes.sis_revendedoresid',
                     'sis_clientes.provinciasid',
+                    'sis_clientes.ciudadesid',
                     'sis_licencias.empresas',
                     'sis_licencias.usuarios',
                     'sis_licencias.numeroequipos',
@@ -221,8 +222,7 @@ class clientesController extends Controller
                     'sis_clientes.fechamodificacion',
                     'sis_licencias.modulopractico',
                     'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable',
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechamodificacion) as licenciamodificacion'),
+                    'sis_licencias.modulocontable'
                 )
                     ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
                     ->where('sis_clientes.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)
@@ -256,12 +256,6 @@ class clientesController extends Controller
                     $hasta =  strtotime(explode(" / ", $fecha)[1]);
                     $final = $final->whereBetween($tipo_fecha, [$desde, $hasta]);
                 }
-            }
-
-            if ($fecha_modificacion) {
-                $desde =  strtotime(explode(" / ", $fecha_modificacion)[0]);
-                $hasta =  strtotime(explode(" / ", $fecha_modificacion)[1]);
-                $final = $final->whereBetween('licenciamodificacion', [$desde, $hasta]);
             }
 
             if ($distribuidor != null) {
@@ -436,6 +430,7 @@ class clientesController extends Controller
                     return $producto;
                 })
                 ->editColumn('provinciasid', function ($cliente) {
+
                     $provincia = "";
                     switch ($cliente['provinciasid']) {
                         case '1':
@@ -513,6 +508,7 @@ class clientesController extends Controller
                     }
                     return $provincia;
                 })
+
                 ->editColumn('periodo', function ($cliente) {
                     $periodo = "";
                     if ($cliente['periodo'] == 1) {
@@ -555,6 +551,8 @@ class clientesController extends Controller
                 'sis_vendedoresid' => 'required',
                 'sis_revendedoresid' => 'required',
                 'red_origen' => 'required',
+                'ciudadesid' => 'required',
+                'grupo' => 'required'
             ],
             [
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
@@ -573,21 +571,21 @@ class clientesController extends Controller
                 'sis_vendedoresid.required' => 'Seleccione un Vendedor',
                 'sis_revendedoresid.required' => 'Seleccione un Revendedor',
                 'red_origen.required' => 'Seleccione un Origen',
+                'grupo.required' => 'Seleccione un Tipo de Negocio',
+                'ciudadesid.required' => 'Seleccione una Ciudad'
             ],
         );
 
         //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
         $request['fechacreacion'] = now();
         $request['usuariocreacion'] = Auth::user()->nombres;
-        $request['validado'] = 1;
-
+        $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
 
         DB::beginTransaction();
         try {
             $servidores = Servidores::where('estado', 1)->get();
 
             $cliente =   Clientes::create($request->all());
-
             $log = new Log();
             $log->usuario = Auth::user()->nombres;
             $log->pantalla = "Clientes";
@@ -604,6 +602,7 @@ class clientesController extends Controller
                     ->post($url, $request->all())
                     ->json();
                 if (!isset($crearCliente['sis_clientes'])) {
+                    dd($crearCliente);
                     DB::rollBack();
                     flash('Ocurrió un error vuelva a intentarlo')->warning();
                     return back();
@@ -613,6 +612,7 @@ class clientesController extends Controller
             DB::commit();
             return redirect()->route('clientes.editar', $cliente->sis_clientesid);
         } catch (\Exception $e) {
+
             DB::rollBack();
             flash('Ocurrió un error vuelva a intentarlo')->warning();
             return back();
@@ -641,6 +641,8 @@ class clientesController extends Controller
                 'sis_vendedoresid' => 'required',
                 'sis_revendedoresid' => 'required',
                 'red_origen' => 'required',
+                'ciudadesid' => 'required',
+                'grupo' => 'required'
             ],
             [
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
@@ -659,6 +661,8 @@ class clientesController extends Controller
                 'sis_vendedoresid.required' => 'Seleccione un Vendedor',
                 'sis_revendedoresid.required' => 'Seleccione un Revendedor',
                 'red_origen.required' => 'Seleccione un Origen',
+                'grupo.required' => 'Seleccione un Tipo de Negocio',
+                'ciudadesid.required' => 'Seleccione una Ciudad'
             ],
         );
 
@@ -666,7 +670,7 @@ class clientesController extends Controller
         DB::beginTransaction();
         try {
             $servidores = Servidores::where('estado', 1)->get();
-
+            $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
             $request['fechamodificacion'] =  now();
             $request['usuariomodificacion'] = Auth::user()->nombres;
             $cliente->update($request->all());
@@ -699,6 +703,7 @@ class clientesController extends Controller
             flash('Guardado Correctamente')->success();
             DB::commit();
         } catch (\Exception $e) {
+
             DB::rollBack();
             flash('Ocurrió un error vuelva a intentarlo')->warning();
         };
@@ -707,6 +712,35 @@ class clientesController extends Controller
 
     public function eliminar(Clientes $cliente)
     {
+
+        $servidores = Servidores::all();
+        $web = [];
+
+        foreach ($servidores as  $servidor) {
+            $url = $servidor->dominio . '/registros/consulta_licencia';
+            $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                ->withOptions(["verify" => false])
+                ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
+                ->json();
+            if (isset($resultado['licencias'])) {
+                $web = array_merge($web, $resultado['licencias']);
+            }
+        }
+
+        $data = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
+            ->where('sis_clientesid', $cliente->sis_clientesid)
+            ->get();
+
+        if ($web) {
+            $unir = array_merge($web, $data->toArray());
+        } else {
+            $unir =  $data->toArray();
+        }
+        if (count($unir) > 0) {
+            flash('Existen licencias creadas para este cliente')->error();
+            return back();
+        }
+
 
         DB::beginTransaction();
         try {
