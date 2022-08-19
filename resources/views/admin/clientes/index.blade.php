@@ -443,7 +443,7 @@
             //Orden inicial
             order: [[ 0, 'desc' ]],
             //Guardar pagina, busqueda, etc
-            stateSave: false,
+            stateSave: true,
             //Trabajar del lado del server
             serverSide: true,
             //Peticion ajax que devuelve los registros
