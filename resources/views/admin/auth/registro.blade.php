@@ -144,10 +144,10 @@ $grupos = App\Models\Grupos::get();
                                             Carchi
                                         </option>
                                         <option value="05">
-                                            Chimborazo
+                                            Cotopaxi
                                         </option>
                                         <option value="06">
-                                            Cotopaxi
+                                            Chimborazo
                                         </option>
                                         <option value="07">
                                             El Oro

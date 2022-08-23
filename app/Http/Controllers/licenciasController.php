@@ -792,6 +792,7 @@ class licenciasController extends Controller
         $licenciaEnviar = $licenciaConsulta['licencias'][0];
         $licenciaArray = json_encode($licenciaEnviar);
         $licencia = json_decode($licenciaArray);
+        $parametros_json = json_decode($licencia->parametros_json);
         //En caso de renovar mensual, anual o actualizar 
         switch ($request->tipo) {
             case 'mes':
@@ -805,16 +806,16 @@ class licenciasController extends Controller
                 $request['periodo'] = 2;
                 break;
             case 'recargar':
-                $parametros_json = json_decode($licencia->parametros_json);
+                //$parametros_json = json_decode($licencia->parametros_json);
                 $parametros_json->Documentos = $parametros_json->Documentos + 120;
-                $request['parametros_json'] = json_encode($parametros_json);
+                //$request['parametros_json'] = json_encode($parametros_json);
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
                 $asunto = $licencia->producto == 9 ? 'Recarga 120 Documentos Perseo Web Lite ' : 'Recarga 120 Documentos Perseo Web Emprendedor';
                 break;
             case 'recargar240':
-                $parametros_json = json_decode($licencia->parametros_json);
+                //$parametros_json = json_decode($licencia->parametros_json);
                 $parametros_json->Documentos = $parametros_json->Documentos + 240;
-                $request['parametros_json'] = json_encode($parametros_json);
+                //$request['parametros_json'] = json_encode($parametros_json);
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
                 $asunto =  'Recarga 240 Documentos Perseo Web Emprendedor';
                 break;
@@ -828,6 +829,7 @@ class licenciasController extends Controller
         $request['fechamodificacion'] = date('YmdHis', strtotime(now()));
         $request['usuariomodificacion'] = Auth::user()->nombres;
         $request['fechainicia'] = date('Ymd', strtotime($request->fechainicia));
+        $request['parametros_json'] = json_encode($parametros_json);
 
 
         $xw = xmlwriter_open_memory();

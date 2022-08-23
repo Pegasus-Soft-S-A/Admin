@@ -92,6 +92,15 @@
 
                 @endif
 
+                @if (Auth::user()->tipo==1 || Auth::user()->tipo==2)
+
+                <li class="menu-item {{ areActiveRoutes(['notificaciones.index']) }}" aria-haspopup="true">
+                    <a href="{{ route('notificaciones.index') }}" class="menu-link">
+                        <i class="menu-icon fa fa-bell"></i>
+                        <span class="menu-text">Notificaciones</span>
+                    </a>
+                </li>
+                @endif
             </ul>
         </div>
     </div>

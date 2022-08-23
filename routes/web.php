@@ -8,6 +8,7 @@ use App\Http\Controllers\licenciasController;
 use App\Http\Controllers\revendedoresController;
 use App\Http\Controllers\servidoresController;
 use App\Http\Controllers\usuariosController;
+use App\Http\Controllers\notificacionesController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas Inicio 
@@ -112,5 +113,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/agrupadoseditar/{agrupados}', [agrupadosController::class, 'editar'])->name('agrupados.editar');
         Route::put('/agrupadosactualizar/{agrupados}', [agrupadosController::class, 'actualizar'])->name('agrupados.actualizar');
         Route::delete('/agrupadoseliminar/{agrupados}', [agrupadosController::class, 'eliminar'])->name('agrupados.eliminar');
+
+        /* Notificaciones */
+        Route::get('/notificaciones', [notificacionesController::class, 'index'])->name('notificaciones.index');
+        Route::get('/notificacionescrear', [notificacionesController::class, 'crear'])->name('notificaciones.crear');
+        Route::post('/notificacionesguardar', [notificacionesController::class, 'guardar'])->name('notificaciones.guardar');
+        Route::get('/notificacioneseditar/{notificaciones}', [notificacionesController::class, 'editar'])->name('notificaciones.editar');
+        Route::put('/notificacionesactualizar/{notificaciones}', [notificacionesController::class, 'actualizar'])->name('notificaciones.actualizar');
+        Route::delete('/notificacioneseliminar/{notificaciones}', [notificacionesController::class, 'eliminar'])->name('notificaciones.eliminar');
     });
 });

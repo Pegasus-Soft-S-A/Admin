@@ -225,7 +225,19 @@ class adminController extends Controller
                         "nombre" => "Total"
                     ], [
                         "id" => "6",
+                        "nombre" => "Perseo Lite Anterior"
+                    ], [
+                        "id" => "8",
+                        "nombre" => "Soy Contador Servicios"
+                    ], [
+                        "id" => "9",
                         "nombre" => "Perseo Lite"
+                    ], [
+                        "id" => "10",
+                        "nombre" => "Emprendedor"
+                    ], [
+                        "id" => "11",
+                        "nombre" => "Socio Perseo"
                     ]
                 ];
                 break;

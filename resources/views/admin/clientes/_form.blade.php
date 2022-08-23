@@ -80,10 +80,10 @@ $grupos = App\Models\Grupos::get();
                 Carchi
             </option>
             <option value="05" {{ $cliente->provinciasid == '05' ? 'Selected' : '' }}>
-                Chimborazo
+                Cotopaxi
             </option>
             <option value="06" {{ $cliente->provinciasid == '06' ? 'Selected' : '' }}>
-                Cotopaxi
+                Chimborazo
             </option>
             <option value="07" {{ $cliente->provinciasid == '07' ? 'Selected' : '' }}>
                 El Oro

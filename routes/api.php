@@ -11,6 +11,7 @@ Route::group(['prefix' => 'datos', 'middleware' => 'authAPI'], function () {
     Route::post('/servidores_activos', [IdentificacionesController::class, 'servidores_activos1'])->name('identificaciones.servidores.activos1');
     Route::post('/consultar_validado', [IdentificacionesController::class, 'consultar_validado'])->name('identificaciones.validado');
     Route::post('/validar_datos', [IdentificacionesController::class, 'validar_datos'])->name('identificaciones.validar');
+    Route::post('/consulta_notificaciones', [IdentificacionesController::class, 'consulta_notificaciones'])->name('identificaciones.consulta_notificaciones');
 });
 
 Route::group(['middleware' => 'authAPILicencia'], function () {

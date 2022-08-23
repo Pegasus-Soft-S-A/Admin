@@ -374,13 +374,22 @@ class clientesController extends Controller
                                 $producto = "Soy Contador Comercial";
                                 break;
                             case '6':
-                                $producto = "Perseo Lite";
+                                $producto = "Perseo Lite Anterior";
                                 break;
                             case '7':
                                 $producto = "Total";
                                 break;
                             case '8':
                                 $producto = "Soy Contador Servicios";
+                                break;
+                            case '9':
+                                $producto = "Perseo Lite";
+                                break;
+                            case '10':
+                                $producto = "Emprendedor";
+                                break;
+                            case '11':
+                                $producto = "Socio Perseo";
                                 break;
                         }
                     } else {
@@ -602,7 +611,6 @@ class clientesController extends Controller
                     ->post($url, $request->all())
                     ->json();
                 if (!isset($crearCliente['sis_clientes'])) {
-                    dd($crearCliente);
                     DB::rollBack();
                     flash('Ocurrió un error vuelva a intentarlo')->warning();
                     return back();

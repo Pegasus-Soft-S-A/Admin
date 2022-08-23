@@ -1,0 +1,145 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Distribuidores;
+use App\Models\Log;
+use App\Models\Notificaciones;
+use App\Models\Servidores;
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables as DataTables;
+use Illuminate\Support\Facades\Auth;
+
+class notificacionesController extends Controller
+{
+    public function index(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $data = Auth::user()->tipo == 1 ? Notificaciones::all() : Notificaciones::where("sis_distribuidores_usuariosid", Auth::user()->sis_distribuidores_usuariosid);
+
+            return DataTables::of($data)
+
+                ->editColumn('asunto', function ($notificacion) {
+                    return '<a class="text-primary" href="' . route('notificaciones.editar', $notificacion->sis_notificacionesid) . '">' . $notificacion->asunto . ' </a>';
+                })
+
+                ->editColumn('action', function ($notificacion) {
+                    return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('notificaciones.editar', $notificacion->sis_notificacionesid) . '"  title="Editar"> <i class="la la-edit"></i> </a>' .
+                        '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('notificaciones.eliminar', $notificacion->sis_notificacionesid) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
+                })
+
+                ->rawColumns(['action', 'asunto'])
+                ->make(true);
+        }
+        return view('admin.notificaciones.index');
+    }
+
+    public function crear()
+    {
+        $notificaciones = new Notificaciones();
+        if (Auth::user()->tipo == 1) {
+            $distribuidores = Distribuidores::all();
+        } else {
+            $distribuidores = Distribuidores::where('sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
+        }
+        return view('admin.notificaciones.crear', compact('notificaciones', 'distribuidores'));
+    }
+
+    public function guardar(Request $request)
+    {
+
+        $request->validate(
+            [
+                'asunto' => 'required',
+                'contenido' => 'required',
+
+            ],
+            [
+                'asunto.required' => 'Ingrese Asunto ',
+                'contenido.required' => 'Ingrese Contenido',
+            ],
+        );
+
+        $request['sis_distribuidores_usuariosid'] = Auth::user()->sis_distribuidores_usuariosid;
+        $request['fechacreacion'] = now();
+        $request['usuariocreacion'] = Auth::user()->nombres;
+
+        unset(
+            $request['files'],
+        );
+
+        $notificaciones =   Notificaciones::create($request->all());
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Notificaciones";
+        $log->tipooperacion = "Crear";
+        $log->fecha = now();
+        $log->detalle = $notificaciones;
+        $log->save();
+        flash('Servidor creado correctamente')->success();
+        return redirect()->route('notificaciones.editar', $notificaciones->sis_notificacionesid);
+    }
+
+    public function editar(Notificaciones $notificaciones)
+    {
+        if (Auth::user()->tipo == 1) {
+            $distribuidores = Distribuidores::all();
+        } else {
+            $distribuidores = Distribuidores::where('sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
+        }
+        return view('admin.notificaciones.editar', compact('notificaciones', 'distribuidores'));
+    }
+    public function actualizar(Notificaciones $notificaciones, Request $request)
+    {
+        $request->validate(
+            [
+                'asunto' => 'required',
+                'contenido' => 'required',
+
+            ],
+            [
+                'asunto.required' => 'Ingrese Asunto ',
+                'contenido.required' => 'Ingrese Contenido',
+            ],
+        );
+
+        $request['sis_distribuidores_usuariosid'] = Auth::user()->sis_distribuidores_usuariosid;
+        $request['fechamodificacion'] = now();
+        $request['usuariomodificacion'] = Auth::user()->nombres;
+
+        unset(
+            $request['files'],
+        );
+
+        $notificaciones->update($request->all());
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Notificaciones";
+        $log->tipooperacion = "Modificar";
+        $log->fecha = now();
+        $log->detalle = $notificaciones;
+        $log->save();
+
+        flash('Actualizado Correctamente')->success();
+        return back();
+    }
+
+    public function eliminar(Notificaciones $notificaciones)
+    {
+        $notificaciones->delete();
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Notificaciones";
+        $log->tipooperacion = "Eliminar";
+        $log->fecha = now();
+        $log->detalle = $notificaciones;
+        $log->save();
+
+        flash("Eliminado Correctamente")->success();
+        return back();
+    }
+}

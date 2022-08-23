@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Clientes;
 use App\Models\Identificaciones;
 use App\Models\Licencias;
+use App\Models\Notificaciones;
 use App\Models\Servidores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,8 @@ class IdentificacionesController extends Controller
     public function index(Request $request)
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
-        $buscar = Identificaciones::where('identificacion', $identificacionIngresada)->first();
+        $buscar = Identificaciones::where('identificacion', 'like', $identificacionIngresada . '%')->first();
+
         if (!$buscar) {
             $buscar = array("razon_social" => "");
         } else {
@@ -211,5 +213,12 @@ class IdentificacionesController extends Controller
         $licencia->tokenrespaldo = $request->token;
         $licencia->save();
         return json_encode(["licencia" => [$licencia]]);
+    }
+
+    public function consulta_notificaciones(Request $request)
+    {
+        $notificaciones = Notificaciones::whereBetween('fechacreacion', [$request->inicio . " 00:00:00", $request->fin . " 23:59:59"])
+            ->get();
+        return json_encode($notificaciones);
     }
 }
