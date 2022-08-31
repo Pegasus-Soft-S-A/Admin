@@ -104,6 +104,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/servidoreseditar/{servidores}', [servidoresController::class, 'editar'])->name('servidores.editar');
         Route::put('/servidoresactualizar/{servidores}', [servidoresController::class, 'actualizar'])->name('servidores.actualizar');
         Route::delete('/servidoreseliminar/{servidores}', [servidoresController::class, 'eliminar'])->name('servidores.eliminar');
+        Route::post('/servidoresmigrar', [servidoresController::class, 'migrar'])->name('servidores.migrar');
 
         /* Agrupados */
 

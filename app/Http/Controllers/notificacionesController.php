@@ -28,7 +28,9 @@ class notificacionesController extends Controller
                     return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('notificaciones.editar', $notificacion->sis_notificacionesid) . '"  title="Editar"> <i class="la la-edit"></i> </a>' .
                         '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('notificaciones.eliminar', $notificacion->sis_notificacionesid) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
                 })
-
+                ->editColumn('fechapublicacion', function ($data) {
+                    return date('d-m-Y', strtotime($data['fechapublicacion']));
+                })
                 ->rawColumns(['action', 'asunto'])
                 ->make(true);
         }
@@ -38,11 +40,8 @@ class notificacionesController extends Controller
     public function crear()
     {
         $notificaciones = new Notificaciones();
-        if (Auth::user()->tipo == 1) {
-            $distribuidores = Distribuidores::all();
-        } else {
-            $distribuidores = Distribuidores::where('sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
-        }
+        $distribuidores = Distribuidores::all();
+
         return view('admin.notificaciones.crear', compact('notificaciones', 'distribuidores'));
     }
 
@@ -64,6 +63,7 @@ class notificacionesController extends Controller
         $request['sis_distribuidores_usuariosid'] = Auth::user()->sis_distribuidores_usuariosid;
         $request['fechacreacion'] = now();
         $request['usuariocreacion'] = Auth::user()->nombres;
+        $request['fechapublicacion'] = date('Ymd', strtotime($request->fechapublicacion));
 
         unset(
             $request['files'],
@@ -84,11 +84,10 @@ class notificacionesController extends Controller
 
     public function editar(Notificaciones $notificaciones)
     {
-        if (Auth::user()->tipo == 1) {
-            $distribuidores = Distribuidores::all();
-        } else {
-            $distribuidores = Distribuidores::where('sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
-        }
+
+        $distribuidores = Distribuidores::all();
+        $notificaciones['fechapublicacion'] = date("d-m-Y", strtotime($notificaciones['fechapublicacion']));
+
         return view('admin.notificaciones.editar', compact('notificaciones', 'distribuidores'));
     }
     public function actualizar(Notificaciones $notificaciones, Request $request)
@@ -108,6 +107,7 @@ class notificacionesController extends Controller
         $request['sis_distribuidores_usuariosid'] = Auth::user()->sis_distribuidores_usuariosid;
         $request['fechamodificacion'] = now();
         $request['usuariomodificacion'] = Auth::user()->nombres;
+        $request['fechapublicacion'] = date('Ymd', strtotime($request->fechapublicacion));
 
         unset(
             $request['files'],

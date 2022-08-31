@@ -32,12 +32,16 @@
             data-menu-dropdown-timeout="500">
             <ul class="menu-nav">
 
+                @if (Auth::user()->tipo!=5)
+
                 <li class="menu-item {{ areActiveRoutes(['clientes.index']) }} " aria-haspopup="true">
                     <a href="{{ route('clientes.index') }}" class="menu-link">
                         <i class="menu-icon fa fa-key"></i>
                         <span class="menu-text">Registro Clientes</span>
                     </a>
                 </li>
+
+                @endif
 
                 @if (Auth::user()->tipo==1)
 
@@ -76,13 +80,6 @@
                     </a>
                 </li>
 
-                <li class="menu-item {{ areActiveRoutes(['publicidad.index']) }} " aria-haspopup="true">
-                    <a href="{{ route('publicidad.index') }}" class="menu-link">
-                        <i class="menu-icon fa fa-file-image"></i>
-                        <span class="menu-text">Publicidad</span>
-                    </a>
-                </li>
-
                 <li class="menu-item {{ areActiveRoutes(['agrupados.index']) }} " aria-haspopup="true">
                     <a href="{{ route('agrupados.index') }}" class="menu-link">
                         <i class="menu-icon fa fa-users"></i>
@@ -92,7 +89,14 @@
 
                 @endif
 
-                @if (Auth::user()->tipo==1 || Auth::user()->tipo==2)
+                @if (Auth::user()->tipo==1 || Auth::user()->tipo==5)
+
+                <li class="menu-item {{ areActiveRoutes(['publicidad.index']) }} " aria-haspopup="true">
+                    <a href="{{ route('publicidad.index') }}" class="menu-link">
+                        <i class="menu-icon fa fa-file-image"></i>
+                        <span class="menu-text">Publicidad</span>
+                    </a>
+                </li>
 
                 <li class="menu-item {{ areActiveRoutes(['notificaciones.index']) }}" aria-haspopup="true">
                     <a href="{{ route('notificaciones.index') }}" class="menu-link">

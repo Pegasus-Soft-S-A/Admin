@@ -11,6 +11,7 @@ use App\Models\Revendedores;
 use App\Models\Servidores;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
+use Illuminate\Filesystem\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -301,6 +302,7 @@ class clientesController extends Controller
                         break;
                 }
             }
+
 
             return DataTables::of($final)
                 ->editColumn('identificacion', function ($cliente) {

@@ -84,7 +84,6 @@ class adminController extends Controller
             ->withOptions(["verify" => false])
             ->post($url, ['sis_clientesid' => $clienteid])
             ->json();
-
         if (isset($licencias["licencias"])) {
             foreach ($licencias["licencias"] as $key => $licencia) {
                 switch ($licencia['producto']) {
@@ -153,6 +152,9 @@ class adminController extends Controller
                 }
                 //Siempre que se hace login es recomendable regenerar las sesiones
                 $request->session()->regenerate();
+                if (Auth::user()->tipo == 5) {
+                    return redirect()->route('publicidad.index');
+                }
                 return redirect()->route('clientes.index');
             } else {
                 flash('Usuario o Contraseña Incorrectos')->error();

@@ -217,7 +217,7 @@ class IdentificacionesController extends Controller
 
     public function consulta_notificaciones(Request $request)
     {
-        $notificaciones = Notificaciones::whereBetween('fechacreacion', [$request->inicio . " 00:00:00", $request->fin . " 23:59:59"])
+        $notificaciones = Notificaciones::whereBetween('fechapublicacion', [$request->inicio, $request->fin])
             ->get();
         return json_encode($notificaciones);
     }

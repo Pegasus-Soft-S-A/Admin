@@ -382,7 +382,7 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 $('#garantias').prop('checked', false);
             } else {
                 if ("{{ $licencia->producto }}" == 6 || "{{ $licencia->producto }}" == 9 || "{{ $licencia->producto }}" == 10) {
-                    $('#periodo').prop("disabled", true);
+                    $('#periodo').addClass("disabled");
                 }
             }
 

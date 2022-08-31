@@ -36,7 +36,8 @@
                                     <tr>
                                         <th class="no-exportar">#</th>
                                         <th data-priority="1">Asunto</th>
-                                        <th data-priority="2">Acciones</th>
+                                        <th data-priority="2">Fecha Publicacion</th>
+                                        <th data-priority="3">Acciones</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -91,6 +92,11 @@
                     {
                         data: 'asunto',
                         name: 'asunto',
+                        
+                    },
+                    {
+                        data: 'fechapublicacion',
+                        name: 'fechapublicacion',
                         
                     },
                     {

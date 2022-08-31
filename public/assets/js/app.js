@@ -513,3 +513,32 @@ function camposvacios() {
     $('#provinciasid').change();
 
 }
+
+function notificaciones(mensaje, tipo) {
+    if (tipo == "danger") {
+        var tiempo = 0;
+        var progreso = false;
+    } else {
+        var tiempo = 2500;
+        var progreso = true;
+    }
+
+    $.notify({
+        // options
+        message: mensaje,
+    }, {
+
+        showProgressbar: progreso,
+        delay: tiempo,
+        mouse_over: "pause",
+        placement: {
+            from: "top",
+            align: "right",
+        },
+        animate: {
+            enter: "animated fadeInUp",
+            exit: "animated fadeOutDown",
+        },
+        type: tipo,
+    });
+}

@@ -40,13 +40,3 @@
     </div>
 </div>
 @endsection
-@section('script')
-<script>
-    $(document).ready(function() {
-        $('.summernote').summernote({
-            height: 200,
-            lang:'es-ES'
-        })
-    });
-</script>
-@endsection

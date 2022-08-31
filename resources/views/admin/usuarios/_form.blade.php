@@ -97,6 +97,9 @@ $listadoDistribuidor = App\Models\Distribuidores::select('sis_distribuidoresid',
             <option value="4" {{ old('tipo', $usuarios->tipo) == '4' ? 'Selected' : '' }}>
                 Ventas
             </option>
+            <option value="5" {{ old('tipo', $usuarios->tipo) == '5' ? 'Selected' : '' }}>
+                Marketing
+            </option>
         </select>
         @if ($errors->has('tipo'))
         <span class="text-danger">{{ $errors->first('tipo') }}</span>
