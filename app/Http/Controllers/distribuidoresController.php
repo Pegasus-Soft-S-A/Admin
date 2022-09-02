@@ -64,13 +64,13 @@ class distribuidoresController extends Controller
         $request['usuariocreacion'] = Auth::user()->nombres;
         $distribuidor =   Distribuidores::create($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Distribuidores";
-        $log->tipooperacion = "Crear";
-        $log->fecha = now();
-        $log->detalle = $distribuidor;
-        $log->save();
+        // $log = new Log();
+        // $log->usuario = Auth::user()->nombres;
+        // $log->pantalla = "Distribuidores";
+        // $log->tipooperacion = "Crear";
+        // $log->fecha = now();
+        // $log->detalle = $distribuidor;
+        // $log->save();
 
         flash('Guardado Correctamente')->success();
         return redirect()->route('distribuidores.editar', $distribuidor->sis_distribuidoresid);
@@ -106,13 +106,13 @@ class distribuidoresController extends Controller
         $request['usuariomodificacion'] = Auth::user()->nombres;
         $distribuidor->update($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Distribuidores";
-        $log->tipooperacion = "Modificar";
-        $log->fecha = now();
-        $log->detalle = $distribuidor;
-        $log->save();
+        // $log = new Log();
+        // $log->usuario = Auth::user()->nombres;
+        // $log->pantalla = "Distribuidores";
+        // $log->tipooperacion = "Modificar";
+        // $log->fecha = now();
+        // $log->detalle = $distribuidor;
+        // $log->save();
 
         flash('Actualizado Correctamente')->success();
         return back();
@@ -129,13 +129,13 @@ class distribuidoresController extends Controller
             }
         }
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Distribuidores";
-        $log->tipooperacion = "Eliminar";
-        $log->fecha = now();
-        $log->detalle = $distribuidor;
-        $log->save();
+        // $log = new Log();
+        // $log->usuario = Auth::user()->nombres;
+        // $log->pantalla = "Distribuidores";
+        // $log->tipooperacion = "Eliminar";
+        // $log->fecha = now();
+        // $log->detalle = $distribuidor;
+        // $log->save();
 
         flash("Eliminado Correctamente")->success();
         return back();

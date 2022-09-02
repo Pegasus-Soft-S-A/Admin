@@ -574,7 +574,7 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                     break;
                  //Perseo Lite
                 case '9':
-                    fecha.setMonth(fecha.getMonth() + 12);
+                    fecha.setMonth(fecha.getMonth() + 3);
                     $('#sis_servidoresid').val('3');
                     $('#precio').val('0');
                     $('#periodo').val('1');
