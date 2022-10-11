@@ -33,15 +33,15 @@ class ValidarCelular implements Rule
             ->get($url)
             ->json();
 
-        if (!isset($celular['error'])) {
-            if ($celular['valid'] != true) {
-                return false;
-            } else {
-                return true;
-            }
+        //if (!isset($celular['error'])) {
+        if ($celular['valid'] != true) {
+            return false;
         } else {
             return true;
         }
+        // } else {
+        //     return true;
+        // }
     }
 
     /**

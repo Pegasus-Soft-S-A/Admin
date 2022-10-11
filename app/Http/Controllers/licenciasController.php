@@ -7,7 +7,6 @@ use App\Models\Agrupados;
 use App\Models\Licencias;
 use App\Models\Clientes;
 use App\Models\Log;
-use App\Models\Revendedores;
 use App\Models\Servidores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -448,6 +447,39 @@ class licenciasController extends Controller
                 ];
                 $request['parametros_json'] = json_encode($parametros_json);
                 break;
+            case '12':
+                switch ($request->periodo) {
+                        //Inicial
+                    case '1':
+                        $parametros_json = [];
+                        $parametros_json = [
+                            'Documentos' => "30",
+                            'Productos' => "0",
+                            'Almacenes' => "0",
+                            'Nomina' => "0",
+                            'Produccion' => "0",
+                            'Activos' => "0",
+                            'Talleres' => "0",
+                            'Garantias' => "0",
+                        ];
+                        $request['parametros_json'] = json_encode($parametros_json);
+                        break;
+                        //Basico
+                    case '2':
+                        $parametros_json = [];
+                        $parametros_json = [
+                            'Documentos' => "100",
+                            'Productos' => "0",
+                            'Almacenes' => "0",
+                            'Nomina' => "0",
+                            'Produccion' => "0",
+                            'Activos' => "0",
+                            'Talleres' => "0",
+                            'Garantias' => "0",
+                        ];
+                        $request['parametros_json'] = json_encode($parametros_json);
+                        break;
+                }
         }
 
         $xw = xmlwriter_open_memory();

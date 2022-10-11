@@ -503,7 +503,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if (isset($modulos[0]->tienda_perseo_distribuidor))
-                                @if ( $modulos[0]->tienda_perseo_distribuidor== true) )checked="checked" @endif @endif
+                                @if ( $modulos[0]->tienda_perseo_distribuidor== true)) checked="checked" @endif @endif
                                 type="checkbox" name="integraciones" id="integraciones" @if($rol!=1 && $accion ==
                                 'Modificar') disabled @endif/>
                                 <span></span>

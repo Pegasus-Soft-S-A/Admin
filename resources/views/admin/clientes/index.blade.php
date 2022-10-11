@@ -139,9 +139,10 @@
                                     <div class="col-lg-3 mb-lg-0 mb-6">
                                         <label>Periodo:</label>
                                         <select class="form-control datatable-input" id="periodo" name="periodo">
-                                            <option value="">Todos</option>
-                                            <option value="1">Mensual</option>
-                                            <option value="2">Anual</option>
+                                            <option id="" value="">Todos</option>
+                                            <option id="periodo1" value="1">Mensual</option>
+                                            <option id="periodo2" value="2">Anual</option>
+                                            <option class="d-none" id="periodo3" value="3">Premium</option>
                                         </select>
                                     </div>
                                 </div>
@@ -310,6 +311,7 @@
                                         <th data-priority="5">Producto</th>
                                         <th data-priority="6">Inicia</th>
                                         <th data-priority="7">Caduca</th>
+                                        <th style="display:none">Grupo</th>
                                         <th style="display:none">Dias Hasta Vencer</th>
                                         <th style="display:none">Precio</th>
                                         <th style="display:none">Periodo</th>
@@ -320,7 +322,6 @@
                                         <th style="display:none">Revendedor</th>
                                         <th style="display:none">Origen</th>
                                         <th style="display:none">Provincia</th>
-
                                         <th style="display:none">Usuarios</th>
                                         <th style="display:none">Empresas</th>
                                         <th style="display:none">Moviles</th>
@@ -365,7 +366,19 @@
             }
         });
     });
-    
+
+    $('#producto').on('change', function(e){
+        if($('#producto').val()==12){
+            $('#periodo1').html("Inicial");
+            $('#periodo2').html("Basico");
+            $('#periodo3').html("Premium");
+            $('#periodo3').removeClass("d-none");
+        }else{
+            $('#periodo1').html("Mensual");
+            $('#periodo2').html("Anual");
+            $('#periodo3').addClass("d-none");
+        }
+    });
     $(document).ready(function() {
 
         //Inicializar rango de fechas
@@ -476,6 +489,7 @@
                 {data: 'tipo_licencia', name: 'tipo_licencia'},
                 {data: 'fechainicia', name: 'fechainicia'},
                 {data: 'fechacaduca', name: 'fechacaduca'},
+                {data: 'grupo', name: 'grupo',visible:false},
                 {data: 'diasvencer', name: 'diasvencer',visible:false},
                 {data: 'precio', name: 'precio',visible:false},
                 {data: 'periodo', name: 'periodo',visible:false},

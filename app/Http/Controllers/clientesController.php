@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ciudades;
 use App\Models\Clientes;
 use App\Models\Distribuidores;
+use App\Models\Grupos;
 use App\Models\Licencias;
 use App\Models\Log;
 use App\Models\Revendedores;
@@ -48,47 +49,13 @@ class clientesController extends Controller
             $producto = $request->producto;
             $periodo = $request->periodo;
             $provinciasid = $request->provinciasid;
-            $distribuidores = Distribuidores::all()->toArray();
+            $distribuidores = Distribuidores::pluck('sis_distribuidoresid', 'razonsocial')->toArray();
+
+            $grupos = Grupos::all()->toArray();
             $vendedores = Revendedores::all()->toArray();
 
             if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2) {
-                $clientes = Clientes::select(
-                    'sis_clientes.sis_clientesid',
-                    'sis_clientes.identificacion',
-                    'sis_clientes.nombres',
-                    'sis_clientes.telefono1',
-                    'sis_clientes.telefono2',
-                    'sis_clientes.correos',
-                    'sis_licencias.tipo_licencia',
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaultimopago) as fechaultimopago'),
-                    DB::RAW('DATEDIFF(sis_licencias.fechacaduca,NOW()) as diasvencer'),
-                    'sis_licencias.numerocontrato',
-                    'sis_licencias.precio',
-                    'sis_licencias.periodo',
-                    'sis_licencias.producto',
-                    'sis_clientes.red_origen',
-                    'sis_clientes.sis_distribuidoresid',
-                    'sis_clientes.sis_vendedoresid',
-                    'sis_clientes.sis_revendedoresid',
-                    'sis_clientes.provinciasid',
-                    'sis_clientes.ciudadesid',
-                    'sis_licencias.empresas',
-                    'sis_licencias.usuarios',
-                    'sis_licencias.numeroequipos',
-                    'sis_licencias.numeromoviles',
-                    'sis_clientes.usuariocreacion',
-                    'sis_clientes.usuariomodificacion',
-                    'sis_clientes.fechacreacion',
-                    'sis_clientes.fechamodificacion',
-                    'sis_licencias.modulopractico',
-                    'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable'
-                )
-                    ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
-                    ->groupBy('sis_clientes.sis_clientesid')
+                $clientes = Clientes::Clientes("Todos", 0)
                     ->get();
                 foreach ($servidores as  $servidor) {
                     $url = $servidor->dominio . '/registros/consulta_cliente';
@@ -101,82 +68,10 @@ class clientesController extends Controller
                     }
                 }
 
-                $pc = Clientes::select(
-                    'sis_clientes.sis_clientesid',
-                    'sis_clientes.identificacion',
-                    'sis_clientes.nombres',
-                    'sis_clientes.telefono1',
-                    'sis_clientes.telefono2',
-                    'sis_clientes.correos',
-                    'sis_licencias.tipo_licencia',
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaultimopago) as fechaultimopago'),
-                    DB::RAW('DATEDIFF(sis_licencias.fechacaduca,NOW()) as diasvencer'),
-                    'sis_licencias.numerocontrato',
-                    'sis_licencias.precio',
-                    'sis_licencias.periodo',
-                    'sis_licencias.producto',
-                    'sis_clientes.red_origen',
-                    'sis_clientes.sis_distribuidoresid',
-                    'sis_clientes.sis_vendedoresid',
-                    'sis_clientes.sis_revendedoresid',
-                    'sis_clientes.provinciasid',
-                    'sis_clientes.ciudadesid',
-                    'sis_licencias.empresas',
-                    'sis_licencias.usuarios',
-                    'sis_licencias.numeroequipos',
-                    'sis_licencias.numeromoviles',
-                    'sis_clientes.usuariocreacion',
-                    'sis_clientes.usuariomodificacion',
-                    'sis_clientes.fechacreacion',
-                    'sis_clientes.fechamodificacion',
-                    'sis_licencias.modulopractico',
-                    'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable'
-                )
-                    ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
+                $pc = Clientes::Clientes("PC", 0)
                     ->get();
             } else {
-                $clientes = Clientes::select(
-                    'sis_clientes.sis_clientesid',
-                    'sis_clientes.identificacion',
-                    'sis_clientes.nombres',
-                    'sis_clientes.telefono1',
-                    'sis_clientes.telefono2',
-                    'sis_clientes.correos',
-                    'sis_licencias.tipo_licencia',
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaultimopago) as fechaultimopago'),
-                    DB::RAW('DATEDIFF(sis_licencias.fechacaduca,NOW()) as diasvencer'),
-                    'sis_licencias.numerocontrato',
-                    'sis_licencias.precio',
-                    'sis_licencias.periodo',
-                    'sis_licencias.producto',
-                    'sis_clientes.red_origen',
-                    'sis_clientes.sis_distribuidoresid',
-                    'sis_clientes.sis_vendedoresid',
-                    'sis_clientes.sis_revendedoresid',
-                    'sis_clientes.provinciasid',
-                    'sis_clientes.ciudadesid',
-                    'sis_licencias.empresas',
-                    'sis_licencias.usuarios',
-                    'sis_licencias.numeroequipos',
-                    'sis_licencias.numeromoviles',
-                    'sis_clientes.usuariocreacion',
-                    'sis_clientes.usuariomodificacion',
-                    'sis_clientes.fechacreacion',
-                    'sis_clientes.fechamodificacion',
-                    'sis_licencias.modulopractico',
-                    'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable'
-                )
-                    ->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
-                    ->where('sis_clientes.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)
-                    ->groupBy('sis_clientes.sis_clientesid')
+                $clientes = Clientes::Clientes("Todos", Auth::user()->sis_distribuidoresid)
                     ->get();
 
                 foreach ($servidores as  $servidor) {
@@ -190,46 +85,9 @@ class clientesController extends Controller
                     }
                 }
 
-                $pc = Clientes::select(
-                    'sis_clientes.sis_clientesid',
-                    'sis_clientes.identificacion',
-                    'sis_clientes.nombres',
-                    'sis_clientes.telefono1',
-                    'sis_clientes.telefono2',
-                    'sis_clientes.correos',
-                    'sis_licencias.tipo_licencia',
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechainicia) as fechainicia'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechacaduca) as fechacaduca'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaactulizaciones) as fechaactulizaciones'),
-                    DB::RAW('UNIX_TIMESTAMP(sis_licencias.fechaultimopago) as fechaultimopago'),
-                    DB::RAW('DATEDIFF(sis_licencias.fechacaduca,NOW()) as diasvencer'),
-                    'sis_licencias.numerocontrato',
-                    'sis_licencias.precio',
-                    'sis_licencias.periodo',
-                    'sis_licencias.producto',
-                    'sis_clientes.red_origen',
-                    'sis_clientes.sis_distribuidoresid',
-                    'sis_clientes.sis_vendedoresid',
-                    'sis_clientes.sis_revendedoresid',
-                    'sis_clientes.provinciasid',
-                    'sis_clientes.ciudadesid',
-                    'sis_licencias.empresas',
-                    'sis_licencias.usuarios',
-                    'sis_licencias.numeroequipos',
-                    'sis_licencias.numeromoviles',
-                    'sis_clientes.usuariocreacion',
-                    'sis_clientes.usuariomodificacion',
-                    'sis_clientes.fechacreacion',
-                    'sis_clientes.fechamodificacion',
-                    'sis_licencias.modulopractico',
-                    'sis_licencias.modulocontrol',
-                    'sis_licencias.modulocontable'
-                )
-                    ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
-                    ->where('sis_clientes.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)
+                $pc = Clientes::Clientes("PC", Auth::user()->sis_distribuidoresid)
                     ->get();
             }
-
             $diferencia = removeDuplicate($clientes->toArray(), $web, $pc->toArray(), 'sis_clientesid');
             $unir = array_merge($web, $pc->toArray());
             $temp = array_unique(array_column($unir,  'numerocontrato'));
@@ -318,8 +176,8 @@ class clientesController extends Controller
                     }
                 })
                 ->editColumn('sis_distribuidoresid', function ($cliente) use ($distribuidores) {
-                    $posicion = array_search($cliente['sis_distribuidoresid'], array_column($distribuidores, 'sis_distribuidoresid'));
-                    return $distribuidores[$posicion]['razonsocial'];
+                    $posicion = array_search($cliente['sis_distribuidoresid'], $distribuidores);
+                    return $posicion;
                 })
                 ->editColumn('sis_vendedoresid', function ($cliente) use ($vendedores) {
                     $posicion = array_search($cliente['sis_vendedoresid'], array_column($vendedores, 'sis_revendedoresid'));
@@ -328,6 +186,13 @@ class clientesController extends Controller
                 ->editColumn('sis_revendedoresid', function ($cliente) use ($vendedores) {
                     $posicion = array_search($cliente['sis_revendedoresid'], array_column($vendedores, 'sis_revendedoresid'));
                     return $vendedores[$posicion]['razonsocial'];
+                })
+                ->editColumn('grupo', function ($cliente) use ($grupos) {
+                    $posicion = array_search($cliente['grupo'], array_column($grupos, 'gruposid'));
+                    if ($posicion) {
+                        return $grupos[$posicion]['descripcion'];
+                    }
+                    return '';
                 })
                 ->editColumn('fechainicia', function ($cliente) {
                     return $cliente['fechainicia'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechainicia']);
@@ -392,6 +257,9 @@ class clientesController extends Controller
                                 break;
                             case '11':
                                 $producto = "Socio Perseo";
+                                break;
+                            case '12':
+                                $producto = "Facturito";
                                 break;
                         }
                     } else {

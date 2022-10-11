@@ -58,7 +58,11 @@ class adminController extends Controller
                     ->json();
 
                 if (isset($resultado['licencias'])) {
-                    $array[] = ["sis_servidoresid" => $servidor->sis_servidoresid, "descripcion" => $servidor->descripcion, "dominio" => $servidor->dominio . '/sistema?identificacion=' . $identificacionIngresada];
+                    if ($servidor->sis_servidoresid == 2) {
+                        $array[] = ["sis_servidoresid" => $servidor->sis_servidoresid, "descripcion" => $servidor->descripcion, "dominio" => $servidor->dominio . '/facturito?identificacion=' . $identificacionIngresada];
+                    } else {
+                        $array[] = ["sis_servidoresid" => $servidor->sis_servidoresid, "descripcion" => $servidor->descripcion, "dominio" => $servidor->dominio . '/sistema?identificacion=' . $identificacionIngresada];
+                    }
                 }
             }
         }
@@ -240,6 +244,9 @@ class adminController extends Controller
                     ], [
                         "id" => "11",
                         "nombre" => "Socio Perseo"
+                    ], [
+                        "id" => "12",
+                        "nombre" => "Facturito"
                     ]
                 ];
                 break;

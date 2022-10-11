@@ -20,7 +20,7 @@
     <div class="row h-100 w-100 mx-auto">
 
         <div class="col-md-8 d-none d-xl-block"
-            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-inicio.jpg') }}); background-size: 100% 100%; ">
+            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-inicio2.jpg') }}); background-size: 100% 100%; ">
         </div>
 
         <div class="mx-auto col-md-4 m-0 p-0 d-flex align-items-center">
@@ -77,7 +77,7 @@
                     <div class="card card-custom gutter-b mt-5">
                         <div class="bg-success-o-50 p-0 pl-3">
                             <label class="mt-2" style="font-size: 13px; font-weight:bold">
-                                Aplicación de Escritorio
+                                Aplicaci&#243;n de Escritorio
                             </label>
                         </div>
                         <div class="p-2">
@@ -107,7 +107,7 @@
                     <div class="card card-custom ">
                         <div class="bg-primary-o-50 p-0 pl-3">
                             <label class="mt-1" style="font-size: 13px;font-weight:bold">
-                                Aplicación Móvil
+                                Aplicaci&#243;n M&#243;vil
                             </label>
                         </div>
                         <div class="p-2">

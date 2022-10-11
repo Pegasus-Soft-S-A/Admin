@@ -47,9 +47,13 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
             @endif
             <option value="9" {{ old('producto', $licencia->producto) == '9' ? 'Selected' : '' }}>Perseo Lite
             </option>
+            @if ($accion == 'Modificar' && $licencia->producto == '10')
             <option value="10" {{ old('producto', $licencia->producto) == '10' ? 'Selected' : '' }}>Emprendedor
             </option>
+            @endif
             <option value="11" {{ old('producto', $licencia->producto) == '11' ? 'Selected' : '' }}>Socio Perseo
+            </option>
+            <option value="12" {{ old('producto', $licencia->producto) == '12' ? 'Selected' : '' }}>Facturito
             </option>
         </select>
         @if ($errors->has('producto'))
@@ -64,9 +68,13 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
         <div class="input-group">
             <select class="form-control @if ($rol != 1 && $accion == 'Modificar') disabled @endif" name="periodo"
                 id="periodo">
-                <option value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected' : '' }}>Mensual
+                <option id="periodo1" value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected' : ''
+                    }}>Mensual
                 </option>
-                <option value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected' : '' }}>Anual
+                <option id="periodo2" value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected' : '' }}>Anual
+                </option>
+                <option id="periodo3" value="3" {{ old('periodo', $licencia->periodo) == '3' ? 'Selected' : ''
+                    }}>Premium
                 </option>
             </select>
             @if ($licencia->producto != 6 && $licencia->producto != 9 )
@@ -91,9 +99,13 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
         <div class="input-group">
             <select class="form-control @if ($rol != 1 && $accion == 'Modificar') disabled @endif" name="periodo"
                 id="periodo">
-                <option value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected' : '' }}>Mensual
+                <option id="periodo1" value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected' : ''
+                    }}>Mensual
                 </option>
-                <option value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected' : '' }}>Anual
+                <option id="periodo2" value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected' : '' }}>Anual
+                </option>
+                <option id="periodo3" value="3" {{ old('periodo', $licencia->periodo) == '3' ? 'Selected' : ''
+                    }}>Premium
                 </option>
             </select>
         </div>
@@ -367,8 +379,11 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 fecha.setMonth(fecha.getMonth() + 1);
                 let fechaFin = ("0" + (fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth() + 1)).slice(-
                     2) + "-" + fecha.getFullYear()
+                $('#periodo1').html("Mensual");
+                $('#periodo2').html("Anual");
+                $('#periodo3').addClass("d-none");
                 $('#fechacaduca').val(fechaFin);
-
+                $('#periodo').removeClass("disabled");
                 $('#precio').val('9.50');
                 $('#usuarios').val('3');
                 $('#numeromoviles').val('1');
@@ -381,8 +396,20 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 $('#talleres').prop('checked', false);
                 $('#garantias').prop('checked', false);
             } else {
-                if ("{{ $licencia->producto }}" == 6 || "{{ $licencia->producto }}" == 9 || "{{ $licencia->producto }}" == 10) {
+                if("{{ $licencia->producto }}" == 12){
+                    $('#periodo1').html("Inicial");
+                    $('#periodo2').html("Basico");
+                    $('#periodo3').html("Premium");
+                    $('#periodo3').removeClass("d-none");
+                }else if ("{{ $licencia->producto }}" == 6 || "{{ $licencia->producto }}" == 9 || "{{ $licencia->producto }}" == 10) {
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                     $('#periodo').addClass("disabled");
+                }else{
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                 }
             }
 
@@ -443,9 +470,17 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                             break;
                         case '2':
                             $('#precio').val('72');
-                            fecha.setMonth(fecha.getMonth() + 15);
+                            fecha.setMonth(fecha.getMonth() + 12);
+                            break;
+                        case '3':
+                            $('#periodo').val("1");
+                            $('#precio').val('9.50');
+                            fecha.setMonth(fecha.getMonth() + 1);
                             break;
                     }
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                     $('#sis_servidoresid').val('1');
                     $('#periodo').removeClass("disabled");
                     $('#usuarios').val('3');
@@ -467,9 +502,17 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                             break;
                         case '2':
                             $('#precio').val('150');
-                            fecha.setMonth(fecha.getMonth() + 15);
+                            fecha.setMonth(fecha.getMonth() + 12);
+                            break;
+                        case '3':
+                            $('#periodo').val("1");
+                            $('#precio').val('17');
+                            fecha.setMonth(fecha.getMonth() + 1);
                             break;
                     }
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                     $('#sis_servidoresid').val('1');
                     $('#periodo').removeClass("disabled");
                     $('#usuarios').val('6');
@@ -492,10 +535,19 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                             break;
                         case '2':
                             $('#precio').val('190');
-                            fecha.setMonth(fecha.getMonth() + 15);
+                            fecha.setMonth(fecha.getMonth() + 12);
                             $('#activos').prop('checked', true);
                             break;
+                        case '3':
+                            $('#periodo').val("1");
+                            $('#precio').val('24');
+                            fecha.setMonth(fecha.getMonth() + 1);
+                            $('#activos').prop('checked', false);
+                            break;
                     }
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                     $('#sis_servidoresid').val('1');
                     $('#periodo').removeClass("disabled");
                     $('#usuarios').val('6');
@@ -518,7 +570,15 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                             $('#precio').val('108');
                             fecha.setMonth(fecha.getMonth() + 12);
                             break;
+                        case '3':
+                            $('#periodo').val("1");
+                            $('#precio').val('13');
+                            fecha.setMonth(fecha.getMonth() + 1);
+                            break;
                     }
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                     $('#sis_servidoresid').val('1');
                     $('#periodo').removeClass("disabled");
                     $('#usuarios').val('6');
@@ -533,6 +593,14 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                     break;
                     //Perseo Lite Anterior
                 case '6':
+                    switch ($('#periodo').val()) {
+                        case '3':
+                            $('#periodo').val("1");
+                            break;
+                    }
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                     fecha.setMonth(fecha.getMonth() + 12);
                     $('#sis_servidoresid').val('3');
                     $('#precio').val('0');
@@ -559,7 +627,15 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                             $('#precio').val('90');
                             fecha.setMonth(fecha.getMonth() + 12);
                             break;
+                        case '3':
+                            $('#periodo').val("1");
+                            $('#precio').val('9.80');
+                            fecha.setMonth(fecha.getMonth() + 1);
+                            break;
                     }
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                     $('#sis_servidoresid').val('1');
                     $('#periodo').removeClass("disabled");
                     $('#usuarios').val('3');
@@ -574,6 +650,14 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                     break;
                  //Perseo Lite
                 case '9':
+                    switch ($('#periodo').val()) {
+                        case '3':
+                            $('#periodo').val("1");
+                            break;
+                    }
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                     fecha.setMonth(fecha.getMonth() + 3);
                     $('#sis_servidoresid').val('3');
                     $('#precio').val('0');
@@ -591,6 +675,14 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                     break;
                 //Emprendedor
                 case '10':
+                    switch ($('#periodo').val()) {
+                        case '3':
+                            $('#periodo').val("1");
+                            break;
+                    }
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                     fecha.setMonth(fecha.getMonth() + 12);
                     $('#sis_servidoresid').val('1');
                     $('#precio').val('24.50');
@@ -617,7 +709,15 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                             $('#precio').val('87.50');
                             fecha.setMonth(fecha.getMonth() + 12);
                             break;
+                        case '3':
+                            $('#periodo').val("1");
+                            $('#precio').val('7');
+                            fecha.setMonth(fecha.getMonth() + 1);
+                            break;
                     }
+                    $('#periodo1').html("Mensual");
+                    $('#periodo2').html("Anual");
+                    $('#periodo3').addClass("d-none");
                     $('#sis_servidoresid').val('1');
                     $('#periodo').removeClass("disabled");
                     $('#usuarios').val('1');
@@ -629,6 +729,36 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                     $('#restaurantes').prop('checked', true);
                     $('#talleres').prop('checked', true);
                     $('#garantias').prop('checked', true);
+                    break;
+                //Facturito
+                case '12':
+                    switch ($('#periodo').val()) {
+                        case '1':
+                            $('#precio').val('6.49');
+                            break;
+                        case '2':
+                            $('#precio').val('9.99');
+                            break;
+                        case '3':
+                            $('#precio').val('29.99');
+                            break;
+                    }
+                    $('#periodo1').html("Inicial");
+                    $('#periodo2').html("Basico");
+                    $('#periodo3').html("Premium");
+                    $('#periodo3').removeClass("d-none");
+                    fecha.setMonth(fecha.getMonth() + 12);
+                    $('#sis_servidoresid').val('2');
+                    $('#periodo').removeClass("disabled");
+                    $('#usuarios').val('6');
+                    $('#numeromoviles').val('1');
+                    $('#ecommerce').prop('checked', false);
+                    $('#produccion').prop('checked', false);
+                    $('#nomina').prop('checked', false);
+                    $('#activos').prop('checked', false);
+                    $('#restaurantes').prop('checked', false);
+                    $('#talleres').prop('checked', false);
+                    $('#garantias').prop('checked', false);
                     break;
             }
             let fechaFormato = ("0" + (fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth() + 1)).slice(-2) + "-" +

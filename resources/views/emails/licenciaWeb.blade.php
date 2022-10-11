@@ -243,6 +243,8 @@
                                                                             Emprendedor
                                                                             @elseif($array['producto'] == 11)
                                                                             Socio Perseo
+                                                                            @elseif($array['producto'] == 12)
+                                                                            Facturito
                                                                             @endif
 
                                                                         </td>
