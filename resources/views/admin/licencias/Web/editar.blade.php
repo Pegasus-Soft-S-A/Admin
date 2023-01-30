@@ -46,11 +46,12 @@
                                                     class="la la-file-medical"></i></a>
                                             @endif
 
-                                            <a href="{{ route('licencias.Web.enviaremail',$cliente->sis_clientesid) }}"
+                                            <a href="{{ route('licencias.Web.enviaremail',[$cliente->sis_clientesid,$licencia->producto]) }}"
                                                 class="btn btn-primary btn-icon" data-toggle="tooltip"
                                                 title="Enviar Email"><i class="socicon-mail"></i></a>
 
-                                            @if (Auth::user()->tipo==1 || Auth::user()->tipo==2)
+                                            @if (Auth::user()->tipo==1 || Auth::user()->tipo==2 ||
+                                            Auth::user()->tipo==4)
                                             <a id="resetear" href="#" class="btn btn-success btn-icon"
                                                 data-toggle="tooltip" title="Resetear Clave"><i
                                                     class="la la-user-lock"></i></a>

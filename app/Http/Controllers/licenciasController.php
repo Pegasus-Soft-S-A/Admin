@@ -283,6 +283,7 @@ class licenciasController extends Controller
             'cash_manager' => $request['cashmanager'] = $request->cashmanager == 'on' ? true : false,
             'cash_debito' => $request['cashdebito'] = $request->cashdebito == 'on' ? true : false,
             'reporte_equifax' => $request['equifax'] = $request->equifax == 'on' ? true : false,
+            'caja_ahorros' => $request['ahorros'] = $request->ahorros == 'on' ? true : false,
         ];
         unset(
             $request['nomina'],
@@ -302,6 +303,7 @@ class licenciasController extends Controller
             $request['cashmanager'],
             $request['cashdebito'],
             $request['equifax'],
+            $request['ahorros'],
             $request['tipo'],
         );
         $request['modulos'] = json_encode([$modulos]);
@@ -479,6 +481,21 @@ class licenciasController extends Controller
                         ];
                         $request['parametros_json'] = json_encode($parametros_json);
                         break;
+                        //Pro
+                    case '3':
+                        $parametros_json = [];
+                        $parametros_json = [
+                            'Documentos' => "100000",
+                            'Productos' => "0",
+                            'Almacenes' => "0",
+                            'Nomina' => "0",
+                            'Produccion' => "0",
+                            'Activos' => "0",
+                            'Talleres' => "0",
+                            'Garantias' => "0",
+                        ];
+                        $request['parametros_json'] = json_encode($parametros_json);
+                        break;
                 }
         }
 
@@ -539,13 +556,13 @@ class licenciasController extends Controller
 
             $log = new Log();
             $log->usuario = Auth::user()->nombres;
-            $log->pantalla = "Licencia PC";
+            $log->pantalla = "Licencia Web";
             $log->tipooperacion = "Crear";
             $log->fecha = now();
             $log->detalle = json_encode($request->all());
             $log->save();
 
-            $cliente = Clientes::select('sis_clientes.correos', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor')
+            $cliente = Clientes::select('sis_clientes.correos', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor', 'sis_revendedores.razonsocial', 'sis_distribuidores.razonsocial AS nombredistribuidor')
                 ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
                 ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
                 ->join('sis_revendedores as revendedor', 'revendedor.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
@@ -556,11 +573,29 @@ class licenciasController extends Controller
             $array['from'] = env('MAIL_FROM_ADDRESS');
             $array['subject'] = 'Nuevo Registro Licencia Web';
             $array['cliente'] = $cliente->nombres;
+            $array['vendedor'] = $cliente->razonsocial;
             $array['identificacion'] = $cliente->identificacion;
             $array['correos'] = $cliente->correos;
             $array['numerocontrato'] = $licencia['numerocontrato'];
             $array['producto'] = $licencia['producto'];
-            $array['periodo'] = $licencia['periodo'] == 1 ? 'Mensual' : 'Anual';
+            $array['distribuidor'] = $cliente->nombredistribuidor;
+
+            if ($request['producto'] == 12) {
+                switch ($request['periodo']) {
+                    case '1':
+                        $array['periodo'] = "Inicial";
+                        break;
+                    case '2':
+                        $array['periodo'] = "Básico";
+                        break;
+                    case '3':
+                        $array['periodo'] = "Premium";
+                        break;
+                }
+            } else {
+                $array['periodo'] = $request['periodo'] == 1 ? 'Mensual' : 'Anual';
+            }
+
             $array['fechainicia'] = date("d-m-Y", strtotime($licencia['fechainicia']));
             $array['fechacaduca'] =  date("d-m-Y", strtotime($licencia['fechacaduca']));
             $array['empresas'] = $licencia['empresas'];
@@ -571,7 +606,12 @@ class licenciasController extends Controller
             $array['modulos'] = json_decode($json);
             $array['usuario'] = Auth::user()->nombres;
             $array['fecha'] = $licencia['fechacreacion'];
-            $array['tipo'] = '1';
+
+            if ($request['producto'] == 12) {
+                $array['tipo'] = 7;
+            } else {
+                $array['tipo'] = 1;
+            }
 
             $emails = explode(", ", $cliente->distribuidor);
 
@@ -579,7 +619,7 @@ class licenciasController extends Controller
                 "comercializacion@perseo.ec",
                 $cliente->vendedor,
                 $cliente->revendedor,
-                $cliente->cliente,
+                $cliente->correos,
                 Auth::user()->correo,
             ]);
 
@@ -588,7 +628,6 @@ class licenciasController extends Controller
             try {
                 Mail::to($emails)->queue(new enviarlicencia($array));
             } catch (\Exception $e) {
-
                 flash('Error enviando email')->error();
                 return redirect()->route('licencias.Web.editar', [$request['sis_clientesid'], $request->sis_servidoresid, $licenciaId]);
             }
@@ -604,9 +643,19 @@ class licenciasController extends Controller
     public function editarPC(Clientes $cliente, Licencias $licencia)
     {
         $modulos = json_decode($licencia->modulos);
+        if (empty($licencia->cantidadempresas)) {
+            $empresas = [];
+            $empresas = [
+                'empresas_activas' => 0,
+                'empresas_inactivas' => 0,
+            ];
+            $empresas = json_decode(json_encode($empresas));
+        } else {
+            $empresas = json_decode($licencia->cantidadempresas);
+        }
         $licencia->fechacaduca = date("d-m-Y", strtotime($licencia->fechacaduca));
         $licencia->fechaactulizaciones = date("d-m-Y", strtotime($licencia->fechaactulizaciones));
-        return view('admin.licencias.PC.editar', compact('cliente', 'licencia', 'modulos'));
+        return view('admin.licencias.PC.editar', compact('cliente', 'licencia', 'modulos', 'empresas'));
     }
 
     public function editarWeb(Clientes $cliente, $servidorid, $licenciaid)
@@ -720,6 +769,7 @@ class licenciasController extends Controller
             'cash_manager' => $request['cashmanager'] = $request->cashmanager == 'on' ? true : false,
             'cash_debito' => $request['cashdebito'] = $request->cashdebito == 'on' ? true : false,
             'reporte_equifax' => $request['equifax'] = $request->equifax == 'on' ? true : false,
+            'caja_ahorros' => $request['ahorros'] = $request->ahorros == 'on' ? true : false,
         ];
         unset(
             $request['nomina'],
@@ -739,7 +789,10 @@ class licenciasController extends Controller
             $request['cashmanager'],
             $request['cashdebito'],
             $request['equifax'],
+            $request['ahorros'],
             $request['tipo'],
+            $request['empresas_activas'],
+            $request['empresas_inactivas'],
         );
         $request['modulos'] = json_encode([$modulos]);
 
@@ -913,7 +966,7 @@ class licenciasController extends Controller
             ->post($urlEditar, $request->all())
             ->json();
 
-        $cliente = Clientes::select('sis_clientes.correos', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor', 'sis_revendedores.razonsocial')
+        $cliente = Clientes::select('sis_clientes.correos', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor', 'sis_revendedores.razonsocial', 'sis_distribuidores.razonsocial AS nombredistribuidor')
             ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
             ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
             ->join('sis_revendedores as revendedor', 'revendedor.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
@@ -938,18 +991,38 @@ class licenciasController extends Controller
             $array['correos'] = $cliente->correos;
             $array['numerocontrato'] = $request['numerocontrato'];
             $array['producto'] = $request['producto'];
-            $array['periodo'] = $request['periodo'] == 1 ? 'Mensual' : 'Anual';
+            if ($request['producto'] == 12) {
+                switch ($request['periodo']) {
+                    case '1':
+                        $array['periodo'] = "Inicial";
+                        break;
+                    case '2':
+                        $array['periodo'] = "Básico";
+                        break;
+                    case '3':
+                        $array['periodo'] = "Premium";
+                        break;
+                }
+            } else {
+                $array['periodo'] = $request['periodo'] == 1 ? 'Mensual' : 'Anual';
+            }
             $array['fechainicia'] = date("d-m-Y", strtotime($request['fechainicia']));
             $array['fechacaduca'] =  date("d-m-Y", strtotime($request['fechacaduca']));
             $array['empresas'] = $request['empresas'];
             $array['numeromoviles'] = $request['numeromoviles'];
             $array['usuarios'] = $request['usuarios'];
+            $array['distribuidor'] = $cliente->nombredistribuidor;
             $transformar = simplexml_load_string($request['modulos']);
             $json = json_encode($transformar);
             $array['modulos'] = json_decode($json);
             $array['usuario'] = Auth::user()->nombres;
             $array['fecha'] =  date("Y-m-d H:i:s", strtotime($request['fechamodificacion']));
-            $array['tipo'] = '3';
+
+            if ($request['producto'] == 12) {
+                $array['tipo'] = 8;
+            } else {
+                $array['tipo'] = 3;
+            }
 
             $emails = explode(", ", $cliente->distribuidor);
 
@@ -958,7 +1031,7 @@ class licenciasController extends Controller
                 "facturacion@perseo.ec",
                 $cliente->vendedor,
                 $cliente->revendedor,
-                $cliente->cliente,
+                $cliente->correos,
                 Auth::user()->correo,
             ]);
 
@@ -1026,7 +1099,7 @@ class licenciasController extends Controller
         return back();
     }
 
-    public function enviarEmail($clienteId)
+    public function enviarEmail($clienteId, $productoId)
     {
         $cliente = Clientes::select('sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_clientes.correos', 'sis_distribuidores.correos as distribuidor')
             ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
@@ -1034,12 +1107,19 @@ class licenciasController extends Controller
             ->first();
 
         if ($cliente != null) {
-            $array['view'] = 'emails.envio_credenciales';
+
+            if ($productoId == 12) {
+                $array['view'] = 'emails.envio_credenciales_facturito';
+                $array['tipo'] = 9;
+            } else {
+                $array['tipo'] = 5;
+                $array['view'] = 'emails.envio_credenciales';
+            }
+
             $array['from'] = env('MAIL_FROM_ADDRESS');
             $array['subject'] = 'Envio Credenciales ';
             $array['nombre'] = $cliente->nombres;
             $array['usuario'] = $cliente->identificacion;
-            $array['tipo'] = 5;
 
             $emails = explode(", ", $cliente->distribuidor);
             array_push($emails, $cliente->correos);

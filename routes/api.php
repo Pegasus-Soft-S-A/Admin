@@ -17,4 +17,7 @@ Route::group(['prefix' => 'datos', 'middleware' => 'authAPI'], function () {
 Route::group(['middleware' => 'authAPILicencia'], function () {
     Route::post('/licencia_actualiza', [IdentificacionesController::class, 'licencia_actualiza'])->name('licencia.actualiza');
     Route::post('/licencia_consulta', [IdentificacionesController::class, 'licencia_consulta'])->name('licencia.consulta');
+    Route::post('/vendedores_consulta', [IdentificacionesController::class, 'vendedores_consulta'])->name('vendedores.consulta');
+    Route::post('/registrar_licencia', [IdentificacionesController::class, 'registrar_licencia'])->name('licencia.registrar');
+    Route::post('/consultar_licencia', [IdentificacionesController::class, 'consultar_licencia'])->name('licencia.consultar');
 });

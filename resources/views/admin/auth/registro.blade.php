@@ -304,6 +304,9 @@ $grupos = App\Models\Grupos::get();
                                         <option value="3" {{ $id=='UIO-01' ? 'Selected' : '' }}>
                                             UIO-01
                                         </option>
+                                        <option value="8" {{ $id=='UIO-02' ? 'Selected' : '' }}>
+                                            UIO-02
+                                        </option>
                                         <option value="6" {{ $id=='CUE-01' ? 'Selected' : '' }}>
                                             CUE-01
                                         </option>

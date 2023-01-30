@@ -32,17 +32,17 @@ class ValidarCorreo implements Rule
             ->get($url)
             ->json();
         if ($correo['deliverability'] != "DELIVERABLE") {
-            if ($correo['is_valid_format']['value'] == true &&  (substr($value, strpos($value, '@') + 1, strlen($value)) == 'hotmail.com') || substr($value, strpos($value, '@') + 1, strlen($value)) == 'outlook.com') {
-                //consultar api2 si es hotmail
+            if ($correo['is_valid_format']['value'] == true) {
                 $url = 'https://api.debounce.io/v1/?email=' . rawurlencode($value) . '&api=6269b53f06aeb';
+                dd($url);
                 $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                     ->withOptions(["verify" => false])
                     ->get($url)
                     ->json();
-                if ($correo['debounce']['result'] != "Safe to Send") {
-                    return false;
-                } else {
+                if ($correo['debounce']['reason'] == "Deliverable" || $correo['debounce']['reason'] == "Deliverable, Role") {
                     return true;
+                } else {
+                    return false;
                 }
             } else {
                 return false;

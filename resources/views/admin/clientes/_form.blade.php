@@ -176,8 +176,8 @@ $grupos = App\Models\Grupos::get();
         <label>Convencional:</label>
         <input type="text" class="form-control {{ $errors->has('telefono1') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Numero Convencional" name="telefono1" onkeypress="return validarNumero(event)"
-            autocomplete="off" value="{{ old('telefono1', $cliente->telefono1) }}" id="telefono1" @if ($rol !=1 &&
-            $accion=='Modificar' ) readonly @endif />
+            autocomplete="off" value="{{ old('telefono1', $cliente->telefono1) }}" id="telefono1" @if ($rol !=1 && $rol
+            !=2 && $accion=='Modificar' ) readonly @endif />
         @if ($errors->has('telefono1'))
         <span class="text-danger">{{ $errors->first('telefono1') }}</span>
         @endif
@@ -186,8 +186,8 @@ $grupos = App\Models\Grupos::get();
         <label>Celular:</label>
         <input type="text" class="form-control {{ $errors->has('telefono2') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Numero Celular" onkeypress="return validarNumero(event)" name="telefono2"
-            autocomplete="off" value="{{ old('telefono2', $cliente->telefono2) }}" id="telefono2" @if ($rol !=1 &&
-            $accion=='Modificar' ) readonly @endif />
+            autocomplete="off" value="{{ old('telefono2', $cliente->telefono2) }}" id="telefono2" @if ($rol !=1 && $rol
+            !=2 && $accion=='Modificar' ) readonly @endif />
         @if ($errors->has('telefono2'))
         <span class="text-danger">{{ $errors->first('telefono2') }}</span>
         @endif
@@ -241,6 +241,8 @@ $grupos = App\Models\Grupos::get();
             <option value="2" {{ old('red_origen', $cliente->red_origen) == '2' ? 'Selected' : '' }}>
                 Contafácil</option>
             <option value="3" {{ old('red_origen', $cliente->red_origen) == '3' ? 'Selected' : '' }}>UIO-01
+            </option>
+            <option value="8" {{ old('red_origen', $cliente->red_origen) == '8' ? 'Selected' : '' }}>UIO-02
             </option>
             <option value="6" {{ old('red_origen', $cliente->red_origen) == '6' ? 'Selected' : '' }}>CUE-01
             </option>

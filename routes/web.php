@@ -9,6 +9,7 @@ use App\Http\Controllers\revendedoresController;
 use App\Http\Controllers\servidoresController;
 use App\Http\Controllers\usuariosController;
 use App\Http\Controllers\notificacionesController;
+use App\Http\Controllers\publicidadesController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas Inicio 
@@ -43,10 +44,6 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/migrar', [adminController::class, 'migrar'])->name('migrar');
         Route::get('/licencia/{servidor}/{cliente}', [adminController::class, 'licencia'])->name('licencia');
 
-        /* Publicidad */
-        Route::get('/publicidad', [adminController::class, 'publicidad'])->name('publicidad.index');
-        Route::post('/publicidad', [adminController::class, 'publicidadGuardar'])->name('publicidad.guardar');
-
         /* Clientes */
         Route::get('/clientes', [clientesController::class, 'index'])->name('clientes.index');
         Route::post('/clientes/tabla', [clientesController::class, 'cargarTabla'])->name('clientes.tabla');
@@ -69,7 +66,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::put('/licenciasweb/{servidor}/{licencia}', [licenciasController::class, 'actualizarWeb'])->name('licencias.Web.actualizar');
         Route::delete('/licencias/eliminarpc/{licencia}', [licenciasController::class, 'eliminarPC'])->name('licencias.Pc.eliminar');
         Route::delete('/licencias/eliminarweb/{servidor}/{licencia}', [licenciasController::class, 'eliminarWeb'])->name('licencias.Web.eliminar');
-        Route::get('/email/{cliente}', [licenciasController::class, 'enviarEmail'])->name('licencias.Web.enviaremail');
+        Route::get('/email/{cliente}/{producto}', [licenciasController::class, 'enviarEmail'])->name('licencias.Web.enviaremail');
         Route::get('/licencias/editarclave/{cliente}/{servidor}/{licencia}', [licenciasController::class, 'editarClave'])->name('editar_clave');
 
         /* Distribuidores */
@@ -122,5 +119,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/notificacioneseditar/{notificaciones}', [notificacionesController::class, 'editar'])->name('notificaciones.editar');
         Route::put('/notificacionesactualizar/{notificaciones}', [notificacionesController::class, 'actualizar'])->name('notificaciones.actualizar');
         Route::delete('/notificacioneseliminar/{notificaciones}', [notificacionesController::class, 'eliminar'])->name('notificaciones.eliminar');
+
+        /* Publicidad */
+        Route::get('/publicidades', [publicidadesController::class, 'index'])->name('publicidades.index');
+        Route::get('/publicidadescrear', [publicidadesController::class, 'crear'])->name('publicidades.crear');
+        Route::post('/publicidadesguardar', [publicidadesController::class, 'guardar'])->name('publicidades.guardar');
+        Route::get('/publicidadeseditar/{publicidades}', [publicidadesController::class, 'editar'])->name('publicidades.editar');
+        Route::put('/publicidadesactualizar/{publicidades}', [publicidadesController::class, 'actualizar'])->name('publicidades.actualizar');
+        Route::delete('/publicidadeseliminar/{publicidades}', [publicidadesController::class, 'eliminar'])->name('publicidades.eliminar');
     });
 });

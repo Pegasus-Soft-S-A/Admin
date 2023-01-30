@@ -265,6 +265,21 @@
                                                 </div>
                                             </td>
                                         </tr>
+                                        <tr>
+                                            <td align="left"
+                                                style="font-size:0px;padding:0px 50px 0px 0px;padding-top:0px;padding-right:0;padding-bottom:0px;padding-left:0px;word-break:break-word;">
+                                                <div
+                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
+
+                                                    <p class="text-build-content"
+                                                        style="text-align: center; margin: 10px 0; margin-bottom: 10px;"
+                                                        data-testid="avjJDuQerw3B"><span
+                                                            style="color:#575757;font-family:Arial;font-size:14px;line-height:22px;"><b>Contraseña</b></span><span
+                                                            style="color:#1d6ea9;font-family:Arial;font-size:14px;line-height:22px;"><b>:
+                                                                &nbsp;123</b></span></p>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -392,7 +407,7 @@
                                                                                     href="https://www.perseo.app/registro"
                                                                                     target="_blank"><img alt=""
                                                                                         height="auto"
-                                                                                        src="{{ $message->embed(public_path() . '/assets/media/perseolite.jpg') }}"
+                                                                                        src="{{ $message->embed(public_path() . '/assets/media/imagenperseolite.jpg') }}"
                                                                                         style="border:none;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;"
                                                                                         width="550"></a></td>
                                                                         </tr>
@@ -420,24 +435,7 @@
                                                                 </table>
                                                             </td>
                                                         </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="font-size:0px;padding:10px 25px 15px 25px;padding-right:25px;padding-bottom:15px;padding-left:25px;word-break:break-word;">
-                                                                <table border="0" cellpadding="0" cellspacing="0"
-                                                                    role="presentation"
-                                                                    style="border-collapse:collapse;border-spacing:0px;">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td style="width:550px;"><img alt=""
-                                                                                    height="auto"
-                                                                                    src="{{ $message->embed(public_path() . '/assets/media/puntos.jpeg') }}"
-                                                                                    style="border:none;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;"
-                                                                                    width="550"></td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
+
                                                         <tr>
                                                             <td align="center"
                                                                 style="font-size:0px;padding:10px 25px 15px 25px;padding-right:25px;padding-bottom:15px;padding-left:25px;word-break:break-word;">

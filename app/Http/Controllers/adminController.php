@@ -7,6 +7,7 @@ use App\Models\Ciudades;
 use App\Models\Clientes;
 use App\Models\Licencias;
 use App\Models\Log;
+use App\Models\Publicidades;
 use App\Models\Servidores;
 use App\Models\Subcategorias;
 use App\Models\User;
@@ -18,7 +19,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\Facades\DataTables;
-use AshAllenDesign\MailboxLayer\Facades\MailboxLayer;
 use Illuminate\Support\Facades\Mail;
 
 class adminController extends Controller
@@ -26,12 +26,22 @@ class adminController extends Controller
 
     public function login()
     {
-        return view('admin.auth.login');
+        $imagen = Publicidades::where('tipo', 2)
+            ->where('fechainicio', '<=', DB::raw('CURDATE()'))
+            ->where('fechafin', '>=', DB::raw('CURDATE()'))
+            ->first();
+
+        return view('admin.auth.login', compact('imagen'));
     }
 
     public function loginRedireccion()
     {
-        return view('admin.auth.loginredireccion');
+        $imagen = Publicidades::where('tipo', 1)
+            ->where('fechainicio', '<=', DB::raw('CURDATE()'))
+            ->where('fechafin', '>=', DB::raw('CURDATE()'))
+            ->first();
+
+        return view('admin.auth.loginredireccion', compact('imagen'));
     }
 
     public function post_loginRedireccion(Request $request)
@@ -330,8 +340,13 @@ class adminController extends Controller
 
     public function registro()
     {
+        $imagen = Publicidades::where('tipo', 3)
+            ->where('fechainicio', '<=', DB::raw('CURDATE()'))
+            ->where('fechafin', '>=', DB::raw('CURDATE()'))
+            ->first();
+
         $identificacion = 0;
-        return view('admin.auth.registro', compact('identificacion'));
+        return view('admin.auth.registro', compact('identificacion', 'imagen'));
     }
 
     public function post_registro(Request $request)
@@ -366,11 +381,42 @@ class adminController extends Controller
         $request['fechacreacion'] = now();
         $request['usuariocreacion'] = "Perseo Lite";
         $request['tipoidentificacion'] = "R";
-        $request['sis_distribuidoresid'] = $request['red_origen'] == 2 ? 1 : 6;
+
+        switch ($request['red_origen']) {
+            case '3':
+                //Delta
+                $distribuidor = 2;
+                break;
+            case '6':
+                //Omega
+                $distribuidor = 3;
+                break;
+            case '7':
+                //Alfa
+                $distribuidor = 1;
+                break;
+            case '2':
+                //Alfa
+                $distribuidor = 1;
+                break;
+            case '11':
+                //matriz
+                $distribuidor = 6;
+                break;
+            case '8':
+                //Delta
+                $distribuidor = 2;
+                break;
+            default:
+                //matriz
+                $distribuidor = 6;
+                break;
+        }
+
+        $request['sis_distribuidoresid'] = $distribuidor;
         $request['sis_revendedoresid'] = 1;
         $request['sis_vendedoresid'] = 405;
         $request['validado'] = 1;
-
 
         DB::beginTransaction();
         try {

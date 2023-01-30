@@ -90,11 +90,12 @@ class clientesController extends Controller
             }
             $diferencia = removeDuplicate($clientes->toArray(), $web, $pc->toArray(), 'sis_clientesid');
             $unir = array_merge($web, $pc->toArray());
+            dd($pc->toArray());
             $temp = array_unique(array_column($unir,  'numerocontrato'));
             $unique_arr = array_intersect_key($unir, $temp);
 
             $final = collect(array_merge($unique_arr, $diferencia));
-
+            dd($final[0]);
             //Filtrar por tipo fecha
             if ($tipo != null) {
                 switch ($tipo) {
@@ -424,7 +425,7 @@ class clientesController extends Controller
                 'direccion' => 'required',
                 'correos' => ['required', 'email', new ValidarCorreo],
                 'provinciasid' => 'required',
-                'telefono1' => ['required', 'min:7|max:10'],
+                //'telefono1' => ['required', 'min:7|max:10'],
                 'telefono2' => ['required', 'size:10', new ValidarCelular],
                 'sis_distribuidoresid' => 'required',
                 'sis_vendedoresid' => 'required',
@@ -442,8 +443,8 @@ class clientesController extends Controller
                 'correos.email' => 'Ingrese un Correo válido',
                 'provinciasid.required' => 'Seleccione una Provincia',
                 'telefono1.required' => 'Ingrese un Número Convencional',
-                'telefono1.min' => 'Mínimo 7 dígitos',
-                'telefono1.max' => 'Máximo 10 dígitos',
+                //'telefono1.min' => 'Mínimo 7 dígitos',
+                //'telefono1.max' => 'Máximo 10 dígitos',
                 'telefono2.required' => 'Ingrese un Número Celular',
                 'telefono2.size' => 'Ingrese 10 dígitos',
                 'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',
@@ -513,7 +514,7 @@ class clientesController extends Controller
                 'direccion' => 'required',
                 'correos' => ['required', 'email', new ValidarCorreo],
                 'provinciasid' => 'required',
-                'telefono1' => ['required', 'min:7|max:10'],
+                //'telefono1' => ['required', 'min:7|max:10'],
                 'telefono2' => ['required', 'size:10', new ValidarCelular],
                 'sis_distribuidoresid' => 'required',
                 'sis_vendedoresid' => 'required',
@@ -531,8 +532,8 @@ class clientesController extends Controller
                 'correos.email' => 'Ingrese un Correo válido',
                 'provinciasid.required' => 'Seleccione una Provincia',
                 'telefono1.required' => 'Ingrese un Número Convencional',
-                'telefono1.min' => 'Mínimo 7 dígitos',
-                'telefono1.max' => 'Máximo 10 dígitos',
+                //'telefono1.min' => 'Mínimo 7 dígitos',
+                //'telefono1.max' => 'Máximo 10 dígitos',
                 'telefono2.required' => 'Ingrese un Número Celular',
                 'telefono2.size' => 'Ingrese 10 dígitos',
                 'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Distribuidores;
 use App\Models\Log;
 use App\Models\Notificaciones;
-use App\Models\Servidores;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables as DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -78,7 +77,8 @@ class notificacionesController extends Controller
         $log->fecha = now();
         $log->detalle = $notificaciones;
         $log->save();
-        flash('Servidor creado correctamente')->success();
+
+        flash('Notificacion creado correctamente')->success();
         return redirect()->route('notificaciones.editar', $notificaciones->sis_notificacionesid);
     }
 

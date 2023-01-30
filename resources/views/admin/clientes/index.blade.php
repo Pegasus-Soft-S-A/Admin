@@ -325,6 +325,7 @@
                                         <th style="display:none">Usuarios</th>
                                         <th style="display:none">Empresas</th>
                                         <th style="display:none">Moviles</th>
+                                        <th style="display:none">Cantidad Empresas</th>
                                         <th class="no-exportar">Acciones</th>
 
                                     </tr>
@@ -449,6 +450,9 @@
                 "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
             responsive: true,
             processing: true,
+            search: {
+                return: true,
+            },  
             //Combo cantidad de registros a mostrar por pantalla
             lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'Todos']],
             //Registros por pagina
@@ -456,7 +460,7 @@
             //Orden inicial
             order: [[ 0, 'desc' ]],
             //Guardar pagina, busqueda, etc
-            stateSave: true,
+            //stateSave: true,
             //Trabajar del lado del server
             serverSide: true,
             //Peticion ajax que devuelve los registros
@@ -504,6 +508,7 @@
                 {data: 'usuarios', name: 'usuarios',visible:false},
                 {data: 'empresas', name: 'empresas',visible:false},
                 {data: 'numeromoviles', name: 'numeromoviles',visible:false},
+                {data: 'cantidadempresas', name: 'cantidadempresas',visible:false},
                 {data: 'action', name: 'action', orderable: false, searchable: false, className: "text-center"},
             ],
             //botones para exportar

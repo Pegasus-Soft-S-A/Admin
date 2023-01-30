@@ -91,8 +91,8 @@
 
                 @if (Auth::user()->tipo==1 || Auth::user()->tipo==5)
 
-                <li class="menu-item {{ areActiveRoutes(['publicidad.index']) }} " aria-haspopup="true">
-                    <a href="{{ route('publicidad.index') }}" class="menu-link">
+                <li class="menu-item {{ areActiveRoutes(['publicidades.index']) }} " aria-haspopup="true">
+                    <a href="{{ route('publicidades.index') }}" class="menu-link">
                         <i class="menu-icon fa fa-file-image"></i>
                         <span class="menu-text">Publicidad</span>
                     </a>

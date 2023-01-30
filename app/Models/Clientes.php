@@ -51,7 +51,8 @@ class Clientes extends Model
             'sis_clientes.fechamodificacion',
             'sis_licencias.modulopractico',
             'sis_licencias.modulocontrol',
-            'sis_licencias.modulocontable'
+            'sis_licencias.modulocontable',
+            'sis_licencias.cantidadempresas'
         );
         if ($tipo == "Todos") {
             $query->leftJoin('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid');

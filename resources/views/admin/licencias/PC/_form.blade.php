@@ -206,6 +206,21 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             </div>
         </div>
 
+        @if ($accion=="Modificar")
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label>Empresas Activas:</label>
+                <input type="text" class="form-control" name="empresas_activas" autocomplete="off"
+                    value="{{ $empresas->empresas_activas}}" readonly />
+            </div>
+            <div class="col-lg-4">
+                <label>Empresas Inactivas:</label>
+                <input type="text" class="form-control" name="empresas_inactivas" autocomplete="off"
+                    value="{{ $empresas->empresas_inactivas}}" readonly />
+            </div>
+        </div>
+        @endif
+
         <ul class="nav nav-tabs nav-tabs-line nav-bold">
             <li class="nav-item">
                 <a class="nav-link active" data-toggle="tab" href="#aplicacionesprincipales">Aplicaciones
@@ -551,6 +566,19 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                             </label>
                         </span>
                     </div>
+                    <label class="col-4 col-form-label">Caja Ahorros</label>
+                    <div class="col-2">
+                        <span class="switch switch-outline switch-icon switch-primary switch-sm">
+                            <label>
+                                <input @if (isset($modulos[0]->caja_ahorros)) @if ($modulos[0]->caja_ahorros==
+                                true))
+                                checked="checked" @endif @endif
+                                type="checkbox" name="ahorros" id="ahorros" @if($rol!=1 && $accion == 'Modificar')
+                                disabled @endif/>
+                                <span></span>
+                            </label>
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -694,6 +722,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         $("#integraciones").prop("disabled", false);
         $("#cashmanager").prop("disabled", false);
         $("#equifax").prop("disabled", false);
+        $("#ahorros").prop("disabled", false);
 
         event.preventDefault(); 
         permisos='';
@@ -886,6 +915,14 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             moduloPerseoIntegraciones(true);
         }else{
             moduloPerseoIntegraciones(false);
+        }
+    });
+
+    $('#ahorros').click(function(){
+        if ($('#ahorros').prop('checked')) {
+            moduloPerseoAhorros(true);
+        }else{
+            moduloPerseoAhorros(false);
         }
     });
 
@@ -1124,6 +1161,16 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
     function moduloPerseoCrmCartera(estado){
         //Activar o desactivar modulos
         $('#220').prop('checked', estado);
+    }
+
+    function moduloPerseoAhorros(estado){
+        //Activar o desactivar modulos
+        $('#1705').prop('checked', estado);
+        $('#1710').prop('checked', estado);
+        $('#1715').prop('checked', estado);
+        $('#1716').prop('checked', estado);
+        $('#1720').prop('checked', estado);
+        $('#1725').prop('checked', estado);
     }
 
     function moduloPerseoIntegraciones(estado){

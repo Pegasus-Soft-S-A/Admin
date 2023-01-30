@@ -20,7 +20,7 @@
     <div class="row h-100 w-100 mx-auto">
 
         <div class="col-md-8 d-none d-xl-block"
-            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-inicio2.jpg') }}); background-size: 100% 100%; ">
+            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-inicio3.jpg') }}); background-size: 100% 100%; ">
         </div>
 
         <div class="mx-auto col-md-4 m-0 p-0 d-flex align-items-center">
@@ -43,6 +43,9 @@
                                     type="text" name="identificacion" id="identificacion" autocomplete="off"
                                     onblur="verificarLogin()" value="{{ old('identificacion') }}"
                                     placeholder="Ingrese Identificaci&#243;n" onkeypress="return validarEnter(event)" />
+
+                                <div id="spinner">
+                                </div>
                             </div>
 
                             <span>Ingrese identificaci&#243;n y presione <b>ENTER</b></span>
@@ -84,7 +87,7 @@
                             <div class="row">
                                 <div class="col-6  text-center">
                                     <a target="_blank"
-                                        href="https://www.dropbox.com/s/ktrp760pelxndc8/Instalador%20Perseo%20Web.exe?dl=1"
+                                        href="https://www.dropbox.com/s/4ntn6njpyjihec8/Instalador%20Perseo%20Web.exe?dl=1"
                                         style="color:black">
                                         <i class="fab fa-windows">
                                         </i>
@@ -168,8 +171,10 @@
 
         function verificarLogin() {
             let identificacion = $('#identificacion').val();
-
+ 	
             if (identificacion.length > 0) {
+		jQuery("#perfil").attr("disabled","disabled");
+ 		$("#spinner").addClass("spinner spinner-success spinner-right");
                 var select = document.getElementById("perfil");
                 $.post('{{ route('post_loginredireccion') }}', {
                     _token: '{{ csrf_token() }}',
@@ -198,6 +203,8 @@
                                 jQuery("#redireccion").attr("href", resultado[0].dominio);
 
                             }
+			
+ 			jQuery("#perfil").removeAttr("disabled");
                         }
 
                     } else {
@@ -222,6 +229,7 @@
                         $('#perfilEscoger').addClass('d-none');
                         jQuery("#ingresar").attr("disabled", "disabled");
                     }
+			$("#spinner").removeClass("spinner spinner-success spinner-right");
                 })
             } else {
                 $.notify({

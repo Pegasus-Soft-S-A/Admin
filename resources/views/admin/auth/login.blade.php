@@ -58,8 +58,7 @@
                                 </div>
 
                                 @if ($errors->has('identificacion'))
-                                    <span
-                                        class="font-size-h6 text-danger">{{ $errors->first('identificacion') }}</span>
+                                <span class="font-size-h6 text-danger">{{ $errors->first('identificacion') }}</span>
                                 @endif
                             </div>
 
@@ -78,8 +77,7 @@
                                         placeholder="Ingrece clave" />
                                 </div>
                                 @if ($errors->has('contrasena'))
-                                    <span
-                                        class="font-size-h6 text-danger">{{ $errors->first('contrasena') }}</span><br>
+                                <span class="font-size-h6 text-danger">{{ $errors->first('contrasena') }}</span><br>
                                 @endif
                             </div>
 
