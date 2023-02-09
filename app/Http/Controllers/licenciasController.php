@@ -796,7 +796,7 @@ class licenciasController extends Controller
         );
         $request['modulos'] = json_encode([$modulos]);
 
-        $urlLicencia = 'https://perseo-data-c1.app/registros/generador_licencia';
+        $urlLicencia = 'https://perseo-data-c2.app/registros/generador_licencia';
 
         $urlLicencia = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
             ->withOptions(["verify" => false])
