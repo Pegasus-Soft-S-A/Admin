@@ -17,6 +17,7 @@ Route::get('/', [adminController::class, 'loginRedireccion'])->name('loginredire
 Route::get('/inicio', [adminController::class, 'loginRedireccion'])->name('loginredireccion');
 Route::post('/inicio', [adminController::class, 'post_loginRedireccion'])->name('post_loginredireccion');
 
+
 //Rutas Registro
 Route::get('/registro', [adminController::class, 'registro'])->name('registro');
 Route::post('/registro', [adminController::class, 'post_registro'])->name('post_registro');
@@ -25,7 +26,6 @@ Route::post('/registro/ciudades', [adminController::class, 'recuperarciudades'])
 Route::get('/sistema', function () {
     return redirect()->route('loginredireccion');
 });
-
 
 Route::group(['prefix' => 'admin'], function () {
 

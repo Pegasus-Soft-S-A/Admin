@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Mail\enviarlicencia;
 use App\Mail\vendedor;
 use App\Models\Clientes;
+use App\Models\Distribuidores;
+use App\Models\Grupos;
 use App\Models\Identificaciones;
 use App\Models\Licencias;
+use App\Models\Licenciasweb;
 use App\Models\Log;
 use App\Models\Notificaciones;
 use App\Models\Revendedores;
@@ -85,7 +88,6 @@ class IdentificacionesController extends Controller
         }
         return json_encode($buscar);
     }
-
 
     public function actualiza(Request $request)
     {
@@ -310,6 +312,238 @@ class IdentificacionesController extends Controller
         }
     }
 
+    public function consultar_licencia_web(Request $request)
+    {
+        $identificacionIngresada = substr($request->identificacion, 0, 10);
+        $cliente = Clientes::whereIn('identificacion', [$identificacionIngresada, $request->identificacion, $request->identificacion . '001'])->first();
+
+        if ($cliente) {
+            $pc = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
+                ->where('sis_clientesid', $cliente->sis_clientesid)
+                ->first();
+
+            if ($pc) {
+                return json_encode([
+                    "liberar" => false,
+                    "accion" => "renovar",
+                    "facturito" => false,
+                    "id_licencia" => 0,
+                    "id_producto" => 0,
+                    "numerocontrato" => 0,
+                    "id_servidor" => 0,
+                ]);
+            }
+
+            $servidores = Servidores::where('estado', 1)->get();
+            $web = [];
+
+            foreach ($servidores as  $servidor) {
+                $url = $servidor->dominio . '/registros/consulta_licencia';
+                $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                    ->withOptions(["verify" => false])
+                    ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
+                    ->json();
+                if (isset($resultado['licencias'])) {
+                    $web = array_merge($web, $resultado['licencias']);
+                }
+            }
+
+            if (count($web) == 0) {
+                return json_encode([
+                    "liberar" => true,
+                    "accion" => "nuevo",
+                    "facturito" => false,
+                    "id_licencia" => 0,
+                    "id_producto" => 0,
+                    "numerocontrato" => 0,
+                ]);
+            }
+
+            if (count($web) == 1) {
+                return json_encode([
+                    "liberar" =>   true,
+                    "accion" => ($web[0]['producto'] == 9 || $web[0]['producto'] == 6) ? "nuevo" : "renovar",
+                    "facturito" => $web[0]['producto'] == 12 ? true : false,
+                    "id_licencia" => $web[0]['sis_licenciasid'],
+                    "id_producto" => $web[0]['producto'],
+                    "numerocontrato" => $web[0]['numerocontrato'],
+                    "id_servidor" => $web[0]['sis_servidoresid'],
+                ]);
+            }
+
+            if (count($web) > 1) {
+                return json_encode([
+                    "liberar" => false,
+                    "accion" => "renovar",
+                    "facturito" => false,
+                    "id_licencia" => 0,
+                    "id_producto" => 0,
+                    "numerocontrato" => 0,
+                    "id_servidor" => 0,
+                ]);
+            }
+        } else {
+            return json_encode([
+                "liberar" => true,
+                "accion" => "nuevo",
+                "facturito" => false,
+                "id_licencia" => 0,
+                "id_producto" => 0,
+                "numerocontrato" => 0,
+                "id_servidor" => 0,
+            ]);
+        }
+    }
+
+    public function renovar_web(Request $request)
+    {
+        $servidor = Servidores::where('sis_servidoresid', $request->id_servidor)->first();
+        $url = $servidor->dominio . '/registros/consulta_licencia';
+        $licenciaConsulta = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($url, ['sis_licenciasid' => $request->id_licencia])
+            ->json();
+        $licenciaEnviar = $licenciaConsulta['licencias'][0];
+        $licenciaArray = json_encode($licenciaEnviar);
+        $licencia = json_decode($licenciaArray);
+
+        $cliente = Clientes::where('sis_clientesid', $licencia->sis_clientesid)->first();
+        $vendedor = Revendedores::where('sis_revendedoresid', $cliente->sis_vendedoresid)->first();
+        //En caso de renovar mensual, anual o actualizar 
+        switch ($request->renovar) {
+            case '1':
+                $datos['fechacaduca'] = date("Ymd", strtotime($licencia->fechacaduca . "+ 1 month"));
+                $datos['fecha_renovacion'] = date('YmdHis', strtotime(now()));
+                $asunto = 'Renovacion Mensual Licencia Web';
+                $datos['periodo'] = 1;
+                break;
+            case '2':
+                $datos['fechacaduca'] = date("Ymd", strtotime($licencia->fechacaduca . "+ 1 year"));
+                $datos['fecha_renovacion'] = date('YmdHis', strtotime(now()));
+                $asunto = 'Renovacion Anual Licencia Web';
+                if ($licencia->producto != 12) {
+                    $datos['periodo'] = 2;
+                }
+                break;
+        }
+        $datos['periodo'] = $licencia->periodo;
+        $datos['sis_clientesid'] = $licencia->sis_clientesid;
+        $datos['sis_servidoresid'] = $licencia->sis_servidoresid;
+        $datos['sis_distribuidoresid'] = $licencia->sis_distribuidoresid;
+        $datos['sis_agrupadosid'] = $licencia->sis_agrupadosid;
+        $datos['numerocontrato'] = $licencia->numerocontrato;
+        $datos['producto'] = $licencia->producto;
+        $datos['fechainicia'] = $licencia->fechainicia;
+        $datos['empresas'] = $licencia->empresas;
+        $datos['numeromoviles'] = $licencia->numeromoviles;
+        $datos['precio'] = $licencia->precio;
+        $datos['tipo_licencia'] = $licencia->tipo_licencia;
+        $datos['fechacrecion'] = $licencia->fechacreacion;
+        $datos['fechamodificacion'] = date('YmdHis', strtotime(now()));
+        $datos['modulos'] = $licencia->modulos;
+        $datos['usuarios'] = $licencia->usuarios;
+        $datos['numerosucursales'] = $licencia->numerosucursales;
+        $datos['parametros_json'] = $licencia->parametros_json;
+        $datos['usuariocreacion'] = $licencia->usuariocreacion;
+        $datos['usuariomodificacion'] = $vendedor->razonsocial;
+        $datos['sis_licenciasid'] = $request->id_licencia;
+
+        $urlEditar = $servidor->dominio . '/registros/editar_licencia';
+        $licenciaEditar = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($urlEditar, $datos)
+            ->json();
+
+        if (isset($licenciaEditar['licencias'])) {
+
+            $licenciaweb = Licenciasweb::where('sis_licenciasid', $request->id_licencia)
+                ->where('sis_servidoresid', $request->id_servidor)
+                ->where('sis_clientesid', $licencia->sis_clientesid)
+                ->first();
+
+            unset($datos['fechacrecion']);
+
+            $licenciaweb->update($datos);
+
+            $log = new Log();
+            $log->usuario = $vendedor->razonsocial;
+            $log->pantalla = "Licencia Web";
+            $log->tipooperacion = "Modificar";
+            $log->fecha = now();
+            $log->detalle = json_encode($datos);
+            $log->save();
+
+            //Enviar correo al cliente
+            $correos = Clientes::select('sis_clientes.correos', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor', 'sis_revendedores.razonsocial', 'sis_distribuidores.razonsocial AS nombredistribuidor')
+                ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
+                ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+                ->join('sis_revendedores as revendedor', 'revendedor.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+                ->where('sis_clientesid', $cliente->sis_clientesid)
+                ->first();
+
+            $array['view'] = 'emails.licenciaweb';
+            $array['from'] = env('MAIL_FROM_ADDRESS');
+            $array['subject'] = $asunto;
+            $array['cliente'] = $correos->nombres;
+            $array['vendedor'] = $correos->razonsocial;
+            $array['identificacion'] = $correos->identificacion;
+            $array['correos'] = $correos->correos;
+            $array['numerocontrato'] = $datos['numerocontrato'];
+            $array['producto'] = $datos['producto'];
+            if ($datos['producto'] == 12) {
+                switch ($datos['periodo']) {
+                    case '1':
+                        $array['periodo'] = "Inicial";
+                        break;
+                    case '2':
+                        $array['periodo'] = "Básico";
+                        break;
+                    case '3':
+                        $array['periodo'] = "Premium";
+                        break;
+                }
+            } else {
+                $array['periodo'] = $datos['periodo'] == 1 ? 'Mensual' : 'Anual';
+            }
+            $array['fechainicia'] = date("d-m-Y", strtotime($datos['fechainicia']));
+            $array['fechacaduca'] =  date("d-m-Y", strtotime($datos['fechacaduca']));
+            $array['empresas'] = $datos['empresas'];
+            $array['numeromoviles'] = $datos['numeromoviles'];
+            $array['usuarios'] = $datos['usuarios'];
+            $array['distribuidor'] = $correos->nombredistribuidor;
+            $transformar = simplexml_load_string($datos['modulos']);
+            $json = json_encode($transformar);
+            $array['modulos'] = json_decode($json);
+            $array['usuario'] = $vendedor->razonsocial;
+            $array['fecha'] =  date("Y-m-d H:i:s", strtotime($datos['fechamodificacion']));
+
+            if ($datos['producto'] == 12) {
+                $array['tipo'] = 8;
+            } else {
+                $array['tipo'] = 3;
+            }
+
+            $emails = explode(", ", $correos->distribuidor);
+
+            $emails = array_merge($emails,  [
+                "facturacion@perseo.ec",
+                $correos->vendedor,
+                $correos->revendedor,
+                $correos->correos,
+            ]);
+
+            $emails = array_diff($emails, array(" ", 0, null));
+
+            try {
+                Mail::to($emails)->queue(new enviarlicencia($array));
+            } catch (\Exception $e) {
+            }
+            return json_encode(["renovar" => true]);
+        } else {
+            return json_encode(["renovar" => false]);
+        }
+    }
+
     public function vendedores_consulta(Request $request)
     {
         $vendedor = Revendedores::where('identificacion', $request->identificacion)->where('tipo', 2)->first();
@@ -414,25 +648,15 @@ class IdentificacionesController extends Controller
             //Buscar las licencias
             $web = [];
 
-            foreach ($servidores as  $servidor) {
-                $url = $servidor->dominio . '/registros/consulta_licencia';
-                $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
-                    ->json();
-                if (isset($resultado['licencias'])) {
-                    $web = array_merge($web, $resultado['licencias']);
-                }
-            }
-            $data = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
+            $pc = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
                 ->where('sis_clientesid', $cliente->sis_clientesid)
                 ->get();
 
-            if ($web) {
-                $unir = array_merge($web, $data->toArray());
-            } else {
-                $unir =  $data->toArray();
-            }
+            $web = Licenciasweb::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
+                ->where('sis_clientesid', $cliente->sis_clientesid)
+                ->get();
+
+            $unir = array_merge($web->toArray(), $pc->toArray());
 
             //Si solo existe una licencia y si la licencia es lite
             if (count($unir) == 1) {
@@ -448,36 +672,7 @@ class IdentificacionesController extends Controller
 
         //registrar licencia
         $contrato = $this->generarContrato();
-        $existepc = Licencias::where('numerocontrato', $contrato)->get();
-        $existeweb = [];
 
-        foreach ($servidores as $servidor) {
-            $url = $servidor->dominio . '/registros/consulta_licencia';
-            $existe = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                ->withOptions(["verify" => false])
-                ->post($url, ['numerocontrato' => $contrato])
-                ->json();
-            if (isset($existe['licencias'])) {
-                $existeweb = array_merge($existeweb, $existe['licencias']);
-            }
-        }
-
-        //Mientras exista en la base el numero de contrato seguira generando hasta que sea unico
-        while (count($existepc) > 0 || count($existeweb) > 0) {
-            $contrato = $this->generarContrato();
-            $existe = Licencias::where('numerocontrato', $contrato)->get();
-
-            foreach ($servidores as $servidor) {
-                $url = $servidor->dominio . '/registros/consulta_licencia';
-                $existe = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($url, ['numerocontrato' => $contrato])
-                    ->json();
-                if (isset($existe['licencias'])) {
-                    $existeweb = array_merge($existeweb, $existe['licencias']);
-                }
-            }
-        }
         foreach ($request["licencia"] as $licencia) {
             //if ($licencia['producto_id'] == 3 || $licencia['producto_id'] == 4 || $licencia['producto_id'] == 5 || $licencia['producto_id'] == 6 || $licencia['producto_id'] == 7 || $licencia['producto_id'] == 8 || $licencia['producto_id'] == 9 || $licencia['producto_id'] == 10 || $licencia['producto_id'] == 11 || $licencia['producto_id'] == 12) {
             //licencia web
@@ -502,7 +697,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  1;
                     $nuevo->modulos = $this->modulos(0, 0, 1, 1, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -516,7 +711,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  1;
                     $nuevo->modulos = $this->modulos(0, 0, 1, 1, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -530,7 +725,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  2;
                     $nuevo->modulos = $this->modulos(1, 1, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -544,7 +739,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  2;
                     $nuevo->modulos = $this->modulos(1, 1, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -558,7 +753,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  2;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 0, 1, 1, 1);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -572,7 +767,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  2;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 0, 1, 1, 1);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -586,7 +781,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  0;
                     $nuevo->modulos = $this->modulos(1, 1, 0, 1, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -600,7 +795,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  0;
                     $nuevo->modulos = $this->modulos(1, 1, 0, 1, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -614,7 +809,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  0;
                     $nuevo->modulos = $this->modulos(0, 0, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -628,7 +823,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  0;
                     $nuevo->modulos = $this->modulos(0, 0, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -642,7 +837,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  1;
                     $nuevo->numeromoviles =  1;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 1, 1, 1, 1);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -656,7 +851,7 @@ class IdentificacionesController extends Controller
                     $nuevo->usuarios =  1;
                     $nuevo->numeromoviles =  1;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 1, 1, 1, 1);
-                    $nuevo->sis_servidoresid =  1;
+                    $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
@@ -748,8 +943,9 @@ class IdentificacionesController extends Controller
                 ->json();
 
             if (isset($crearLicenciaWeb["licencias"])) {
-                // $licenciaId = $crearLicenciaWeb["licencias"][0]['sis_licenciasid'];
-                //$request['sis_licenciasid'] = $licenciaId;
+
+                $nuevo->sis_licenciasid = $crearLicenciaWeb["licencias"][0]['sis_licenciasid'];
+                Licenciasweb::create($nuevo->toArray());
 
                 $log = new Log();
                 $log->usuario = 'Tienda';
@@ -813,7 +1009,7 @@ class IdentificacionesController extends Controller
                 $emails = explode(", ", $cliente->distribuidor);
 
                 $emails = array_merge($emails,  [
-                    "comercializacion@perseo.ec",
+                    "facturacion@perseo.ec",
                     $cliente->vendedor,
                     $cliente->revendedor,
                     $cliente->correos
@@ -847,6 +1043,13 @@ class IdentificacionesController extends Controller
             $randomString = $randomString . $numero;
         }
 
+        $pc = Licencias::where('numerocontrato', $randomString)->first();
+        $web = Licenciasweb::where('numerocontrato', $randomString)->first();
+
+        if ($pc || $web) {
+            $randomString = $this->generarContrato();
+        }
+
         return $randomString;
     }
 
@@ -878,5 +1081,291 @@ class IdentificacionesController extends Controller
         xmlwriter_end_element($xw);
         xmlwriter_end_document($xw);
         return xmlwriter_output_memory($xw);
+    }
+
+    public function datos_powerbi()
+    {
+        $servidores = Servidores::where('estado', 1)->get();
+        $web = [];
+        $distribuidores = Distribuidores::pluck('sis_distribuidoresid', 'razonsocial')->toArray();
+        $grupos = Grupos::all()->toArray();
+        $vendedores = Revendedores::all()->toArray();
+
+        $licencias = collect(DB::select("SELECT * FROM (SELECT
+        sis_clientes.sis_clientesid,
+        sis_clientes.identificacion,
+        sis_clientes.nombres,
+        sis_clientes.telefono1,
+        sis_clientes.telefono2,
+        sis_clientes.correos,
+        sis_clientes.grupo,
+        sis_licencias.tipo_licencia,
+        UNIX_TIMESTAMP( sis_licencias.fechainicia ) AS fechainicia,
+        UNIX_TIMESTAMP( sis_licencias.fechacaduca ) AS fechacaduca,
+        UNIX_TIMESTAMP( sis_licencias.fechaactulizaciones ) AS fechaactulizaciones,
+        UNIX_TIMESTAMP( sis_licencias.fechaultimopago ) AS fechaultimopago,
+        DATEDIFF(
+            sis_licencias.fechacaduca,
+        NOW()) AS diasvencer,
+        sis_licencias.numerocontrato,
+        sis_licencias.precio,
+        sis_licencias.periodo,
+        sis_licencias.producto,
+        sis_clientes.red_origen,
+        sis_clientes.sis_distribuidoresid,
+        sis_clientes.sis_vendedoresid,
+        sis_clientes.sis_revendedoresid,
+        sis_clientes.provinciasid,
+        sis_clientes.ciudadesid,
+        sis_licencias.empresas,
+        sis_licencias.usuarios,
+        sis_licencias.numeroequipos,
+        sis_licencias.numeromoviles,
+        sis_clientes.usuariocreacion,
+        sis_clientes.usuariomodificacion,
+        sis_clientes.fechacreacion,
+        sis_clientes.fechamodificacion,
+        sis_licencias.modulopractico,
+        sis_licencias.modulocontrol,
+        sis_licencias.modulocontable,
+        sis_licencias.cantidadempresas 
+    FROM
+        sis_licencias
+        INNER JOIN sis_clientes ON sis_licencias.sis_clientesid = sis_clientes.sis_clientesid UNION
+    SELECT
+        sis_clientes.sis_clientesid,
+        sis_clientes.identificacion,
+        sis_clientes.nombres,
+        sis_clientes.telefono1,
+        sis_clientes.telefono2,
+        sis_clientes.correos,
+        sis_clientes.grupo,
+        sis_licencias_web.tipo_licencia,
+        UNIX_TIMESTAMP( sis_licencias_web.fechainicia ) AS fechainicia,
+        UNIX_TIMESTAMP( sis_licencias_web.fechacaduca ) AS fechacaduca,
+        UNIX_TIMESTAMP( sis_licencias_web.fechaactulizaciones ) AS fechaactulizaciones,
+        UNIX_TIMESTAMP( sis_licencias_web.fechaultimopago ) AS fechaultimopago,
+        DATEDIFF(
+            sis_licencias_web.fechacaduca,
+        NOW()) AS diasvencer,
+        sis_licencias_web.numerocontrato,
+        sis_licencias_web.precio,
+        sis_licencias_web.periodo,
+        sis_licencias_web.producto,
+        sis_clientes.red_origen,
+        sis_clientes.sis_distribuidoresid,
+        sis_clientes.sis_vendedoresid,
+        sis_clientes.sis_revendedoresid,
+        sis_clientes.provinciasid,
+        sis_clientes.ciudadesid,
+        sis_licencias_web.empresas,
+        sis_licencias_web.usuarios,
+        sis_licencias_web.numeroequipos,
+        sis_licencias_web.numeromoviles,
+        sis_clientes.usuariocreacion,
+        sis_clientes.usuariomodificacion,
+        sis_clientes.fechacreacion,
+        sis_clientes.fechamodificacion,
+        sis_licencias_web.modulopractico,
+        sis_licencias_web.modulocontrol,
+        sis_licencias_web.modulocontable,
+        '' AS cantidadempresas 
+    FROM
+        sis_clientes
+        INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid ));"));
+
+        $licencias->map(function ($licencia) use ($distribuidores, $vendedores, $grupos) {
+            $licencia->sis_distribuidoresid = array_search($licencia->sis_distribuidoresid, $distribuidores);
+            $licencia->sis_vendedoresid = $vendedores[array_search($licencia->sis_vendedoresid, array_column($vendedores, 'sis_revendedoresid'))]['razonsocial'];
+            $licencia->sis_revendedoresid = $vendedores[array_search($licencia->sis_revendedoresid, array_column($vendedores, 'sis_revendedoresid'))]['razonsocial'];
+            $licencia->grupo = array_search($licencia->grupo, array_column($grupos, 'gruposid')) ? $grupos[array_search($licencia->grupo, array_column($grupos, 'gruposid'))]['descripcion'] : 'Ninguno';
+            $licencia->fechainicia = $licencia->fechainicia == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $licencia->fechainicia);
+            $licencia->fechacaduca = $licencia->fechacaduca == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $licencia->fechacaduca);
+            $licencia->fechaultimopago = $licencia->fechaultimopago == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $licencia->fechaultimopago);
+            $licencia->fechaactulizaciones = $licencia->fechaactulizaciones == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $licencia->fechaactulizaciones);
+            $licencia->periodo = $licencia->periodo == 1 ? "Mensual"  : "Anual";
+            $licencia->producto = $this->producto($licencia);
+            $licencia->tipo_licencia = $licencia->tipo_licencia == 1 ? "Web"  : "PC";
+            $licencia->red_origen = $this->origen($licencia);
+            $licencia->provinciasid = $this->provincias($licencia);
+            unset($licencia->ciudadesid);
+            return $licencia;
+        });
+
+        $licencias = $licencias->toArray();
+        return response()->json(["ventas" => $licencias]);
+    }
+
+    private function producto($licencia)
+    {
+        $producto = "";
+        if ($licencia->tipo_licencia == 1) {
+            switch ($licencia->producto) {
+                case '2':
+                    $producto = "Facturación";
+                    break;
+                case '3':
+                    $producto = "Servicios";
+                    break;
+                case '4':
+                    $producto = "Comercial";
+                    break;
+                case '5':
+                    $producto = "Soy Contador Comercial";
+                    break;
+                case '6':
+                    $producto = "Perseo Lite Anterior";
+                    break;
+                case '7':
+                    $producto = "Total";
+                    break;
+                case '8':
+                    $producto = "Soy Contador Servicios";
+                    break;
+                case '9':
+                    $producto = "Perseo Lite";
+                    break;
+                case '10':
+                    $producto = "Emprendedor";
+                    break;
+                case '11':
+                    $producto = "Socio Perseo";
+                    break;
+                case '12':
+                    $producto = "Facturito";
+                    break;
+                default:
+                    $producto = "Sin Asignar";
+                    break;
+            }
+        } else {
+            if ($licencia->modulopractico == 1) $producto = "Práctico";
+            if ($licencia->modulocontrol == 1) $producto = "Control";
+            if ($licencia->modulocontable == 1) $producto = "Contable";
+            if ($licencia->modulocontable == 1) $producto = "Contable";
+        }
+
+        return $producto;
+    }
+
+    private function origen($licencia)
+    {
+        $origen = "";
+        switch ($licencia->red_origen) {
+            case '1':
+                $origen = "PERSEO";
+                break;
+            case '2':
+                $origen = "CONTAFACIL";
+                break;
+            case '3':
+                $origen = "UIO-01";
+                break;
+            case '4':
+                $origen = "GYE-01";
+                break;
+            case '5':
+                $origen = "GYE-02";
+                break;
+            case '6':
+                $origen = "CUE-01";
+                break;
+            case '7':
+                $origen = "STO-01";
+                break;
+            case '8':
+                $origen = "UIO-02";
+                break;
+            case '9':
+                $origen = "GYE-03";
+                break;
+            case '10':
+                $origen = "CNV-01";
+                break;
+            case '11':
+                $origen = "MATRIZ";
+                break;
+        }
+        return $origen;
+    }
+
+    private function provincias($licencia)
+    {
+        $provincia = "";
+        switch ($licencia->provinciasid) {
+            case '1':
+                $provincia = "AZUAY";
+                break;
+            case '2':
+                $provincia = "BOLIVAR";
+                break;
+            case '3':
+                $provincia = "CAÑAR";
+                break;
+            case '4':
+                $provincia = "CARCHI";
+                break;
+            case '5':
+                $provincia = "CHIMBORAZO";
+                break;
+            case '6':
+                $provincia = "COTOPAXI";
+                break;
+            case '7':
+                $provincia = "EL ORO";
+                break;
+            case '8':
+                $provincia = "ESMERALDAS";
+                break;
+            case '9':
+                $provincia = "GUAYAS";
+                break;
+            case '10':
+                $provincia = "IMBABURA";
+                break;
+            case '11':
+                $provincia = "LOJA";
+                break;
+            case '12':
+                $provincia = "LOS RIOS";
+                break;
+            case '13':
+                $provincia = "MANABI";
+                break;
+            case '14':
+                $provincia = "MORONA SANTIAGO";
+                break;
+            case '15':
+                $provincia = "NAPO";
+                break;
+            case '16':
+                $provincia = "PASTAZA";
+                break;
+            case '17':
+                $provincia = "PICHINCHA";
+                break;
+            case '18':
+                $provincia = "TUNGURAHUA";
+                break;
+            case '19':
+                $provincia = "ZAMORA CHINCHIPE";
+                break;
+            case '20':
+                $provincia = "GALAPAGOS";
+                break;
+            case '21':
+                $provincia = "SUCUMBIOS";
+                break;
+            case '22':
+                $provincia = "ORELLANA";
+                break;
+            case '23':
+                $provincia = "SANTO DOMINGO DE LOS TSACHILAS";
+                break;
+            case '24':
+                $provincia = "SANTA ELENA";
+                break;
+        }
+        return $provincia;
     }
 }

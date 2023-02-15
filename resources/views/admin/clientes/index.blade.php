@@ -268,6 +268,7 @@
                                             <option value="1">Perseo</option>
                                             <option value="2">Contafácil</option>
                                             <option value="3">UIO-01</option>
+                                            <option value="8">UIO-02</option>
                                             <option value="5">GYE-02</option>
                                             <option value="6">CUE-01</option>
                                             <option value="7">STO-01</option>
@@ -284,6 +285,7 @@
                                             <span>
                                                 <i class="la la-search"></i>
                                                 <span>Buscar</span>
+                                                <input type="hidden" name="buscar_filtro" id="buscar_filtro">
                                             </span>
                                         </button>&#160;&#160;
                                         <button class="btn btn-secondary btn-secondary--icon" id="kt_reset">
@@ -478,37 +480,38 @@
                     d.vendedor= $("#vendedor").val();
                     d.origen= $("#origen").val();
                     d.provinciasid = $("#provinciasid").val();
+                    d.buscar_filtro = $("#buscar_filtro").val();
                 }
             },
             //Columnas de la tabla (Debe contener misma cantidad que thead)
             columns: [
-                {data: 'sis_clientesid', name: 'sis_clientesid',visible:false},
+                {data: 'sis_clientesid', name: 'sis_clientesid',visible:false, searchable: false},
                 {data: 'numerocontrato', name: 'numerocontrato',visible:false},
                 {data: 'identificacion', name: 'identificacion'},
                 {data: 'nombres', name: 'nombres'},
-                {data: 'sis_distribuidoresid', name: 'sis_distribuidoresid'},
-                {data: 'telefono2', name: 'telefono2'},
-                {data: 'correos', name: 'correos',visible:false},
-                {data: 'producto', name: 'producto'},
-                {data: 'tipo_licencia', name: 'tipo_licencia'},
-                {data: 'fechainicia', name: 'fechainicia'},
-                {data: 'fechacaduca', name: 'fechacaduca'},
-                {data: 'grupo', name: 'grupo',visible:false},
-                {data: 'diasvencer', name: 'diasvencer',visible:false},
-                {data: 'precio', name: 'precio',visible:false},
-                {data: 'periodo', name: 'periodo',visible:false},
-                {data: 'producto', name: 'producto',visible:false},
-                {data: 'fechaultimopago', name: 'fechaultimopago',visible:false},
-                {data: 'fechaactulizaciones', name: 'fechaactulizaciones',visible:false},
-                {data: 'sis_vendedoresid', name: 'sis_vendedoresid',visible:false},
-                {data: 'sis_revendedoresid', name: 'sis_revendedoresid',visible:false},
-                {data: 'red_origen', name: 'red_origen',visible:false},
-                {data: 'provinciasid',name: 'provinciasid',visible: false},
+                {data: 'sis_distribuidoresid', name: 'sis_distribuidoresid', searchable: false},
+                {data: 'telefono2', name: 'telefono2', searchable: false},
+                {data: 'correos', name: 'correos',visible:false, searchable: false},
+                {data: 'producto', name: 'producto', searchable: false},
+                {data: 'tipo_licencia', name: 'tipo_licencia', searchable: false},
+                {data: 'fechainicia', name: 'fechainicia', searchable: false},
+                {data: 'fechacaduca', name: 'fechacaduca', searchable: false},
+                {data: 'grupo', name: 'grupo',visible:false, searchable: false},
+                {data: 'diasvencer', name: 'diasvencer',visible:false, searchable: false},
+                {data: 'precio', name: 'precio',visible:false, searchable: false},
+                {data: 'periodo', name: 'periodo',visible:false, searchable: false},
+                {data: 'producto', name: 'producto',visible:false, searchable: false},
+                {data: 'fechaultimopago', name: 'fechaultimopago',visible:false, searchable: false},
+                {data: 'fechaactulizaciones', name: 'fechaactulizaciones',visible:false, searchable: false},
+                {data: 'sis_vendedoresid', name: 'sis_vendedoresid',visible:false, searchable: false},
+                {data: 'sis_revendedoresid', name: 'sis_revendedoresid',visible:false, searchable: false},
+                {data: 'red_origen', name: 'red_origen',visible:false, searchable: false},
+                {data: 'provinciasid',name: 'provinciasid',visible: false, searchable: false},
                 
-                {data: 'usuarios', name: 'usuarios',visible:false},
-                {data: 'empresas', name: 'empresas',visible:false},
-                {data: 'numeromoviles', name: 'numeromoviles',visible:false},
-                {data: 'cantidadempresas', name: 'cantidadempresas',visible:false},
+                {data: 'usuarios', name: 'usuarios',visible:false, searchable: false},
+                {data: 'empresas', name: 'empresas',visible:false, searchable: false},
+                {data: 'numeromoviles', name: 'numeromoviles',visible:false, searchable: false},
+                {data: 'cantidadempresas', name: 'cantidadempresas',visible:false, searchable: false},
                 {data: 'action', name: 'action', orderable: false, searchable: false, className: "text-center"},
             ],
             //botones para exportar
@@ -528,6 +531,31 @@
                     }
                 },
             ],
+
+            initComplete: function() {
+                //Buscar con enter
+                $('.dataTables_filter input').unbind();
+                $('.dataTables_filter input').bind('keyup', function(e){
+                    var code = e.keyCode || e.which;
+                    if (code == 13) {
+                        table.search(this.value).draw();
+                    }
+                });
+
+                //Buscar al borrar y no hay caracteres
+                var api = this.api();
+                $('.dataTables_filter input').off('.DT').on('keyup.DT', function (e) {
+                    if (e.keyCode == 8 && this.value.length == 0) {
+                    api.search('').draw();
+                    }
+                });
+
+                //Buscar al hacer clic en limpiar
+                $('input[type="search"]').on('search', function () {
+                    api.search('').draw();
+                });
+                
+            },
         });
 
         //Al hacer clic en los botones para exportar 
@@ -544,6 +572,7 @@
         //Clic en boton buscar
         $('#kt_search').on('click', function(e) {
 			e.preventDefault();
+            $("#buscar_filtro").val('1');
             table.draw();
 		});
 
@@ -558,6 +587,7 @@
             $("#vendedor").val('');
             $("#origen").val('');
             $("#provinciasid").val('');
+            $("#buscar_filtro").val('');
             table.draw();
 		});
 

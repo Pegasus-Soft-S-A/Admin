@@ -52,3 +52,14 @@ if (!function_exists('removeDuplicate')) {
         return $tmpArray;
     }
 }
+
+function compareByKey($array, $key)
+{
+    $unique = [];
+    foreach ($array as $item) {
+        if (!in_array($item[$key], array_column($unique, $key))) {
+            $unique[] = $item;
+        }
+    }
+    return $unique;
+}

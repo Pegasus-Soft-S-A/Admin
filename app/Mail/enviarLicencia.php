@@ -57,7 +57,7 @@ class enviarlicencia extends Mailable implements ShouldQueue
         if ($this->array['tipo'] == 5) {
             return $this->view('emails.envio_credenciales')
                 ->from($this->array['from'], env('MAIL_FROM_NAME'))
-                ->subject($this->array['subject'])->attach(public_path() . '/assets/media/Procedimiento Ingreso.pdf')->attach(public_path() . '/assets/media/Términos y Condiciones.pdf');
+                ->subject($this->array['subject'])->attach(public_path() . '/assets/media/Procedimiento Ingreso.pdf')->attach(public_path() . '/assets/media/Terminos y Condiciones.pdf');
         } elseif ($this->array['tipo'] == 9) {
 
             return $this->view('emails.envio_credenciales_facturito')
@@ -68,7 +68,7 @@ class enviarlicencia extends Mailable implements ShouldQueue
         if ($this->array['tipo'] == 6) {
             return $this->view('emails.registro_demos')
                 ->from($this->array['from'], env('MAIL_FROM_NAME'))
-                ->subject($this->array['subject'])->attach(public_path() . '/assets/media/Procedimiento Ingreso.pdf')->attach(public_path() . '/assets/media/Términos y Condiciones.pdf');
+                ->subject($this->array['subject'])->attach(public_path() . '/assets/media/Procedimiento Ingreso.pdf')->attach(public_path() . '/assets/media/Terminos y Condiciones.pdf');
         } elseif ($this->array['tipo'] == 7) {
 
             return $this->view('emails.licenciaQuitoFacturito')

@@ -6,10 +6,12 @@ use App\Mail\enviarlicencia;
 use App\Models\Agrupados;
 use App\Models\Licencias;
 use App\Models\Clientes;
+use App\Models\Licenciasweb;
 use App\Models\Log;
 use App\Models\Servidores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
@@ -91,10 +93,18 @@ class licenciasController extends Controller
 
     public function generarContrato()
     {
+
         $randomString = "";
         while (strlen($randomString) < 10) {
             $numero = rand(1, 9);
             $randomString = $randomString . $numero;
+        }
+
+        $pc = Licencias::where('numerocontrato', $randomString)->first();
+        $web = Licenciasweb::where('numerocontrato', $randomString)->first();
+
+        if ($pc || $web) {
+            $randomString = $this->generarContrato();
         }
 
         return $randomString;
@@ -107,39 +117,8 @@ class licenciasController extends Controller
             ->join('sis_clientes', 'sis_clientes.sis_clientesid', 'sis_agrupados.sis_clientesid')
             ->get();
         $servidores = Servidores::where('estado', 1)->get();
-        $contrato = $this->generarContrato();
-        $existepc = Licencias::where('numerocontrato', $contrato)->get();
-        $existeweb = [];
 
-        foreach ($servidores as $servidor) {
-            $url = $servidor->dominio . '/registros/consulta_licencia';
-            $existe = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                ->withOptions(["verify" => false])
-                ->post($url, ['numerocontrato' => $contrato])
-                ->json();
-            if (isset($existe['licencias'])) {
-                $existeweb = array_merge($existeweb, $existe['licencias']);
-            }
-        }
-
-        //Mientras exista en la base el numero de contrato seguira generando hasta que sea unico
-        while (count($existepc) > 0 || count($existeweb) > 0) {
-            $contrato = $this->generarContrato();
-            $existe = Licencias::where('numerocontrato', $contrato)->get();
-
-            foreach ($servidores as $servidor) {
-                $url = $servidor->dominio . '/registros/consulta_licencia';
-                $existe = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($url, ['numerocontrato' => $contrato])
-                    ->json();
-                if (isset($existe['licencias'])) {
-                    $existeweb = array_merge($existeweb, $existe['licencias']);
-                }
-            }
-        }
-
-        $licencia->numerocontrato = $contrato;
+        $licencia->numerocontrato = $this->generarContrato();
         $licencia->numerosucursales = 0;
         $licencia->empresas = 1;
         $licencia->sis_distribuidoresid = Auth::user()->sis_distribuidoresid;
@@ -175,27 +154,7 @@ class licenciasController extends Controller
         $licencia->aplicaciones = " s";
         $licencia->fechaactulizaciones = date("d-m-Y", strtotime(date("d-m-Y") . "+ 1 month"));
         $licencia->sis_distribuidoresid = Auth::user()->sis_distribuidoresid;
-
-        $contrato = $this->generarContrato();
-        $existe = Licencias::where('numerocontrato', $contrato)->get();
-
-        $url = 'https://perseo-data-c1.app/registros/consulta_licencia';
-        $existeWeb = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-            ->withOptions(["verify" => false])
-            ->post($url, ['numerocontrato' => $contrato])
-            ->json();
-
-        //Mientras exista en la base el numero de contrato seguira generando hasta que sea unico
-        while (count($existe) > 0 || isset($existeWeb['licencias'])) {
-            $contrato = $this->generarContrato();
-            $existe = Licencias::where('numerocontrato', $contrato)->get();
-            $existeWeb = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                ->withOptions(["verify" => false])
-                ->post($url, ['numerocontrato' => $contrato])
-                ->json();
-        }
-
-        $licencia->numerocontrato = $contrato;
+        $licencia->numerocontrato = $this->generarContrato();
         $modulos = [];
         $modulos = [
             'nomina' => false,
@@ -349,7 +308,6 @@ class licenciasController extends Controller
         $emails = explode(", ", $cliente->distribuidor);
 
         $emails = array_merge($emails,  [
-            "comercializacion@perseo.ec",
             "facturacion@perseo.ec",
             $cliente->vendedor,
             Auth::user()->correo,
@@ -554,6 +512,8 @@ class licenciasController extends Controller
             $licenciaId = $crearLicenciaWeb["licencias"][0]['sis_licenciasid'];
             $request['sis_licenciasid'] = $licenciaId;
 
+            Licenciasweb::create($request->all());
+
             $log = new Log();
             $log->usuario = Auth::user()->nombres;
             $log->pantalla = "Licencia Web";
@@ -616,7 +576,7 @@ class licenciasController extends Controller
             $emails = explode(", ", $cliente->distribuidor);
 
             $emails = array_merge($emails,  [
-                "comercializacion@perseo.ec",
+                "facturacion@perseo.ec",
                 $cliente->vendedor,
                 $cliente->revendedor,
                 $cliente->correos,
@@ -846,7 +806,6 @@ class licenciasController extends Controller
         $emails = explode(", ", $cliente->distribuidor);
 
         $emails = array_merge($emails,  [
-            "comercializacion@perseo.ec",
             "facturacion@perseo.ec",
             $cliente->vendedor,
             Auth::user()->correo,
@@ -882,13 +841,17 @@ class licenciasController extends Controller
         switch ($request->tipo) {
             case 'mes':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 month"));
+                $request['fecha_renovacion'] = date('YmdHis', strtotime(now()));
                 $asunto = 'Renovacion Mensual Licencia Web';
                 $request['periodo'] = 1;
                 break;
             case 'anual':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
+                $request['fecha_renovacion'] = date('YmdHis', strtotime(now()));
                 $asunto = 'Renovacion Anual Licencia Web';
-                $request['periodo'] = 2;
+                if ($request['producto'] != 12) {
+                    $request['periodo'] = 2;
+                }
                 break;
             case 'recargar':
                 //$parametros_json = json_decode($licencia->parametros_json);
@@ -974,6 +937,7 @@ class licenciasController extends Controller
             ->first();
 
         if (isset($licenciaEditar['licencias'])) {
+
             $log = new Log();
             $log->usuario = Auth::user()->nombres;
             $log->pantalla = "Licencia Web";
@@ -981,6 +945,13 @@ class licenciasController extends Controller
             $log->fecha = now();
             $log->detalle = json_encode($request->all());
             $log->save();
+
+            $licenciaweb = Licenciasweb::where('sis_licenciasid', $licenciaid)
+                ->where('sis_servidoresid', $request['sis_servidoresid'])
+                ->where('sis_clientesid', $request['sis_clientesid'])
+                ->first();
+
+            $licenciaweb->update($request->all());
 
             $array['view'] = 'emails.licenciaweb';
             $array['from'] = env('MAIL_FROM_ADDRESS');
@@ -1027,7 +998,6 @@ class licenciasController extends Controller
             $emails = explode(", ", $cliente->distribuidor);
 
             $emails = array_merge($emails,  [
-                "comercializacion@perseo.ec",
                 "facturacion@perseo.ec",
                 $cliente->vendedor,
                 $cliente->revendedor,
@@ -1040,6 +1010,7 @@ class licenciasController extends Controller
             try {
                 Mail::to($emails)->queue(new enviarlicencia($array));
             } catch (\Exception $e) {
+                //dd($e->getMessage());
                 flash('Error enviando email')->error();
                 return back();
             }
@@ -1083,6 +1054,14 @@ class licenciasController extends Controller
             ->json();
 
         if (isset($eliminarLicencia['respuesta'])) {
+
+            $licenciaweb = Licenciasweb::where('sis_licenciasid', $licenciaid)
+                ->where('sis_servidoresid', $licenciaConsulta['licencias'][0]['sis_servidoresid'])
+                ->where('sis_clientesid', $licenciaConsulta['licencias'][0]['sis_clientesid'])
+                ->first();
+
+            $licenciaweb->delete();
+
             $log = new Log();
             $log->usuario = Auth::user()->nombres;
             $log->pantalla = "Licencia Web";
@@ -1128,7 +1107,7 @@ class licenciasController extends Controller
             try {
                 Mail::to($emails)->queue(new enviarlicencia($array));
             } catch (\Exception $e) {
-
+                dd($e->getMessage());
                 flash('Error enviando email')->error();
                 return back();
             }

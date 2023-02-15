@@ -18,11 +18,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\DataTables as DataTables;
+use Cookie;
+use Illuminate\Support\Facades\Session;
 
 class clientesController extends Controller
 {
     public function index(Request $request)
     {
+        $servidores = Servidores::where('estado', 1)->get();
+
         if (Auth::user()->tipo == 1) {
             $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->orderBy('sis_revendedores.razonsocial')->get();
             $distribuidores = Distribuidores::all();
@@ -30,14 +34,21 @@ class clientesController extends Controller
             $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->where('sis_revendedores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->orderBy('sis_revendedores.razonsocial')->get();
             $distribuidores = Distribuidores::where('sis_distribuidores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
         }
+
+        if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2) {
+            $licencias = Clientes::Clientes();
+        } else {
+            $licencias = Clientes::Clientes(Auth::user()->sis_distribuidoresid);
+        }
+
+        $merged = collect($licencias);
+        Session::put('data', $merged);
+
         return view('admin.clientes.index', compact('vendedores', 'distribuidores'));
     }
 
     public function cargarTabla(Request $request)
     {
-        $servidores = Servidores::where('estado', 1)->get();
-        $web = [];
-
         if ($request->ajax()) {
 
             $tipo = $request->tipofecha;
@@ -50,185 +61,177 @@ class clientesController extends Controller
             $periodo = $request->periodo;
             $provinciasid = $request->provinciasid;
             $distribuidores = Distribuidores::pluck('sis_distribuidoresid', 'razonsocial')->toArray();
-
             $grupos = Grupos::all()->toArray();
             $vendedores = Revendedores::all()->toArray();
 
-            if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2) {
-                $clientes = Clientes::Clientes("Todos", 0)
-                    ->get();
-                foreach ($servidores as  $servidor) {
-                    $url = $servidor->dominio . '/registros/consulta_cliente';
-                    $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                        ->withOptions(["verify" => false])
-                        ->post($url, ['sis_distribuidoresid' => '0'])
-                        ->json();
-                    if (isset($resultado['registro'])) {
-                        $web = array_merge($web, $resultado['registro']);
-                    }
-                }
-
-                $pc = Clientes::Clientes("PC", 0)
-                    ->get();
+            //Busqueda
+            $search = $request->search['value'];
+            if ($search <> null) {
+                //Variable con los datos de la tabla
+                $final = Clientes::Clientes(0, $search);
+                //Total de registros
+                $records = count(Session::get('data'));
             } else {
-                $clientes = Clientes::Clientes("Todos", Auth::user()->sis_distribuidoresid)
-                    ->get();
+                //Variable con los datos de la tabla
+                $merged = Session::get('data');
+                //Total de registros
+                $records = $merged->count();
+                //Posicion inicial
+                $start = $request->start;
+                //Cantidad de registros a mostrar
+                $limit = $request->length;
+                //Resultado final del offset
+                $final = $merged->slice($start, $limit);
+                //Total de paginas
+                $totalPages = ceil($records / $limit);
+            }
 
-                foreach ($servidores as  $servidor) {
-                    $url = $servidor->dominio . '/registros/consulta_cliente';
-                    $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                        ->withOptions(["verify" => false])
-                        ->post($url, ['sis_distribuidoresid' => Auth::user()->sis_distribuidoresid])
-                        ->json();
-                    if (isset($resultado['registro'])) {
-                        $web = array_merge($web, $resultado['registro']);
+            //Filtros
+            if ($request->buscar_filtro == 1) {
+                //Buscar en todos los campos
+                $final = $merged;
+
+                if ($tipo != null) {
+                    switch ($tipo) {
+                        case '1':
+                            $tipo_fecha = "fechainicia";
+                            break;
+                        case '2':
+                            $tipo_fecha = "fechacaduca";
+                            break;
+                        case '3':
+                            $tipo_fecha = "fechaactulizaciones";
+                            break;
+                    }
+
+
+                    if ($fecha) {
+                        $desde =  strtotime(explode(" / ", $fecha)[0]);
+                        $hasta =  strtotime(explode(" / ", $fecha)[1]);
+                        $final = $final->whereBetween($tipo_fecha, [$desde, $hasta]);
                     }
                 }
 
-                $pc = Clientes::Clientes("PC", Auth::user()->sis_distribuidoresid)
-                    ->get();
-            }
-            $diferencia = removeDuplicate($clientes->toArray(), $web, $pc->toArray(), 'sis_clientesid');
-            $unir = array_merge($web, $pc->toArray());
-            dd($pc->toArray());
-            $temp = array_unique(array_column($unir,  'numerocontrato'));
-            $unique_arr = array_intersect_key($unir, $temp);
-
-            $final = collect(array_merge($unique_arr, $diferencia));
-            dd($final[0]);
-            //Filtrar por tipo fecha
-            if ($tipo != null) {
-                switch ($tipo) {
-                    case '1':
-                        $tipo_fecha = "fechainicia";
-                        break;
-                    case '2':
-                        $tipo_fecha = "fechacaduca";
-                        break;
-                    case '3':
-                        $tipo_fecha = "fechaactulizaciones";
-                        break;
+                if ($distribuidor != null) {
+                    $final = $final->where('sis_distribuidoresid', $distribuidor);
                 }
 
-
-                if ($fecha) {
-                    $desde =  strtotime(explode(" / ", $fecha)[0]);
-                    $hasta =  strtotime(explode(" / ", $fecha)[1]);
-                    $final = $final->whereBetween($tipo_fecha, [$desde, $hasta]);
+                if ($vendedor != null) {
+                    $final = $final->where('sis_vendedoresid', $vendedor);
                 }
-            }
 
-            if ($distribuidor != null) {
-                $final = $final->where('sis_distribuidoresid', $distribuidor);
-            }
+                if ($origen != null) {
+                    $final = $final->where('red_origen', $origen);
+                }
 
-            if ($vendedor != null) {
-                $final = $final->where('sis_vendedoresid', $vendedor);
-            }
+                if ($provinciasid != null) {
+                    $final = $final->where('provinciasid', $provinciasid);
+                }
 
-            if ($origen != null) {
-                $final = $final->where('red_origen', $origen);
-            }
-
-            if ($provinciasid != null) {
-                $final = $final->where('provinciasid', $provinciasid);
-            }
-
-            if ($tipolicencia != 1) {
-                switch ($tipolicencia) {
-                        //web
-                    case '2':
-                        $final = $final->where('tipo_licencia', 1);
-                        if ($producto != null) $final = $final->where('producto', $producto);
-                        if ($periodo != null) $final = $final->where('periodo', $periodo);
-                        break;
-                        //pc
-                    case '3':
-                        $final = $final->where('tipo_licencia', 2);
-                        if ($producto != null) {
-                            switch ($producto) {
-                                case '1':
-                                    $final = $final->where('modulopractico', 1);
-                                    break;
-                                case '2':
-                                    $final = $final->where('modulocontrol', 1);
-                                    break;
-                                case '3':
-                                    $final = $final->where('modulocontable', 1);
-                                    break;
+                if ($tipolicencia != 1) {
+                    switch ($tipolicencia) {
+                            //web
+                        case '2':
+                            $final = $final->where('tipo_licencia', 1);
+                            if ($producto != null) $final = $final->where('producto', $producto);
+                            if ($periodo != null) $final = $final->where('periodo', $periodo);
+                            break;
+                            //pc
+                        case '3':
+                            $final = $final->where('tipo_licencia', 2);
+                            if ($producto != null) {
+                                switch ($producto) {
+                                    case '1':
+                                        $final = $final->where('modulopractico', 1);
+                                        break;
+                                    case '2':
+                                        $final = $final->where('modulocontrol', 1);
+                                        break;
+                                    case '3':
+                                        $final = $final->where('modulocontable', 1);
+                                        break;
+                                }
                             }
-                        }
-                        break;
+                            break;
+                    }
                 }
             }
 
-
-            return DataTables::of($final)
+            $datatable = DataTables::of($final)
                 ->editColumn('identificacion', function ($cliente) {
-                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente['sis_distribuidoresid']))) {
-                        return '<a class="text-primary" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '">' . $cliente['identificacion'] . ' </a>';
+                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid))) {
+                        return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
                     } else {
-                        return $cliente['identificacion'];
+                        return $cliente->identificacion;
                     }
                 })
                 ->editColumn('action', function ($cliente) {
-                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente['sis_distribuidoresid']))) {
-                        return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente['sis_clientesid']) . '" title="Editar"> <i class="la la-edit"></i> </a>';
+                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid))) {
+                        return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" title="Editar"> <i class="la la-edit"></i> </a>';
                     }
                 })
                 ->editColumn('sis_distribuidoresid', function ($cliente) use ($distribuidores) {
-                    $posicion = array_search($cliente['sis_distribuidoresid'], $distribuidores);
+                    $posicion = array_search($cliente->sis_distribuidoresid, $distribuidores);
                     return $posicion;
                 })
                 ->editColumn('sis_vendedoresid', function ($cliente) use ($vendedores) {
-                    $posicion = array_search($cliente['sis_vendedoresid'], array_column($vendedores, 'sis_revendedoresid'));
+                    $posicion = array_search($cliente->sis_vendedoresid, array_column($vendedores, 'sis_revendedoresid'));
                     return $vendedores[$posicion]['razonsocial'];
                 })
                 ->editColumn('sis_revendedoresid', function ($cliente) use ($vendedores) {
-                    $posicion = array_search($cliente['sis_revendedoresid'], array_column($vendedores, 'sis_revendedoresid'));
+                    $posicion = array_search($cliente->sis_revendedoresid, array_column($vendedores, 'sis_revendedoresid'));
                     return $vendedores[$posicion]['razonsocial'];
                 })
                 ->editColumn('grupo', function ($cliente) use ($grupos) {
-                    $posicion = array_search($cliente['grupo'], array_column($grupos, 'gruposid'));
+                    $posicion = array_search($cliente->grupo, array_column($grupos, 'gruposid'));
                     if ($posicion) {
                         return $grupos[$posicion]['descripcion'];
                     }
                     return '';
                 })
                 ->editColumn('fechainicia', function ($cliente) {
-                    return $cliente['fechainicia'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechainicia']);
+                    return $cliente->fechainicia == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechainicia);
                 })
                 ->editColumn('fechacaduca', function ($cliente) {
-                    return $cliente['fechacaduca'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechacaduca']);
+                    return $cliente->fechacaduca == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechacaduca);
                 })
                 ->editColumn('fechaultimopago', function ($cliente) {
-                    return $cliente['fechaultimopago'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechaultimopago']);
+                    return $cliente->fechaultimopago == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechaultimopago);
                 })
                 ->editColumn('fechaactulizaciones', function ($cliente) {
-                    return $cliente['fechaactulizaciones'] == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente['fechaactulizaciones']);
+                    return $cliente->fechaactulizaciones == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechaactulizaciones);
                 })
                 ->editColumn('tipo_licencia', function ($cliente) {
                     $licencia = "";
-                    if ($cliente['tipo_licencia'] == 1) {
+                    if ($cliente->tipo_licencia == 1) {
                         $licencia = "Web";
-                    } elseif ($cliente['tipo_licencia'] == 2) {
+                    } elseif ($cliente->tipo_licencia == 2) {
                         $licencia = "PC";
                     }
                     return $licencia;
                 })
                 ->editColumn('telefono2', function ($cliente) {
                     $telefono = "";
-                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente['sis_distribuidoresid']))) {
-                        $telefono = $cliente['telefono2'];
+                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid))) {
+                        $telefono = $cliente->telefono2;
                     } else {
                         $telefono = "";
                     }
                     return $telefono;
                 })
+                ->editColumn('correos', function ($cliente) {
+                    $correos = "";
+                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid))) {
+                        $correos = $cliente->correos;
+                    } else {
+                        $correos = "";
+                    }
+                    return $correos;
+                })
                 ->editColumn('producto', function ($cliente) {
                     $producto = "";
-                    if ($cliente['tipo_licencia'] == 1) {
-                        switch ($cliente['producto']) {
+                    if ($cliente->tipo_licencia == 1) {
+                        switch ($cliente->producto) {
                             case '2':
                                 $producto = "Facturación";
                                 break;
@@ -264,15 +267,15 @@ class clientesController extends Controller
                                 break;
                         }
                     } else {
-                        if ($cliente['modulopractico'] == 1) $producto = "Práctico";
-                        if ($cliente['modulocontrol'] == 1) $producto = "Control";
-                        if ($cliente['modulocontable'] == 1) $producto = "Contable";
+                        if ($cliente->modulopractico == 1) $producto = "Práctico";
+                        if ($cliente->modulocontrol == 1) $producto = "Control";
+                        if ($cliente->modulocontable == 1) $producto = "Contable";
                     }
                     return $producto;
                 })
                 ->editColumn('red_origen', function ($cliente) {
                     $origen = "";
-                    switch ($cliente['red_origen']) {
+                    switch ($cliente->red_origen) {
                         case '1':
                             $producto = "PERSEO";
                             break;
@@ -312,7 +315,7 @@ class clientesController extends Controller
                 ->editColumn('provinciasid', function ($cliente) {
 
                     $provincia = "";
-                    switch ($cliente['provinciasid']) {
+                    switch ($cliente->provinciasid) {
                         case '1':
                             $provincia = "AZUAY";
                             break;
@@ -388,18 +391,31 @@ class clientesController extends Controller
                     }
                     return $provincia;
                 })
-
                 ->editColumn('periodo', function ($cliente) {
                     $periodo = "";
-                    if ($cliente['periodo'] == 1) {
+                    if ($cliente->periodo == 1) {
                         $periodo = "Mensual";
-                    } elseif ($cliente['periodo'] == 2) {
+                    } elseif ($cliente->periodo == 2) {
                         $periodo = "Anual";
                     }
                     return $periodo;
                 })
-                ->rawColumns(['action', 'identificacion'])
-                ->make(true);
+                ->rawColumns(['action', 'identificacion']);
+
+            if ($request->buscar_filtro == 1 || $search <> null) {
+                $datatable = $datatable
+                    ->with('recordsTotal', $records)
+                    ->make(true);
+            } else {
+                $datatable = $datatable
+                    ->setOffset($start)
+                    ->with('recordsTotal', $records)
+                    ->with('recordsFiltered', $records)
+                    ->with('totalPages', $totalPages)
+                    ->make(true);
+            }
+
+            return  $datatable;
         }
     }
 

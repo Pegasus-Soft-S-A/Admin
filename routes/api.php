@@ -20,4 +20,7 @@ Route::group(['middleware' => 'authAPILicencia'], function () {
     Route::post('/vendedores_consulta', [IdentificacionesController::class, 'vendedores_consulta'])->name('vendedores.consulta');
     Route::post('/registrar_licencia', [IdentificacionesController::class, 'registrar_licencia'])->name('licencia.registrar');
     Route::post('/consultar_licencia', [IdentificacionesController::class, 'consultar_licencia'])->name('licencia.consultar');
+    Route::post('/consultar_licencia_web', [IdentificacionesController::class, 'consultar_licencia_web'])->name('licencia.consultar_web');
+    Route::post('/renovar_web', [IdentificacionesController::class, 'renovar_web'])->name('licencia.renovar_web');
 });
+Route::get('/datos_powerbi', [IdentificacionesController::class, 'datos_powerbi'])->name('licencia.datos_powerbi');

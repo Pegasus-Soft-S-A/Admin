@@ -6,6 +6,7 @@ use App\Mail\enviarlicencia;
 use App\Models\Ciudades;
 use App\Models\Clientes;
 use App\Models\Licencias;
+use App\Models\Licenciasweb;
 use App\Models\Log;
 use App\Models\Publicidades;
 use App\Models\Servidores;
@@ -26,22 +27,12 @@ class adminController extends Controller
 
     public function login()
     {
-        $imagen = Publicidades::where('tipo', 2)
-            ->where('fechainicio', '<=', DB::raw('CURDATE()'))
-            ->where('fechafin', '>=', DB::raw('CURDATE()'))
-            ->first();
-
-        return view('admin.auth.login', compact('imagen'));
+        return view('admin.auth.login');
     }
 
     public function loginRedireccion()
     {
-        $imagen = Publicidades::where('tipo', 1)
-            ->where('fechainicio', '<=', DB::raw('CURDATE()'))
-            ->where('fechafin', '>=', DB::raw('CURDATE()'))
-            ->first();
-
-        return view('admin.auth.loginredireccion', compact('imagen'));
+        return view('admin.auth.loginredireccion');
     }
 
     public function post_loginRedireccion(Request $request)
@@ -340,13 +331,8 @@ class adminController extends Controller
 
     public function registro()
     {
-        $imagen = Publicidades::where('tipo', 3)
-            ->where('fechainicio', '<=', DB::raw('CURDATE()'))
-            ->where('fechafin', '>=', DB::raw('CURDATE()'))
-            ->first();
-
         $identificacion = 0;
-        return view('admin.auth.registro', compact('identificacion', 'imagen'));
+        return view('admin.auth.registro', compact('identificacion'));
     }
 
     public function post_registro(Request $request)
@@ -377,47 +363,136 @@ class adminController extends Controller
             ],
         );
 
-        //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
-        $request['fechacreacion'] = now();
-        $request['usuariocreacion'] = "Perseo Lite";
-        $request['tipoidentificacion'] = "R";
+        switch ($request['grupo']) {
+            case '1':
+                $grupo = '599';
+                break;
+            case '2':
+                $grupo = '601';
+                break;
+            case '3':
+                $grupo = '603';
+                break;
+            case '4':
+                $grupo = '605';
+                break;
+            case '5':
+                $grupo = '607';
+                break;
+            case '6':
+                $grupo = '609';
+                break;
+            case '7':
+                $grupo = '611';
+                break;
+            case '8':
+                $grupo = '613';
+                break;
+            case '9':
+                $grupo = '615';
+                break;
+            case '10':
+                $grupo = '617';
+                break;
+            case '11':
+                $grupo = '621';
+                break;
+            case '12':
+                $grupo = '623';
+                break;
+            default:
+                $grupo = '599';
+                break;
+        }
 
         switch ($request['red_origen']) {
             case '3':
                 //Delta
                 $distribuidor = 2;
+                $assigned_id = 34745;
+                $source_id = 24;
                 break;
             case '6':
                 //Omega
                 $distribuidor = 3;
+                $assigned_id = 29359;
+                $source_id = 25;
                 break;
             case '7':
                 //Alfa
                 $distribuidor = 1;
+                $assigned_id = 32045;
+                $source_id = 23;
                 break;
             case '2':
                 //Alfa
                 $distribuidor = 1;
+                $assigned_id = 32045;
+                $source_id = 23;
                 break;
             case '11':
                 //matriz
                 $distribuidor = 6;
+                $assigned_id = 36925;
+                $source_id = 26;
                 break;
             case '8':
                 //Delta
                 $distribuidor = 2;
+                $assigned_id = 34745;
+                $source_id = 24;
                 break;
             default:
                 //matriz
                 $distribuidor = 6;
+                $assigned_id = 36925;
+                $source_id = 26;
                 break;
         }
 
+        $telefono = "+593" . substr($request['telefono2'], 1, 9);
+        //Json para enviar a la API de bitrix
+        $fields = [
+            "fields" => [
+                "ASSIGNED_BY_ID" => $assigned_id,
+                "TITLE" => "Nuevo registro de prueba",
+                "SOURCE_ID" => $source_id,
+                "NAME" => $request['nombres'],
+                "ADDRESS" => $request['direccion'],
+                "PHONE" => [[
+                    "VALUE" => $telefono,
+                    "VALUE_TYPE" => "WORK"
+                ]],
+                "EMAIL" => [[
+                    "VALUE" => $request['correos'],
+                    "VALUE_TYPE" => "WORK"
+                ]],
+                "UF_CRM_1656951427626" => $request['texto_ciudad'],
+                "UF_CRM_1668442025742" => $grupo,
+            ]
+        ];
+
+        //consumir api de bitrix
+        $url = 'https://b24-mh9fll.bitrix24.es/rest/5507/zcc5hapr3zyri76d/crm.lead.add.json';
+        $res = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+            ->withOptions(["verify" => false])
+            ->post($url, $fields)
+            ->json();
+
+        if (array_key_exists('error', $res)) {
+        }
+
+        //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
+        $request['fechacreacion'] = now();
+        $request['usuariocreacion'] = "Perseo Lite";
+        $request['tipoidentificacion'] = "R";
         $request['sis_distribuidoresid'] = $distribuidor;
         $request['sis_revendedoresid'] = 1;
         $request['sis_vendedoresid'] = 405;
         $request['validado'] = 1;
-
+        unset(
+            $request['texto_ciudad'],
+        );
         DB::beginTransaction();
         try {
             $servidores = Servidores::where('estado', 1)->get();
@@ -448,36 +523,6 @@ class adminController extends Controller
 
             //Verificar que no se exista el numero de contrato
             $contrato = $this->generarContrato();
-            $existepc = Licencias::where('numerocontrato', $contrato)->get();
-            $existeweb = [];
-
-            foreach ($servidores as $servidor) {
-                $url = $servidor->dominio . '/registros/consulta_licencia';
-                $existe = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($url, ['numerocontrato' => $contrato])
-                    ->json();
-                if (isset($existe['licencias'])) {
-                    $existeweb = array_merge($existeweb, $existe['licencias']);
-                }
-            }
-
-            //Mientras exista en la base el numero de contrato seguira generando hasta que sea unico
-            while (count($existepc) > 0 || count($existeweb) > 0) {
-                $contrato = $this->generarContrato();
-                $existe = Licencias::where('numerocontrato', $contrato)->get();
-
-                foreach ($servidores as $servidor) {
-                    $url = $servidor->dominio . '/registros/consulta_licencia';
-                    $existe = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                        ->withOptions(["verify" => false])
-                        ->post($url, ['numerocontrato' => $contrato])
-                        ->json();
-                    if (isset($existe['licencias'])) {
-                        $existeweb = array_merge($existeweb, $existe['licencias']);
-                    }
-                }
-            }
 
             $parametros_json = [];
             $parametros_json = [
@@ -522,6 +567,9 @@ class adminController extends Controller
             if (isset($crearLicenciaWeb["licencias"])) {
                 DB::commit();
 
+                $licencia['sis_licenciasid'] = $crearLicenciaWeb["licencias"][0]['sis_licenciasid'];
+                Licenciasweb::create($licencia);
+
                 $array['view'] = 'emails.registro_demos';
                 $array['from'] = env('MAIL_FROM_ADDRESS');
                 $array['subject'] = 'Registro Demo';
@@ -557,6 +605,13 @@ class adminController extends Controller
         while (strlen($randomString) < 10) {
             $numero = rand(1, 9);
             $randomString = $randomString . $numero;
+        }
+
+        $pc = Licencias::where('numerocontrato', $randomString)->first();
+        $web = Licenciasweb::where('numerocontrato', $randomString)->first();
+
+        if ($pc || $web) {
+            $randomString = $this->generarContrato();
         }
 
         return $randomString;

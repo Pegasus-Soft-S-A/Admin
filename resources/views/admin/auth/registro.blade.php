@@ -216,7 +216,8 @@ $grupos = App\Models\Grupos::get();
                                             <i class="fa fa-city"></i>
                                         </span>
                                     </div>
-                                    <select class="form-control selectDespegable" name="ciudadesid" id="ciudadesid">
+                                    <select class="form-control selectDespegable" name="ciudadesid" id="ciudadesid"
+                                        onchange="setTextFieldCiudad(this)">
                                         <option value="">Seleccione una ciudad</option>
 
                                     </select>
@@ -323,6 +324,8 @@ $grupos = App\Models\Grupos::get();
                                 </div>
                             </div>
 
+                            <input id="texto_ciudad" type="hidden" name="texto_ciudad" value="" />
+
                             <div class="text-center">
                                 <button type="submit" class="btn btn-lg btn-primary w-100 mb-2" id="ingresar">
                                     <span class="indicator-label">Registrarse</span>
@@ -404,6 +407,10 @@ $grupos = App\Models\Grupos::get();
             }
         });
 
+        function setTextFieldCiudad(ddl) {
+            document.getElementById('texto_ciudad').value = ddl.options[ddl.selectedIndex].text;
+        }
+
         function verificarruc() {
             var cad = document.getElementById('identificacion').value;
 
@@ -472,11 +479,12 @@ $grupos = App\Models\Grupos::get();
                 success: function(data) {
                     $('#ciudadesid').empty();
 
-
                     data.map(ciudades =>
                         $('#ciudadesid').append('<option value="' + ciudades.ciudadesid + '">' + ciudades
                             .ciudad + '</option>')
                     );
+
+                    document.getElementById("ciudadesid").onchange();
                 }
             })
         }
