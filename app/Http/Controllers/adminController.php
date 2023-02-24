@@ -12,6 +12,7 @@ use App\Models\Publicidades;
 use App\Models\Servidores;
 use App\Models\Subcategorias;
 use App\Models\User;
+use App\Rules\UniqueSimilar;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
 use Illuminate\Support\Facades\Session;
@@ -339,7 +340,7 @@ class adminController extends Controller
     {
         $request->validate(
             [
-                'identificacion' => ['required', 'unique:sis_clientes', 'size:13'],
+                'identificacion' => ['required', new UniqueSimilar, 'size:13'],
                 'nombres' => 'required',
                 'direccion' => 'required',
                 'correos' => ['required', 'email', new ValidarCorreo],
@@ -455,7 +456,7 @@ class adminController extends Controller
         $fields = [
             "fields" => [
                 "ASSIGNED_BY_ID" => $assigned_id,
-                "TITLE" => "Nuevo registro de prueba",
+                "TITLE" => "Nuevo registro lite",
                 "SOURCE_ID" => $source_id,
                 "NAME" => $request['nombres'],
                 "ADDRESS" => $request['direccion'],

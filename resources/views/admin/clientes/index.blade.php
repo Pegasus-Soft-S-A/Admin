@@ -533,26 +533,40 @@
             ],
 
             initComplete: function() {
-                //Buscar con enter
-                $('.dataTables_filter input').unbind();
-                $('.dataTables_filter input').bind('keyup', function(e){
-                    var code = e.keyCode || e.which;
-                    if (code == 13) {
-                        table.search(this.value).draw();
-                    }
-                });
+
+                self = this.api();
+                //Si esta en movil agregar boton buscar
+                if ($(window).width() < 768) {
+                    var input = $('.dataTables_filter input').unbind(),
+                    $searchButton = $('<button>')
+                            .text('Buscar')
+                            .addClass('btn btn-sm btn-primary ml-1') 
+                            .click(function() {
+                                self.search(input.val()).draw();
+                            })
+
+                    $('.dataTables_filter').append($searchButton);
+                }else{
+                    // //Buscar con enter
+                    $('.dataTables_filter input').unbind();
+                    $('.dataTables_filter input').bind('keyup', function(e){
+                        var code = e.keyCode || e.which;
+                        if (code == 13) {
+                            table.search(this.value).draw();
+                        }
+                    });
+                }
 
                 //Buscar al borrar y no hay caracteres
-                var api = this.api();
                 $('.dataTables_filter input').off('.DT').on('keyup.DT', function (e) {
                     if (e.keyCode == 8 && this.value.length == 0) {
-                    api.search('').draw();
+                    self.search('').draw();
                     }
                 });
 
-                //Buscar al hacer clic en limpiar
+                // //Buscar al hacer clic en limpiar
                 $('input[type="search"]').on('search', function () {
-                    api.search('').draw();
+                    self.search('').draw();
                 });
                 
             },

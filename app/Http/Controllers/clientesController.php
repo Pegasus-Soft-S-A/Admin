@@ -7,18 +7,18 @@ use App\Models\Clientes;
 use App\Models\Distribuidores;
 use App\Models\Grupos;
 use App\Models\Licencias;
+use App\Models\Licenciasweb;
 use App\Models\Log;
 use App\Models\Revendedores;
 use App\Models\Servidores;
+use App\Rules\UniqueSimilar;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
-use Illuminate\Filesystem\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\DataTables as DataTables;
-use Cookie;
 use Illuminate\Support\Facades\Session;
 
 class clientesController extends Controller
@@ -436,7 +436,7 @@ class clientesController extends Controller
         //Validaciones
         $request->validate(
             [
-                'identificacion' => ['required', 'unique:sis_clientes'],
+                'identificacion' => ['required', new UniqueSimilar],
                 'nombres' => 'required',
                 'direccion' => 'required',
                 'correos' => ['required', 'email', new ValidarCorreo],
@@ -452,7 +452,6 @@ class clientesController extends Controller
             ],
             [
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
-                'identificacion.unique' => 'Su cédula o RUC ya se encuentra registrado',
                 'nombres.required' => 'Ingrese los Nombres',
                 'direccion.required' => 'Ingrese una Dirección',
                 'correos.required' => 'Ingrese un Correo',
@@ -472,46 +471,66 @@ class clientesController extends Controller
             ],
         );
 
-        //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
         $request['fechacreacion'] = now();
         $request['usuariocreacion'] = Auth::user()->nombres;
         $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
+        $request['telefono1'] = $request['telefono1'] <> "" ? $request['telefono1'] : "";
 
         DB::beginTransaction();
-        try {
-            $servidores = Servidores::where('estado', 1)->get();
 
-            $cliente =   Clientes::create($request->all());
-            $log = new Log();
-            $log->usuario = Auth::user()->nombres;
-            $log->pantalla = "Clientes";
-            $log->tipooperacion = "Crear";
-            $log->fecha = now();
-            $log->detalle = $cliente;
-            $log->save();
-            $request['sis_clientesid'] = $cliente->sis_clientesid;
+        $servidores = Servidores::where('estado', 1)->get();
+        $cliente = Clientes::create($request->all());
 
-            foreach ($servidores as $servidor) {
-                $url = $servidor->dominio . '/registros/crear_clientes';
-                $crearCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-                    ->withOptions(["verify" => false])
-                    ->post($url, $request->all())
-                    ->json();
-                if (!isset($crearCliente['sis_clientes'])) {
-                    DB::rollBack();
-                    flash('Ocurrió un error vuelva a intentarlo')->warning();
-                    return back();
-                }
-            }
-            flash('Guardado Correctamente')->success();
-            DB::commit();
-            return redirect()->route('clientes.editar', $cliente->sis_clientesid);
-        } catch (\Exception $e) {
+        $clientes_creados = []; // variable para almacenar los clientes creados en los servidores remotos
 
+        // Verificar si se creó el cliente en el servidor local
+        if (!$cliente) {
+            flash('Ocurrió un error al crear el cliente')->warning();
             DB::rollBack();
-            flash('Ocurrió un error vuelva a intentarlo')->warning();
             return back();
         }
+
+        // Insertar el cliente en cada uno de los servidores remotos
+        foreach ($servidores as $servidor) {
+            $url = $servidor->dominio . '/registros/crear_clientes';
+            $crearCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+                ->withOptions(["verify" => false])
+                ->post($url, $request->all())
+                ->json();
+
+            if (isset($crearCliente['sis_clientes'])) {
+                $clientes_creados[] = [
+                    'dominio' => $servidor->dominio,
+                    'sis_clientesid' => $crearCliente["sis_clientes"][0]['sis_clientesid']
+                ];
+            } else {
+                foreach ($clientes_creados as $registro) {
+                    $url = $registro['dominio'] . '/registros/eliminar_cliente';
+                    $eliminarCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+                        ->withOptions(["verify" => false])
+                        ->post($url, ["sis_clientesid" => $registro['sis_clientesid']])
+                        ->json();
+                }
+
+                flash('Ocurrió un error al crear el cliente, intentelo nuevamente')->warning();
+                DB::rollBack();
+                return back();
+            }
+        }
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Clientes";
+        $log->tipooperacion = "Crear";
+        $log->fecha = now();
+        $log->detalle = $cliente;
+        $log->save();
+        $request['sis_clientesid'] = $cliente->sis_clientesid;
+
+        DB::commit();
+
+        flash('Guardado Correctamente')->success();
+        return redirect()->route('clientes.editar', $cliente->sis_clientesid);
     }
 
     public function editar(Request $request, clientes $cliente)
@@ -525,7 +544,7 @@ class clientesController extends Controller
         //Validaciones
         $request->validate(
             [
-                'identificacion' => ['required', 'unique:sis_clientes,identificacion,' . $cliente->sis_clientesid . ',sis_clientesid'],
+                'identificacion' => ['required', new UniqueSimilar($cliente->sis_clientesid)],
                 'nombres' => 'required',
                 'direccion' => 'required',
                 'correos' => ['required', 'email', new ValidarCorreo],
@@ -541,7 +560,6 @@ class clientesController extends Controller
             ],
             [
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
-                'identificacion.unique' => 'Su cédula o RUC ya se encuentra registrado',
                 'nombres.required' => 'Ingrese los Nombres',
                 'direccion.required' => 'Ingrese una Dirección',
                 'correos.required' => 'Ingrese un Correo',
@@ -568,6 +586,8 @@ class clientesController extends Controller
             $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
             $request['fechamodificacion'] =  now();
             $request['usuariomodificacion'] = Auth::user()->nombres;
+            $request['telefono1'] = $request['telefono1'] <> "" ? $request['telefono1'] : "";
+
             $cliente->update($request->all());
 
             $log = new Log();
@@ -656,6 +676,7 @@ class clientesController extends Controller
             }
 
             Licencias::where('sis_clientesid', $cliente->sis_clientesid)->delete();
+            Licenciasweb::where('sis_clientesid', $cliente->sis_clientesid)->delete();
 
             $cliente->delete();
             $log = new Log();

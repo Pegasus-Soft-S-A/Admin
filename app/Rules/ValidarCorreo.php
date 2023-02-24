@@ -34,7 +34,6 @@ class ValidarCorreo implements Rule
         if ($correo['deliverability'] != "DELIVERABLE") {
             if ($correo['is_valid_format']['value'] == true) {
                 $url = 'https://api.debounce.io/v1/?email=' . rawurlencode($value) . '&api=6269b53f06aeb';
-                dd($url);
                 $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                     ->withOptions(["verify" => false])
                     ->get($url)

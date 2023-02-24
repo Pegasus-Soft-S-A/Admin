@@ -1368,4 +1368,39 @@ class IdentificacionesController extends Controller
         }
         return $provincia;
     }
+
+    public function gastosFacebook($inicio, $fin)
+    {
+        $resultado = Http::withHeaders([
+            'Authorization' => 'Bearer ' . 'EAAMNIHFYKQwBAKmUAGKPFLqlZCsu6IVbGRF7WZCfkFe7HrPpGFGzwd7O5PgYkqlVROl2rFlY9GHKKdFS7jREsrwRwMXOZCHPS1e9G421xHAAzAhZBgijt2MQ7LxPCzblXIZBTTr0KZAinQya0sW2dreWFyJIC1BuW9My7ebx6ZBsBARpBS16SATsyh2Pme3WvZA04ptrNA684gZDZD',
+            'Facebook-App-Id' => '858857921849612',
+            'Facebook-App-Secret' => 'a05faf55b6e2b9dc787620a35f0418cb',
+        ])
+            ->withOptions(["verify" => false])
+            ->get("https://graph.facebook.com/v16.0/act_347213498749913/insights?level=campaign&fields=campaign_name,adset_name,ad_name,spend,actions&time_range={since:'$inicio',until:'$fin'}")
+            ->json();
+
+        $data = collect(json_decode(json_encode($resultado['data']), true));
+
+        $spendTotal = $data->sum('spend');
+
+        $leadTotal = 0;
+
+        foreach ($data as $item) {
+            if (isset($item['actions'])) {
+                foreach ($item['actions'] as $action) {
+                    if ($action['action_type'] == 'lead') {
+                        $leadTotal += $action['value'];
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'gasto' => round($spendTotal, 2),
+            'leads' => $leadTotal,
+            'inicio' => '2023-02-01',
+            'fin' => '2023-02-28',
+        ]);
+    }
 }
