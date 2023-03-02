@@ -1188,6 +1188,7 @@ class IdentificacionesController extends Controller
             $licencia->tipo_licencia = $licencia->tipo_licencia == 1 ? "Web"  : "PC";
             $licencia->red_origen = $this->origen($licencia);
             $licencia->provinciasid = $this->provincias($licencia);
+            $licencia->precio = number_format(floatval($licencia->precio), 2, ',', '.');
             unset($licencia->ciudadesid);
             return $licencia;
         });
@@ -1380,27 +1381,13 @@ class IdentificacionesController extends Controller
             ->get("https://graph.facebook.com/v16.0/act_347213498749913/insights?level=campaign&fields=campaign_name,adset_name,ad_name,spend,actions&time_range={since:'$inicio',until:'$fin'}")
             ->json();
 
-        $data = collect(json_decode(json_encode($resultado['data']), true));
+        $data = collect($resultado['data']);
 
-        $spendTotal = $data->sum('spend');
+        $data->map(function ($item) {
+            $item['spend'] = number_format(floatval($item['spend']), 2, ',', '.');
+            return $item;
+        });
 
-        $leadTotal = 0;
-
-        foreach ($data as $item) {
-            if (isset($item['actions'])) {
-                foreach ($item['actions'] as $action) {
-                    if ($action['action_type'] == 'lead') {
-                        $leadTotal += $action['value'];
-                    }
-                }
-            }
-        }
-
-        return response()->json([
-            'gasto' => round($spendTotal, 2),
-            'leads' => $leadTotal,
-            'inicio' => '2023-02-01',
-            'fin' => '2023-02-28',
-        ]);
+        return response()->json([$data]);
     }
 }

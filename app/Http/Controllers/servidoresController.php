@@ -7,7 +7,6 @@ use App\Models\Servidores;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables as DataTables;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 
 class servidoresController extends Controller
 {
@@ -33,43 +32,86 @@ class servidoresController extends Controller
         return view('admin.servidores.index');
     }
 
-    public function migrar(Request $request)
+    public function crear()
     {
-        $dominioorigen = Servidores::select('dominio')->where('sis_servidoresid', $request['servidororigen'])->first();
-        $urlorigen = $dominioorigen->dominio . '/registros/respaldar_empresa';
-        $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-            ->withOptions(["verify" => false])
-            ->post($urlorigen, ['sis_licenciasid' => $request['licenciaorigen']])
-            ->json();
+        $servidores = new Servidores();
+        return view('admin.servidores.crear', compact('servidores'));
+    }
+
+    public function guardar(Request $request)
+    {
+
+        $request->validate(
+            [
+                'descripcion' => 'required',
+                'dominio' => 'required',
+
+            ],
+            [
+                'descripcion.required' => 'Ingrese Descripción ',
+                'dominio.required' => 'Ingrese Dominio',
+            ],
+        );
 
 
-        if (isset($resultado['licencia'])) {
-            $decodificar = json_decode(json_encode($resultado));
-            $dominiodestino = Servidores::select('dominio')->where('sis_servidoresid', $request['servidordestino'])->first();
-            $urldestino = $dominiodestino->dominio . '/registros/restaurar_empresa';
-            $resultado2 = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false])
-                ->withOptions(["verify" => false])
-                ->post($urldestino, ["licencia" => $decodificar->licencia, "respaldo_empresa" => $decodificar->respaldo_empresa, "sis_servidoresdestinoid" => (int) $request['servidordestino'], "sis_distribuidores_usuariosid" => Auth::user()->sis_distribuidores_usuariosid])
-                ->json();
+        $servidores =   Servidores::create($request->all());
 
-            if (isset($resultado2['licencias'])) {
-                $urleliminarorigen = $dominioorigen->dominio . '/registros/eliminar_licencia';
-                $eliminarLicencia = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($urleliminarorigen, ['sis_licenciasid' => $request['licenciaorigen']])
-                    ->json();
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Servidores";
+        $log->tipooperacion = "Crear";
+        $log->fecha = now();
+        $log->detalle = $servidores;
+        $log->save();
+        flash('Servidor creado correctamente')->success();
+        return redirect()->route('servidores.editar', $servidores->sis_servidoresid);
+    }
 
-                if (isset($eliminarLicencia['respuesta'])) {
-                    return 1;
-                } else {
-                    return 4;
-                }
-            }
+    public function editar(Servidores $servidores)
+    {
 
-            return 2;
-        } else {
+        return view('admin.servidores.editar', compact('servidores'));
+    }
+    public function actualizar(Servidores $servidores, Request $request)
+    {
+        $request->validate(
+            [
+                'descripcion' => 'required',
+                'dominio' => 'required',
+            ],
+            [
+                'descripcion.required' => 'Ingrese su cédula o RUC ',
+                'dominio.required' => 'Ingrese Nombres',
+            ],
+        );
 
-            return 3;
-        }
+
+        $servidores->update($request->all());
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Servidores";
+        $log->tipooperacion = "Modificar";
+        $log->fecha = now();
+        $log->detalle = $servidores;
+        $log->save();
+
+        flash('Actualizado Correctamente')->success();
+        return back();
+    }
+    public function eliminar(Servidores $servidores)
+    {
+        $servidores->delete();
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Servidores";
+        $log->tipooperacion = "Eliminar";
+        $log->fecha = now();
+        $log->detalle = $servidores;
+        $log->save();
+
+        flash("Eliminado Correctamente")->success();
+        return back();
     }
 }

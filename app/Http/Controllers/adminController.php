@@ -149,6 +149,12 @@ class adminController extends Controller
         //Buscar usuario
         $usuario = User::where('identificacion', $request->identificacion)->first();
         if ($usuario) {
+
+            if ($usuario->estado == 0) {
+                flash('Usuario Inactivo')->error();
+                return back();
+            }
+
             if ($usuario->contrasena === encrypt_openssl($request->contrasena, "Perseo1232*")) {
                 //Si tiene puesto check para recordar 
                 if ($request->has('recordar')) {
