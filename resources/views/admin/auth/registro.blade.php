@@ -299,7 +299,8 @@ $grupos = App\Models\Grupos::get();
                                         <option value="1" {{ $id=='' ? 'Selected' : '' }}>
                                             PERSEO
                                         </option>
-                                        <option value="2" {{ $id=='contafacil' ? 'Selected' : '' }}>
+                                        <option value="2" {{ $id=='contafacil' || $id=='CONTAFACIL' ? 'Selected' : ''
+                                            }}>
                                             CONTAFACIL
                                         </option>
                                         <option value="3" {{ $id=='UIO-01' ? 'Selected' : '' }}>
@@ -319,6 +320,15 @@ $grupos = App\Models\Grupos::get();
                                         </option>
                                         <option value="11" {{ $id=='MATRIZ' ? 'Selected' : '' }}>
                                             MATRIZ
+                                        </option>
+                                        <option value="12" {{ $id=='CUE-02' ? 'Selected' : '' }}>
+                                            CUE-02
+                                        </option>
+                                        <option value="13" {{ $id=='CUE-03' ? 'Selected' : '' }}>
+                                            CUE-03
+                                        </option>
+                                        <option value="14" {{ $id=='UIO-03' ? 'Selected' : '' }}>
+                                            UIO-03
                                         </option>
                                     </select>
                                 </div>

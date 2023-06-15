@@ -203,11 +203,18 @@ class clientesController extends Controller
                 })
                 ->editColumn('tipo_licencia', function ($cliente) {
                     $licencia = "";
-                    if ($cliente->tipo_licencia == 1) {
-                        $licencia = "Web";
-                    } elseif ($cliente->tipo_licencia == 2) {
-                        $licencia = "PC";
+                    switch ($cliente->tipo_licencia) {
+                        case '1':
+                            $licencia = "Web";
+                            break;
+                        case '2':
+                            $licencia = "PC";
+                            break;
+                        case '3':
+                            $licencia = "VPS";
+                            break;
                     }
+
                     return $licencia;
                 })
                 ->editColumn('telefono2', function ($cliente) {
@@ -309,6 +316,16 @@ class clientesController extends Controller
                         case '11':
                             $producto = "MATRIZ";
                             break;
+                        case '12':
+                            $producto = "CUE-02";
+                            break;
+                        case '13':
+                            $producto = "CUE-03";
+                            break;
+                        case '14':
+                            $producto = "UIO-03";
+                            break;
+                        default:
                     }
                     return $producto;
                 })

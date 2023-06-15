@@ -185,6 +185,18 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 @endif
             </div>
             <div class="col-lg-4">
+                <label>Puerto Movil:</label>
+                <select class="form-control @if($rol != 1 && $rol != 2 && $rol != 3) disabled @endif" name="puertows"
+                    id="puertows">
+                    <option value="80" {{ old('puertows', $licencia->puertows) == '80' ? 'Selected': '' }}>80</option>
+                    <option value="2900" {{ old('puertows', $licencia->puertows) == '2900' ? 'Selected': '' }}>2900
+                    </option>
+                </select>
+                @if ($errors->has('puertows'))
+                <span class="text-danger">{{ $errors->first('puertows') }}</span>
+                @endif
+            </div>
+            <div class="col-lg-4">
                 <label>Usuario BD:</label>
                 <input type="text"
                     class="form-control @if($rol!=1) disabled @endif {{ $errors->has('usuario') ? 'is-invalid' : '' }}"
@@ -194,6 +206,10 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 <span class="text-danger">{{ $errors->first('usuario') }}</span>
                 @endif
             </div>
+
+        </div>
+
+        <div class="form-group row">
             <div class="col-lg-4">
                 <label>Clave BD:</label>
                 <input type="text"
@@ -204,10 +220,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 <span class="text-danger">{{ $errors->first('clave') }}</span>
                 @endif
             </div>
-        </div>
-
-        @if ($accion=="Modificar")
-        <div class="form-group row">
+            @if ($accion=="Modificar")
             <div class="col-lg-4">
                 <label>Empresas Activas:</label>
                 <input type="text" class="form-control" name="empresas_activas" autocomplete="off"
@@ -218,8 +231,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 <input type="text" class="form-control" name="empresas_inactivas" autocomplete="off"
                     value="{{ $empresas->empresas_inactivas}}" readonly />
             </div>
+            @endif
         </div>
-        @endif
 
         <ul class="nav nav-tabs nav-tabs-line nav-bold">
             <li class="nav-item">
@@ -698,7 +711,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         confirmar('actualizacion',"Está seguro de Renovar la Licencia?");
     });
 
-    //recorrer tabla de permisos y hacer una sola cadena con los ids 
+    //recorrer tabla de permisos y hacer una sola cadena con los ids
     $('#formulario').submit(function(event) {
 
         //Enviar swirch que estan disabled
@@ -724,14 +737,14 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         $("#equifax").prop("disabled", false);
         $("#ahorros").prop("disabled", false);
 
-        event.preventDefault(); 
+        event.preventDefault();
         permisos='';
         $("#aplicaciones tbody td input").each(function(){
             if ($(this).prop('checked')) {
                 permisos=permisos+$(this).attr('id') + ';';
             }
         });
-        
+
         let inputPractico = $('#practico').prop('checked');
         let inputControl = $('#control').prop('checked');
         let inputContable = $('#contable').prop('checked');
@@ -754,7 +767,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 exit: "animated fadeOutDown",
                 },
                 ype: 'warning',
-            }); 
+            });
         } else {
             $('#permisos').val(permisos)
             $(this).unbind('submit').submit();
@@ -995,7 +1008,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             }
         });
 
-        
+
     });
 
     function moduloPerseoPractico(estado){
@@ -1319,8 +1332,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 }
                 break;
         }
-        let fechaFormato = ("0"+(fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear() 
-        let fechaPagadoFormato = ("0"+(fechaPagado.getDate())).slice(-2) + "-" + ("0" + (fechaPagado.getMonth()+1)).slice(-2) + "-" + fechaPagado.getFullYear() 
+        let fechaFormato = ("0"+(fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear()
+        let fechaPagadoFormato = ("0"+(fechaPagado.getDate())).slice(-2) + "-" + ("0" + (fechaPagado.getMonth()+1)).slice(-2) + "-" + fechaPagado.getFullYear()
 
         $('#fechacaduca').val(fechaFormato);
         $('#fechaactulizaciones').val(fechaPagadoFormato);
@@ -1339,7 +1352,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             if (result.value) {
                 $('#tipo').val(tipo);
                 $("#formulario").submit();
-            } 
+            }
         });
     }
 </script>

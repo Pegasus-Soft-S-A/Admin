@@ -25,45 +25,21 @@ class revendedoresController extends Controller
             $data = Revendedores::select('sis_revendedores.sis_revendedoresid', 'sis_revendedores.identificacion', 'sis_revendedores.tipoidentificacion', 'sis_revendedores.razonsocial', 'sis_revendedores.correo', 'sis_revendedores.direccion', 'sis_revendedores.tipo', 'sis_distribuidores.razonsocial as distribuidor')
                 ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_revendedores.sis_distribuidoresid');
 
-            //Filtrar por tipo fecha
-
             return DataTables::of($data)
-
-
                 ->editColumn('identificacion', function ($revendedor) {
                     return '<a class="text-primary" href="' . route('revendedores.editar', $revendedor->sis_revendedoresid) . '">' . $revendedor->identificacion . ' </a>';
                 })
-
                 ->editColumn('action', function ($revendedor) {
                     return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('revendedores.editar', $revendedor->sis_revendedoresid) . '"  title="Editar"> <i class="la la-edit"></i> </a>' .
                         '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('revendedores.eliminar', $revendedor->sis_revendedoresid) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
                 })
-                // ->editColumn('tipo', function ($revendedor) {
-                //     if ($revendedor->tipo == 1) {
-                //         return 'Contador';
-                //     } else {
-                //         return 'Vendedor';
-                //     }
-                // })
-                ->filterColumn('tipo', function ($query, $keyword) {
-                    $tipo = 0;
-
-                    $terminoBuscar = strtolower($keyword);
-                    $cadenaContador = strtolower('Contador');
-                    $cadenaVendedor = strtolower('Vendedor');
-                    $vefificarContador = strpos($cadenaContador, $terminoBuscar);
-                    $vefificarVendedor = strpos($cadenaVendedor, $terminoBuscar);
-
-                    if ($vefificarContador === 0) {
-                        $tipo = 1;
+                ->editColumn('tipo', function ($revendedor) {
+                    if ($revendedor->tipo == 1) {
+                        return 'Contador';
+                    } else {
+                        return 'Vendedor';
                     }
-                    if ($vefificarVendedor === 0) {
-                        $tipo = 2;
-                    }
-
-                    $query->where('tipo', $tipo);
                 })
-
                 ->rawColumns(['action', 'identificacion', 'tipo'])
                 ->make(true);
         }

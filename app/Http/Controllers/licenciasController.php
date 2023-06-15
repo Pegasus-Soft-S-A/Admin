@@ -6,6 +6,7 @@ use App\Mail\enviarlicencia;
 use App\Models\Agrupados;
 use App\Models\Licencias;
 use App\Models\Clientes;
+use App\Models\Licenciasvps;
 use App\Models\Licenciasweb;
 use App\Models\Log;
 use App\Models\Servidores;
@@ -42,45 +43,72 @@ class licenciasController extends Controller
                 ->where('sis_clientesid', $cliente->sis_clientesid)
                 ->get();
 
-            if ($web) {
-                $unir = array_merge($web, $data->toArray());
-            } else {
-                $unir =  $data->toArray();
-            }
+            $data2 = Licenciasvps::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fecha_corte_cliente as fechacaduca', 'sis_clientesid', 'sis_servidoresid')
+                ->where('sis_clientesid', $cliente->sis_clientesid)
+                ->get();
 
+            if ($web) {
+                $unir = array_merge($web, $data->toArray(), $data2->toArray());
+            } else {
+                $unir =  array_merge($data->toArray(), $data2->toArray());
+            }
+            //dd($unir);
             return DataTables::of($unir)
 
                 ->editColumn('numerocontrato', function ($data) {
-                    if ($data['tipo_licencia'] == 1) {
-                        return '<a class="text-primary" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '">' . $data['numerocontrato'] . ' </a>';
-                    } else {
-                        return '<a class="text-primary" href="' . route('licencias.Pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '">' . $data['numerocontrato'] . ' </a>';
+                    switch ($data['tipo_licencia']) {
+                        case '1':
+                            return '<a class="text-primary" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '">' . $data['numerocontrato'] . ' </a>';
+                            break;
+                        case '2':
+                            return '<a class="text-primary" href="' . route('licencias.Pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '">' . $data['numerocontrato'] . ' </a>';
+                            break;
+                        case '3':
+                            return '<a class="text-primary" href="' . route('licencias.Vps.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '">' . $data['numerocontrato'] . ' </a>';
+                            break;
                     }
                 })
                 ->editColumn('action', function ($data) {
-                    if ($data['tipo_licencia'] == 1) {
-                        if (Auth::user()->tipo == 1) {
-                            return '<a class="btn btn-icon btn-light btn-hover-primary btn-sm mr-2 actividad" href="javascript:void(0)" data-href="' . route('licencias.actividad', [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Actividad"> <i class="la la-eye"></i> </a>' .
-                                '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
-                                '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.Web.eliminar',  [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
-                        } else {
-                            return '<a class="btn btn-icon btn-light btn-hover-primary btn-sm mr-2 actividad" href="javascript:void(0)" data-href="' . route('licencias.actividad', [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Actividad"> <i class="la la-eye"></i> </a>' .
-                                '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>';
-                        }
-                    } else {
-                        if (Auth::user()->tipo == 1) {
-                            return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
-                                '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.Pc.eliminar', $data['sis_licenciasid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
-                        } else {
-                            return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>';
-                        }
+                    switch ($data['tipo_licencia']) {
+                        case '1':
+                            if (Auth::user()->tipo == 1) {
+                                return '<a class="btn btn-icon btn-light btn-hover-primary btn-sm mr-2 actividad" href="javascript:void(0)" data-href="' . route('licencias.actividad', [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Actividad"> <i class="la la-eye"></i> </a>' .
+                                    '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
+                                    '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.Web.eliminar',  [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
+                            } else {
+                                return '<a class="btn btn-icon btn-light btn-hover-primary btn-sm mr-2 actividad" href="javascript:void(0)" data-href="' . route('licencias.actividad', [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Actividad"> <i class="la la-eye"></i> </a>' .
+                                    '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>';
+                            }
+                            break;
+                        case '2':
+                            if (Auth::user()->tipo == 1) {
+                                return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
+                                    '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.Pc.eliminar', $data['sis_licenciasid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
+                            } else {
+                                return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>';
+                            }
+                            break;
+                        case '3':
+                            if (Auth::user()->tipo == 1) {
+                                return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Vps.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
+                                    '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.Vps.eliminar', $data['sis_licenciasid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
+                            } else {
+                                return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Vps.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>';
+                            }
+                            break;
                     }
                 })
                 ->editColumn('tipo_licencia', function ($data) {
-                    if ($data['tipo_licencia'] == 1) {
-                        return 'Perseo Web';
-                    } else {
-                        return 'Perseo PC';
+                    switch ($data['tipo_licencia']) {
+                        case '1':
+                            return 'Perseo Web';
+                            break;
+                        case '2':
+                            return 'Perseo PC';
+                            break;
+                        case '3':
+                            return 'Perseo VPS';
+                            break;
                     }
                 })
                 ->editColumn('fechacaduca', function ($data) {
@@ -179,6 +207,13 @@ class licenciasController extends Controller
         $modulos = json_decode($modulos);
 
         return view('admin.licencias.PC.crear', compact('cliente', 'licencia', 'modulos'));
+    }
+
+    public function crearVps(Clientes $cliente)
+    {
+        $licencia = new Licencias();
+        $licencia->numerocontrato = $this->generarContrato();
+        return view('admin.licencias.Vps.crear', compact('licencia', 'cliente'));
     }
 
     public function guardarPC(Request $request)
@@ -324,7 +359,7 @@ class licenciasController extends Controller
         $log->save();
 
         try {
-            Mail::to($emails)->queue(new enviarlicencia($array));
+            //Mail::to($emails)->queue(new enviarlicencia($array));
         } catch (\Exception $e) {
 
             flash('Error enviando email')->error();
@@ -413,7 +448,7 @@ class licenciasController extends Controller
                     case '1':
                         $parametros_json = [];
                         $parametros_json = [
-                            'Documentos' => "30",
+                            'Documentos' => "60",
                             'Productos' => "0",
                             'Almacenes' => "0",
                             'Nomina' => "0",
@@ -428,7 +463,7 @@ class licenciasController extends Controller
                     case '2':
                         $parametros_json = [];
                         $parametros_json = [
-                            'Documentos' => "100",
+                            'Documentos' => "150",
                             'Productos' => "0",
                             'Almacenes' => "0",
                             'Nomina' => "0",
@@ -444,6 +479,21 @@ class licenciasController extends Controller
                         $parametros_json = [];
                         $parametros_json = [
                             'Documentos' => "100000",
+                            'Productos' => "0",
+                            'Almacenes' => "0",
+                            'Nomina' => "0",
+                            'Produccion' => "0",
+                            'Activos' => "0",
+                            'Talleres' => "0",
+                            'Garantias' => "0",
+                        ];
+                        $request['parametros_json'] = json_encode($parametros_json);
+                        break;
+                        //Gratis
+                    case '4':
+                        $parametros_json = [];
+                        $parametros_json = [
+                            'Documentos' => "30",
                             'Productos' => "0",
                             'Almacenes' => "0",
                             'Nomina' => "0",
@@ -551,6 +601,9 @@ class licenciasController extends Controller
                     case '3':
                         $array['periodo'] = "Premium";
                         break;
+                    case '4':
+                        $array['periodo'] = "Gratis";
+                        break;
                 }
             } else {
                 $array['periodo'] = $request['periodo'] == 1 ? 'Mensual' : 'Anual';
@@ -600,6 +653,81 @@ class licenciasController extends Controller
         }
     }
 
+    public function guardarVps(Request $request)
+    {
+        //Validaciones
+        $request->validate(
+            [
+                'usuario' => ['required'],
+                'clave' => ['required'],
+                'ip' => ['required'],
+            ],
+            [
+                'usuario.required' => 'Ingrese un Usuario',
+                'clave.required' => 'Ingrese una Clave',
+                'ip.required' => 'Ingrese una IP',
+            ],
+        );
+        //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
+        $request['fechacreacion'] = date('Y-m-d H:i:s', strtotime(now()));
+        $request['usuariocreacion'] = Auth::user()->nombres;
+        $request['fecha_corte_proveedor'] = date('Ymd', strtotime($request->fecha_corte_proveedor));
+        $request['fecha_corte_cliente'] = date('Ymd', strtotime($request->fecha_corte_cliente));
+        $request['tipo_licencia'] =  3;
+
+        $licencia =   Licenciasvps::create($request->all());
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Licencia Vps";
+        $log->tipooperacion = "Crear";
+        $log->fecha = now();
+        $log->detalle = json_encode($request->all());
+        $log->save();
+
+        $cliente = Clientes::select('sis_clientes.correos', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_distribuidores.correos AS distribuidor', 'sis_revendedores.correo AS vendedor', 'revendedor.correo AS revendedor', 'sis_revendedores.razonsocial', 'sis_distribuidores.razonsocial AS nombredistribuidor')
+            ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
+            ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+            ->join('sis_revendedores as revendedor', 'revendedor.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+            ->where('sis_clientesid', $request['sis_clientesid'])
+            ->first();
+
+        $array['from'] = env('MAIL_FROM_ADDRESS');
+        $array['subject'] = 'Crear Licencia VPS';
+        $array['cliente'] =  $cliente->nombres;
+        $array['identificacion'] = $cliente->identificacion;
+        $array['correo'] = $cliente->correos;
+        $array['numerocontrato'] = $licencia->numerocontrato;
+        $array['ip'] = $licencia->ip;
+        $array['fecha_corte_proveedor'] = $licencia->fecha_corte_proveedor;
+        $array['fecha_corte_cliente'] = $licencia->fecha_corte_cliente;
+        $array['usuario'] = Auth::user()->nombres;
+        $array['fecha'] = $request['fechacreacion'];
+        $array['tipo'] = '10';
+
+        $emails = explode(", ", $cliente->distribuidor);
+
+        $emails = array_merge($emails,  [
+            "facturacion@perseo.ec",
+            $cliente->vendedor,
+            $cliente->revendedor,
+            $cliente->correos,
+            Auth::user()->correo,
+        ]);
+
+        //$emails = array_diff($emails, array(" ", 0, null));
+        $emails = 'jhusep95@gmail.com';
+        try {
+            Mail::to($emails)->queue(new enviarlicencia($array));
+        } catch (\Exception $e) {
+            flash('Error enviando email')->error();
+            return redirect()->route('licencias.Vps.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
+        }
+
+        flash('Guardado Correctamente')->success();
+        return redirect()->route('licencias.Vps.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
+    }
+
     public function editarPC(Clientes $cliente, Licencias $licencia)
     {
         $modulos = json_decode($licencia->modulos);
@@ -616,6 +744,14 @@ class licenciasController extends Controller
         $licencia->fechacaduca = date("d-m-Y", strtotime($licencia->fechacaduca));
         $licencia->fechaactulizaciones = date("d-m-Y", strtotime($licencia->fechaactulizaciones));
         return view('admin.licencias.PC.editar', compact('cliente', 'licencia', 'modulos', 'empresas'));
+    }
+
+    public function editarVPS(Clientes $cliente, Licenciasvps $licencia)
+    {
+        $licencia->fecha_corte_proveedor = date("d-m-Y", strtotime($licencia->fecha_corte_proveedor));
+        $licencia->fecha_corte_cliente = date("d-m-Y", strtotime($licencia->fecha_corte_cliente));
+
+        return view('admin.licencias.VPS.editar', compact('cliente', 'licencia'));
     }
 
     public function editarWeb(Clientes $cliente, $servidorid, $licenciaid)
@@ -671,7 +807,7 @@ class licenciasController extends Controller
             ],
         );
 
-        //En caso de renovar mensual, anual o actualizar 
+        //En caso de renovar mensual, anual o actualizar
         switch ($request->tipo) {
             case 'mes':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 month"));
@@ -756,7 +892,8 @@ class licenciasController extends Controller
         );
         $request['modulos'] = json_encode([$modulos]);
 
-        $urlLicencia = 'https://perseo-data-c2.app/registros/generador_licencia';
+        $servidor = Servidores::where('estado', 1)->first();
+        $urlLicencia = $servidor->dominio . '/registros/generador_licencia';
 
         $urlLicencia = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
             ->withOptions(["verify" => false])
@@ -816,7 +953,77 @@ class licenciasController extends Controller
         try {
             Mail::to($emails)->queue(new enviarlicencia($array));
         } catch (\Exception $e) {
-            dd($e);
+            flash('Error enviando email')->error();
+            return back();
+        }
+
+        flash('Actualizado Correctamente')->success();
+        return back();
+    }
+
+    public function actualizarVPS(Request $request, Licenciasvps $licencia)
+    {
+        //Validaciones
+        $request->validate(
+            [
+                'usuario' => ['required'],
+                'clave' => ['required'],
+                'ip' => ['required'],
+            ],
+            [
+                'usuario.required' => 'Ingrese un Usuario',
+                'clave.required' => 'Ingrese una Clave',
+                'ip.required' => 'Ingrese una IP',
+            ],
+        );
+
+        $request['fecha_corte_proveedor'] = date("Ymd", strtotime($request->fecha_corte_proveedor));
+        $request['fecha_corte_cliente'] = date("Ymd", strtotime($request->fecha_corte_cliente));
+        $request['fechamodificacion'] = now();
+        $request['usuariomodificacion'] = Auth::user()->nombres;
+
+        $licencia->update($request->all());
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Licencia VPS";
+        $log->tipooperacion = "Modificar";
+        $log->fecha = now();
+        $log->detalle = $licencia;
+        $log->save();
+
+        $cliente = Clientes::select('sis_clientes.correos', 'sis_distribuidores.correos AS distribuidor', 'sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_revendedores.correo AS vendedor')
+            ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
+            ->join('sis_revendedores', 'sis_revendedores.sis_revendedoresid', 'sis_clientes.sis_vendedoresid')
+            ->where('sis_clientesid', $licencia->sis_clientesid)
+            ->first();
+
+        $array['from'] = env('MAIL_FROM_ADDRESS');
+        $array['subject'] = 'Modificar Licencia VPS';
+        $array['cliente'] =  $cliente->nombres;
+        $array['identificacion'] = $cliente->identificacion;
+        $array['correo'] = $cliente->correos;
+        $array['numerocontrato'] = $licencia->numerocontrato;
+        $array['ip'] = $licencia->ip;
+        $array['fecha_corte_proveedor'] = $licencia->fecha_corte_proveedor;
+        $array['fecha_corte_cliente'] = $licencia->fecha_corte_cliente;
+        $array['usuario'] = Auth::user()->nombres;
+        $array['fecha'] = $request['fechamodificacion'];
+        $array['tipo'] = '11';
+
+        $emails = explode(", ", $cliente->distribuidor);
+
+        $emails = array_merge($emails,  [
+            "facturacion@perseo.ec",
+            $cliente->vendedor,
+            Auth::user()->correo,
+        ]);
+
+        $emails = array_diff($emails, array(" ", 0, null));
+
+        try {
+            Mail::to($emails)->queue(new enviarlicencia($array));
+        } catch (\Exception $e) {
             flash('Error enviando email')->error();
             return back();
         }
@@ -837,7 +1044,8 @@ class licenciasController extends Controller
         $licenciaArray = json_encode($licenciaEnviar);
         $licencia = json_decode($licenciaArray);
         $parametros_json = json_decode($licencia->parametros_json);
-        //En caso de renovar mensual, anual o actualizar 
+
+        //En caso de renovar mensual, anual o actualizar
         switch ($request->tipo) {
             case 'mes':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 month"));
@@ -845,32 +1053,65 @@ class licenciasController extends Controller
                 $asunto = 'Renovacion Mensual Licencia Web';
                 $request['periodo'] = 1;
                 break;
+
             case 'anual':
-                $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
                 $request['fecha_renovacion'] = date('YmdHis', strtotime(now()));
                 $asunto = 'Renovacion Anual Licencia Web';
+                //Si es facturito se suma documentos y fecha desde la actual
                 if ($request['producto'] != 12) {
                     $request['periodo'] = 2;
+                    $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
+                } else {
+                    $request['fechacaduca'] = date("Ymd", strtotime(now() . "+ 1 year"));
+                    switch ($request['periodo']) {
+                        case '1':
+                            $parametros_json->Documentos = $parametros_json->Documentos + 60;
+                            break;
+                        case '2':
+                            $parametros_json->Documentos = $parametros_json->Documentos + 150;
+                            break;
+                        case '3':
+                            $parametros_json->Documentos = 100000;
+                            break;
+                        case '4':
+                            $parametros_json->Documentos = 30;
+                            break;
+                    }
                 }
                 break;
+
             case 'recargar':
-                //$parametros_json = json_decode($licencia->parametros_json);
                 $parametros_json->Documentos = $parametros_json->Documentos + 120;
-                //$request['parametros_json'] = json_encode($parametros_json);
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
                 $asunto = $licencia->producto == 9 ? 'Recarga 120 Documentos Perseo Web Lite ' : 'Recarga 120 Documentos Perseo Web Emprendedor';
                 break;
+
             case 'recargar240':
-                //$parametros_json = json_decode($licencia->parametros_json);
                 $parametros_json->Documentos = $parametros_json->Documentos + 240;
-                //$request['parametros_json'] = json_encode($parametros_json);
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
                 $asunto =  'Recarga 240 Documentos Perseo Web Emprendedor';
                 break;
+
             default:
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
                 $asunto = 'Modificar Licencia Web';
                 break;
+        }
+
+        if ($request['producto'] == 12) {
+            if ($licencia->periodo != $request['periodo']) {
+                switch ($request['periodo']) {
+                    case '1':
+                        $parametros_json->Documentos = $parametros_json->Documentos + 60;
+                        break;
+                    case '2':
+                        $parametros_json->Documentos = $parametros_json->Documentos + 150;
+                        break;
+                    case '3':
+                        $parametros_json->Documentos = 100000;
+                        break;
+                }
+            }
         }
 
         //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
@@ -1030,6 +1271,22 @@ class licenciasController extends Controller
         $log = new Log();
         $log->usuario = Auth::user()->nombres;
         $log->pantalla = "Licencia PC";
+        $log->tipooperacion = "Eliminar";
+        $log->fecha = now();
+        $log->detalle = $licencia;
+        $log->save();
+
+        flash("Eliminado Correctamente")->success();
+        return back();
+    }
+
+    public function eliminarVps(Licenciasvps $licencia)
+    {
+        $licencia->delete();
+
+        $log = new Log();
+        $log->usuario = Auth::user()->nombres;
+        $log->pantalla = "Licencia VPS";
         $log->tipooperacion = "Eliminar";
         $log->fecha = now();
         $log->detalle = $licencia;

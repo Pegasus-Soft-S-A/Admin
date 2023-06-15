@@ -39,9 +39,12 @@ class adminController extends Controller
     public function post_loginRedireccion(Request $request)
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
-        $servidores = Servidores::where('estado', 1)->get();
-        $array = [];
 
+        $path = public_path('/assets/servidores.json');
+        $datos_servidores = file_get_contents($path);
+        $servidores = json_decode($datos_servidores);
+
+        $array = [];
 
         foreach ($servidores as  $servidor) {
             $urlUsuario = $servidor->dominio . '/registros/consulta_usuario';
@@ -51,7 +54,6 @@ class adminController extends Controller
                 ->withOptions(["verify" => false])
                 ->post($urlUsuario, ['identificacion' => $identificacionIngresada])
                 ->json();
-
 
             if (isset($usuario['usuario'])) {
                 $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
@@ -156,7 +158,7 @@ class adminController extends Controller
             }
 
             if ($usuario->contrasena === encrypt_openssl($request->contrasena, "Perseo1232*")) {
-                //Si tiene puesto check para recordar 
+                //Si tiene puesto check para recordar
                 if ($request->has('recordar')) {
                     Auth::login($usuario, true);
                 } else {
@@ -414,41 +416,29 @@ class adminController extends Controller
 
         switch ($request['red_origen']) {
             case '3':
+            case '8':
+            case '14':
                 //Delta
                 $distribuidor = 2;
                 $assigned_id = 34745;
                 $source_id = 24;
                 break;
             case '6':
+            case '12':
+            case '13':
                 //Omega
                 $distribuidor = 3;
                 $assigned_id = 29359;
                 $source_id = 25;
                 break;
+            case '2':
             case '7':
                 //Alfa
                 $distribuidor = 1;
                 $assigned_id = 32045;
                 $source_id = 23;
                 break;
-            case '2':
-                //Alfa
-                $distribuidor = 1;
-                $assigned_id = 32045;
-                $source_id = 23;
-                break;
             case '11':
-                //matriz
-                $distribuidor = 6;
-                $assigned_id = 36925;
-                $source_id = 26;
-                break;
-            case '8':
-                //Delta
-                $distribuidor = 2;
-                $assigned_id = 34745;
-                $source_id = 24;
-                break;
             default:
                 //matriz
                 $distribuidor = 6;
@@ -457,7 +447,34 @@ class adminController extends Controller
                 break;
         }
 
+
         $telefono = "+593" . substr($request['telefono2'], 1, 9);
+
+        $url = 'https://b24-mh9fll.bitrix24.es/rest/5507/zcc5hapr3zyri76d/crm.lead.list.json';
+        $fields_filtro = [
+            'filter' => [
+                'LOGIC' => 'OR',
+                [
+                    '=EMAIL' => 'example@email.com',
+                ],
+                [
+                    '=PHONE' => '1234567890',
+                ],
+            ],
+            'select' => ['*'],
+            'order' => ['DATE_CREATE' => 'DESC'],
+        ];
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json; charset=UTF-8',
+        ])
+            ->withOptions([
+                "verify" => false,
+            ])
+            ->post($url, $fields_filtro)
+            ->json();
+
+        dd($response);
         //Json para enviar a la API de bitrix
         $fields = [
             "fields" => [

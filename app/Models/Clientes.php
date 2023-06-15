@@ -54,10 +54,49 @@ class Clientes extends Model
         sis_licencias.modulopractico,
         sis_licencias.modulocontrol,
         sis_licencias.modulocontable,
-        sis_licencias.cantidadempresas 
+        sis_licencias.cantidadempresas
     FROM
         sis_licencias
         INNER JOIN sis_clientes ON sis_licencias.sis_clientesid = sis_clientes.sis_clientesid UNION
+    SELECT
+        sis_clientes.sis_clientesid,
+        sis_clientes.identificacion,
+        sis_clientes.nombres,
+        sis_clientes.telefono1,
+        sis_clientes.telefono2,
+        sis_clientes.correos,
+        sis_clientes.grupo,
+        sis_licencias_vps.tipo_licencia,
+        '' AS fechainicia,
+        UNIX_TIMESTAMP( sis_licencias_vps.fecha_corte_cliente ) AS fechacaduca,
+        '' AS fechaactulizaciones,
+        '' AS fechaultimopago,
+        '' AS diasvencer,
+        sis_licencias_vps.numerocontrato,
+        '' AS precio,
+        '' AS periodo,
+        '' AS producto,
+        sis_clientes.red_origen,
+        sis_clientes.sis_distribuidoresid,
+        sis_clientes.sis_vendedoresid,
+        sis_clientes.sis_revendedoresid,
+        sis_clientes.provinciasid,
+        sis_clientes.ciudadesid,
+        '' AS empresas,
+        '' AS usuarios,
+        '' AS numeroequipos,
+        '' AS numeromoviles,
+        sis_clientes.usuariocreacion,
+        sis_clientes.usuariomodificacion,
+        sis_clientes.fechacreacion,
+        sis_clientes.fechamodificacion,
+        '' AS modulopractico,
+        '' AS modulocontrol,
+        '' AS modulocontable,
+        '' AS cantidadempresas
+    FROM
+        sis_licencias_vps
+        INNER JOIN sis_clientes ON sis_licencias_vps.sis_clientesid = sis_clientes.sis_clientesid UNION
     SELECT
         sis_clientes.sis_clientesid,
         sis_clientes.identificacion,
@@ -95,7 +134,7 @@ class Clientes extends Model
         sis_licencias_web.modulopractico,
         sis_licencias_web.modulocontrol,
         sis_licencias_web.modulocontable,
-        '' AS cantidadempresas 
+        '' AS cantidadempresas
     FROM
         sis_clientes
         INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid UNION
@@ -134,11 +173,11 @@ class Clientes extends Model
         '' AS modulopractico,
         '' AS modulocontrol,
         '' AS modulocontable,
-        '' AS cantidadempresas 
+        '' AS cantidadempresas
     FROM
-        sis_clientes 
+        sis_clientes
     WHERE
-        NOT EXISTS ( SELECT 1 FROM sis_licencias WHERE sis_licencias.sis_clientesid = sis_clientes.sis_clientesid ) 
+        NOT EXISTS ( SELECT 1 FROM sis_licencias WHERE sis_licencias.sis_clientesid = sis_clientes.sis_clientesid )
         AND NOT EXISTS ( SELECT 1 FROM sis_licencias_web WHERE sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid )) as U";
 
         //Si el distribuidor es diferente de cero se agrega la condicion

@@ -233,7 +233,7 @@ class IdentificacionesController extends Controller
             }
         }
 
-        //Actualizar 
+        //Actualizar
         DB::beginTransaction();
         try {
             $servidores = Servidores::where('estado', 1)->get();
@@ -408,8 +408,33 @@ class IdentificacionesController extends Controller
         $licencia = json_decode($licenciaArray);
 
         $cliente = Clientes::where('sis_clientesid', $licencia->sis_clientesid)->first();
+
         $vendedor = Revendedores::where('sis_revendedoresid', $cliente->sis_vendedoresid)->first();
-        //En caso de renovar mensual, anual o actualizar 
+        $vendedor_tienda = Revendedores::where('sis_revendedoresid', $request->sis_vendedoresid)->first();
+        //Si el vendedor no corresponde al vendedor del cliente
+        if ($request->sis_vendedoresid != $cliente->sis_vendedoresid) {
+            try {
+                $array['from'] = env('MAIL_FROM_ADDRESS');
+                $array['subject'] = 'URGENTE';
+                $array['cliente'] = $cliente->nombres;
+
+                //Notificar al vendedor incorrecto
+                $array['view'] = 'emails.vendedor_incorrecto';
+                $emails = $vendedor_tienda->correo;
+                $array['tipo'] = 1;
+                Mail::to($emails)->queue(new vendedor($array));
+
+                //Notificar al vendendor correcto
+                $array['view'] = 'emails.vendedor_correcto';
+                $emails = $vendedor->correo;
+                $array['tipo'] = 2;
+                $array['vendedor'] = $vendedor_tienda->razonsocial;
+                Mail::to($emails)->queue(new vendedor($array));
+            } catch (\Exception $e) {
+            }
+            return json_encode(["licencia" => ['El vendedor no corresponde al registrado en la licencia']]);
+        }
+        //En caso de renovar mensual, anual o actualizar
         switch ($request->renovar) {
             case '1':
                 $datos['fechacaduca'] = date("Ymd", strtotime($licencia->fechacaduca . "+ 1 month"));
@@ -581,7 +606,21 @@ class IdentificacionesController extends Controller
             $nuevo->telefono2 = $request["cliente"]['telefono2'];
             $nuevo->sis_distribuidoresid = $request["cliente"]['sis_distribuidoresid'];
             $nuevo->sis_vendedoresid = $request["cliente"]['sis_vendedoresid'];
-            $nuevo->sis_revendedoresid = 1;
+
+            if ($request["cliente"]['contador'] == 0) {
+                $nuevo->sis_revendedoresid = 1;
+            } else {
+                $identificacionIngresada = substr($request["cliente"]['contador'], 0, 10);
+                $contador = Revendedores::whereIn('identificacion', [$identificacionIngresada, $request["cliente"]['contador'], $request["cliente"]['contador'] . '001'])
+                    ->where('sis_distribuidoresid', $request["cliente"]['sis_distribuidoresid'])
+                    ->where('tipo', 1)
+                    ->first();
+                if ($contador) {
+                    $nuevo->sis_revendedoresid = $contador->sis_revendedoresid;
+                } else {
+                    return json_encode(["licencia" => ['El contador no existe para este distribuidor']]);
+                }
+            }
             $nuevo->grupo = 1;
             $nuevo->red_origen = 1;
             $nuevo->ciudadesid = 1701;
@@ -620,9 +659,9 @@ class IdentificacionesController extends Controller
             }
         } else {
             $sis_clientesid = $cliente->sis_clientesid;
+            $revendedor_correcto = Revendedores::where('sis_revendedoresid', $cliente->sis_revendedoresid)->first();
             //Si el vendedor no corresponde al vendedor del cliente
             if ($request["cliente"]['sis_vendedoresid'] != $cliente->sis_vendedoresid) {
-
                 $vendedor_correcto = Revendedores::where('sis_revendedoresid', $cliente->sis_vendedoresid)->first();
                 try {
                     $array['from'] = env('MAIL_FROM_ADDRESS');
@@ -645,14 +684,30 @@ class IdentificacionesController extends Controller
                 }
                 return json_encode(["licencia" => ['El vendedor no corresponde al registrado en la licencia']]);
             }
+
+            //Si el contador no corresponde al contador del cliente
+            if ($request["cliente"]['contador'] != 0) {
+                $identificacionIngresada = substr($request["cliente"]['contador'], 0, 10);
+                $contador = Revendedores::whereIn('identificacion', [$identificacionIngresada, $request["cliente"]['contador'], $request["cliente"]['contador'] . '001'])
+                    ->where('tipo', 1)
+                    ->first();
+                if (!$contador) {
+                    return json_encode(["licencia" => ['El contador no existe']]);
+                } else {
+                    if ($revendedor_correcto->identificacion != $request["cliente"]['contador']) {
+                        return json_encode(["licencia" => ['El contador no corresponde al registrado para el cliente']]);
+                    }
+                }
+            }
+
             //Buscar las licencias
             $web = [];
 
-            $pc = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
+            $pc = Licencias::select('sis_licenciasid', 'numerocontrato', 'producto', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
                 ->where('sis_clientesid', $cliente->sis_clientesid)
                 ->get();
 
-            $web = Licenciasweb::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
+            $web = Licenciasweb::select('sis_licenciasid', 'numerocontrato', 'producto', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
                 ->where('sis_clientesid', $cliente->sis_clientesid)
                 ->get();
 
@@ -706,7 +761,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  72;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
                     $nuevo->producto =  2;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  1;
@@ -734,7 +789,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  150;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
                     $nuevo->producto =  3;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  2;
@@ -762,7 +817,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  190;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
                     $nuevo->producto =  4;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  2;
@@ -790,7 +845,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  108;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
                     $nuevo->producto =  5;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  0;
@@ -818,7 +873,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  90;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
                     $nuevo->producto =  8;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  0;
@@ -846,7 +901,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  87.50;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
                     $nuevo->producto =  11;
                     $nuevo->usuarios =  1;
                     $nuevo->numeromoviles =  1;
@@ -858,7 +913,7 @@ class IdentificacionesController extends Controller
                     //Facturito Inicial
                 case '1':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  6.49;
+                    $nuevo->precio =  5.40;
                     $nuevo->periodo =  1;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
                     $nuevo->producto =  12;
@@ -870,7 +925,7 @@ class IdentificacionesController extends Controller
                     $nuevo->empresas = 1;
                     $parametros_json = [];
                     $parametros_json = [
-                        'Documentos' => "30",
+                        'Documentos' => "60",
                         'Productos' => "0",
                         'Almacenes' => "0",
                         'Nomina' => "0",
@@ -884,7 +939,7 @@ class IdentificacionesController extends Controller
                     //Facturito Basico
                 case '2':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  9.99;
+                    $nuevo->precio =  8.99;
                     $nuevo->periodo =  2;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
                     $nuevo->producto =  12;
@@ -896,7 +951,7 @@ class IdentificacionesController extends Controller
                     $nuevo->empresas = 1;
                     $parametros_json = [];
                     $parametros_json = [
-                        'Documentos' => "100",
+                        'Documentos' => "150",
                         'Productos' => "0",
                         'Almacenes' => "0",
                         'Nomina' => "0",
@@ -910,7 +965,7 @@ class IdentificacionesController extends Controller
                     //Facturito Pro
                 case '3':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  29.99;
+                    $nuevo->precio =  17.99;
                     $nuevo->periodo =  3;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
                     $nuevo->producto =  12;
@@ -923,6 +978,32 @@ class IdentificacionesController extends Controller
                     $parametros_json = [];
                     $parametros_json = [
                         'Documentos' => "100000",
+                        'Productos' => "0",
+                        'Almacenes' => "0",
+                        'Nomina' => "0",
+                        'Produccion' => "0",
+                        'Activos' => "0",
+                        'Talleres' => "0",
+                        'Garantias' => "0",
+                    ];
+                    $nuevo->parametros_json = json_encode($parametros_json);
+                    break;
+                    //Facturito Gratis
+                case '81':
+                    $nuevo->Identificador = $contrato;
+                    $nuevo->precio =  4;
+                    $nuevo->periodo =  4;
+                    $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->producto =  12;
+                    $nuevo->usuarios =  6;
+                    $nuevo->numeromoviles =  1;
+                    $nuevo->modulos = $this->modulos(0, 0, 0, 0, 0, 0, 0);
+                    $nuevo->sis_servidoresid =  2;
+                    $nuevo->tipo_licencia =  1;
+                    $nuevo->empresas = 1;
+                    $parametros_json = [];
+                    $parametros_json = [
+                        'Documentos' => "30",
                         'Productos' => "0",
                         'Almacenes' => "0",
                         'Nomina' => "0",
@@ -983,6 +1064,9 @@ class IdentificacionesController extends Controller
                             break;
                         case '3':
                             $array['periodo'] = "Premium";
+                            break;
+                        case '4':
+                            $array['periodo'] = "Gratis";
                             break;
                     }
                 } else {
@@ -1091,88 +1175,7 @@ class IdentificacionesController extends Controller
         $grupos = Grupos::all()->toArray();
         $vendedores = Revendedores::all()->toArray();
 
-        $licencias = collect(DB::select("SELECT * FROM (SELECT
-        sis_clientes.sis_clientesid,
-        sis_clientes.identificacion,
-        sis_clientes.nombres,
-        sis_clientes.telefono1,
-        sis_clientes.telefono2,
-        sis_clientes.correos,
-        sis_clientes.grupo,
-        sis_licencias.tipo_licencia,
-        UNIX_TIMESTAMP( sis_licencias.fechainicia ) AS fechainicia,
-        UNIX_TIMESTAMP( sis_licencias.fechacaduca ) AS fechacaduca,
-        UNIX_TIMESTAMP( sis_licencias.fechaactulizaciones ) AS fechaactulizaciones,
-        UNIX_TIMESTAMP( sis_licencias.fechaultimopago ) AS fechaultimopago,
-        DATEDIFF(
-            sis_licencias.fechacaduca,
-        NOW()) AS diasvencer,
-        sis_licencias.numerocontrato,
-        sis_licencias.precio,
-        sis_licencias.periodo,
-        sis_licencias.producto,
-        sis_clientes.red_origen,
-        sis_clientes.sis_distribuidoresid,
-        sis_clientes.sis_vendedoresid,
-        sis_clientes.sis_revendedoresid,
-        sis_clientes.provinciasid,
-        sis_clientes.ciudadesid,
-        sis_licencias.empresas,
-        sis_licencias.usuarios,
-        sis_licencias.numeroequipos,
-        sis_licencias.numeromoviles,
-        sis_clientes.usuariocreacion,
-        sis_clientes.usuariomodificacion,
-        sis_clientes.fechacreacion,
-        sis_clientes.fechamodificacion,
-        sis_licencias.modulopractico,
-        sis_licencias.modulocontrol,
-        sis_licencias.modulocontable,
-        sis_licencias.cantidadempresas 
-    FROM
-        sis_licencias
-        INNER JOIN sis_clientes ON sis_licencias.sis_clientesid = sis_clientes.sis_clientesid UNION
-    SELECT
-        sis_clientes.sis_clientesid,
-        sis_clientes.identificacion,
-        sis_clientes.nombres,
-        sis_clientes.telefono1,
-        sis_clientes.telefono2,
-        sis_clientes.correos,
-        sis_clientes.grupo,
-        sis_licencias_web.tipo_licencia,
-        UNIX_TIMESTAMP( sis_licencias_web.fechainicia ) AS fechainicia,
-        UNIX_TIMESTAMP( sis_licencias_web.fechacaduca ) AS fechacaduca,
-        UNIX_TIMESTAMP( sis_licencias_web.fechaactulizaciones ) AS fechaactulizaciones,
-        UNIX_TIMESTAMP( sis_licencias_web.fechaultimopago ) AS fechaultimopago,
-        DATEDIFF(
-            sis_licencias_web.fechacaduca,
-        NOW()) AS diasvencer,
-        sis_licencias_web.numerocontrato,
-        sis_licencias_web.precio,
-        sis_licencias_web.periodo,
-        sis_licencias_web.producto,
-        sis_clientes.red_origen,
-        sis_clientes.sis_distribuidoresid,
-        sis_clientes.sis_vendedoresid,
-        sis_clientes.sis_revendedoresid,
-        sis_clientes.provinciasid,
-        sis_clientes.ciudadesid,
-        sis_licencias_web.empresas,
-        sis_licencias_web.usuarios,
-        sis_licencias_web.numeroequipos,
-        sis_licencias_web.numeromoviles,
-        sis_clientes.usuariocreacion,
-        sis_clientes.usuariomodificacion,
-        sis_clientes.fechacreacion,
-        sis_clientes.fechamodificacion,
-        sis_licencias_web.modulopractico,
-        sis_licencias_web.modulocontrol,
-        sis_licencias_web.modulocontable,
-        '' AS cantidadempresas 
-    FROM
-        sis_clientes
-        INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid ));"));
+        $licencias = collect(Clientes::Clientes(0, ''));
 
         $licencias->map(function ($licencia) use ($distribuidores, $vendedores, $grupos) {
             $licencia->sis_distribuidoresid = array_search($licencia->sis_distribuidoresid, $distribuidores);
@@ -1372,22 +1375,23 @@ class IdentificacionesController extends Controller
 
     public function gastosFacebook($inicio, $fin)
     {
-        $resultado = Http::withHeaders([
-            'Authorization' => 'Bearer ' . 'EAAMNIHFYKQwBAKmUAGKPFLqlZCsu6IVbGRF7WZCfkFe7HrPpGFGzwd7O5PgYkqlVROl2rFlY9GHKKdFS7jREsrwRwMXOZCHPS1e9G421xHAAzAhZBgijt2MQ7LxPCzblXIZBTTr0KZAinQya0sW2dreWFyJIC1BuW9My7ebx6ZBsBARpBS16SATsyh2Pme3WvZA04ptrNA684gZDZD',
-            'Facebook-App-Id' => '858857921849612',
-            'Facebook-App-Secret' => 'a05faf55b6e2b9dc787620a35f0418cb',
-        ])
-            ->withOptions(["verify" => false])
-            ->get("https://graph.facebook.com/v16.0/act_347213498749913/insights?level=campaign&fields=campaign_name,adset_name,ad_name,spend,actions&time_range={since:'$inicio',until:'$fin'}")
-            ->json();
+        // $resultado = Http::withHeaders([
+        //     'Authorization' => 'Bearer ' . 'EAAMNIHFYKQwBAKmUAGKPFLqlZCsu6IVbGRF7WZCfkFe7HrPpGFGzwd7O5PgYkqlVROl2rFlY9GHKKdFS7jREsrwRwMXOZCHPS1e9G421xHAAzAhZBgijt2MQ7LxPCzblXIZBTTr0KZAinQya0sW2dreWFyJIC1BuW9My7ebx6ZBsBARpBS16SATsyh2Pme3WvZA04ptrNA684gZDZD',
+        //     'Facebook-App-Id' => '858857921849612',
+        //     'Facebook-App-Secret' => 'a05faf55b6e2b9dc787620a35f0418cb',
+        // ])
+        //     ->withOptions(["verify" => false])
+        //     ->get("https://graph.facebook.com/v16.0/act_347213498749913/insights?level=campaign&fields=campaign_name,adset_name,ad_name,spend,actions&time_range={since:'$inicio',until:'$fin'}")
+        //     ->json();
 
-        $data = collect($resultado['data']);
+        // $data = collect($resultado['data']);
 
-        $data->map(function ($item) {
-            $item['spend'] = number_format(floatval($item['spend']), 2, ',', '.');
-            return $item;
-        });
+        // $data->map(function ($item) {
+        //     $item['spend'] = number_format(floatval($item['spend']), 2, ',', '.');
+        //     return $item;
+        // });
 
-        return response()->json([$data]);
+        // return response()->json([$data]);
+
     }
 }

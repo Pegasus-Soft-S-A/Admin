@@ -274,6 +274,9 @@
                                             <option value="7">STO-01</option>
                                             <option value="10">CNV-01</option>
                                             <option value="11">MATRIZ</option>
+                                            <option value="12">CUE-02</option>
+                                            <option value="13">CUE-03</option>
+                                            <option value="14">UIO-03</option>
                                         </select>
                                     </div>
                                     @endif
@@ -454,7 +457,7 @@
             processing: true,
             search: {
                 return: true,
-            },  
+            },
             //Combo cantidad de registros a mostrar por pantalla
             lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'Todos']],
             //Registros por pagina
@@ -492,8 +495,8 @@
                 {data: 'sis_distribuidoresid', name: 'sis_distribuidoresid', searchable: false},
                 {data: 'telefono2', name: 'telefono2', searchable: false},
                 {data: 'correos', name: 'correos',visible:false, searchable: false},
-                {data: 'producto', name: 'producto', searchable: false},
                 {data: 'tipo_licencia', name: 'tipo_licencia', searchable: false},
+                {data: 'producto', name: 'producto', searchable: false},
                 {data: 'fechainicia', name: 'fechainicia', searchable: false},
                 {data: 'fechacaduca', name: 'fechacaduca', searchable: false},
                 {data: 'grupo', name: 'grupo',visible:false, searchable: false},
@@ -507,7 +510,7 @@
                 {data: 'sis_revendedoresid', name: 'sis_revendedoresid',visible:false, searchable: false},
                 {data: 'red_origen', name: 'red_origen',visible:false, searchable: false},
                 {data: 'provinciasid',name: 'provinciasid',visible: false, searchable: false},
-                
+
                 {data: 'usuarios', name: 'usuarios',visible:false, searchable: false},
                 {data: 'empresas', name: 'empresas',visible:false, searchable: false},
                 {data: 'numeromoviles', name: 'numeromoviles',visible:false, searchable: false},
@@ -540,7 +543,7 @@
                     var input = $('.dataTables_filter input').unbind(),
                     $searchButton = $('<button>')
                             .text('Buscar')
-                            .addClass('btn btn-sm btn-primary ml-1') 
+                            .addClass('btn btn-sm btn-primary ml-1')
                             .click(function() {
                                 self.search(input.val()).draw();
                             })
@@ -568,11 +571,11 @@
                 $('input[type="search"]').on('search', function () {
                     self.search('').draw();
                 });
-                
+
             },
         });
 
-        //Al hacer clic en los botones para exportar 
+        //Al hacer clic en los botones para exportar
         $('#export_copy').on('click', function(e) {
 			e.preventDefault();
 			table.button(0).trigger();
@@ -611,7 +614,7 @@
 		});
 
     });
- 
+
 </script>
 
 

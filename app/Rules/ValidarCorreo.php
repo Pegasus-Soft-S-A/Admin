@@ -38,7 +38,7 @@ class ValidarCorreo implements Rule
                     ->withOptions(["verify" => false])
                     ->get($url)
                     ->json();
-                if ($correo['debounce']['reason'] == "Deliverable" || $correo['debounce']['reason'] == "Deliverable, Role") {
+                if ($correo['debounce']['reason'] == "Deliverable" || $correo['debounce']['reason'] == "Deliverable, Role" || $correo['debounce']['reason'] == "Accept All, Role") {
                     return true;
                 } else {
                     return false;

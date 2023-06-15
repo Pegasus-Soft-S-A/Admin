@@ -79,8 +79,12 @@ class enviarlicencia extends Mailable implements ShouldQueue
             return $this->view('emails.licenciaQuitoFacturitoModificar')
                 ->from($this->array['from'], env('MAIL_FROM_NAME'))
                 ->subject($this->array['subject']);
-        }
+        } elseif ($this->array['tipo'] == 10 || $this->array['tipo'] == 11) {
 
+            return $this->view('emails.licenciavps')
+                ->from($this->array['from'], env('MAIL_FROM_NAME'))
+                ->subject($this->array['subject']);
+        }
 
         /* elseif ($this->array['tipo'] == 7 || $this->array['tipo'] == 8 ) {
 
