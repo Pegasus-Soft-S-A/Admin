@@ -321,8 +321,7 @@
                                                                     <span
                                                                         style="font-size: 18px; line-height: 28.8px; font-family: 'Open Sans', sans-serif;"><strong>Credenciales🔐</strong></span><br /><span
                                                                         style="font-family: 'Open Sans', sans-serif; font-size: 14px; line-height: 22.4px;">Enlace:
-                                                                        <a rel="noopener"
-                                                                            href="https://www.perseo.app"
+                                                                        <a rel="noopener" href="https://www.perseo.app"
                                                                             target="_blank">www.perseo.app</a></span>
                                                                 </p>
                                                                 <p
@@ -449,15 +448,10 @@
                                                                             DE IMPLEMENTACIÓN📆</span></strong>
                                                                 </p>
                                                                 <p style="font-size: 14px; line-height: 160%;"><span
-                                                                        style="font-family: 'Open Sans', sans-serif; font-size: 14px; line-height: 22.4px;">Para
-                                                                        aprender a trabajar conmigo y realizar la
-                                                                        configuración inicial, debes reservar un horario
-                                                                        a través del siguiente enlace:</span></p>
+                                                                        style="font-family: 'Open Sans', sans-serif; font-size: 14px; line-height: 22.4px;">Te recordamos que tienes horas de implementación incluidas en la adquisición de tu sistema. En el transcurso del día, el técnico asignado para implementar tu sistema se comunicará contigo vía WhatsApp, para coordinar la reunión acorde a la disponibilidad de tu tiempo.  </span></p>
                                                                 <p style="font-size: 14px; line-height: 160%;"> </p>
                                                                 <p style="line-height: 160%; font-size: 14px;"><span
-                                                                        style="font-family: 'Open Sans', sans-serif; font-size: 14px; line-height: 22.4px;"><a
-                                                                            rel="noopener"
-                                                                            href="https://www.facturito.ec/implementacion"
+                                                                        style="font-family: 'Open Sans', sans-serif; font-size: 14px; line-height: 22.4px;"><a rel="noopener" href="https://www.facturito.ec/implementacion"
                                                                             target="_blank">www.facturito.ec/implementacion</a></span>
                                                                 </p>
                                                             </div>
@@ -517,11 +511,7 @@
                                                                         style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span
                                                                             style="font-size: 14px; line-height: 22.4px;"></span></span>
                                                                 </p>
-                                                                <p style="font-size: 14px; line-height: 160%;"><a
-                                                                        rel="noopener"
-                                                                        href="https://facturito.ec/tutoriales/"
-                                                                        target="_blank">www.facturito.ec/tutoriales</a>
-                                                                </p>
+                                                                
                                                             </div>
 
                                                         </td>
@@ -715,12 +705,10 @@
                                                                 style="color: #fafafa; line-height: 180%; text-align: center; word-wrap: break-word;">
                                                                 <p style="font-size: 14px; line-height: 180%;"><span
                                                                         style="font-size: 16px; line-height: 28.8px;">Perseo
-                                                                        Soft 2022 © | Todos los derechos
+                                                                        Soft  {{ date('Y') }} © | Todos los derechos
                                                                         reservados.</span></p>
                                                                 <p style="font-size: 14px; line-height: 180%;"><span
-                                                                        style="color: #ecf0f1; font-size: 14px; line-height: 25.2px;"><a
-                                                                            rel="noopener"
-                                                                            href="https://www.facturito.ec"
+                                                                        style="color: #ecf0f1; font-size: 14px; line-height: 25.2px;"><a rel="noopener" href="https://www.facturito.ec"
                                                                             target="_blank"
                                                                             style="color: #ecf0f1;">www.facturito.ec</a></span>
                                                                 </p>

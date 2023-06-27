@@ -550,8 +550,8 @@ class adminController extends Controller
 
             $parametros_json = [];
             $parametros_json = [
-                'Documentos' => "30",
-                'Productos' => "100",
+                'Documentos' => "100000",
+                'Productos' => "100000",
                 'Almacenes' => "1",
                 'Nomina' => "3",
                 'Produccion' => "3",
@@ -570,7 +570,7 @@ class adminController extends Controller
                 "numerocontrato" => $contrato,
                 "Identificador" => $contrato,
                 "fechainicia" => date('Ymd', strtotime(now())),
-                "fechacaduca" => date("Ymd", strtotime(date("Ymd") . "+ 3 months")),
+                "fechacaduca" => date("Ymd", strtotime(date("Ymd") . "+ 2 months")),
                 "empresas" => 1,
                 "usuarios" => 6,
                 "periodo" => 1,

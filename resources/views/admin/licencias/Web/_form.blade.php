@@ -714,7 +714,7 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                     $('#periodo2').html("Anual");
                     $('#periodo3').addClass("d-none");
                     $('#periodo4').addClass("d-none");
-                    fecha.setMonth(fecha.getMonth() + 3);
+                    fecha.setMonth(fecha.getMonth() + 2);
                     if("{{$accion}}"=="Crear"){
                         $('#sis_servidoresid').val('3');
                     }

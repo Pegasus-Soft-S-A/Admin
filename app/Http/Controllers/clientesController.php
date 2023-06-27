@@ -67,8 +67,13 @@ class clientesController extends Controller
             //Busqueda
             $search = $request->search['value'];
             if ($search <> null) {
-                //Variable con los datos de la tabla
-                $final = Clientes::Clientes(0, $search);
+                if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2) {
+                    //Variable con los datos de la tabla
+                    $final = Clientes::Clientes(0, $search);
+                } else {
+                    //Variable con los datos de la tabla
+                    $final = Clientes::Clientes(Auth::user()->sis_distribuidoresid, $search);
+                }
                 //Total de registros
                 $records = count(Session::get('data'));
             } else {

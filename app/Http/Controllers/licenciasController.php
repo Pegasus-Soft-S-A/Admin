@@ -401,8 +401,8 @@ class licenciasController extends Controller
             case '9':
                 $parametros_json = [];
                 $parametros_json = [
-                    'Documentos' => "30",
-                    'Productos' => "100",
+                    'Documentos' => "100000",
+                    'Productos' => "100000",
                     'Almacenes' => "1",
                     'Nomina' => "3",
                     'Produccion' => "3",
@@ -816,7 +816,7 @@ class licenciasController extends Controller
                 break;
             case 'anual':
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
-                $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones));
+                $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones . "+ 1 year"));
                 $asunto = "Renovacion Anual Perseo PC";
                 break;
             case 'actualizacion':

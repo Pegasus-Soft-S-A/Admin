@@ -180,16 +180,21 @@ class Clientes extends Model
         NOT EXISTS ( SELECT 1 FROM sis_licencias WHERE sis_licencias.sis_clientesid = sis_clientes.sis_clientesid )
         AND NOT EXISTS ( SELECT 1 FROM sis_licencias_web WHERE sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid )) as U";
 
+        //Iniciar la variable para saber si ya se ha usado WHERE
+        $usedWhere = false;
+
         //Si el distribuidor es diferente de cero se agrega la condicion
         if ($distribuidor <> 0) {
             $query .= " WHERE U.sis_distribuidoresid = $distribuidor";
+            $usedWhere = true; //Marcamos que ya hemos usado WHERE
         }
 
         //Si existe una busqueda se agrega la condicion
         if ($busqueda <> "") {
             //Separar las palabras de la busqueda
             $keywords = explode(" ", $busqueda);
-            $query .= " WHERE ";
+            //Si ya hemos usado WHERE, añadimos AND, si no, añadimos WHERE
+            $query .= $usedWhere ? " AND (" : " WHERE ";
             $i = 0;
             foreach ($keywords as $keyword) {
                 if ($i == 0) {
@@ -199,10 +204,14 @@ class Clientes extends Model
                 }
                 $i++;
             }
+
+            //Cerramos el paréntesis si hemos añadido AND al inicio
+            if ($usedWhere) {
+                $query .= " )";
+            }
         }
 
         $query .= " ORDER BY U.sis_clientesid DESC";
-
         return  DB::select($query);
     }
 }

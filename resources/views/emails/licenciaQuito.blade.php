@@ -315,9 +315,9 @@
 
                               <div style="line-height: 160%; text-align: center; word-wrap: break-word;">
                                 <p style="font-size: 14px; line-height: 160%;"><strong><span style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;">HORARIOS DE IMPLEMENTACIÓN📆</span></strong></p>
-                                <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span style="font-size: 14px; line-height: 22.4px;">Recuerda que todos nuestros planes web, incluyen horas de </span></span>
+                                <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span style="font-size: 14px; line-height: 22.4px;">Te recordamos que tienes horas de implementación incluidas en la adquisición de tu sistema. En el transcurso del día, el técnico asignado para implementar tu sistema se comunicará contigo vía WhatsApp, para coordinar la reunión acorde a la disponibilidad de tu tiempo.</span></span>
                                   <span
-                                    style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span style="font-size: 14px; line-height: 22.4px;">implementación. </span></span>
+                                    style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span style="font-size: 14px; line-height: 22.4px;"></span></span>
                                 </p>
                                 <p style="font-size: 14px; line-height: 160%;"><strong><span style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span style="font-size: 14px; line-height: 22.4px;">Para reservar tu implementación ingresa a:</span></span></strong>
                                   <span
@@ -361,7 +361,7 @@
                                   <span
                                     style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span style="font-size: 14px; line-height: 22.4px;"></span></span>
                                 </p>
-                                <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 16px; line-height: 25.6px;"><a rel="noopener" href="https://academy.perseo.ec" target="_blank">academy.perseo.ec</a></span></p>
+                               
                               </div>
 
                             </td>
@@ -548,7 +548,7 @@
                             <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Cabin',sans-serif;" align="left">
 
                               <div style="color: #fafafa; line-height: 180%; text-align: center; word-wrap: break-word;">
-                                <p style="font-size: 14px; line-height: 180%;"><span style="font-size: 16px; line-height: 28.8px;">Perseo Soft 2022 © | Todos los derechos reservados.</span></p>
+                                <p style="font-size: 14px; line-height: 180%;"><span style="font-size: 16px; line-height: 28.8px;">Perseo Soft  {{ date('Y') }} © | Todos los derechos reservados.</span></p>
                                 <p style="font-size: 14px; line-height: 180%;"><span style="color: #ecf0f1; font-size: 14px; line-height: 25.2px;"><a rel="noopener" href="https://www.perseo.ec" target="_blank" style="color: #ecf0f1;">www.perseo.ec</a></span></p>
                               </div>
 

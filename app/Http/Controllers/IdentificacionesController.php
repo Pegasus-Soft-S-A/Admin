@@ -835,7 +835,7 @@ class IdentificacionesController extends Controller
                     $nuevo->producto =  5;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  0;
-                    $nuevo->modulos = $this->modulos(1, 1, 0, 1, 0, 0, 0);
+                    $nuevo->modulos = $this->modulos(1, 1, 1, 1, 0, 0, 0);
                     $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
@@ -849,7 +849,7 @@ class IdentificacionesController extends Controller
                     $nuevo->producto =  5;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  0;
-                    $nuevo->modulos = $this->modulos(1, 1, 0, 1, 0, 0, 0);
+                    $nuevo->modulos = $this->modulos(1, 1, 1, 1, 0, 0, 0);
                     $nuevo->sis_servidoresid =  4;
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;

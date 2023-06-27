@@ -1,3 +1,6 @@
+@php
+$rol = Auth::user()->tipo;
+@endphp
 @csrf
 <input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
 <div class="form-group row">
@@ -37,6 +40,7 @@
         @endif
     </div>
 </div>
+
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Fecha Corte Proveedor:</label>
@@ -57,7 +61,26 @@
         @endif
     </div>
 </div>
-
+<div class="form-group row">
+    <div class="col-lg-6">
+        <label>Costo Proveedor:</label>
+        <input type="text" class="form-control precio {{ $errors->has('costo_proveedor') ? 'is-invalid' : '' }}"
+            placeholder="Ingrese Costo" id="costo_proveedor" name="costo_proveedor" autocomplete="off"
+            value="{{ old('costo_proveedor', $licencia->costo_proveedor) }}" />
+        @if ($errors->has('costo_proveedor'))
+        <span class="text-danger">{{ $errors->first('costo_proveedor') }}</span>
+        @endif
+    </div>
+    <div class="col-lg-6">
+        <label>Precio cliente:</label>
+        <input type="text" class="form-control precio {{ $errors->has('precio_cliente') ? 'is-invalid' : '' }}"
+            placeholder="Ingrese Precio" id="precio_cliente" name="precio_cliente" autocomplete="off"
+            value="{{ old('precio_cliente', $licencia->precio_cliente) }}" />
+        @if ($errors->has('precio_cliente'))
+        <span class="text-danger">{{ $errors->first('precio_cliente') }}</span>
+        @endif
+    </div>
+</div>
 @section('script')
 <script>
     $(document).ready(function() {
@@ -84,6 +107,24 @@
                     leftArrow: '<i class="la la-angle-left"></i>',
                     rightArrow: '<i class="la la-angle-right"></i>'
                 }
+            });
+
+            var estado = '{{ $rol }}';
+            if (estado != 1) {
+                estado = 'disabled';
+            }
+
+            //Iniciar input numerico
+            $('.precio').TouchSpin({
+                buttondown_class: 'btn btn-secondary ' + estado,
+                buttonup_class: 'btn btn-secondary ' + estado,
+                min: 0,
+                max: 10000000,
+                step: 1,
+                decimals: 2,
+                boostat: 5,
+                maxboostedstep: 10,
+                forcestepdivisibility: 'none'
             });
 
             if ("{{ isset($licencia->sis_licenciasid) }}" == false) {
