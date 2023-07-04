@@ -277,6 +277,8 @@
                                             <option value="12">CUE-02</option>
                                             <option value="13">CUE-03</option>
                                             <option value="14">UIO-03</option>
+                                            <option value="15">UIO-04</option>
+                                            <option value="16">UIO-05</option>
                                         </select>
                                     </div>
                                     @endif

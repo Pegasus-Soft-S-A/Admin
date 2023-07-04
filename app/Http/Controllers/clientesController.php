@@ -35,11 +35,7 @@ class clientesController extends Controller
             $distribuidores = Distribuidores::where('sis_distribuidores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
         }
 
-        if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2) {
-            $licencias = Clientes::Clientes();
-        } else {
-            $licencias = Clientes::Clientes(Auth::user()->sis_distribuidoresid);
-        }
+        $licencias = Clientes::Clientes();
 
         $merged = collect($licencias);
         Session::put('data', $merged);
@@ -67,13 +63,8 @@ class clientesController extends Controller
             //Busqueda
             $search = $request->search['value'];
             if ($search <> null) {
-                if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2) {
-                    //Variable con los datos de la tabla
-                    $final = Clientes::Clientes(0, $search);
-                } else {
-                    //Variable con los datos de la tabla
-                    $final = Clientes::Clientes(Auth::user()->sis_distribuidoresid, $search);
-                }
+                //Variable con los datos de la tabla
+                $final = Clientes::Clientes(0, $search);
                 //Total de registros
                 $records = count(Session::get('data'));
             } else {
@@ -164,14 +155,14 @@ class clientesController extends Controller
 
             $datatable = DataTables::of($final)
                 ->editColumn('identificacion', function ($cliente) {
-                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid))) {
+                    if (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
                         return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
                     } else {
                         return $cliente->identificacion;
                     }
                 })
                 ->editColumn('action', function ($cliente) {
-                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid))) {
+                    if (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
                         return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" title="Editar"> <i class="la la-edit"></i> </a>';
                     }
                 })
@@ -224,7 +215,7 @@ class clientesController extends Controller
                 })
                 ->editColumn('telefono2', function ($cliente) {
                     $telefono = "";
-                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid))) {
+                    if (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
                         $telefono = $cliente->telefono2;
                     } else {
                         $telefono = "";
@@ -233,7 +224,7 @@ class clientesController extends Controller
                 })
                 ->editColumn('correos', function ($cliente) {
                     $correos = "";
-                    if (Auth::user()->tipo != 2 || (Auth::user()->tipo == 2 && (Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid))) {
+                    if (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
                         $correos = $cliente->correos;
                     } else {
                         $correos = "";
@@ -329,6 +320,12 @@ class clientesController extends Controller
                             break;
                         case '14':
                             $producto = "UIO-03";
+                            break;
+                        case '15':
+                            $producto = "UIO-04";
+                            break;
+                        case '16':
+                            $producto = "UIO-05";
                             break;
                         default:
                     }

@@ -258,6 +258,10 @@ $grupos = App\Models\Grupos::get();
             </option>
             <option value="14" {{ old('red_origen', $cliente->red_origen) == '14' ? 'Selected' : '' }}>UIO-03
             </option>
+            <option value="15" {{ old('red_origen', $cliente->red_origen) == '15' ? 'Selected' : '' }}>UIO-04
+            </option>
+            <option value="16" {{ old('red_origen', $cliente->red_origen) == '16' ? 'Selected' : '' }}>UIO-05
+            </option>
             @endif
         </select>
         @if ($errors->has('red_origen'))

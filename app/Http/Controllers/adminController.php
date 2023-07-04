@@ -418,9 +418,16 @@ class adminController extends Controller
             case '3':
             case '8':
             case '14':
-                //Delta
+            case '16':
+                //Delta lead Stefany
                 $distribuidor = 2;
                 $assigned_id = 34745;
+                $source_id = 24;
+                break;
+            case '15':
+                //Delta lead Karla Armas
+                $distribuidor = 2;
+                $assigned_id = 38585;
                 $source_id = 24;
                 break;
             case '6':
@@ -449,32 +456,6 @@ class adminController extends Controller
 
 
         $telefono = "+593" . substr($request['telefono2'], 1, 9);
-
-        $url = 'https://b24-mh9fll.bitrix24.es/rest/5507/zcc5hapr3zyri76d/crm.lead.list.json';
-        $fields_filtro = [
-            'filter' => [
-                'LOGIC' => 'OR',
-                [
-                    '=EMAIL' => 'example@email.com',
-                ],
-                [
-                    '=PHONE' => '1234567890',
-                ],
-            ],
-            'select' => ['*'],
-            'order' => ['DATE_CREATE' => 'DESC'],
-        ];
-
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json; charset=UTF-8',
-        ])
-            ->withOptions([
-                "verify" => false,
-            ])
-            ->post($url, $fields_filtro)
-            ->json();
-
-        dd($response);
         //Json para enviar a la API de bitrix
         $fields = [
             "fields" => [

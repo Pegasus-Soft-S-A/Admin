@@ -314,42 +314,19 @@
                             <td style="overflow-wrap:break-word;word-break:break-word;padding:33px 55px;font-family:'Cabin',sans-serif;" align="left">
 
                               <div style="line-height: 160%; text-align: center; word-wrap: break-word;">
-                                <p style="font-size: 14px; line-height: 160%;"><strong><span style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;">HORARIOS DE IMPLEMENTACIÓN📆</span></strong></p>
+                                <p style="font-size: 14px; line-height: 160%;"><strong><span style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;">IMPLEMENTACIÓN📆</span></strong></p>
                                 <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span style="font-size: 14px; line-height: 22.4px;">Te recordamos que tienes horas de implementación incluidas en la adquisición de tu sistema. En el transcurso del día, el técnico asignado para implementar tu sistema se comunicará contigo vía WhatsApp, para coordinar la reunión acorde a la disponibilidad de tu tiempo.</span></span>
-                                  <span
-                                    style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span style="font-size: 14px; line-height: 22.4px;"></span></span>
+                                
                                 </p>
-                                <p style="font-size: 14px; line-height: 160%;"><strong><span style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span style="font-size: 14px; line-height: 22.4px;">Para reservar tu implementación ingresa a:</span></span></strong>
-                                  <span
-                                    style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;"><span style="font-size: 14px; line-height: 22.4px;"></span></span>
-                                </p>
-                                <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 16px; line-height: 25.6px;"><a rel="noopener" href="https://www.perseo.ec/implementaciones" target="_blank">www.perseo.ec/implementaciones</a></span></p>
+                              
+                            
                               </div>
 
                             </td>
                           </tr>
                         </tbody>
                       </table>
-
-                      <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-                        <tbody>
-                          <tr>
-                            <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Cabin',sans-serif;" align="left">
-
-                              <!--[if mso]><style>.v-button {background: transparent !important;}</style><![endif]-->
-                              <div align="center">
-                                <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://www.perseo.ec/implementaciones" style="height:37px; v-text-anchor:middle; width:137px;" arcsize="11%"  stroke="f" fillcolor="#ffae00"><w:anchorlock/><center style="color:#FFFFFF;font-family:'Cabin',sans-serif;"><![endif]-->
-                                <a href="https://www.perseo.ec/implementaciones" target="_blank" class="v-button" style="box-sizing: border-box;display: inline-block;font-family:'Cabin',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #ffae00; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;">
-                                  <span style="display:block;padding:10px 20px;line-height:120%;"><span style="font-size: 14px; line-height: 16.8px;">Reservar Horario</span></span>
-                                </a>
-                                <!--[if mso]></center></v:roundrect><![endif]-->
-                              </div>
-
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-
+                    
                       <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                         <tbody>
                           <tr>
