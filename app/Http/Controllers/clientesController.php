@@ -27,7 +27,7 @@ class clientesController extends Controller
     {
         $servidores = Servidores::where('estado', 1)->get();
 
-        if (Auth::user()->tipo == 1) {
+        if (Auth::user()->tipo == 1 || Auth::user()->tipo == 6) {
             $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->orderBy('sis_revendedores.razonsocial')->get();
             $distribuidores = Distribuidores::all();
         } else {
