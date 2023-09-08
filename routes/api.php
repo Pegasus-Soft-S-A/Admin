@@ -22,6 +22,8 @@ Route::group(['middleware' => 'authAPILicencia'], function () {
     Route::post('/consultar_licencia', [IdentificacionesController::class, 'consultar_licencia'])->name('licencia.consultar');
     Route::post('/consultar_licencia_web', [IdentificacionesController::class, 'consultar_licencia_web'])->name('licencia.consultar_web');
     Route::post('/renovar_web', [IdentificacionesController::class, 'renovar_web'])->name('licencia.renovar_web');
+    Route::post('/proximas_caducar/{distribuidor?}', [IdentificacionesController::class, 'proximas_caducar'])->name('licencia.proximas_caducar');
 });
+
 Route::get('/datos_powerbi', [IdentificacionesController::class, 'datos_powerbi'])->name('licencia.datos_powerbi');
 Route::get('/datos_facebook/{inicio}/{fin}', [IdentificacionesController::class, 'gastosFacebook'])->name('licencia.gastosFacebook');

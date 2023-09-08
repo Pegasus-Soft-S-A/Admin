@@ -181,7 +181,7 @@ class licenciasController extends Controller
         $licencia->actulizaciones = 1;
         $licencia->aplicaciones = " s";
         $licencia->fechaactulizaciones = date("d-m-Y", strtotime(date("d-m-Y") . "+ 1 month"));
-        $licencia->sis_distribuidoresid = Auth::user()->sis_distribuidoresid;
+        $licencia->sis_distribuidoresid = $cliente->sis_distribuidoresid;
         $licencia->numerocontrato = $this->generarContrato();
         $modulos = [];
         $modulos = [
@@ -810,22 +810,22 @@ class licenciasController extends Controller
         //En caso de renovar mensual, anual o actualizar
         switch ($request->tipo) {
             case 'mes':
-                $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 month"));
-                $request['fechaactulizaciones'] = date('Ymd', strtotime($request->fechaactulizaciones . "+ 1 month"));
+                $request['fechacaduca'] = date("Y-m-d", strtotime($request->fechacaduca . "+ 1 month"));
+                $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones . "+ 1 month"));
                 $asunto = "Renovacion Mensual Perseo PC";
                 break;
             case 'anual':
-                $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
+                $request['fechacaduca'] = date("Y-m-d", strtotime($request->fechacaduca . "+ 1 year"));
                 $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones . "+ 1 year"));
                 $asunto = "Renovacion Anual Perseo PC";
                 break;
             case 'actualizacion':
-                $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca));
+                $request['fechacaduca'] = date("Y-m-d", strtotime($request->fechacaduca));
                 $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones . "+ 1 year"));
                 $asunto = "Actualizacion Anual Perseo PC";
                 break;
             default:
-                $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
+                $request['fechacaduca'] = date('Y-m-d', strtotime($request->fechacaduca));
                 $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones));
                 $asunto = "Modificacion Registro Licencia Pc";
                 break;

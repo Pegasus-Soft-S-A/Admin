@@ -94,7 +94,7 @@
                                     <!--end::Dropdown Menu-->
                                 </div>
 
-                                @if (Auth::user()->tipo != 4)
+                                @if (Auth::user()->tipo != 4 && Auth::user()->tipo != 6)
                                 <a href="{{ route('clientes.crear') }}" class="btn btn-primary font-weight-bolder">
                                     <span class="svg-icon svg-icon-md">
                                         <i class="flaticon2-plus-1"></i>
@@ -262,9 +262,7 @@
                                     <div class="col-lg-3 mb-lg-0 mb-6">
                                         <label>Origen:</label>
                                         <select class="form-control datatable-input select2" id="origen" name="origen">
-                                            @if (Auth::user()->tipo == 1)
                                             <option value="">Todos</option>
-                                            @endif
                                             <option value="1">Perseo</option>
                                             <option value="2">Contafácil</option>
                                             <option value="3">UIO-01</option>
@@ -279,6 +277,15 @@
                                             <option value="14">UIO-03</option>
                                             <option value="15">UIO-04</option>
                                             <option value="16">UIO-05</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Validado:</label>
+                                        <select class="form-control datatable-input select2" id="validado"
+                                            name="validado">
+                                            <option value="">Todos</option>
+                                            <option value="1">Si</option>
+                                            <option value="0">No</option>
                                         </select>
                                     </div>
                                     @endif
@@ -307,6 +314,7 @@
                                 id="kt_datatable">
                                 <thead>
                                     <tr>
+                                        <th class="no-exportar"></th>
                                         <th class="no-exportar">#</th>
                                         <th>Contrato</th>
                                         <th data-priority="1">Identificacion</th>
@@ -465,7 +473,7 @@
             //Registros por pagina
             pageLength: 15,
             //Orden inicial
-            order: [[ 0, 'desc' ]],
+            order: [[ 1, 'desc' ]],
             //Guardar pagina, busqueda, etc
             //stateSave: true,
             //Trabajar del lado del server
@@ -484,12 +492,14 @@
                     d.distribuidor= $("#distribuidor").val();
                     d.vendedor= $("#vendedor").val();
                     d.origen= $("#origen").val();
+                    d.validado= $("#validado").val();
                     d.provinciasid = $("#provinciasid").val();
                     d.buscar_filtro = $("#buscar_filtro").val();
                 }
             },
             //Columnas de la tabla (Debe contener misma cantidad que thead)
             columns: [
+                {data: 'validado', name: 'validado', orderable: false, searchable: false, className: "text-center"},
                 {data: 'sis_clientesid', name: 'sis_clientesid',visible:false, searchable: false},
                 {data: 'numerocontrato', name: 'numerocontrato',visible:false},
                 {data: 'identificacion', name: 'identificacion'},

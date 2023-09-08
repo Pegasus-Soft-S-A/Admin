@@ -194,22 +194,23 @@ class IdentificacionesController extends Controller
 
     public function validar_datos(Request $request)
     {
-        $respuesta = [];
-
         $url = 'https://emailvalidation.abstractapi.com/v1/?api_key=fae435e4569b4c93ac34e0701100778c&email=' . $request->correo;
         $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
             ->withOptions(["verify" => false])
             ->get($url)
             ->json();
+
+        $respuesta = [];
+
         if ($correo['deliverability'] != "DELIVERABLE") {
-            if ($correo['is_valid_format']['value'] == true &&  (substr($request->correo, strpos($request->correo, '@') + 1, strlen($request->correo)) == 'hotmail.com') || substr($request->correo, strpos($request->correo, '@') + 1, strlen($request->correo)) == 'outlook.com') {
-                //consultar api2 si es hotmail
+            if ($correo['is_valid_format']['value'] == true) {
                 $url = 'https://api.debounce.io/v1/?email=' . rawurlencode($request->correo) . '&api=6269b53f06aeb';
                 $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                     ->withOptions(["verify" => false])
                     ->get($url)
                     ->json();
-                if ($correo['debounce']['result'] != "Safe to Send") {
+
+                if (!in_array($correo['debounce']['reason'], ["Deliverable", "Deliverable, Role", "Accept All, Role"])) {
                     $respuesta = ["resultado" => "El correo ingresado no es válido"];
                     return json_encode($respuesta);
                 }
@@ -412,7 +413,7 @@ class IdentificacionesController extends Controller
         $vendedor = Revendedores::where('sis_revendedoresid', $cliente->sis_vendedoresid)->first();
         $vendedor_tienda = Revendedores::where('sis_revendedoresid', $request->sis_vendedoresid)->first();
         //Si el vendedor no corresponde al vendedor del cliente
-        if ($request->sis_vendedoresid != $cliente->sis_vendedoresid) {
+        if ($request->sis_vendedoresid != 0 && $request->sis_vendedoresid != $cliente->sis_vendedoresid) {
             try {
                 $array['from'] = env('MAIL_FROM_ADDRESS');
                 $array['subject'] = 'URGENTE';
@@ -593,7 +594,8 @@ class IdentificacionesController extends Controller
     public function registrar_licencia(Request $request)
     {
         $servidores = Servidores::where('estado', 1)->get();
-        $cliente = Clientes::where('identificacion', $request["cliente"]['identificacion'])->first();
+        $identificacionCliente = substr($request["cliente"]['identificacion'], 0, 10);
+        $cliente = Clientes::whereIn('identificacion', [$identificacionCliente, $request["cliente"]['identificacion'], $request["cliente"]['identificacion'] . '001'])->first();
         $vendedor = Revendedores::where('sis_revendedoresid', $request["cliente"]['sis_vendedoresid'])->first();
         $sis_clientesid = 0;
         //si no existe cliente se lo registra
@@ -1393,5 +1395,75 @@ class IdentificacionesController extends Controller
 
         // return response()->json([$data]);
 
+    }
+
+    public function proximas_caducar($distribuidor = null)
+    {
+        $query = "SELECT * FROM
+            (
+            SELECT
+                sis_clientes.identificacion,
+                sis_clientes.nombres,
+                sis_clientes.telefono2,
+                sis_clientes.correos,
+                sis_clientes.direccion,
+                sis_licencias.tipo_licencia,
+                sis_licencias.periodo,
+                sis_licencias.producto,
+                sis_clientes.sis_distribuidoresid,
+                vendedor.identificacion AS vendedor,
+                contador.identificacion AS contador_identificacion,
+                contador.razonsocial AS contador_nombres,
+                contador.correo AS contador_correo,
+                contador.celular AS contador_celular,
+                contador.direccion AS contador_direccion,
+                sis_licencias.modulopractico,
+                sis_licencias.modulocontrol,
+                sis_licencias.modulocontable
+            FROM
+                sis_licencias
+                INNER JOIN sis_clientes ON sis_licencias.sis_clientesid = sis_clientes.sis_clientesid
+                INNER JOIN sis_revendedores AS vendedor ON vendedor.sis_revendedoresid = sis_clientes.sis_vendedoresid
+                INNER JOIN sis_revendedores AS contador ON contador.sis_revendedoresid = sis_clientes.sis_revendedoresid
+            WHERE
+                sis_licencias.periodo <> 3
+                AND DATEDIFF(
+                    sis_licencias.fechacaduca,
+                NOW()) = 5 UNION
+            SELECT
+                sis_clientes.identificacion,
+                sis_clientes.nombres,
+                sis_clientes.telefono2,
+                sis_clientes.correos,
+                sis_clientes.direccion,
+                sis_licencias_web.tipo_licencia,
+                sis_licencias_web.periodo,
+                sis_licencias_web.producto,
+                sis_clientes.sis_distribuidoresid,
+                vendedor.identificacion AS vendedor,
+                contador.identificacion AS contador_identificacion,
+                contador.razonsocial AS contador_nombres,
+                contador.correo AS contador_correo,
+                contador.celular AS contador_celular,
+                contador.direccion AS contador_direccion,
+                sis_licencias_web.modulopractico,
+                sis_licencias_web.modulocontrol,
+                sis_licencias_web.modulocontable
+            FROM
+                sis_clientes
+                INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid
+                INNER JOIN sis_revendedores AS vendedor ON vendedor.sis_revendedoresid = sis_clientes.sis_vendedoresid
+                INNER JOIN sis_revendedores AS contador ON contador.sis_revendedoresid = sis_clientes.sis_revendedoresid
+            WHERE
+                DATEDIFF(
+                    sis_licencias_web.fechacaduca,
+                NOW()) = 5
+            ) AS U";
+        //Si el distribuidor es diferente de cero se agrega la condicion
+        if ($distribuidor) {
+            $query .= " WHERE U.sis_distribuidoresid = $distribuidor";
+        }
+
+        return json_encode(DB::select($query));
     }
 }

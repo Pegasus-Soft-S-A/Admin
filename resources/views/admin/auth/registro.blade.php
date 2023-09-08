@@ -324,9 +324,9 @@ $grupos = App\Models\Grupos::get();
                                         <option value="12" {{ $id=='CUE-02' ? 'Selected' : '' }}>
                                             CUE-02
                                         </option>
-                                        <option value="13" {{ $id=='CUE-03' ? 'Selected' : '' }}>
+                                        {{-- <option value="13" {{ $id=='CUE-03' ? 'Selected' : '' }}>
                                             CUE-03
-                                        </option>
+                                        </option> --}}
                                         <option value="14" {{ $id=='UIO-03' ? 'Selected' : '' }}>
                                             UIO-03
                                         </option>
@@ -476,7 +476,7 @@ $grupos = App\Models\Grupos::get();
                         $("#correo").val(data.correo);
                         $("#telefono1").val(data.telefono1);
                         $("#telefono2").val(data.telefono2);
-                        $('#provinciasid').val(data.provinciasid);
+                       // $('#provinciasid').val(data.provinciasid);
 
                     }
                 }

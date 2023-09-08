@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Log;
 use App\Models\Revendedores;
+use App\Rules\IdentificacionRevendedor;
+use App\Rules\ValidarCelular;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables as DataTables;
@@ -56,8 +58,9 @@ class revendedoresController extends Controller
     {
         $request->validate(
             [
-                'identificacion' => ['required', 'unique:sis_revendedores'],
+                'identificacion' => ['required', new IdentificacionRevendedor],
                 'razonsocial' => 'required',
+                'celular' => ['required', 'size:10', new ValidarCelular],
                 'direccion' => 'required',
                 'correo' => 'required',
                 'sis_distribuidoresid' => 'required',
@@ -66,6 +69,8 @@ class revendedoresController extends Controller
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
                 'identificacion.unique' => 'Su cédula o RUC ya se encuentra registrado',
                 'razonsocial.required' => 'Ingrese una Razón Social',
+                'celular.required' => 'Ingrese un Número Celular',
+                'celular.size' => 'Ingrese 10 dígitos',
                 'direccion.required' => 'Ingrese una Dirección',
                 'correo.required' => 'Ingrese un Correo',
                 'correo.email' => 'Ingrese un Correo válido',
@@ -105,6 +110,7 @@ class revendedoresController extends Controller
             [
                 'identificacion' => ['required', 'unique:sis_revendedores,identificacion,' . $revendedor->sis_revendedoresid . ',sis_revendedoresid'],
                 'razonsocial' => 'required',
+                'celular' => ['required', 'size:10', new ValidarCelular],
                 'direccion' => 'required',
                 'correo' => 'required',
                 'sis_distribuidoresid' => 'required',
@@ -113,6 +119,8 @@ class revendedoresController extends Controller
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
                 'identificacion.unique' => 'Su cédula o RUC ya se encuentra registrado',
                 'razonsocial.required' => 'Ingrese una Razón Social',
+                'celular.required' => 'Ingrese un Número Celular',
+                'celular.size' => 'Ingrese 10 dígitos',
                 'direccion.required' => 'Ingrese una Dirección',
                 'correo.required' => 'Ingrese un Correo',
                 'correo.email' => 'Ingrese un Correo válido',

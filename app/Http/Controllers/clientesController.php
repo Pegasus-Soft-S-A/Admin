@@ -53,6 +53,7 @@ class clientesController extends Controller
             $distribuidor = $request->distribuidor;
             $vendedor = $request->vendedor;
             $origen = $request->origen;
+            $validado = $request->validado;
             $producto = $request->producto;
             $periodo = $request->periodo;
             $provinciasid = $request->provinciasid;
@@ -120,6 +121,14 @@ class clientesController extends Controller
                     $final = $final->where('red_origen', $origen);
                 }
 
+                if ($validado != null) {
+                    if ($validado == 1) {
+                        $final = $final->where('validado', 1);
+                    } else {
+                        $final = $final->whereIn('validado', [0, null]);
+                    }
+                }
+
                 if ($provinciasid != null) {
                     $final = $final->where('provinciasid', $provinciasid);
                 }
@@ -154,15 +163,19 @@ class clientesController extends Controller
             }
 
             $datatable = DataTables::of($final)
+                ->editColumn('validado', function ($cliente) {
+                    $checked = $cliente->validado == 1 ? 'checked' : '';
+                    return '<label class="checkbox checkbox-single checkbox-primary mb-0"><input type="checkbox" class="checkable" ' . $checked . ' disabled><span></span></label>';
+                })
+
                 ->editColumn('identificacion', function ($cliente) {
-                    if (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
-                        return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
-                    } else {
+                    if (Auth::user()->tipo == 6 || (Auth::user()->tipo != 1 && Auth::user()->sis_distribuidoresid != $cliente->sis_distribuidoresid)) {
                         return $cliente->identificacion;
                     }
+                    return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
                 })
                 ->editColumn('action', function ($cliente) {
-                    if (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
+                    if (Auth::user()->tipo != 6 && (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid)) {
                         return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" title="Editar"> <i class="la la-edit"></i> </a>';
                     }
                 })
@@ -419,7 +432,7 @@ class clientesController extends Controller
                     }
                     return $periodo;
                 })
-                ->rawColumns(['action', 'identificacion']);
+                ->rawColumns(['action', 'identificacion', 'validado']);
 
             if ($request->buscar_filtro == 1 || $search <> null) {
                 $datatable = $datatable
@@ -508,6 +521,8 @@ class clientesController extends Controller
             DB::rollBack();
             return back();
         }
+
+        $request['sis_clientesid'] = $cliente->sis_clientesid;
 
         // Insertar el cliente en cada uno de los servidores remotos
         foreach ($servidores as $servidor) {

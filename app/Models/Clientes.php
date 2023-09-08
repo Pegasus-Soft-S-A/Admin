@@ -54,7 +54,8 @@ class Clientes extends Model
         sis_licencias.modulopractico,
         sis_licencias.modulocontrol,
         sis_licencias.modulocontable,
-        sis_licencias.cantidadempresas
+        sis_licencias.cantidadempresas,
+        sis_clientes.validado
     FROM
         sis_licencias
         INNER JOIN sis_clientes ON sis_licencias.sis_clientesid = sis_clientes.sis_clientesid UNION
@@ -93,7 +94,8 @@ class Clientes extends Model
         '' AS modulopractico,
         '' AS modulocontrol,
         '' AS modulocontable,
-        '' AS cantidadempresas
+        '' AS cantidadempresas,
+        sis_clientes.validado
     FROM
         sis_licencias_vps
         INNER JOIN sis_clientes ON sis_licencias_vps.sis_clientesid = sis_clientes.sis_clientesid UNION
@@ -134,7 +136,8 @@ class Clientes extends Model
         sis_licencias_web.modulopractico,
         sis_licencias_web.modulocontrol,
         sis_licencias_web.modulocontable,
-        '' AS cantidadempresas
+        '' AS cantidadempresas,
+        sis_clientes.validado
     FROM
         sis_clientes
         INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid UNION
@@ -173,7 +176,8 @@ class Clientes extends Model
         '' AS modulopractico,
         '' AS modulocontrol,
         '' AS modulocontable,
-        '' AS cantidadempresas
+        '' AS cantidadempresas,
+        sis_clientes.validado
     FROM
         sis_clientes
     WHERE

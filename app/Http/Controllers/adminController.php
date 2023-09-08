@@ -432,7 +432,7 @@ class adminController extends Controller
                 break;
             case '6':
             case '12':
-            case '13':
+                // case '13':
                 //Omega
                 $distribuidor = 3;
                 $assigned_id = 29359;
@@ -501,8 +501,47 @@ class adminController extends Controller
         DB::beginTransaction();
         try {
             $servidores = Servidores::where('estado', 1)->get();
-
             $cliente =   Clientes::create($request->all());
+
+            $clientes_creados = []; // variable para almacenar los clientes creados en los servidores remotos
+
+            // Verificar si se creó el cliente en el servidor local
+            if (!$cliente) {
+                flash('Ocurrió un error al crear el cliente')->warning();
+                DB::rollBack();
+                return back();
+            }
+
+            $request['sis_clientesid'] = $cliente->sis_clientesid;
+
+            // Insertar el cliente en cada uno de los servidores remotos
+            foreach ($servidores as $servidor) {
+                $url = $servidor->dominio . '/registros/crear_clientes';
+                $crearCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+                    ->withOptions(["verify" => false])
+                    ->post($url, $request->all())
+                    ->json();
+
+                if (isset($crearCliente['sis_clientes'])) {
+                    $clientes_creados[] = [
+                        'dominio' => $servidor->dominio,
+                        'sis_clientesid' => $crearCliente["sis_clientes"][0]['sis_clientesid']
+                    ];
+                } else {
+                    foreach ($clientes_creados as $registro) {
+                        $url = $registro['dominio'] . '/registros/eliminar_cliente';
+                        $eliminarCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+                            ->withOptions(["verify" => false])
+                            ->post($url, ["sis_clientesid" => $registro['sis_clientesid']])
+                            ->json();
+                    }
+
+                    flash('Ocurrió un error al crear el cliente, intentelo nuevamente')->warning();
+                    DB::rollBack();
+                    return back();
+                }
+            }
+
             $log = new Log();
             $log->usuario = "Perseo Lite";
             $log->pantalla = "Clientes";
@@ -510,21 +549,6 @@ class adminController extends Controller
             $log->fecha = now();
             $log->detalle = $cliente;
             $log->save();
-            $request['sis_clientesid'] = $cliente->sis_clientesid;
-
-            //Crear clientes en todos los servidores
-            foreach ($servidores as $servidor) {
-                $url = $servidor->dominio . '/registros/crear_clientes';
-                $crearCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-                    ->withOptions(["verify" => false])
-                    ->post($url, $request->all())
-                    ->json();
-                if (!isset($crearCliente['sis_clientes'])) {
-                    DB::rollBack();
-                    flash('Ocurrió un error vuelva a intentarlo')->warning();
-                    return back();
-                }
-            }
 
             //Verificar que no se exista el numero de contrato
             $contrato = $this->generarContrato();

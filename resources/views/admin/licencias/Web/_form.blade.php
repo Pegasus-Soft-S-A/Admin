@@ -525,7 +525,7 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                     $('#periodo').removeClass("disabled");
                     $('#usuarios').val('6');
                     $('#numeromoviles').val('1');
-                    $('#ecommerce').prop('checked', false);
+                    $('#ecommerce').prop('checked', true);
                     $('#produccion').prop('checked', true);
                     $('#nomina').prop('checked', false);
                     $('#activos').prop('checked', false);
@@ -559,7 +559,7 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                     }
                     $('#periodo').removeClass("disabled");
                     $('#usuarios').val('6');
-                    $('#numeromoviles').val('2');
+                    $('#numeromoviles').val('0');
                     $('#ecommerce').prop('checked', false);
                     $('#produccion').prop('checked', false);
                     $('#nomina').prop('checked', true);
@@ -632,7 +632,7 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                     $('#periodo').removeClass("disabled");
                     $('#usuarios').val('6');
                     $('#numeromoviles').val('0');
-                    $('#ecommerce').prop('checked', false);
+                    $('#ecommerce').prop('checked', true);
                     $('#produccion').prop('checked', true);
                     $('#nomina').prop('checked', true);
                     $('#activos').prop('checked', true);

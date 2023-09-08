@@ -52,7 +52,15 @@ $listadoDistribuidor = App\Models\Distribuidores::select('sis_distribuidoresid',
 </div>
 
 <div class="form-group row">
-
+    <div class="col-lg-6">
+        <label>Celular:</label>
+        <input type="text" class="form-control {{ $errors->has('celular') ? 'is-invalid' : '' }}"
+            placeholder="Ingrese Celular" name="celular" autocomplete="off"
+            value="{{ old('celular', $revendedor->celular) }}" id="celular" />
+        @if ($errors->has('celular'))
+        <span class="text-danger">{{ $errors->first('celular') }}</span>
+        @endif
+    </div>
     <div class="col-lg-6">
         <label>Distribuidor:</label>
         <select class="form-control select2" id="sis_distribuidoresid" name="sis_distribuidoresid">
@@ -76,6 +84,8 @@ $listadoDistribuidor = App\Models\Distribuidores::select('sis_distribuidoresid',
         <span class="text-danger">{{ $errors->first('sis_distribuidoresid') }}</span>
         @endif
     </div>
+</div>
+<div class="form-group row">
     <div class="col-lg-6">
         <label>Tipo:</label>
         <select class="form-control " name="tipo" id="tipo">
