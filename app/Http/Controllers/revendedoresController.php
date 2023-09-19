@@ -24,7 +24,7 @@ class revendedoresController extends Controller
     {
         if ($request->ajax()) {
 
-            $data = Revendedores::select('sis_revendedores.sis_revendedoresid', 'sis_revendedores.identificacion', 'sis_revendedores.tipoidentificacion', 'sis_revendedores.razonsocial', 'sis_revendedores.correo', 'sis_revendedores.direccion', 'sis_revendedores.tipo', 'sis_distribuidores.razonsocial as distribuidor')
+            $data = Revendedores::select('sis_revendedores.sis_revendedoresid', 'sis_revendedores.identificacion', 'sis_revendedores.tipoidentificacion', 'sis_revendedores.razonsocial', 'sis_revendedores.correo', 'sis_revendedores.celular', 'sis_revendedores.direccion', 'sis_revendedores.tipo', 'sis_distribuidores.razonsocial as distribuidor')
                 ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_revendedores.sis_distribuidoresid');
 
             return DataTables::of($data)

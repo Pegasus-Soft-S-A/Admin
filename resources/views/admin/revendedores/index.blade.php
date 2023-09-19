@@ -126,6 +126,7 @@
                                         <th data-priority="1">Identificacion</th>
                                         <th data-priority="2">Nombres</th>
                                         <th>Dirección</th>
+                                        <th>Celular</th>
                                         <th>Correo</th>
                                         <th>Tipo</th>
                                         <th>Distribuidor</th>
@@ -179,7 +180,8 @@
                         data.estado = $('#estado').val();
                     }
                 },
-                columns: [{
+                columns: [
+                    {
                         data: 'sis_revendedoresid',
                         name: 'sis_revendedoresid',
                         searchable: false,
@@ -206,7 +208,14 @@
                         name: 'direccion',
                         searchable: false,
                         visible: false
-                    }, {
+                    },
+                    {
+                        data: 'celular',
+                        name: 'celular',
+                        searchable: false,
+                        visible: false
+                    },
+                    {
                         data: 'correo',
                         name: 'correo',
                         searchable: false,

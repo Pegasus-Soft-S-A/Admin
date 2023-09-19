@@ -699,8 +699,8 @@ class licenciasController extends Controller
         $array['correo'] = $cliente->correos;
         $array['numerocontrato'] = $licencia->numerocontrato;
         $array['ip'] = $licencia->ip;
-        $array['fecha_corte_proveedor'] = $licencia->fecha_corte_proveedor;
-        $array['fecha_corte_cliente'] = $licencia->fecha_corte_cliente;
+        $array['fecha_corte_proveedor'] = date("d-m-Y", strtotime($licencia->fecha_corte_proveedor));
+        $array['fecha_corte_cliente'] = date("d-m-Y", strtotime($licencia->fecha_corte_cliente));
         $array['usuario'] = Auth::user()->nombres;
         $array['fecha'] = $request['fechacreacion'];
         $array['tipo'] = '10';
@@ -751,7 +751,7 @@ class licenciasController extends Controller
         $licencia->fecha_corte_proveedor = date("d-m-Y", strtotime($licencia->fecha_corte_proveedor));
         $licencia->fecha_corte_cliente = date("d-m-Y", strtotime($licencia->fecha_corte_cliente));
 
-        return view('admin.licencias.VPS.editar', compact('cliente', 'licencia'));
+        return view('admin.licencias.Vps.editar', compact('cliente', 'licencia'));
     }
 
     public function editarWeb(Clientes $cliente, $servidorid, $licenciaid)

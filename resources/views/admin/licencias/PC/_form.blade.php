@@ -1224,7 +1224,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 fechaPagado.setMonth(fechaPagado.getMonth() + 1);
 
                 if ($('#practico').prop('checked')) {
-                    $('#numeroequipos').val('2');
+                    $('#numeroequipos').val('1');
                     $('#numeromoviles').val('0');
                     $('#numerosucursales').val('1');
                     $('#nomina').prop('checked', false);
@@ -1246,7 +1246,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     moduloPerseoProduccion(false);
                 }
                 if ($('#contable').prop('checked')) {
-                    $('#numeroequipos').val('4');
+                    $('#numeroequipos').val('3');
                     $('#numeromoviles').val('0');
                     $('#numerosucursales').val('1');
                     $('#nomina').prop('checked', true);
@@ -1261,7 +1261,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 fecha.setYear(fecha.getFullYear() + 1);
                 fechaPagado.setYear(fechaPagado.getFullYear() + 1);
                 if ($('#practico').prop('checked')) {
-                    $('#numeroequipos').val('2');
+                    $('#numeroequipos').val('1');
                     $('#numeromoviles').val('0');
                     $('#numerosucursales').val('1');
                     $('#nomina').prop('checked', false);
@@ -1283,7 +1283,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     moduloPerseoProduccion(false);
                 }
                 if ($('#contable').prop('checked')) {
-                    $('#numeroequipos').val('4');
+                    $('#numeroequipos').val('3');
                     $('#numeromoviles').val('0');
                     $('#numerosucursales').val('1');
                     $('#nomina').prop('checked', true);
@@ -1298,7 +1298,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 fecha.setYear(fecha.getFullYear() + 5);
                 fechaPagado.setYear(fechaPagado.getFullYear() + 1);
                 if ($('#practico').prop('checked')) {
-                    $('#numeroequipos').val('2');
+                    $('#numeroequipos').val('1');
                     $('#numeromoviles').val('0');
                     $('#numerosucursales').val('1');
                     $('#nomina').prop('checked', false);
@@ -1320,7 +1320,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     moduloPerseoProduccion(false);
                 }
                 if ($('#contable').prop('checked')) {
-                    $('#numeroequipos').val('4');
+                    $('#numeroequipos').val('3');
                     $('#numeromoviles').val('0');
                     $('#numerosucursales').val('1');
                     $('#nomina').prop('checked', true);

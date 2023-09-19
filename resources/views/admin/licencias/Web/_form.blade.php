@@ -821,7 +821,7 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                         $('#sis_servidoresid').val('2');
                     }
                     $('#periodo').removeClass("disabled");
-                    $('#usuarios').val('6');
+                    $('#usuarios').val('50');
                     $('#numeromoviles').val('1');
                     $('#ecommerce').prop('checked', false);
                     $('#produccion').prop('checked', false);
