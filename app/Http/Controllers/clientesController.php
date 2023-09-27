@@ -228,7 +228,7 @@ class clientesController extends Controller
                 })
                 ->editColumn('telefono2', function ($cliente) {
                     $telefono = "";
-                    if (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
+                    if (Auth::user()->tipo == 6 || Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
                         $telefono = $cliente->telefono2;
                     } else {
                         $telefono = "";
@@ -237,7 +237,7 @@ class clientesController extends Controller
                 })
                 ->editColumn('correos', function ($cliente) {
                     $correos = "";
-                    if (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
+                    if (Auth::user()->tipo == 6 || Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
                         $correos = $cliente->correos;
                     } else {
                         $correos = "";
