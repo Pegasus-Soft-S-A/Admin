@@ -30,59 +30,62 @@ class IdentificacionesController extends Controller
         //$buscar = Identificaciones::where('identificacion', 'like', $identificacionIngresada . '%')->first();
 
         if (!$buscar) {
-            $curl = curl_init();
+            try {
+                $curl = curl_init();
 
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'http://merlyna.com/merlyna/abc/webserviceSRI-RegistroCivil.php',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => '<?xml version="1.0" encoding="utf-8"?>
-                    <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-                    <soap:Body>
-                        <nombreCedulaRegistroCivilRequest>
-                        <arg0>' . $identificacionIngresada . '</arg0>
-                        <arg1>212</arg1>
-                        <arg2>1001</arg2>
-                        <arg3>1001</arg3>
-                        <arg4>perseo</arg4>
-                        <arg5>perseo</arg5>
-                        <arg6>IGESeec92e31032ab99345a4d4f3ecea</arg6>
-                        </nombreCedulaRegistroCivilRequest>
-                    </soap:Body>
-                    </soap:Envelope>
-    ',
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: text/xml; charset=utf-8',
-                    'SOAPAction: http://merlyna.com/.perfect/abc/webserviceSRI-RegistroCivil.php'
-                ),
-            ));
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => 'http://merlyna.com/merlyna/abc/webserviceSRI-RegistroCivil.php',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => '<?xml version="1.0" encoding="utf-8"?>
+                        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                        <soap:Body>
+                            <nombreCedulaRegistroCivilRequest>
+                            <arg0>' . $identificacionIngresada . '</arg0>
+                            <arg1>212</arg1>
+                            <arg2>1001</arg2>
+                            <arg3>1001</arg3>
+                            <arg4>perseo</arg4>
+                            <arg5>perseo</arg5>
+                            <arg6>IGESeec92e31032ab99345a4d4f3ecea</arg6>
+                            </nombreCedulaRegistroCivilRequest>
+                        </soap:Body>
+                        </soap:Envelope>
+        ',
+                    CURLOPT_HTTPHEADER => array(
+                        'Content-Type: text/xml; charset=utf-8',
+                        'SOAPAction: http://merlyna.com/.perfect/abc/webserviceSRI-RegistroCivil.php'
+                    ),
+                ));
 
-            $response = curl_exec($curl);
-            curl_close($curl);
+                $response = curl_exec($curl);
+                curl_close($curl);
+                dd($response);
+                $xml = simplexml_load_string($response);
+                $data = $xml->children('SOAP-ENV', true)->Body->children('ns1', true)->nombreCedulaRegistroCivilResponse->children()->return;
+                $arrOutput = json_decode(json_encode($data), TRUE);
+                //$buscar = array("razon_social" => $arrOutput['0']);
 
-            $xml = simplexml_load_string($response);
-            $data = $xml->children('SOAP-ENV', true)->Body->children('ns1', true)->nombreCedulaRegistroCivilResponse->children()->return;
-            $arrOutput = json_decode(json_encode($data), TRUE);
-            //$buscar = array("razon_social" => $arrOutput['0']);
-
-            $request->razon_social =  $arrOutput['0'];
-            $request->nombre_comercial =  '';
-            $request->direccion =  '';
-            $request->correo = '';
-            $request->provinciasid = '17';
-            $request->ciudadesid =  '1701';
-            $request->parroquiasid =  '170150';
-            $request->telefono1 = '';
-            $request->telefono2 =  '';
-            $request->telefono3 = '';
-            $request->tipo_contribuyente = '0';
-            $request->obligado = '0';
-            return json_encode($this->crearIdentificacion($request));
+                $request->razon_social =  $arrOutput['0'];
+                $request->nombre_comercial =  '';
+                $request->direccion =  '';
+                $request->correo = '';
+                $request->provinciasid = '17';
+                $request->ciudadesid =  '1701';
+                $request->parroquiasid =  '170150';
+                $request->telefono1 = '';
+                $request->telefono2 =  '';
+                $request->telefono3 = '';
+                $request->tipo_contribuyente = '0';
+                $request->obligado = '0';
+                return json_encode($this->crearIdentificacion($request));
+            } catch (\Exception $e) {
+            }
         } else {
             $buscar->parametros_json = json_decode($buscar->parametros_json);
         }
@@ -469,7 +472,25 @@ class IdentificacionesController extends Controller
         $datos['modulos'] = $licencia->modulos;
         $datos['usuarios'] = $licencia->usuarios;
         $datos['numerosucursales'] = $licencia->numerosucursales;
-        $datos['parametros_json'] = $licencia->parametros_json;
+        $parametros_json = json_decode($licencia->parametros_json);
+        //si es facturito sumar los documentos
+        if ($licencia->producto == 12) {
+            switch ($licencia->periodo) {
+                case '1':
+                    $parametros_json->Documentos = $parametros_json->Documentos + 60;
+                    break;
+                case '2':
+                    $parametros_json->Documentos = $parametros_json->Documentos + 150;
+                    break;
+                case '3':
+                    $parametros_json->Documentos = 100000;
+                    break;
+                case '4':
+                    $parametros_json->Documentos = 30;
+                    break;
+            }
+        }
+        $datos['parametros_json'] = json_encode($parametros_json);
         $datos['usuariocreacion'] = $licencia->usuariocreacion;
         $datos['usuariomodificacion'] = $vendedor->razonsocial;
         $datos['sis_licenciasid'] = $request->id_licencia;
@@ -624,7 +645,7 @@ class IdentificacionesController extends Controller
                 }
             }
             $nuevo->grupo = 1;
-            $nuevo->red_origen = 1;
+            $nuevo->red_origen = 17;
             $nuevo->ciudadesid = 1701;
             $nuevo->provinciasid = 17;
             $nuevo->fechacreacion = now();
@@ -1013,6 +1034,32 @@ class IdentificacionesController extends Controller
                         'Activos' => "0",
                         'Talleres' => "0",
                         'Garantias' => "0",
+                    ];
+                    $nuevo->parametros_json = json_encode($parametros_json);
+                    break;
+                    //Perseo Lite
+                case '1000':
+                    $nuevo->Identificador = $contrato;
+                    $nuevo->precio =  0;
+                    $nuevo->periodo =  1;
+                    $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 2 months"));
+                    $nuevo->producto =  9;
+                    $nuevo->usuarios =  6;
+                    $nuevo->numeromoviles =  1;
+                    $nuevo->modulos = $this->modulos(1, 1, 1, 1, 1, 1, 1);
+                    $nuevo->sis_servidoresid =  3;
+                    $nuevo->tipo_licencia =  1;
+                    $nuevo->empresas = 1;
+                    $parametros_json = [];
+                    $parametros_json = [
+                        'Documentos' => "100000",
+                        'Productos' => "100000",
+                        'Almacenes' => "1",
+                        'Nomina' => "3",
+                        'Produccion' => "3",
+                        'Activos' => "3",
+                        'Talleres' => "3",
+                        'Garantias' => "3",
                     ];
                     $nuevo->parametros_json = json_encode($parametros_json);
                     break;

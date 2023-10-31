@@ -1062,7 +1062,7 @@ class licenciasController extends Controller
                     $request['periodo'] = 2;
                     $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
                 } else {
-                    $request['fechacaduca'] = date("Ymd", strtotime(now() . "+ 1 year"));
+                    $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
                     switch ($request['periodo']) {
                         case '1':
                             $parametros_json->Documentos = $parametros_json->Documentos + 60;

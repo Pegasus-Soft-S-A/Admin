@@ -339,6 +339,8 @@ class clientesController extends Controller
                             break;
                         case '16':
                             $producto = "UIO-05";
+                        case '17':
+                            $producto = "Tienda";
                             break;
                         default:
                     }

@@ -593,6 +593,21 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         </span>
                     </div>
                 </div>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">Académico</label>
+                    <div class="col-2">
+                        <span class="switch switch-outline switch-icon switch-primary switch-sm">
+                            <label>
+                                <input @if (isset($modulos[0]->academico)) @if ($modulos[0]->academico==
+                                true))
+                                checked="checked" @endif @endif
+                                type="checkbox" name="academico" id="academico" @if($rol!=1 && $accion == 'Modificar')
+                                disabled @endif/>
+                                <span></span>
+                            </label>
+                        </span>
+                    </div>
+                </div>
             </div>
 
             <div class="tab-pane fade show" id="correos" role="tabpanel">
@@ -939,6 +954,14 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         }
     });
 
+    $('#academico').click(function(){
+        if ($('#academico').prop('checked')) {
+            moduloPerseoAcademico(true);
+        }else{
+            moduloPerseoAcademico(false);
+        }
+    });
+
 
     $(document).ready(function () {
 
@@ -1212,6 +1235,16 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         $('#1400').prop('checked', estado);
         $('#1405').prop('checked', estado);
         $('#1410').prop('checked', estado);
+    }
+
+    function moduloPerseoAcademico(estado){
+        //Activar o desactivar modulos
+        $('#1805').prop('checked', estado);
+        $('#1810').prop('checked', estado);
+        $('#1815').prop('checked', estado);
+        $('#1820').prop('checked', estado);
+        $('#1825').prop('checked', estado);
+        $('#1830').prop('checked', estado);
     }
 
     function cambiarComboPC(){
