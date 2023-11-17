@@ -14,6 +14,7 @@ use App\Models\Servidores;
 use App\Rules\UniqueSimilar;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -99,12 +100,24 @@ class clientesController extends Controller
                         case '3':
                             $tipo_fecha = "fechaactulizaciones";
                             break;
+                        case '4':
+                            $tipo_fecha = "fechamodificacion";
+                            break;
                     }
 
-
                     if ($fecha) {
-                        $desde =  strtotime(explode(" / ", $fecha)[0]);
-                        $hasta =  strtotime(explode(" / ", $fecha)[1]);
+
+                        $desde =  explode(" / ", $fecha)[0];
+                        $hasta =  explode(" / ", $fecha)[1];
+
+                        if ($tipo_fecha == "fechamodificacion") {
+                            $desde = date('Y-m-d H:i:s', strtotime($desde));
+                            $hasta = date('Y-m-d H:i:s', strtotime($hasta . ' +1 day -1 second'));
+                        } else {
+                            $desde = strtotime(date('Y-m-d', strtotime($desde)));
+                            $hasta = strtotime(date('Y-m-d', strtotime($hasta)));
+                        }
+
                         $final = $final->whereBetween($tipo_fecha, [$desde, $hasta]);
                     }
                 }

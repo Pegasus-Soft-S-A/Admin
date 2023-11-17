@@ -65,7 +65,7 @@ class IdentificacionesController extends Controller
 
                 $response = curl_exec($curl);
                 curl_close($curl);
-                dd($response);
+
                 $xml = simplexml_load_string($response);
                 $data = $xml->children('SOAP-ENV', true)->Body->children('ns1', true)->nombreCedulaRegistroCivilResponse->children()->return;
                 $arrOutput = json_decode(json_encode($data), TRUE);
@@ -455,6 +455,7 @@ class IdentificacionesController extends Controller
                 }
                 break;
         }
+
         $datos['periodo'] = $licencia->periodo;
         $datos['sis_clientesid'] = $licencia->sis_clientesid;
         $datos['sis_servidoresid'] = $licencia->sis_servidoresid;
@@ -475,6 +476,8 @@ class IdentificacionesController extends Controller
         $parametros_json = json_decode($licencia->parametros_json);
         //si es facturito sumar los documentos
         if ($licencia->producto == 12) {
+            $datos['fechacaduca'] = date("Ymd", strtotime($licencia->fechacaduca . "+ 1 year"));
+            $asunto = 'Renovacion Anual Facturito';
             switch ($licencia->periodo) {
                 case '1':
                     $parametros_json->Documentos = $parametros_json->Documentos + 60;
@@ -1164,6 +1167,7 @@ class IdentificacionesController extends Controller
     public function consulta_notificaciones(Request $request)
     {
         $notificaciones = Notificaciones::whereBetween('fechapublicacion', [$request->inicio, $request->fin])
+            ->where('tipo', $request->tipo)
             ->get();
         return json_encode($notificaciones);
     }
@@ -1424,24 +1428,18 @@ class IdentificacionesController extends Controller
 
     public function gastosFacebook($inicio, $fin)
     {
-        // $resultado = Http::withHeaders([
-        //     'Authorization' => 'Bearer ' . 'EAAMNIHFYKQwBAKmUAGKPFLqlZCsu6IVbGRF7WZCfkFe7HrPpGFGzwd7O5PgYkqlVROl2rFlY9GHKKdFS7jREsrwRwMXOZCHPS1e9G421xHAAzAhZBgijt2MQ7LxPCzblXIZBTTr0KZAinQya0sW2dreWFyJIC1BuW9My7ebx6ZBsBARpBS16SATsyh2Pme3WvZA04ptrNA684gZDZD',
-        //     'Facebook-App-Id' => '858857921849612',
-        //     'Facebook-App-Secret' => 'a05faf55b6e2b9dc787620a35f0418cb',
-        // ])
-        //     ->withOptions(["verify" => false])
-        //     ->get("https://graph.facebook.com/v16.0/act_347213498749913/insights?level=campaign&fields=campaign_name,adset_name,ad_name,spend,actions&time_range={since:'$inicio',until:'$fin'}")
-        //     ->json();
+        $resultado = Http::withHeaders([
+            'Authorization' => 'Bearer ' . 'EAAMNIHFYKQwBAKmUAGKPFLqlZCsu6IVbGRF7WZCfkFe7HrPpGFGzwd7O5PgYkqlVROl2rFlY9GHKKdFS7jREsrwRwMXOZCHPS1e9G421xHAAzAhZBgijt2MQ7LxPCzblXIZBTTr0KZAinQya0sW2dreWFyJIC1BuW9My7ebx6ZBsBARpBS16SATsyh2Pme3WvZA04ptrNA684gZDZD',
+            'Facebook-App-Id' => '858857921849612',
+            'Facebook-App-Secret' => 'a05faf55b6e2b9dc787620a35f0418cb',
+        ])
+            ->withOptions(["verify" => false])
+            ->get("https://graph.facebook.com/v16.0/act_347213498749913/insights?level=campaign&fields=campaign_name,adset_name,ad_name,spend,actions&time_range={since:'$inicio',until:'$fin'}")
+            ->json();
 
-        // $data = collect($resultado['data']);
+        $data = collect(json_decode(json_encode($resultado['data']), true));
 
-        // $data->map(function ($item) {
-        //     $item['spend'] = number_format(floatval($item['spend']), 2, ',', '.');
-        //     return $item;
-        // });
-
-        // return response()->json([$data]);
-
+        return response()->json([$data]);
     }
 
     public function proximas_caducar($distribuidor = null)
@@ -1512,5 +1510,42 @@ class IdentificacionesController extends Controller
         }
 
         return json_encode(DB::select($query));
+    }
+
+    public function informacion_licencia(Request $request)
+    {
+        $licenciaid = $request->licenciaid;
+        $servidorid = $request->servidorid;
+
+        $query = "
+            SELECT
+                sis_clientes.identificacion,
+                sis_clientes.nombres,
+                sis_clientes.telefono2,
+                sis_clientes.correos,
+                sis_clientes.direccion,
+                sis_licencias_web.tipo_licencia,
+                sis_licencias_web.periodo,
+                sis_licencias_web.producto,
+                sis_clientes.sis_distribuidoresid,
+                vendedor.identificacion AS vendedor,
+                contador.identificacion AS contador_identificacion,
+                contador.razonsocial AS contador_nombres,
+                contador.correo AS contador_correo,
+                contador.celular AS contador_celular,
+                contador.direccion AS contador_direccion,
+                sis_licencias_web.modulopractico,
+                sis_licencias_web.modulocontrol,
+                sis_licencias_web.modulocontable
+            FROM
+                sis_clientes
+                INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid
+                INNER JOIN sis_revendedores AS vendedor ON vendedor.sis_revendedoresid = sis_clientes.sis_vendedoresid
+                INNER JOIN sis_revendedores AS contador ON contador.sis_revendedoresid = sis_clientes.sis_revendedoresid
+            WHERE
+                sis_licencias_web.sis_licenciasid = $licenciaid
+                AND sis_servidoresid = $servidorid";
+
+        return json_encode(DB::selectOne($query));
     }
 }

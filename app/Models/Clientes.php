@@ -202,9 +202,9 @@ class Clientes extends Model
             $i = 0;
             foreach ($keywords as $keyword) {
                 if ($i == 0) {
-                    $query .= " U.identificacion LIKE '%$keyword%'  or U.numerocontrato LIKE '%$keyword%'  or U.nombres LIKE '%$keyword%'";
+                    $query .= " U.identificacion LIKE '%$keyword%'  or U.numerocontrato LIKE '%$keyword%'  or U.nombres LIKE '%$keyword%' or U.telefono2 LIKE '%$keyword%' or U.correos LIKE '%$keyword%'";
                 } else {
-                    $query .= " OR U.identificacion LIKE '%$keyword%'  or U.numerocontrato LIKE '%$keyword%'  or U.nombres LIKE '%$keyword%'";
+                    $query .= " OR U.identificacion LIKE '%$keyword%'  or U.numerocontrato LIKE '%$keyword%'  or U.nombres LIKE '%$keyword%' or U.telefono2 LIKE '%$keyword%' or U.correos LIKE '%$keyword%'";
                 }
                 $i++;
             }

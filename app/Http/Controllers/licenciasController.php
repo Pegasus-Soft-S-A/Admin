@@ -278,6 +278,7 @@ class licenciasController extends Controller
             'cash_debito' => $request['cashdebito'] = $request->cashdebito == 'on' ? true : false,
             'reporte_equifax' => $request['equifax'] = $request->equifax == 'on' ? true : false,
             'caja_ahorros' => $request['ahorros'] = $request->ahorros == 'on' ? true : false,
+            'academico' => $request['academico'] = $request->academico == 'on' ? true : false,
         ];
         unset(
             $request['nomina'],
@@ -298,6 +299,7 @@ class licenciasController extends Controller
             $request['cashdebito'],
             $request['equifax'],
             $request['ahorros'],
+            $request['academico'],
             $request['tipo'],
         );
         $request['modulos'] = json_encode([$modulos]);
@@ -339,7 +341,7 @@ class licenciasController extends Controller
         $array['usuario'] = Auth::user()->nombres;
         $array['fecha'] = $request['fechacreacion'];
         $array['tipo'] = '2';
-
+        $array['fechaactulizaciones'] = $licencia->fechaactulizaciones;
         $emails = explode(", ", $cliente->distribuidor);
 
         $emails = array_merge($emails,  [
@@ -866,6 +868,7 @@ class licenciasController extends Controller
             'cash_debito' => $request['cashdebito'] = $request->cashdebito == 'on' ? true : false,
             'reporte_equifax' => $request['equifax'] = $request->equifax == 'on' ? true : false,
             'caja_ahorros' => $request['ahorros'] = $request->ahorros == 'on' ? true : false,
+            'academico' => $request['academico'] = $request->academico == 'on' ? true : false,
         ];
         unset(
             $request['nomina'],
@@ -886,6 +889,7 @@ class licenciasController extends Controller
             $request['cashdebito'],
             $request['equifax'],
             $request['ahorros'],
+            $request['academico'],
             $request['tipo'],
             $request['empresas_activas'],
             $request['empresas_inactivas'],

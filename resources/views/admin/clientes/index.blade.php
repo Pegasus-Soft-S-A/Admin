@@ -114,6 +114,7 @@
                                             <option value="1">Fecha Inicio</option>
                                             <option value="2">Fecha Caduca</option>
                                             <option value="3">Fecha Actualizacion</option>
+                                            <option value="4">Fecha Modificacion</option>
                                         </select>
                                     </div>
                                     <div class="col-lg-3 mb-lg-0 mb-6">

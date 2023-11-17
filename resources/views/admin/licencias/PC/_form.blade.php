@@ -751,6 +751,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         $("#cashmanager").prop("disabled", false);
         $("#equifax").prop("disabled", false);
         $("#ahorros").prop("disabled", false);
+        $("#academico").prop("disabled", false);
 
         event.preventDefault();
         permisos='';
@@ -1116,6 +1117,9 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         $('#215').prop('checked', estado);
         $('#505').prop('checked', estado);
         $('#510').prop('checked', estado);
+        $('#515').prop('checked', estado);
+        $('#516').prop('checked', estado);
+        $('#517').prop('checked', estado);
         $('#462').prop('checked', estado);
         $('#463').prop('checked', estado);
         $('#485').prop('checked', estado);
