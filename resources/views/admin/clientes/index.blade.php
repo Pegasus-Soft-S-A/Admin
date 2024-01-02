@@ -181,6 +181,19 @@
                                         </select>
                                     </div>
                                     <div class="col-lg-3 mb-lg-0 mb-6">
+                                        <label>Revendedor:</label>
+                                        <select class="form-control datatable-input select2" id="revendedor"
+                                            name="revendedor">
+                                            <option value="">Todos</option>
+                                            @foreach ($revendedores as $vendedor)
+                                            <option value="{{ $vendedor->sis_revendedoresid }}">
+                                                {{ $vendedor->razonsocial }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-8">
+                                    <div class="col-lg-3 mb-lg-0 mb-6">
                                         <label>Provincias:</label>
                                         <select class="form-control datatable-input select2" id="provinciasid"
                                             name="provinciasid">
@@ -257,8 +270,6 @@
                                                 Chinchipe</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row mb-8">
                                     @if (Auth::user()->tipo == 1)
                                     <div class="col-lg-3 mb-lg-0 mb-6">
                                         <label>Origen:</label>
@@ -278,6 +289,8 @@
                                             <option value="14">UIO-03</option>
                                             <option value="15">UIO-04</option>
                                             <option value="16">UIO-05</option>
+                                            <option value="18">SP-01</option>
+                                            <option value="17">Tienda</option>
                                         </select>
                                     </div>
                                     <div class="col-lg-3 mb-lg-0 mb-6">
@@ -492,6 +505,7 @@
                     d.producto= $("#producto").val();
                     d.distribuidor= $("#distribuidor").val();
                     d.vendedor= $("#vendedor").val();
+                    d.revendedor= $("#revendedor").val();
                     d.origen= $("#origen").val();
                     d.validado= $("#validado").val();
                     d.provinciasid = $("#provinciasid").val();

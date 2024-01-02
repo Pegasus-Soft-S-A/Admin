@@ -30,9 +30,11 @@ class clientesController extends Controller
 
         if (Auth::user()->tipo == 1 || Auth::user()->tipo == 6) {
             $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->orderBy('sis_revendedores.razonsocial')->get();
+            $revendedores = Revendedores::where('sis_revendedores.tipo', 1)->orderBy('sis_revendedores.razonsocial')->get();
             $distribuidores = Distribuidores::all();
         } else {
             $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->where('sis_revendedores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->orderBy('sis_revendedores.razonsocial')->get();
+            $revendedores = Revendedores::where('sis_revendedores.tipo', 1)->where('sis_revendedores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->orderBy('sis_revendedores.razonsocial')->get();
             $distribuidores = Distribuidores::where('sis_distribuidores.sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
         }
 
@@ -41,7 +43,7 @@ class clientesController extends Controller
         $merged = collect($licencias);
         Session::put('data', $merged);
 
-        return view('admin.clientes.index', compact('vendedores', 'distribuidores'));
+        return view('admin.clientes.index', compact('vendedores', 'distribuidores', 'revendedores'));
     }
 
     public function cargarTabla(Request $request)
@@ -53,6 +55,7 @@ class clientesController extends Controller
             $fecha = $request->fecha;
             $distribuidor = $request->distribuidor;
             $vendedor = $request->vendedor;
+            $revendedor = $request->revendedor;
             $origen = $request->origen;
             $validado = $request->validado;
             $producto = $request->producto;
@@ -128,6 +131,10 @@ class clientesController extends Controller
 
                 if ($vendedor != null) {
                     $final = $final->where('sis_vendedoresid', $vendedor);
+                }
+
+                if ($revendedor != null) {
+                    $final = $final->where('sis_revendedoresid', $revendedor);
                 }
 
                 if ($origen != null) {
@@ -352,8 +359,12 @@ class clientesController extends Controller
                             break;
                         case '16':
                             $producto = "UIO-05";
+                            break;
                         case '17':
                             $producto = "Tienda";
+                            break;
+                        case '18':
+                            $producto = "SP-01";
                             break;
                         default:
                     }

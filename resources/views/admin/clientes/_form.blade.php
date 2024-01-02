@@ -262,6 +262,8 @@ $grupos = App\Models\Grupos::get();
             </option>
             <option value="16" {{ old('red_origen', $cliente->red_origen) == '16' ? 'Selected' : '' }}>UIO-05
             </option>
+            <option value="18" {{ old('red_origen', $cliente->red_origen) == '18' ? 'Selected' : '' }}>SP-01
+            </option>
             <option value="17" {{ old('red_origen', $cliente->red_origen) == '17' ? 'Selected' : '' }}>Tienda
             </option>
             @endif

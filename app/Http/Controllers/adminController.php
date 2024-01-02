@@ -167,7 +167,7 @@ class adminController extends Controller
                 //Siempre que se hace login es recomendable regenerar las sesiones
                 $request->session()->regenerate();
                 if (Auth::user()->tipo == 5) {
-                    return redirect()->route('publicidad.index');
+                    return redirect()->route('notificaciones.index');
                 }
                 return redirect()->route('clientes.index');
             } else {
@@ -416,12 +416,17 @@ class adminController extends Controller
 
         switch ($request['red_origen']) {
             case '3':
-            case '8':
             case '14':
             case '16':
                 //Delta lead Stefany
                 $distribuidor = 2;
                 $assigned_id = 34745;
+                $source_id = 24;
+                break;
+            case '8':
+                //Delta Sonia Mendez
+                $distribuidor = 2;
+                $assigned_id = 25939;
                 $source_id = 24;
                 break;
             case '15':
@@ -476,6 +481,14 @@ class adminController extends Controller
                 "UF_CRM_1668442025742" => $grupo,
             ]
         ];
+
+        if ($request['red_origen'] == 8) {
+            $fields["fields"]["SOURCE_DESCRIPTION"] = "Contador Eficiente Link 02";
+        }
+
+        if ($request['red_origen'] == 15) {
+            $fields["fields"]["SOURCE_DESCRIPTION"] = "Tu Sistema Contable Link 04";
+        }
 
         //consumir api de bitrix
         $url = 'https://b24-mh9fll.bitrix24.es/rest/5507/zcc5hapr3zyri76d/crm.lead.add.json';

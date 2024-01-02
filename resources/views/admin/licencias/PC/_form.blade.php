@@ -607,6 +607,21 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                             </label>
                         </span>
                     </div>
+
+                    <label class="col-4 col-form-label">Perseo Contador</label>
+                    <div class="col-2">
+                        <span class="switch switch-outline switch-icon switch-primary switch-sm">
+                            <label>
+                                <input @if (isset($modulos[0]->perseo_contador)) @if ($modulos[0]->perseo_contador==
+                                true))
+                                checked="checked" @endif @endif
+                                type="checkbox" name="perseo_contador" id="perseo_contador" @if($rol!=1 && $accion ==
+                                'Modificar')
+                                disabled @endif/>
+                                <span></span>
+                            </label>
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -752,6 +767,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         $("#equifax").prop("disabled", false);
         $("#ahorros").prop("disabled", false);
         $("#academico").prop("disabled", false);
+        $("#perseo_contador").prop("disabled", false);
 
         event.preventDefault();
         permisos='';

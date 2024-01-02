@@ -60,6 +60,19 @@
 </div>
 <div class="form-group row">
     <div class="col-lg-6">
+        <label>Tipo Contenido:</label>
+        <select class="form-control select2" id="tipo_contenido" name="tipo_contenido">
+            <option value="1" {{ old('tipo_contenido', $notificaciones->tipo_contenido) == '1' ? 'Selected' : ''
+                }}>HTML
+            </option>
+            <option value="2" {{ old('tipo_contenido', $notificaciones->tipo_contenido) == '2' ? 'Selected' : '' }}>URL
+            </option>
+        </select>
+        @if ($errors->has('tipo'))
+        <span class="text-danger">{{ $errors->first('tipo') }}</span>
+        @endif
+    </div>
+    <div class="col-lg-6">
         <label>Fecha Publicacion:</label>
         <input type="text" class="form-control {{ $errors->has('fechapublicacion') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Fecha Publicacion" name="fechapublicacion" id="fechapublicacion" autocomplete="off"
@@ -68,6 +81,9 @@
         <span class="text-danger">{{ $errors->first('fechapublicacion') }}</span>
         @endif
     </div>
+
+</div>
+<div class="form-group row">
     <div class="col-lg-6">
         <label>Asunto:</label>
         <input type="text" class="form-control {{ $errors->has('asunto') ? 'is-invalid' : '' }}"
@@ -91,7 +107,7 @@
 @section('script')
 <script>
     $(document).ready(function() {
-         //Iniciar fecha 
+         //Iniciar fecha
         $('#fechapublicacion').datepicker({
                 language: "es",
                 todayHighlight: true,

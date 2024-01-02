@@ -51,7 +51,7 @@ class IdentificacionesController extends Controller
                             <arg2>1001</arg2>
                             <arg3>1001</arg3>
                             <arg4>perseo</arg4>
-                            <arg5>perseo</arg5>
+                            <arg5>software</arg5>
                             <arg6>IGESeec92e31032ab99345a4d4f3ecea</arg6>
                             </nombreCedulaRegistroCivilRequest>
                         </soap:Body>
@@ -59,7 +59,7 @@ class IdentificacionesController extends Controller
         ',
                     CURLOPT_HTTPHEADER => array(
                         'Content-Type: text/xml; charset=utf-8',
-                        'SOAPAction: http://merlyna.com/.perfect/abc/webserviceSRI-RegistroCivil.php'
+                        'SOAPAction: http://merlyna.com//abc/webserviceSRI-RegistroCivil.php'
                     ),
                 ));
 
@@ -83,6 +83,7 @@ class IdentificacionesController extends Controller
                 $request->telefono3 = '';
                 $request->tipo_contribuyente = '0';
                 $request->obligado = '0';
+
                 return json_encode($this->crearIdentificacion($request));
             } catch (\Exception $e) {
             }
@@ -274,7 +275,11 @@ class IdentificacionesController extends Controller
 
     public function licencia_consulta(Request $request)
     {
-        $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
+        $licencia = Licencias::select('sis_licencias.*', "sis_clientes.nombres", "sis_clientes.identificacion", "sis_clientes.correos", "sis_clientes.telefono2")
+            ->where('numerocontrato', $request->numerocontrato)
+            ->join('sis_clientes', 'sis_clientes.sis_clientesid', 'sis_licencias.sis_clientesid')
+            ->first();
+
         return json_encode(["licencia" => [$licencia]]);
     }
 
@@ -1167,8 +1172,10 @@ class IdentificacionesController extends Controller
     public function consulta_notificaciones(Request $request)
     {
         $notificaciones = Notificaciones::whereBetween('fechapublicacion', [$request->inicio, $request->fin])
-            ->where('tipo', $request->tipo)
+            ->whereIn('tipo', [0, $request->tipo])
+            ->whereIn('sis_distribuidoresid', [0, $request->distribuidor])
             ->get();
+
         return json_encode($notificaciones);
     }
 
