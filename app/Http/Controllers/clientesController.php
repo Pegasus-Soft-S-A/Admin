@@ -366,6 +366,18 @@ class clientesController extends Controller
                         case '18':
                             $producto = "SP-01";
                             break;
+                        case '19':
+                            $producto = "SP-02";
+                            break;
+                        case '20':
+                            $producto = "SP-03";
+                            break;
+                        case '21':
+                            $producto = "SP-04";
+                            break;
+                        case '22':
+                            $producto = "SP-05";
+                            break;
                         default:
                     }
                     return $producto;

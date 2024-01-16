@@ -333,9 +333,11 @@ $grupos = App\Models\Grupos::get();
                                         <option value="16" {{ $id=='UIO-05' ? 'Selected' : '' }}>
                                             UIO-05
                                         </option>
-                                        <option value="18" {{ $id=='SP-01' ? 'Selected' : '' }}>
-                                            SP-01
-                                        </option>
+                                        <option value="18" {{ $id=='SP-01' ? 'Selected' : '' }}>SP-01</option>
+                                        <option value="19" {{ $id=='SP-02' ? 'Selected' : '' }}>SP-02</option>
+                                        <option value="20" {{ $id=='SP-03' ? 'Selected' : '' }}>SP-03</option>
+                                        <option value="21" {{ $id=='SP-04' ? 'Selected' : '' }}>SP-04</option>
+                                        <option value="22" {{ $id=='SP-05' ? 'Selected' : '' }}>SP-05</option>
                                     </select>
                                 </div>
                             </div>

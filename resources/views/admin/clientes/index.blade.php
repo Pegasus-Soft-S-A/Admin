@@ -290,6 +290,10 @@
                                             <option value="15">UIO-04</option>
                                             <option value="16">UIO-05</option>
                                             <option value="18">SP-01</option>
+                                            <option value="19">SP-02</option>
+                                            <option value="20">SP-03</option>
+                                            <option value="21">SP-04</option>
+                                            <option value="22">SP-05</option>
                                             <option value="17">Tienda</option>
                                         </select>
                                     </div>

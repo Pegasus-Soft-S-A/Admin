@@ -55,7 +55,8 @@ class Clientes extends Model
         sis_licencias.modulocontrol,
         sis_licencias.modulocontable,
         sis_licencias.cantidadempresas,
-        sis_clientes.validado
+        sis_clientes.validado,
+        sis_licencias.Identificador
     FROM
         sis_licencias
         INNER JOIN sis_clientes ON sis_licencias.sis_clientesid = sis_clientes.sis_clientesid UNION
@@ -95,7 +96,8 @@ class Clientes extends Model
         '' AS modulocontrol,
         '' AS modulocontable,
         '' AS cantidadempresas,
-        sis_clientes.validado
+        sis_clientes.validado,
+        '' AS Identificador
     FROM
         sis_licencias_vps
         INNER JOIN sis_clientes ON sis_licencias_vps.sis_clientesid = sis_clientes.sis_clientesid UNION
@@ -137,7 +139,8 @@ class Clientes extends Model
         sis_licencias_web.modulocontrol,
         sis_licencias_web.modulocontable,
         '' AS cantidadempresas,
-        sis_clientes.validado
+        sis_clientes.validado,
+        '' AS Identificador
     FROM
         sis_clientes
         INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid UNION
@@ -177,7 +180,8 @@ class Clientes extends Model
         '' AS modulocontrol,
         '' AS modulocontable,
         '' AS cantidadempresas,
-        sis_clientes.validado
+        sis_clientes.validado,
+        '' AS Identificador
     FROM
         sis_clientes
     WHERE
@@ -202,9 +206,9 @@ class Clientes extends Model
             $i = 0;
             foreach ($keywords as $keyword) {
                 if ($i == 0) {
-                    $query .= " U.identificacion LIKE '%$keyword%'  or U.numerocontrato LIKE '%$keyword%'  or U.nombres LIKE '%$keyword%' or U.telefono2 LIKE '%$keyword%' or U.correos LIKE '%$keyword%'";
+                    $query .= " U.identificacion LIKE '%$keyword%'  or U.numerocontrato LIKE '%$keyword%'  or U.nombres LIKE '%$keyword%' or U.telefono2 LIKE '%$keyword%' or U.Identificador LIKE '%$keyword%' or U.correos LIKE '%$keyword%'";
                 } else {
-                    $query .= " OR U.identificacion LIKE '%$keyword%'  or U.numerocontrato LIKE '%$keyword%'  or U.nombres LIKE '%$keyword%' or U.telefono2 LIKE '%$keyword%' or U.correos LIKE '%$keyword%'";
+                    $query .= " OR U.identificacion LIKE '%$keyword%'  or U.numerocontrato LIKE '%$keyword%'  or U.nombres LIKE '%$keyword%' or U.telefono2 LIKE '%$keyword%' or U.Identificador LIKE '%$keyword%' or U.correos LIKE '%$keyword%'";
                 }
                 $i++;
             }
@@ -216,6 +220,7 @@ class Clientes extends Model
         }
 
         $query .= " ORDER BY U.sis_clientesid DESC";
+
         return  DB::select($query);
     }
 }

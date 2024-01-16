@@ -336,7 +336,7 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
             //Enviar swirch que estan disabled
             $("#sis_agrupadosid").prop("disabled", false);
 
-        });
+    });
 
         $("#renovarmensual").click(function(e) {
             confirmar('mes', "Está seguro de Renovar la Licencia?");

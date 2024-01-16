@@ -372,132 +372,138 @@ class adminController extends Controller
             ],
         );
 
-        switch ($request['grupo']) {
-            case '1':
-                $grupo = '599';
-                break;
-            case '2':
-                $grupo = '601';
-                break;
-            case '3':
-                $grupo = '603';
-                break;
-            case '4':
-                $grupo = '605';
-                break;
-            case '5':
-                $grupo = '607';
-                break;
-            case '6':
-                $grupo = '609';
-                break;
-            case '7':
-                $grupo = '611';
-                break;
-            case '8':
-                $grupo = '613';
-                break;
-            case '9':
-                $grupo = '615';
-                break;
-            case '10':
-                $grupo = '617';
-                break;
-            case '11':
-                $grupo = '621';
-                break;
-            case '12':
-                $grupo = '623';
-                break;
-            default:
-                $grupo = '599';
-                break;
-        }
+        $distribuidores = [1, 2, 3, 8, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17];
 
-        switch ($request['red_origen']) {
-            case '3':
-            case '14':
-            case '16':
-                //Delta lead Stefany
-                $distribuidor = 2;
-                $assigned_id = 34745;
-                $source_id = 24;
-                break;
-            case '8':
-                //Delta Sonia Mendez
-                $distribuidor = 2;
-                $assigned_id = 25939;
-                $source_id = 24;
-                break;
-            case '15':
-                //Delta lead Karla Armas
-                $distribuidor = 2;
-                $assigned_id = 38585;
-                $source_id = 24;
-                break;
-            case '6':
-            case '12':
-                // case '13':
-                //Omega
-                $distribuidor = 3;
-                $assigned_id = 29359;
-                $source_id = 25;
-                break;
-            case '2':
-            case '7':
-                //Alfa
-                $distribuidor = 1;
-                $assigned_id = 32045;
-                $source_id = 23;
-                break;
-            case '11':
-            default:
-                //matriz
-                $distribuidor = 6;
-                $assigned_id = 36925;
-                $source_id = 26;
-                break;
-        }
+        //Si no es de ningun distribuidor no se crea bitrix
+        if (in_array($request['red_origen'], $distribuidores)) {
+
+            switch ($request['grupo']) {
+                case '1':
+                    $grupo = '599';
+                    break;
+                case '2':
+                    $grupo = '601';
+                    break;
+                case '3':
+                    $grupo = '603';
+                    break;
+                case '4':
+                    $grupo = '605';
+                    break;
+                case '5':
+                    $grupo = '607';
+                    break;
+                case '6':
+                    $grupo = '609';
+                    break;
+                case '7':
+                    $grupo = '611';
+                    break;
+                case '8':
+                    $grupo = '613';
+                    break;
+                case '9':
+                    $grupo = '615';
+                    break;
+                case '10':
+                    $grupo = '617';
+                    break;
+                case '11':
+                    $grupo = '621';
+                    break;
+                case '12':
+                    $grupo = '623';
+                    break;
+                default:
+                    $grupo = '599';
+                    break;
+            }
+
+            switch ($request['red_origen']) {
+                case '3':
+                case '14':
+                case '16':
+                    //Delta lead Stefany
+                    $distribuidor = 2;
+                    $assigned_id = 34745;
+                    $source_id = 24;
+                    break;
+                case '8':
+                    //Delta Sonia Mendez
+                    $distribuidor = 2;
+                    $assigned_id = 25939;
+                    $source_id = 24;
+                    break;
+                case '15':
+                    //Delta lead Karla Armas
+                    $distribuidor = 2;
+                    $assigned_id = 38585;
+                    $source_id = 24;
+                    break;
+                case '6':
+                case '12':
+                    // case '13':
+                    //Omega
+                    $distribuidor = 3;
+                    $assigned_id = 29359;
+                    $source_id = 25;
+                    break;
+                case '2':
+                case '7':
+                    //Alfa
+                    $distribuidor = 1;
+                    $assigned_id = 32045;
+                    $source_id = 23;
+                    break;
+                case '11':
+                default:
+                    //matriz
+                    $distribuidor = 6;
+                    $assigned_id = 36925;
+                    $source_id = 26;
+                    break;
+            }
 
 
-        $telefono = "+593" . substr($request['telefono2'], 1, 9);
-        //Json para enviar a la API de bitrix
-        $fields = [
-            "fields" => [
-                "ASSIGNED_BY_ID" => $assigned_id,
-                "TITLE" => "Nuevo registro lite",
-                "SOURCE_ID" => $source_id,
-                "NAME" => $request['nombres'],
-                "ADDRESS" => $request['direccion'],
-                "PHONE" => [[
-                    "VALUE" => $telefono,
-                    "VALUE_TYPE" => "WORK"
-                ]],
-                "EMAIL" => [[
-                    "VALUE" => $request['correos'],
-                    "VALUE_TYPE" => "WORK"
-                ]],
-                "UF_CRM_1656951427626" => $request['texto_ciudad'],
-                "UF_CRM_1668442025742" => $grupo,
-            ]
-        ];
+            $telefono = "+593" . substr($request['telefono2'], 1, 9);
+            //Json para enviar a la API de bitrix
+            $fields = [
+                "fields" => [
+                    "ASSIGNED_BY_ID" => $assigned_id,
+                    "TITLE" => "Nuevo registro lite",
+                    "SOURCE_ID" => $source_id,
+                    "NAME" => $request['nombres'],
+                    "ADDRESS" => $request['direccion'],
+                    "PHONE" => [[
+                        "VALUE" => $telefono,
+                        "VALUE_TYPE" => "WORK"
+                    ]],
+                    "EMAIL" => [[
+                        "VALUE" => $request['correos'],
+                        "VALUE_TYPE" => "WORK"
+                    ]],
+                    "UF_CRM_1656951427626" => $request['texto_ciudad'],
+                    "UF_CRM_1668442025742" => $grupo,
+                ]
+            ];
 
-        if ($request['red_origen'] == 8) {
-            $fields["fields"]["SOURCE_DESCRIPTION"] = "Contador Eficiente Link 02";
-        }
+            if ($request['red_origen'] == 8) {
+                $fields["fields"]["SOURCE_DESCRIPTION"] = "Contador Eficiente Link 02";
+            }
 
-        if ($request['red_origen'] == 15) {
-            $fields["fields"]["SOURCE_DESCRIPTION"] = "Tu Sistema Contable Link 04";
-        }
+            if ($request['red_origen'] == 15) {
+                $fields["fields"]["SOURCE_DESCRIPTION"] = "Tu Sistema Contable Link 04";
+            }
 
-        //consumir api de bitrix
-        $url = 'https://b24-mh9fll.bitrix24.es/rest/5507/zcc5hapr3zyri76d/crm.lead.add.json';
-        $res = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-            ->withOptions(["verify" => false])
-            ->post($url, $fields)
-            ->json();
+            //consumir api de bitrix
+            $url = 'https://b24-mh9fll.bitrix24.es/rest/5507/9mgnss30ssjdu1ay/crm.lead.add.json';
+            $res = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+                ->withOptions(["verify" => false])
+                ->post($url, $fields)
+                ->json();
 
-        if (array_key_exists('error', $res)) {
+            if (array_key_exists('error', $res)) {
+            }
         }
 
         //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
