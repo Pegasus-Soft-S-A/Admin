@@ -7,6 +7,7 @@ use App\Models\Ciudades;
 use App\Models\Clientes;
 use App\Models\Licencias;
 use App\Models\Licenciasweb;
+use App\Models\Links;
 use App\Models\Log;
 use App\Models\Publicidades;
 use App\Models\Servidores;
@@ -341,7 +342,8 @@ class adminController extends Controller
     public function registro()
     {
         $identificacion = 0;
-        return view('admin.auth.registro', compact('identificacion'));
+        $links = Links::where('estado', 1)->get();
+        return view('admin.auth.registro', compact('identificacion', 'links'));
     }
 
     public function post_registro(Request $request)
@@ -372,10 +374,15 @@ class adminController extends Controller
             ],
         );
 
-        $distribuidores = [1, 2, 3, 8, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17];
+        $link = Links::where('sis_linksid', $request['red_origen'])->first();
 
-        //Si no es de ningun distribuidor no se crea bitrix
-        if (in_array($request['red_origen'], $distribuidores)) {
+        $distribuidor = $link->sis_distribuidoresid;
+        $assigned_id = $link->usuarioid;
+        $source_id = $link->origenid;
+        $descripcion = $link->descripcion;
+
+        //Verificar si se debe registrar en bitrix
+        if ($link->registra_bitrix == 1) {
 
             switch ($request['grupo']) {
                 case '1':
@@ -419,52 +426,6 @@ class adminController extends Controller
                     break;
             }
 
-            switch ($request['red_origen']) {
-                case '3':
-                case '14':
-                case '16':
-                    //Delta lead Stefany
-                    $distribuidor = 2;
-                    $assigned_id = 34745;
-                    $source_id = 24;
-                    break;
-                case '8':
-                    //Delta Sonia Mendez
-                    $distribuidor = 2;
-                    $assigned_id = 25939;
-                    $source_id = 24;
-                    break;
-                case '15':
-                    //Delta lead Karla Armas
-                    $distribuidor = 2;
-                    $assigned_id = 38585;
-                    $source_id = 24;
-                    break;
-                case '6':
-                case '12':
-                    // case '13':
-                    //Omega
-                    $distribuidor = 3;
-                    $assigned_id = 29359;
-                    $source_id = 25;
-                    break;
-                case '2':
-                case '7':
-                    //Alfa
-                    $distribuidor = 1;
-                    $assigned_id = 32045;
-                    $source_id = 23;
-                    break;
-                case '11':
-                default:
-                    //matriz
-                    $distribuidor = 6;
-                    $assigned_id = 36925;
-                    $source_id = 26;
-                    break;
-            }
-
-
             $telefono = "+593" . substr($request['telefono2'], 1, 9);
             //Json para enviar a la API de bitrix
             $fields = [
@@ -472,6 +433,7 @@ class adminController extends Controller
                     "ASSIGNED_BY_ID" => $assigned_id,
                     "TITLE" => "Nuevo registro lite",
                     "SOURCE_ID" => $source_id,
+                    "SOURCE_DESCRIPTION" => $descripcion,
                     "NAME" => $request['nombres'],
                     "ADDRESS" => $request['direccion'],
                     "PHONE" => [[
@@ -486,14 +448,6 @@ class adminController extends Controller
                     "UF_CRM_1668442025742" => $grupo,
                 ]
             ];
-
-            if ($request['red_origen'] == 8) {
-                $fields["fields"]["SOURCE_DESCRIPTION"] = "Contador Eficiente Link 02";
-            }
-
-            if ($request['red_origen'] == 15) {
-                $fields["fields"]["SOURCE_DESCRIPTION"] = "Tu Sistema Contable Link 04";
-            }
 
             //consumir api de bitrix
             $url = 'https://b24-mh9fll.bitrix24.es/rest/5507/9mgnss30ssjdu1ay/crm.lead.add.json';

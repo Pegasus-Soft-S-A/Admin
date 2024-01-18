@@ -87,6 +87,13 @@
                     </a>
                 </li>
 
+                <li class="menu-item {{ areActiveRoutes(['links.index']) }} " aria-haspopup="true">
+                    <a href="{{ route('links.index') }}" class="menu-link">
+                        <i class="menu-icon fa fa-link"></i>
+                        <span class="menu-text">Links</span>
+                    </a>
+                </li>
+
                 @endif
 
                 @if (Auth::user()->tipo==1 || Auth::user()->tipo==5)

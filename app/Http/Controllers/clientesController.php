@@ -8,6 +8,7 @@ use App\Models\Distribuidores;
 use App\Models\Grupos;
 use App\Models\Licencias;
 use App\Models\Licenciasweb;
+use App\Models\Links;
 use App\Models\Log;
 use App\Models\Revendedores;
 use App\Models\Servidores;
@@ -62,6 +63,7 @@ class clientesController extends Controller
             $periodo = $request->periodo;
             $provinciasid = $request->provinciasid;
             $distribuidores = Distribuidores::pluck('sis_distribuidoresid', 'razonsocial')->toArray();
+            $links = Links::all()->toArray();
             $grupos = Grupos::all()->toArray();
             $vendedores = Revendedores::all()->toArray();
 
@@ -309,78 +311,9 @@ class clientesController extends Controller
                     }
                     return $producto;
                 })
-                ->editColumn('red_origen', function ($cliente) {
-                    $origen = "";
-                    switch ($cliente->red_origen) {
-                        case '1':
-                            $producto = "PERSEO";
-                            break;
-                        case '2':
-                            $producto = "CONTAFACIL";
-                            break;
-                        case '3':
-                            $producto = "UIO-01";
-                            break;
-                        case '4':
-                            $producto = "GYE-01";
-                            break;
-                        case '5':
-                            $producto = "GYE-02";
-                            break;
-                        case '6':
-                            $producto = "CUE-01";
-                            break;
-                        case '7':
-                            $producto = "STO-01";
-                            break;
-                        case '8':
-                            $producto = "UIO-02";
-                            break;
-                        case '9':
-                            $producto = "GYE-03";
-                            break;
-                        case '10':
-                            $producto = "CNV-01";
-                            break;
-                        case '11':
-                            $producto = "MATRIZ";
-                            break;
-                        case '12':
-                            $producto = "CUE-02";
-                            break;
-                        case '13':
-                            $producto = "CUE-03";
-                            break;
-                        case '14':
-                            $producto = "UIO-03";
-                            break;
-                        case '15':
-                            $producto = "UIO-04";
-                            break;
-                        case '16':
-                            $producto = "UIO-05";
-                            break;
-                        case '17':
-                            $producto = "Tienda";
-                            break;
-                        case '18':
-                            $producto = "SP-01";
-                            break;
-                        case '19':
-                            $producto = "SP-02";
-                            break;
-                        case '20':
-                            $producto = "SP-03";
-                            break;
-                        case '21':
-                            $producto = "SP-04";
-                            break;
-                        case '22':
-                            $producto = "SP-05";
-                            break;
-                        default:
-                    }
-                    return $producto;
+                ->editColumn('red_origen', function ($cliente) use ($links) {
+                    $posicion = array_search($cliente->red_origen, array_column($links, 'sis_linksid'));
+                    return $links[$posicion]['codigo'];
                 })
                 ->editColumn('provinciasid', function ($cliente) {
 
@@ -497,8 +430,8 @@ class clientesController extends Controller
         } else {
             $distribuidores = Distribuidores::where('sis_distribuidoresid', Auth::user()->sis_distribuidoresid)->get();
         }
-
-        return view('admin.clientes.crear', compact('cliente', 'distribuidores'));
+        $links = Links::where('estado', 1)->get();
+        return view('admin.clientes.crear', compact('cliente', 'distribuidores', 'links'));
     }
 
     public function guardar(Request $request)
@@ -608,7 +541,8 @@ class clientesController extends Controller
     public function editar(Request $request, clientes $cliente)
     {
         $distribuidores = Distribuidores::all();
-        return view('admin.clientes.editar', compact('cliente', 'distribuidores'));
+        $links = Links::where('estado', 1)->get();
+        return view('admin.clientes.editar', compact('cliente', 'distribuidores', 'links'));
     }
 
     public function actualizar(Request $request, Clientes $cliente)

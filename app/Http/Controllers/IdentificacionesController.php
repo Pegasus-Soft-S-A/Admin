@@ -27,7 +27,6 @@ class IdentificacionesController extends Controller
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
         $buscar = Identificaciones::whereIn('identificacion', [$identificacionIngresada, $request->identificacion, $request->identificacion . '001'])->first();
-        //$buscar = Identificaciones::where('identificacion', 'like', $identificacionIngresada . '%')->first();
 
         if (!$buscar) {
             try {

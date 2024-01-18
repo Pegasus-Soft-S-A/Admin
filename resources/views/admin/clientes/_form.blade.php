@@ -234,47 +234,13 @@ $grupos = App\Models\Grupos::get();
     <div class="col-lg-3">
         <label>Origen:</label>
         <select class="form-control select2" id="red_origen" name="red_origen">
-            {{-- <option value="">Seleccione un Origen</option> --}}
-            <option value="1" {{ old('red_origen', $cliente->red_origen) == '1' ? 'Selected' : '' }}>Perseo
-            </option>
-            @if ($rol == 1)
-            <option value="2" {{ old('red_origen', $cliente->red_origen) == '2' ? 'Selected' : '' }}>
-                Contafácil</option>
-            <option value="3" {{ old('red_origen', $cliente->red_origen) == '3' ? 'Selected' : '' }}>UIO-01
-            </option>
-            <option value="8" {{ old('red_origen', $cliente->red_origen) == '8' ? 'Selected' : '' }}>UIO-02
-            </option>
-            <option value="6" {{ old('red_origen', $cliente->red_origen) == '6' ? 'Selected' : '' }}>CUE-01
-            </option>
-            <option value="7" {{ old('red_origen', $cliente->red_origen) == '7' ? 'Selected' : '' }}>STO-01
-            </option>
-            <option value="10" {{ old('red_origen', $cliente->red_origen) == '10' ? 'Selected' : '' }}>CNV-01
-            </option>
-            <option value="11" {{ old('red_origen', $cliente->red_origen) == '11' ? 'Selected' : '' }}>MATRIZ
-            </option>
-            <option value="12" {{ old('red_origen', $cliente->red_origen) == '12' ? 'Selected' : '' }}>CUE-02
-            </option>
-            <option value="13" {{ old('red_origen', $cliente->red_origen) == '13' ? 'Selected' : '' }}>CUE-03
-            </option>
-            <option value="14" {{ old('red_origen', $cliente->red_origen) == '14' ? 'Selected' : '' }}>UIO-03
-            </option>
-            <option value="15" {{ old('red_origen', $cliente->red_origen) == '15' ? 'Selected' : '' }}>UIO-04
-            </option>
-            <option value="16" {{ old('red_origen', $cliente->red_origen) == '16' ? 'Selected' : '' }}>UIO-05
-            </option>
-            <option value="18" {{ old('red_origen', $cliente->red_origen) == '18' ? 'Selected' : '' }}>SP-01
-            </option>
-            <option value="19" {{ old('red_origen', $cliente->red_origen) == '19' ? 'Selected' : '' }}>SP-02
-            </option>
-            <option value="20" {{ old('red_origen', $cliente->red_origen) == '20' ? 'Selected' : '' }}>SP-03
-            </option>
-            <option value="21" {{ old('red_origen', $cliente->red_origen) == '21' ? 'Selected' : '' }}>SP-04
-            </option>
-            <option value="22" {{ old('red_origen', $cliente->red_origen) == '22' ? 'Selected' : '' }}>SP-05
-            </option>
-            <option value="17" {{ old('red_origen', $cliente->red_origen) == '17' ? 'Selected' : '' }}>Tienda
-            </option>
-            @endif
+            @foreach ($links as $link)
+            <option value="{{ $link->sis_linksid }}" {{ $link->sis_linksid==
+                $cliente->red_origen
+                ? 'Selected'
+                : '' }}>
+                {{ $link->codigo }}</option>
+            @endforeach
         </select>
         @if ($errors->has('red_origen'))
         <span class="text-danger">{{ $errors->first('red_origen') }}</span>

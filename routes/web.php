@@ -5,6 +5,7 @@ use App\Http\Controllers\agrupadosController;
 use App\Http\Controllers\clientesController;
 use App\Http\Controllers\distribuidoresController;
 use App\Http\Controllers\licenciasController;
+use App\Http\Controllers\LinksController;
 use App\Http\Controllers\revendedoresController;
 use App\Http\Controllers\servidoresController;
 use App\Http\Controllers\usuariosController;
@@ -124,6 +125,14 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/notificacioneseditar/{notificaciones}', [notificacionesController::class, 'editar'])->name('notificaciones.editar');
         Route::put('/notificacionesactualizar/{notificaciones}', [notificacionesController::class, 'actualizar'])->name('notificaciones.actualizar');
         Route::delete('/notificacioneseliminar/{notificaciones}', [notificacionesController::class, 'eliminar'])->name('notificaciones.eliminar');
+
+        /* Links */
+        Route::get('/links', [LinksController::class, 'index'])->name('links.index');
+        Route::get('/linkscrear', [LinksController::class, 'crear'])->name('links.crear');
+        Route::post('/linksguardar', [LinksController::class, 'guardar'])->name('links.guardar');
+        Route::get('/linkseditar/{links}', [LinksController::class, 'editar'])->name('links.editar');
+        Route::put('/linksactualizar/{links}', [LinksController::class, 'actualizar'])->name('links.actualizar');
+        Route::delete('/linkseliminar/{links}', [LinksController::class, 'eliminar'])->name('links.eliminar');
 
         /* Publicidad */
         Route::get('/publicidades', [publicidadesController::class, 'index'])->name('publicidades.index');
