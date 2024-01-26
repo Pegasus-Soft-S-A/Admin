@@ -586,9 +586,9 @@ class adminController extends Controller
                     flash('Error enviando email')->error();
                     return back();
                 }
-
+                $links = Links::where('estado', 1)->get();
                 flash('Registrado Correctamente')->success();
-                return view('admin.auth.registro')->with(['identificacion' => substr($cliente->identificacion, 0, 10)]);
+                return view('admin.auth.registro')->with(['identificacion' => substr($cliente->identificacion, 0, 10), 'links' => $links]);
             } else {
                 DB::rollBack();
                 flash('Ocurrió un error vuelva a intentarlo')->warning();

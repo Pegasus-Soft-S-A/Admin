@@ -335,6 +335,7 @@
                                         <th class="no-exportar"></th>
                                         <th class="no-exportar">#</th>
                                         <th>Contrato</th>
+                                        <th class="no-exportar">Identificador</th>
                                         <th data-priority="1">Identificacion</th>
                                         <th data-priority="2">Nombres</th>
                                         <th data-priority="3">Distribuidor</th>
@@ -521,11 +522,12 @@
                 {data: 'validado', name: 'validado', orderable: false, searchable: false, className: "text-center"},
                 {data: 'sis_clientesid', name: 'sis_clientesid',visible:false, searchable: false},
                 {data: 'numerocontrato', name: 'numerocontrato',visible:false},
+                {data: 'Identificador', name: 'Identificador',visible:false},
                 {data: 'identificacion', name: 'identificacion'},
                 {data: 'nombres', name: 'nombres'},
                 {data: 'sis_distribuidoresid', name: 'sis_distribuidoresid', searchable: false},
-                {data: 'telefono2', name: 'telefono2', searchable: false},
-                {data: 'correos', name: 'correos',visible:false, searchable: false},
+                {data: 'telefono2', name: 'telefono2', searchable: true},
+                {data: 'correos', name: 'correos',visible:false, searchable: true},
                 {data: 'tipo_licencia', name: 'tipo_licencia', searchable: false},
                 {data: 'producto', name: 'producto', searchable: false},
                 {data: 'fechainicia', name: 'fechainicia', searchable: false},

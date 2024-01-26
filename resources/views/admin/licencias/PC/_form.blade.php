@@ -1290,7 +1290,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     moduloPerseoProduccion(false);
                 }
                 if ($('#control').prop('checked')) {
-                    $('#numeroequipos').val('4');
+                    $('#numeroequipos').val('3');
                     $('#numeromoviles').val('0');
                     $('#numerosucursales').val('1');
                     $('#nomina').prop('checked', false);
@@ -1327,7 +1327,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     moduloPerseoProduccion(false);
                 }
                 if ($('#control').prop('checked')) {
-                    $('#numeroequipos').val('4');
+                    $('#numeroequipos').val('3');
                     $('#numeromoviles').val('0');
                     $('#numerosucursales').val('1');
                     $('#nomina').prop('checked', false);
@@ -1364,7 +1364,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     moduloPerseoProduccion(false);
                 }
                 if ($('#control').prop('checked')) {
-                    $('#numeroequipos').val('4');
+                    $('#numeroequipos').val('3');
                     $('#numeromoviles').val('0');
                     $('#numerosucursales').val('1');
                     $('#nomina').prop('checked', false);
