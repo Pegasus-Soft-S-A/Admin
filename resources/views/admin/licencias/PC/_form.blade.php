@@ -1410,5 +1410,6 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             }
         });
     }
+
 </script>
 @endsection

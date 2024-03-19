@@ -473,7 +473,7 @@ class adminController extends Controller
         );
         DB::beginTransaction();
         try {
-            $servidores = Servidores::where('estado', 1)->get();
+            $servidores = Servidores::all();
             $cliente =   Clientes::create($request->all());
 
             $clientes_creados = []; // variable para almacenar los clientes creados en los servidores remotos

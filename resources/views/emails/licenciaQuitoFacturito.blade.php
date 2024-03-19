@@ -454,6 +454,23 @@
 
                                                         </td>
                                                     </tr>
+                                                    
+                                                    @if ($array['periodo'] == 'Inicial' || $array['periodo'] == 'Básico')
+                                                        <tr>
+                                                            <td style="overflow-wrap:break-word;word-break:break-word;padding: 0px 55px;font-family:'Cabin',sans-serif;"
+                                                                align="left">
+
+                                                                <div
+                                                                    style="line-height: 160%; text-align: center; word-wrap: break-word;">
+
+                                                                    <p style="font-size: 14px; line-height: 160%;"><a
+                                                                            href="https://tidycal.com/perseosistemacontable/implementacionesfacturito" target="_blank">https://tidycal.com/perseosistemacontable/implementacionesfacturito</a>
+                                                                    </p>
+                                                                </div>
+
+                                                            </td>
+                                                        </tr>
+                                                    @endif
                                                 </tbody>
                                             </table>
 

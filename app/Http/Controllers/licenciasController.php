@@ -305,7 +305,7 @@ class licenciasController extends Controller
             $request['tipo'],
         );
         $request['modulos'] = json_encode([$modulos]);
-        $servidor = Servidores::where('estado', 1)->first();
+        $servidor = Servidores::where('sis_servidoresid', 4)->first();
         $urlLicencia = $servidor->dominio . '/registros/generador_licencia';
 
         $urlLicencia = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
@@ -652,6 +652,7 @@ class licenciasController extends Controller
             flash('Guardado Correctamente')->success();
             return redirect()->route('licencias.Web.editar', [$request['sis_clientesid'], $request->sis_servidoresid, $licenciaId]);
         } else {
+            //dd($crearLicenciaWeb);
             flash('Ocurrió un error vuelva a intentarlo')->warning();
             return back();
         }
@@ -1337,6 +1338,7 @@ class licenciasController extends Controller
 
             flash("Eliminado Correctamente")->success();
         } else {
+            dd($eliminarLicencia);
             flash('Ocurrió un error vuelva a intentarlo')->warning();
         }
 

@@ -307,7 +307,7 @@
                           </tr>
                         </tbody>
                       </table>
-
+                    @if($array['periodo'] == 'Anual')
                      <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                         <tbody>
                           <tr>
@@ -326,7 +326,7 @@
                           </tr>
                         </tbody>
                       </table>
-                    
+                    @endif
                       <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                         <tbody>
                           <tr>
