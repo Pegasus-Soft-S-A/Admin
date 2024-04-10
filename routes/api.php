@@ -12,6 +12,7 @@ Route::group(['prefix' => 'datos', 'middleware' => 'authAPI'], function () {
     Route::post('/consultar_validado', [IdentificacionesController::class, 'consultar_validado'])->name('identificaciones.validado');
     Route::post('/validar_datos', [IdentificacionesController::class, 'validar_datos'])->name('identificaciones.validar');
     Route::post('/consulta_notificaciones', [IdentificacionesController::class, 'consulta_notificaciones'])->name('identificaciones.consulta_notificaciones');
+    Route::post('/plan_soporte', [IdentificacionesController::class, 'plan_soporte'])->name('licencia.plan_soporte');
 });
 
 Route::group(['middleware' => 'authAPILicencia'], function () {
@@ -24,6 +25,10 @@ Route::group(['middleware' => 'authAPILicencia'], function () {
     Route::post('/renovar_web', [IdentificacionesController::class, 'renovar_web'])->name('licencia.renovar_web');
     Route::post('/proximas_caducar/{distribuidor?}', [IdentificacionesController::class, 'proximas_caducar'])->name('licencia.proximas_caducar');
     Route::post('/informacion_licencia', [IdentificacionesController::class, 'informacion_licencia'])->name('licencia.informacion_licencia');
+    Route::post('/update_licencia', [IdentificacionesController::class, 'update_licencia'])->name('licencia.update_licencia');
+    Route::post('/correos_licencia', [IdentificacionesController::class, 'correos_licencia'])->name('licencia.correos_licencia');
+    Route::post('/movil_versiones', [IdentificacionesController::class, 'movil_versiones'])->name('licencia.movil_versiones');
+    Route::post('/update_versiones', [IdentificacionesController::class, 'update_versiones'])->name('licencia.update_versiones');
 });
 
 Route::get('/datos_powerbi', [IdentificacionesController::class, 'datos_powerbi'])->name('licencia.datos_powerbi');

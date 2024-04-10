@@ -600,7 +600,9 @@ class IdentificacionesController extends Controller
 
     public function vendedores_consulta(Request $request)
     {
-        $vendedor = Revendedores::where('identificacion', $request->identificacion)->where('tipo', 2)->first();
+        $identificacionIngresada = substr($request->identificacion, 0, 10);
+        $vendedor = Revendedores::whereIn('identificacion', [$identificacionIngresada, $request->identificacion, $request->identificacion . '001'])->first();
+
         return json_encode(["vendedor" => [$vendedor]]);
     }
 
@@ -1518,6 +1520,30 @@ class IdentificacionesController extends Controller
         return json_encode(DB::select($query));
     }
 
+    public function plan_soporte(Request $request)
+    {
+        $web = Clientes::select('sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_licencias_web.numerocontrato', 'sis_licencias_web.tipo_licencia', 'sis_licencias_web.sis_distribuidoresid')
+            ->join('sis_licencias_web', 'sis_licencias_web.sis_clientesid', 'sis_clientes.sis_clientesid')
+            ->where('sis_clientes.identificacion', $request->identificacion)
+            ->get();
+
+        $pc = Clientes::select('sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_licencias.numerocontrato', 'sis_licencias.tipo_licencia', 'sis_licencias.plan_soporte', 'sis_licencias.fechacaduca_soporte', 'sis_licencias.sis_distribuidoresid')
+            ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
+            ->where('sis_clientes.identificacion', $request->identificacion)
+            ->where('sis_licencias.plan_soporte', 1)
+            ->where('sis_licencias.fechacaduca_soporte', '>=', date('Y-m-d'))
+            ->get();
+
+        // Combinar los resultados en un arreglo asociativo
+        $response = [
+            'web' => $web,
+            'pc'  => $pc,
+        ];
+
+        // Retornar una respuesta JSON con ambos resultados
+        return response()->json($response);
+    }
+
     public function informacion_licencia(Request $request)
     {
         $licenciaid = $request->licenciaid;
@@ -1553,5 +1579,55 @@ class IdentificacionesController extends Controller
                 AND sis_servidoresid = $servidorid";
 
         return json_encode(DB::selectOne($query));
+    }
+
+    public function update_licencia(Request $request)
+    {
+        $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
+
+        if ($licencia) {
+            $licencia->version_ejecutable = $request->version_ejecutable;
+            $licencia->fecha_actualizacion_ejecutable = date('Y-m-d', strtotime($request->fecha_actualizacion_ejecutable));
+            $licencia->fecha_respaldo = date('Y-m-d', strtotime($request->fecha_respaldo));
+            $licencia->save();
+        }
+
+        return response()->json($licencia);
+    }
+
+    public function correos_licencia(Request $request)
+    {
+        $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
+        $correos = "";
+
+        if ($licencia) {
+            $correos = $licencia->correopropietario . '; ' . $licencia->correoadministrador . '; ' . $licencia->correocontador;
+        }
+
+        return response()->json(['correos' => $correos]);
+    }
+
+    public function movil_versiones(Request $request)
+    {
+        $versiones = DB::table('movil_versiones')
+            ->where('movil_versionesid', $request->movil_versionesid)
+            ->first();
+
+        return response()->json($versiones);
+    }
+
+    public function update_versiones(Request $request)
+    {
+        $version = DB::table('movil_versiones')
+            ->where('movil_versionesid', $request->movil_versionesid)
+            ->first();
+
+        if ($version) {
+            $version->version_ios = $request->version_ios;
+            $version->version_android = $request->version_android;
+            $version->save();
+        }
+
+        return response()->json($version);
     }
 }

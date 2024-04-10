@@ -37,6 +37,35 @@ class adminController extends Controller
         return view('admin.auth.loginredireccion');
     }
 
+    public function soporte()
+    {
+        return view('admin.auth.soporte');
+    }
+
+    public function post_soporte(Request $request)
+    {
+        $request->validate(
+            [
+                'numerocontrato' => 'required',
+            ],
+            [
+                'numerocontrato.required' => 'Ingrese numero de contrato',
+            ],
+        );
+
+        $licencia = Licenciasweb::where('numerocontrato', $request->numerocontrato)->first();
+
+        if (!$licencia) {
+            flash('Número de contrato no encontrado')->error();
+            return back();
+        }
+
+        $servidor = Servidores::where('sis_servidoresid', $licencia->sis_servidoresid)->first();
+        $url = $servidor->dominio . '/sistema?contrato=' . $licencia->numerocontrato . '&token=' . encrypt_openssl(date("Ymd"), "Perseo1232*");
+
+        return back()->with(['url' => $url]);
+    }
+
     public function post_loginRedireccion(Request $request)
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
@@ -426,37 +455,37 @@ class adminController extends Controller
                     break;
             }
 
+            // Preparar el teléfono y otros campos como en tu ejemplo original
             $telefono = "+593" . substr($request['telefono2'], 1, 9);
-            //Json para enviar a la API de bitrix
-            $fields = [
-                "fields" => [
-                    "ASSIGNED_BY_ID" => $assigned_id,
-                    "TITLE" => "Nuevo registro lite",
-                    "SOURCE_ID" => $source_id,
-                    "SOURCE_DESCRIPTION" => $descripcion,
-                    "NAME" => $request['nombres'],
-                    "ADDRESS" => $request['direccion'],
-                    "PHONE" => [[
-                        "VALUE" => $telefono,
-                        "VALUE_TYPE" => "WORK"
-                    ]],
-                    "EMAIL" => [[
-                        "VALUE" => $request['correos'],
-                        "VALUE_TYPE" => "WORK"
-                    ]],
-                    "UF_CRM_1656951427626" => $request['texto_ciudad'],
-                    "UF_CRM_1668442025742" => $grupo,
-                ]
+
+            // Base URL de la API
+            $baseUrl = 'https://b24-mh9fll.bitrix24.es/rest/5507/9mgnss30ssjdu1ay/crm.lead.add.json';
+
+            // Construir los parámetros de consulta como un array asociativo
+            $queryParams = [
+                'FIELDS[ASSIGNED_BY_ID]' => $assigned_id,
+                'FIELDS[TITLE]' => $request['nombres'],
+                'FIELDS[COMPANY_TITLE]' => $request['nombres'],
+                'FIELDS[SOURCE_ID]' => $source_id,
+                'FIELDS[SOURCE_DESCRIPTION]' => $descripcion,
+                'FIELDS[NAME]' => $request['nombres'],
+                'FIELDS[ADDRESS]' => $request['direccion'],
+                'FIELDS[PHONE][0][VALUE]' => $telefono,
+                'FIELDS[PHONE][0][VALUE_TYPE]' => 'WORK',
+                'FIELDS[EMAIL][0][VALUE]' => $request['correos'],
+                'FIELDS[EMAIL][0][VALUE_TYPE]' => 'WORK',
+                'FIELDS[UF_CRM_1656951427626]' => $request['texto_ciudad'],
+                'FIELDS[UF_CRM_1668442025742]' => $grupo,
             ];
 
-            //consumir api de bitrix
-            $url = 'https://b24-mh9fll.bitrix24.es/rest/5507/9mgnss30ssjdu1ay/crm.lead.add.json';
-            $res = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                ->withOptions(["verify" => false])
-                ->post($url, $fields)
+            // Realizar la solicitud GET
+            $response = Http::withOptions(["verify" => false])
+                ->get($baseUrl, $queryParams)
                 ->json();
 
-            if (array_key_exists('error', $res)) {
+            // Verificar si hay un error en la respuesta
+            if (array_key_exists('error', $response)) {
+                // Manejar el error
             }
         }
 

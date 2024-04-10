@@ -24,6 +24,10 @@ Route::get('/registro', [adminController::class, 'registro'])->name('registro');
 Route::post('/registro', [adminController::class, 'post_registro'])->name('post_registro');
 Route::post('/registro/ciudades', [adminController::class, 'recuperarciudades'])->name('registro.recuperarciudades');
 
+//Rutas Soporte
+Route::get('/soporte', [adminController::class, 'soporte'])->name('ver.soporte');
+Route::post('/soporte', [adminController::class, 'post_soporte'])->name('soporte');
+
 Route::get('/sistema', function () {
     return redirect()->route('loginredireccion');
 });

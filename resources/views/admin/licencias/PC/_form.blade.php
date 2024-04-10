@@ -43,6 +43,9 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
     <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#aplicaciones">Aplicaciones</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#soporte">Soporte</a>
+    </li>
 </ul>
 <div class="tab-content mt-5" id="myTabContent">
     <div class="tab-pane fade show active" id="datoslicencia" role="tabpanel">
@@ -209,7 +212,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
 
         </div>
 
-        <div class="form-group row">
+        <div class="form-group row ">
             <div class="col-lg-4">
                 <label>Clave BD:</label>
                 <input type="text"
@@ -337,7 +340,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         <label>Periodo:</label>
                         <select class="form-control @if($rol!=1 && $accion == 'Modificar') disabled @endif"
                             name="periodo" id="periodo">
-                            <option value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected': '' }}>Mensual
+                            <option value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected': ''
+                                }}>Mensual
                             </option>
                             <option value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected': '' }}>Anual
                             </option>
@@ -443,7 +447,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->api_whatsapp)) @if ($modulos[0]->api_whatsapp== true))
+                                <input @if (isset($modulos[0]->api_whatsapp)) @if ($modulos[0]->api_whatsapp==
+                                true))
                                 checked="checked" @endif @endif type="checkbox"
                                 name="apiwhatsapp" id="apiwhatsapp" @if($rol!=1 && $accion == 'Modificar') disabled
                                 @endif/>
@@ -455,7 +460,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->perseo_hybrid)) @if ($modulos[0]->perseo_hybrid== true))
+                                <input @if (isset($modulos[0]->perseo_hybrid)) @if ($modulos[0]->perseo_hybrid==
+                                true))
                                 checked="checked" @endif @endif type="checkbox"
                                 name="hybrid" id="hybrid" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
                                 <span></span>
@@ -470,7 +476,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                             <label>
                                 <input @if (isset($modulos[0]->tienda_woocommerce))
                                 @if($modulos[0]->tienda_woocommerce==true)) checked="checked" @endif @endif
-                                type="checkbox" name="woocomerce" id="woocomerce" @if($rol!=1 && $accion == 'Modificar')
+                                type="checkbox" name="woocomerce" id="woocomerce" @if($rol!=1 && $accion ==
+                                'Modificar')
                                 disabled @endif/>
                                 <span></span>
                             </label>
@@ -508,7 +515,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                             <label>
                                 <input @if (isset($modulos[0]->garantias)) @if ($modulos[0]->garantias== true))
                                 checked="checked" @endif @endif type="checkbox"
-                                name="garantias" id="garantias" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
+                                name="garantias" id="garantias" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -521,7 +529,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                             <label>
                                 <input @if (isset($modulos[0]->talleres)) @if ($modulos[0]->talleres== true))
                                 checked="checked" @endif @endif type="checkbox"
-                                name="talleres" id="talleres" @if($rol!=1 && $accion == 'Modificar') disabled @endif/>
+                                name="talleres" id="talleres" @if($rol!=1 && $accion == 'Modificar') disabled
+                                @endif/>
                                 <span></span>
                             </label>
                         </span>
@@ -531,7 +540,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input @if (isset($modulos[0]->tienda_perseo_distribuidor))
-                                @if ( $modulos[0]->tienda_perseo_distribuidor== true)) checked="checked" @endif @endif
+                                @if ( $modulos[0]->tienda_perseo_distribuidor== true)) checked="checked" @endif
+                                @endif
                                 type="checkbox" name="integraciones" id="integraciones" @if($rol!=1 && $accion ==
                                 'Modificar') disabled @endif/>
                                 <span></span>
@@ -544,7 +554,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input @if (isset($modulos[0]->cash_manager)) @if ($modulos[0]->cash_manager== true))
+                                <input @if (isset($modulos[0]->cash_manager)) @if ($modulos[0]->cash_manager==
+                                true))
                                 checked="checked" @endif @endif type="checkbox"
                                 name="cashmanager" id="cashmanager" @if($rol!=1 && $accion == 'Modificar') disabled
                                 @endif/>
@@ -601,7 +612,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                                 <input @if (isset($modulos[0]->academico)) @if ($modulos[0]->academico==
                                 true))
                                 checked="checked" @endif @endif
-                                type="checkbox" name="academico" id="academico" @if($rol!=1 && $accion == 'Modificar')
+                                type="checkbox" name="academico" id="academico" @if($rol!=1 && $accion ==
+                                'Modificar')
                                 disabled @endif/>
                                 <span></span>
                             </label>
@@ -615,7 +627,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                                 <input @if (isset($modulos[0]->perseo_contador)) @if ($modulos[0]->perseo_contador==
                                 true))
                                 checked="checked" @endif @endif
-                                type="checkbox" name="perseo_contador" id="perseo_contador" @if($rol!=1 && $accion ==
+                                type="checkbox" name="perseo_contador" id="perseo_contador" @if($rol!=1 && $accion
+                                ==
                                 'Modificar')
                                 disabled @endif/>
                                 <span></span>
@@ -725,6 +738,75 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             </thead>
         </table>
     </div>
+
+    <div class="tab-pane fade" role="tabpanel" id="soporte">
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label>Plan de Soporte:</label>
+                <span class="switch switch-outline switch-icon switch-primary switch-sm">
+                    <label>
+                        <input @if ($licencia->plan_soporte== 1) checked="checked" @endif type="checkbox"
+                        name="plan_soporte" @if($rol!=1 && $accion == 'Modificar') disabled id="plan_soporte"
+                        @endif/>
+                        <span></span>
+                    </label>
+                </span>
+            </div>
+            <div class="col-lg-4">
+                <label>Fecha Caducidad Plan Soporte:</label>
+                <input type="text"
+                    class="form-control @if($rol!=1) disabled @endif {{ $errors->has('fechacaduca_soporte') ? 'is-invalid' : '' }}"
+                    placeholder="Ingrese Fecha Caducidad" name="fechacaduca_soporte" id="fechacaduca_soporte"
+                    autocomplete="off" value="{{ old('fechacaduca_soporte',$licencia->fechacaduca_soporte) }}" />
+                @if ($errors->has('fechacaduca_soporte'))
+                <span class="text-danger">{{ $errors->first('fechacaduca_soporte') }}</span>
+                @endif
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label>Numero Tickets Totales:</label>
+                <input type="text"
+                    class="form-control @if($rol!=1) disabled @endif {{ $errors->has('numero_tickets_totales') ? 'is-invalid' : '' }}"
+                    placeholder="numero_tickets_totales" name="numero_tickets_totales" autocomplete="off"
+                    id="numero_tickets_totales"
+                    value="{{ old('numero_tickets_totales', $licencia->numero_tickets_totales) }}" />
+                @if ($errors->has('numero_tickets_totales'))
+                <span class="text-danger">{{ $errors->first('numero_tickets_totales') }}</span>
+                @endif
+            </div>
+            <div class="col-lg-4">
+                <label>Numero Tickets Mensuales:</label>
+                <input type="text"
+                    class="form-control @if($rol!=1) disabled @endif {{ $errors->has('numero_tickets_mensuales') ? 'is-invalid' : '' }}"
+                    placeholder="numero_tickets_mensuales" name="numero_tickets_mensuales" autocomplete="off"
+                    id="numero_tickets_mensuales"
+                    value="{{ old('numero_tickets_mensuales', $licencia->numero_tickets_mensuales) }}" />
+                @if ($errors->has('numero_tickets_mensuales'))
+                <span class="text-danger">{{ $errors->first('numero_tickets_mensuales') }}</span>
+                @endif
+            </div>
+            <div class="col-lg-4">
+                <label>Tickets Utilizados:</label>
+                <input type="text" class="form-control" readonly value="{{$licencia->tickets_utilizados }}" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <label>Version ejecutable:</label>
+                <input type="text" class="form-control" value="{{ $licencia->version_ejecutable }}" readonly />
+            </div>
+            <div class="col-lg-4">
+                <label>Fecha Actualizacion Ejecutable:</label>
+                <input type="text" class="form-control" value="{{ $licencia->fecha_actualizacion_ejecutable }}"
+                    readonly />
+            </div>
+            <div class="col-lg-4">
+                <label>Fecha Respaldo:</label>
+                <input type="text" class="form-control" value="{{ $licencia->fecha_respaldo }}" readonly />
+            </div>
+        </div>
+    </div>
 </div>
 
 @section('script')
@@ -768,6 +850,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         $("#ahorros").prop("disabled", false);
         $("#academico").prop("disabled", false);
         $("#perseo_contador").prop("disabled", false);
+        $("#plan_soporte").prop("disabled", false);
 
         event.preventDefault();
         permisos='';
@@ -994,6 +1077,16 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         });
 
         $('#fechaactulizaciones').datepicker({
+            language: "es",
+            todayHighlight: true,
+            orientation: "bottom left",
+            templates: {
+                leftArrow: '<i class="la la-angle-left"></i>',
+                rightArrow: '<i class="la la-angle-right"></i>'
+            }
+        });
+
+        $('#fechacaduca_soporte').datepicker({
             language: "es",
             todayHighlight: true,
             orientation: "bottom left",

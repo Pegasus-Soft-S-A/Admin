@@ -171,6 +171,7 @@ class licenciasController extends Controller
     {
         $licencia = new Licencias();
         $licencia->fechacaduca = date("d-m-Y", strtotime(date("d-m-Y") . "+ 5 year"));
+        $licencia->fechacaduca_soporte = date("d-m-Y", strtotime(date("d-m-Y") . "+ 1 year"));
         $licencia->numeroequipos = 1;
         $licencia->numeromoviles = 0;
         $licencia->numerosucursales = 0;
@@ -180,6 +181,7 @@ class licenciasController extends Controller
         $licencia->puerto = "5588";
         $licencia->actulizaciones = 1;
         $licencia->aplicaciones = " s";
+        $licencia->plan_soporte = 1;
         $licencia->fechaactulizaciones = date("d-m-Y", strtotime(date("d-m-Y") . "+ 1 month"));
         $licencia->sis_distribuidoresid = $cliente->sis_distribuidoresid;
         $licencia->numerocontrato = $this->generarContrato();
@@ -242,6 +244,7 @@ class licenciasController extends Controller
         $request['fechacreacion'] = now();
         $request['fechainicia'] = date('Y-m-d', strtotime(now()));
         $request['fechacaduca'] = date('Y-m-d', strtotime($request->fechacaduca));
+        $request['fechacaduca_soporte'] = date('Y-m-d', strtotime($request->fechacaduca_soporte));
         $request['fechaactulizaciones'] = date('Y-m-d', strtotime($request->fechaactulizaciones));
         $request['fechaultimopago'] = date('Y-m-d', strtotime(now()));
         $request['usuariocreacion'] = Auth::user()->nombres;
@@ -249,6 +252,7 @@ class licenciasController extends Controller
         $request['modulocontrol'] = $request->modulocontrol == 'on' ? 1 : 0;
         $request['modulocontable'] = $request->modulocontable == 'on' ? 1 : 0;
         $request['actulizaciones'] = $request->actulizaciones == 'on' ? 1 : 0;
+        $request['plan_soporte'] = $request->plan_soporte == 'on' ? 1 : 0;
         $request['ipservidorremoto'] = $request->ipservidorremoto == '' ? '' : $request->ipservidorremoto;
         $request['motivobloqueo'] = $request->motivobloqueo == '' ? '' : $request->motivobloqueo;
         $request['mensaje'] = $request->mensaje == '' ? '' : $request->mensaje;
@@ -747,7 +751,11 @@ class licenciasController extends Controller
             $empresas = json_decode($licencia->cantidadempresas);
         }
         $licencia->fechacaduca = date("d-m-Y", strtotime($licencia->fechacaduca));
+        $licencia->fechacaduca_soporte = date("d-m-Y", strtotime($licencia->fechacaduca_soporte));
         $licencia->fechaactulizaciones = date("d-m-Y", strtotime($licencia->fechaactulizaciones));
+        $licencia->fecha_actualizacion_ejecutable = date("d-m-Y", strtotime($licencia->fecha_actualizacion_ejecutable));
+        $licencia->fecha_respaldo = date("d-m-Y", strtotime($licencia->fecha_respaldo));
+
         return view('admin.licencias.PC.editar', compact('cliente', 'licencia', 'modulos', 'empresas'));
     }
 
@@ -839,11 +847,12 @@ class licenciasController extends Controller
         //Asignacion masiva para los campos asignados en guarded o fillable en el modelo
         $request['fechamodificacion'] = now();
         $request['usuariomodificacion'] = Auth::user()->nombres;
-
+        $request['fechacaduca_soporte'] = date('Y-m-d', strtotime($request->fechacaduca_soporte));
         $request['modulopractico'] = $request->modulopractico == 'on' ? 1 : 0;
         $request['modulocontrol'] = $request->modulocontrol == 'on' ? 1 : 0;
         $request['modulocontable'] = $request->modulocontable == 'on' ? 1 : 0;
         $request['actulizaciones'] = $request->actulizaciones == 'on' ? 1 : 0;
+        $request['plan_soporte'] = $request->plan_soporte == 'on' ? 1 : 0;
         $request['tokenrespaldo'] =  $request['tokenrespaldo'] == "" ? "" : $request['tokenrespaldo'];
         $request['ipservidorremoto'] = $request->ipservidorremoto == '' ? '' : $request->ipservidorremoto;
         $request['motivobloqueo'] = $request->motivobloqueo == '' ? '' : $request->motivobloqueo;
@@ -901,7 +910,7 @@ class licenciasController extends Controller
         );
         $request['modulos'] = json_encode([$modulos]);
 
-        $servidor = Servidores::where('estado', 1)->first();
+        $servidor = Servidores::where('sis_servidoresid', 4)->first();
         $urlLicencia = $servidor->dominio . '/registros/generador_licencia';
 
         $urlLicencia = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
@@ -960,7 +969,7 @@ class licenciasController extends Controller
         $emails = array_diff($emails, array(" ", 0, null));
 
         try {
-            Mail::to($emails)->queue(new enviarlicencia($array));
+            // Mail::to($emails)->queue(new enviarlicencia($array));
         } catch (\Exception $e) {
             flash('Error enviando email')->error();
             return back();
