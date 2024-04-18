@@ -99,22 +99,22 @@ class usuariosController extends Controller
             [
                 'identificacion' => ['required', 'unique:sis_distribuidores_usuarios'],
                 'nombres' => 'required',
-                'contrasena' => 'required',
+                'contrasena' => 'required|string|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/',
                 'correo' => 'required',
                 'sis_distribuidoresid' => 'required',
                 'tipo' => 'required',
             ],
             [
+                'contrasena.required' => 'Ingrese su nueva contraseña',
+                'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres',
+                'contrasena.regex' => 'La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número',
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
                 'identificacion.unique' => 'Su cédula o RUC ya se encuentra registrado',
                 'nombres.required' => 'Ingrese Nombres',
-                'contrasena.required' => 'Ingrese una Dirección',
                 'correo.required' => 'Ingrese un Correo',
                 'correo.email' => 'Ingrese un Correo válido',
                 'sis_distribuidoresid.required' => 'Escoja un Distribuidor',
                 'tipo.required' => 'Escoja un Tipo',
-
-
             ],
         );
 
@@ -142,6 +142,7 @@ class usuariosController extends Controller
     {
         return view('admin.usuarios.editar', compact('usuarios'));
     }
+
     public function actualizar(Usuarios $usuarios, Request $request)
     {
         $request->validate(
@@ -151,12 +152,14 @@ class usuariosController extends Controller
                 'correo' => 'required',
                 'sis_distribuidoresid' => 'required',
                 'tipo' => 'required',
+                'contrasena' => 'sometimes|nullable|string|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/',
             ],
             [
                 'identificacion.required' => 'Ingrese su cédula o RUC ',
                 'identificacion.unique' => 'Su cédula o RUC ya se encuentra registrado',
                 'nombres.required' => 'Ingrese Nombres',
-                'contrasena.required' => 'Ingrese una Dirección',
+                'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres',
+                'contrasena.regex' => 'La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número',
                 'correo.required' => 'Ingrese un Correo',
                 'correo.email' => 'Ingrese un Correo válido',
                 'sis_distribuidoresid.required' => 'Escoja un Distribuidor',

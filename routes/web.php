@@ -11,6 +11,7 @@ use App\Http\Controllers\servidoresController;
 use App\Http\Controllers\usuariosController;
 use App\Http\Controllers\notificacionesController;
 use App\Http\Controllers\publicidadesController;
+use App\Http\Controllers\ReporteController;
 use Illuminate\Support\Facades\Route;
 
 //Rutas Inicio
@@ -37,6 +38,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [adminController::class, 'login']);
     Route::get('/login', [adminController::class, 'login'])->name('login');
     Route::post('/login', [adminController::class, 'post_login'])->name('post_login');
+    Route::get('/cambiarclave', [adminController::class, 'cambiar_clave'])->name('usuarios.cambiar_clave');
+    Route::post('/cambiarclave', [adminController::class, 'updatePassword'])->name('usuarios.update_password');
 
     Route::group(['middleware' => 'auth'], function () {
 
@@ -145,5 +148,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/publicidadeseditar/{publicidades}', [publicidadesController::class, 'editar'])->name('publicidades.editar');
         Route::put('/publicidadesactualizar/{publicidades}', [publicidadesController::class, 'actualizar'])->name('publicidades.actualizar');
         Route::delete('/publicidadeseliminar/{publicidades}', [publicidadesController::class, 'eliminar'])->name('publicidades.eliminar');
+
+        /* Reportes */
+        Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+        Route::get('/reportes/download/versiones', [ReporteController::class, 'export_versiones'])->name('reportes.export_versiones');
+        Route::get('/reportes/download/respaldos', [ReporteController::class, 'export_respaldos'])->name('reportes.export_respaldos');
     });
 });

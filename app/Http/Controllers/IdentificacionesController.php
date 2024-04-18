@@ -11,6 +11,7 @@ use App\Models\Identificaciones;
 use App\Models\Licencias;
 use App\Models\Licenciasweb;
 use App\Models\Log;
+use App\Models\MovilVersion;
 use App\Models\Notificaciones;
 use App\Models\Revendedores;
 use App\Models\Servidores;
@@ -1522,26 +1523,31 @@ class IdentificacionesController extends Controller
 
     public function plan_soporte(Request $request)
     {
-        $web = Clientes::select('sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_licencias_web.numerocontrato', 'sis_licencias_web.tipo_licencia', 'sis_licencias_web.sis_distribuidoresid')
+        $web = Clientes::select('sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_licencias_web.numerocontrato', 'sis_licencias_web.producto', 'sis_licencias_web.tipo_licencia', 'sis_licencias_web.sis_distribuidoresid', 'sis_servidores.dominio')
             ->join('sis_licencias_web', 'sis_licencias_web.sis_clientesid', 'sis_clientes.sis_clientesid')
-            ->where('sis_clientes.identificacion', $request->identificacion)
-            ->get();
+            ->join('sis_servidores', 'sis_servidores.sis_servidoresid', 'sis_licencias_web.sis_servidoresid')
+            ->where('sis_licencias_web.numerocontrato', $request->numerocontrato)
+            ->first();
+
+        if ($web) {
+            $web->producto = $web->producto == 12 ? "Facturito" : "Web";
+            $web->tipo_licencia = "Web";
+            return response()->json($web);
+        }
 
         $pc = Clientes::select('sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_licencias.numerocontrato', 'sis_licencias.tipo_licencia', 'sis_licencias.plan_soporte', 'sis_licencias.fechacaduca_soporte', 'sis_licencias.sis_distribuidoresid')
             ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
-            ->where('sis_clientes.identificacion', $request->identificacion)
+            ->where('sis_licencias.numerocontrato', $request->numerocontrato)
             ->where('sis_licencias.plan_soporte', 1)
             ->where('sis_licencias.fechacaduca_soporte', '>=', date('Y-m-d'))
-            ->get();
+            ->first();
 
-        // Combinar los resultados en un arreglo asociativo
-        $response = [
-            'web' => $web,
-            'pc'  => $pc,
-        ];
+        if ($pc) {
+            $pc->tipo_licencia =  "PC";
+            return response()->json($pc);
+        }
 
-        // Retornar una respuesta JSON con ambos resultados
-        return response()->json($response);
+        return response()->json(['error' => 'No se encontraron resultados']);
     }
 
     public function informacion_licencia(Request $request)
@@ -1586,9 +1592,15 @@ class IdentificacionesController extends Controller
         $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
 
         if ($licencia) {
-            $licencia->version_ejecutable = $request->version_ejecutable;
-            $licencia->fecha_actualizacion_ejecutable = date('Y-m-d', strtotime($request->fecha_actualizacion_ejecutable));
             $licencia->fecha_respaldo = date('Y-m-d', strtotime($request->fecha_respaldo));
+
+            if ($request->has('version_ejecutable')) {
+                $licencia->version_ejecutable = $request->version_ejecutable;
+            }
+            if ($request->has('fecha_actualizacion_ejecutable')) {
+                $licencia->fecha_actualizacion_ejecutable = date('Y-m-d', strtotime($request->fecha_actualizacion_ejecutable));
+            }
+
             $licencia->save();
         }
 
@@ -1609,8 +1621,7 @@ class IdentificacionesController extends Controller
 
     public function movil_versiones(Request $request)
     {
-        $versiones = DB::table('movil_versiones')
-            ->where('movil_versionesid', $request->movil_versionesid)
+        $versiones = MovilVersion::where('movil_versionesid', $request->movil_versionesid)
             ->first();
 
         return response()->json($versiones);
@@ -1618,8 +1629,7 @@ class IdentificacionesController extends Controller
 
     public function update_versiones(Request $request)
     {
-        $version = DB::table('movil_versiones')
-            ->where('movil_versionesid', $request->movil_versionesid)
+        $version = MovilVersion::where('movil_versionesid', $request->movil_versionesid)
             ->first();
 
         if ($version) {

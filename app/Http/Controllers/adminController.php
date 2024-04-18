@@ -13,6 +13,7 @@ use App\Models\Publicidades;
 use App\Models\Servidores;
 use App\Models\Subcategorias;
 use App\Models\User;
+use App\Models\Usuarios;
 use App\Rules\UniqueSimilar;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
@@ -61,7 +62,13 @@ class adminController extends Controller
         }
 
         $servidor = Servidores::where('sis_servidoresid', $licencia->sis_servidoresid)->first();
-        $url = $servidor->dominio . '/sistema?contrato=' . $licencia->numerocontrato . '&token=' . encrypt_openssl(date("Ymd"), "Perseo1232*");
+
+        $search = ['+', '/', '='];  // Caracteres que quieres reemplazar
+        $replace = ['.', '_', '-']; // Valores de reemplazo correspondientes
+
+        $encriptado = str_replace($search, $replace, encrypt_openssl(date("Ymd"), "Perseo1232*"));
+
+        $url = $servidor->dominio . '/sistema?contrato=' . $licencia->numerocontrato . '&token=' . $encriptado;
 
         return back()->with(['url' => $url]);
     }
@@ -178,28 +185,31 @@ class adminController extends Controller
             ],
         );
 
-        //Buscar usuario
         $usuario = User::where('identificacion', $request->identificacion)->first();
         if ($usuario) {
-
             if ($usuario->estado == 0) {
                 flash('Usuario Inactivo')->error();
                 return back();
             }
 
             if ($usuario->contrasena === encrypt_openssl($request->contrasena, "Perseo1232*")) {
-                //Si tiene puesto check para recordar
+                // Verificar la fortaleza de la contraseña actual
+                $isPasswordStrong = $this->isPasswordStrong($request->contrasena);
+
+                if (!$isPasswordStrong) {
+                    Auth::login($usuario, true);
+                    flash('Tu contraseña actual no cumple con los requisitos de seguridad. Por favor, cambia tu contraseña.')->warning();
+                    return redirect()->route('usuarios.cambiar_clave'); // Asumiendo que tienes una ruta para cambiar contraseña
+                }
+
+                // Proceso de login
                 if ($request->has('recordar')) {
                     Auth::login($usuario, true);
                 } else {
                     Auth::login($usuario, false);
                 }
-                //Siempre que se hace login es recomendable regenerar las sesiones
                 $request->session()->regenerate();
-                if (Auth::user()->tipo == 5) {
-                    return redirect()->route('notificaciones.index');
-                }
-                return redirect()->route('clientes.index');
+                return $this->redirectUserBasedOnType($usuario->tipo);
             } else {
                 flash('Usuario o Contraseña Incorrectos')->error();
                 return back();
@@ -208,6 +218,47 @@ class adminController extends Controller
             flash('Usuario o Contraseña Incorrectos')->error();
             return back();
         }
+    }
+
+    private function redirectUserBasedOnType($tipo)
+    {
+        if ($tipo == 5) {
+            return redirect()->route('notificaciones.index');
+        }
+        return redirect()->route('clientes.index');
+    }
+
+    private function isPasswordStrong($password)
+    {
+        $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/';
+        return preg_match($pattern, $password);
+    }
+
+    public function cambiar_clave()
+    {
+        return view('admin.auth.cambiarclave');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate(
+            [
+                'password' => 'required|string|min:8|confirmed|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/',
+            ],
+            [
+                'password.required' => 'Ingrese su nueva contraseña',
+                'password.min' => 'La contraseña debe tener al menos 8 caracteres',
+                'password.confirmed' => 'Las contraseñas no coinciden',
+                'password.regex' => 'La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número',
+            ]
+        );
+
+        $user = Usuarios::find(Auth::user()->sis_distribuidores_usuariosid);
+        $user->contrasena = encrypt_openssl($request->password, "Perseo1232*");
+        $user->save();
+
+        flash('Tu contraseña ha sido actualizada con éxito.')->success();
+        return $this->redirectUserBasedOnType($user->tipo);
     }
 
     public function logout()

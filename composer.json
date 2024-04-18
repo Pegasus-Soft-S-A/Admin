@@ -16,6 +16,7 @@
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
+        "maatwebsite/excel": "^3.1",
         "rackbeat/laravel-ui-avatars": "^1.0",
         "rogervila/array-diff-multidimensional": "^2.1",
         "sentry/sentry-laravel": "^2.13",
