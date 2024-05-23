@@ -230,7 +230,7 @@ class adminController extends Controller
 
     private function isPasswordStrong($password)
     {
-        $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/';
+        $pattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*#?&.,_-]{8,}$/';
         return preg_match($pattern, $password);
     }
 

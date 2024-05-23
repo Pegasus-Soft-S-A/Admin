@@ -1592,11 +1592,15 @@ class IdentificacionesController extends Controller
         $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
 
         if ($licencia) {
-            $licencia->fecha_respaldo = date('Y-m-d', strtotime($request->fecha_respaldo));
+
+            if ($request->has('fecha_respaldo')) {
+                $licencia->fecha_respaldo = date('Y-m-d', strtotime($request->fecha_respaldo));
+            }
 
             if ($request->has('version_ejecutable')) {
                 $licencia->version_ejecutable = $request->version_ejecutable;
             }
+
             if ($request->has('fecha_actualizacion_ejecutable')) {
                 $licencia->fecha_actualizacion_ejecutable = date('Y-m-d', strtotime($request->fecha_actualizacion_ejecutable));
             }

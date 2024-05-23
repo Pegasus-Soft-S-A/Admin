@@ -47,7 +47,7 @@
 
                                     <input
                                         class="form-control form-control-lg  h-auto  {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
-                                        type="text" name="identificacion" autocomplete="off"
+                                        type="text" name="identificacion" autocomplete="off" id="usuario"
                                         placeholder="Ingrese Identificación" value="{{ old('identificacion') }}" />
 
                                 </div>

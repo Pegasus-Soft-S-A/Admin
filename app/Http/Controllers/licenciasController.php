@@ -969,7 +969,7 @@ class licenciasController extends Controller
         $emails = array_diff($emails, array(" ", 0, null));
 
         try {
-            // Mail::to($emails)->queue(new enviarlicencia($array));
+            Mail::to($emails)->queue(new enviarlicencia($array));
         } catch (\Exception $e) {
             flash('Error enviando email')->error();
             return back();
