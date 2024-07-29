@@ -284,6 +284,7 @@ class licenciasController extends Controller
             'caja_ahorros' => $request['ahorros'] = $request->ahorros == 'on' ? true : false,
             'academico' => $request['academico'] = $request->academico == 'on' ? true : false,
             'perseo_contador' => $request['perseo_contador'] = $request->perseo_contador == 'on' ? true : false,
+            'api_urbano' => $request['api_urbano'] = $request->api_urbano == 'on' ? true : false,
         ];
         unset(
             $request['nomina'],
@@ -306,6 +307,7 @@ class licenciasController extends Controller
             $request['ahorros'],
             $request['academico'],
             $request['perseo_contador'],
+            $request['api_urbano'],
             $request['tipo'],
         );
         $request['modulos'] = json_encode([$modulos]);
@@ -882,6 +884,7 @@ class licenciasController extends Controller
             'caja_ahorros' => $request['ahorros'] = $request->ahorros == 'on' ? true : false,
             'academico' => $request['academico'] = $request->academico == 'on' ? true : false,
             'perseo_contador' => $request['perseo_contador'] = $request->perseo_contador == 'on' ? true : false,
+            'api_urbano' => $request['api_urbano'] = $request->api_urbano == 'on' ? true : false,
         ];
         unset(
             $request['nomina'],
@@ -904,6 +907,7 @@ class licenciasController extends Controller
             $request['ahorros'],
             $request['academico'],
             $request['perseo_contador'],
+            $request['api_urbano'],
             $request['tipo'],
             $request['empresas_activas'],
             $request['empresas_inactivas'],

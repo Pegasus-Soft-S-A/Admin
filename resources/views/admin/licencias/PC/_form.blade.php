@@ -638,6 +638,23 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 </div>
             </div>
 
+            <div class="form-group row">
+                <label class="col-4 col-form-label">API Urbano</label>
+                <div class="col-2">
+                    <span class="switch switch-outline switch-icon switch-primary switch-sm">
+                        <label>
+                            <input @if (isset($modulos[0]->api_urbano)) @if ($modulos[0]->api_urbano==
+                            true))
+                            checked="checked" @endif @endif
+                            type="checkbox" name="api_urbano" id="api_urbano" @if($rol!=1 && $accion ==
+                            'Modificar')
+                            disabled @endif/>
+                            <span></span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+
             <div class="tab-pane fade show" id="correos" role="tabpanel">
                 <div class="form-group row">
                     <label>Correo Propietario:</label>
@@ -1260,6 +1277,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         $('#628').prop('checked', estado);
         $('#630').prop('checked', estado);
         $('#635').prop('checked', estado);
+        $('#636').prop('checked', estado);
         $('#640').prop('checked', estado);
     }
 

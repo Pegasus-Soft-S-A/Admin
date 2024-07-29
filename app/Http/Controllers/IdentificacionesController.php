@@ -1052,7 +1052,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  0;
                     $nuevo->periodo =  1;
-                    $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 2 months"));
+                    $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 month"));
                     $nuevo->producto =  9;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  1;
@@ -1509,6 +1509,7 @@ class IdentificacionesController extends Controller
                 INNER JOIN sis_revendedores AS vendedor ON vendedor.sis_revendedoresid = sis_clientes.sis_vendedoresid
                 INNER JOIN sis_revendedores AS contador ON contador.sis_revendedoresid = sis_clientes.sis_revendedoresid
             WHERE
+            sis_licencias_web.periodo <> 4 AND
                 DATEDIFF(
                     sis_licencias_web.fechacaduca,
                 NOW()) = 5

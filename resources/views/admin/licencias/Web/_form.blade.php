@@ -417,8 +417,8 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 $('#periodo4').addClass("d-none");
                 $('#fechacaduca').val(fechaFin);
                 $('#periodo').removeClass("disabled");
-                $('#precio').val('9.50');
-                $('#usuarios').val('3');
+                $('#precio').val('12');
+                $('#usuarios').val('6');
                 $('#numeromoviles').val('1');
                 $('#sis_servidoresid').val('4');
                 $('#ecommerce').prop('checked', false);
@@ -714,7 +714,7 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                     $('#periodo2').html("Anual");
                     $('#periodo3').addClass("d-none");
                     $('#periodo4').addClass("d-none");
-                    fecha.setMonth(fecha.getMonth() + 2);
+                    fecha.setMonth(fecha.getMonth() + 1);
                     if("{{$accion}}"=="Crear"){
                         $('#sis_servidoresid').val('3');
                     }

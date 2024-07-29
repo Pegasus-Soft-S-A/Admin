@@ -628,7 +628,7 @@ class adminController extends Controller
                 "numerocontrato" => $contrato,
                 "Identificador" => $contrato,
                 "fechainicia" => date('Ymd', strtotime(now())),
-                "fechacaduca" => date("Ymd", strtotime(date("Ymd") . "+ 2 months")),
+                "fechacaduca" => date("Ymd", strtotime(date("Ymd") . "+ 1 month")),
                 "empresas" => 1,
                 "usuarios" => 6,
                 "periodo" => 1,
