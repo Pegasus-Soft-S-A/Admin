@@ -180,6 +180,10 @@ class clientesController extends Controller
                                 }
                             }
                             break;
+                            //vps
+                        case '4':
+                            $final = $final->where('tipo_licencia', 3);
+                            break;
                     }
                 }
             }

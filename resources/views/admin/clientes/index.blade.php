@@ -123,6 +123,7 @@
                                             <option value="1">Todos</option>
                                             <option value="2">Web</option>
                                             <option value="3">PC</option>
+                                            <option value="4">VPS</option>
                                         </select>
                                     </div>
                                     <div class="col-lg-3 mb-lg-0 mb-6">

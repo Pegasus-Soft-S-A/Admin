@@ -774,6 +774,24 @@ class IdentificacionesController extends Controller
             $nuevo->sis_distribuidoresid = $request["cliente"]['sis_distribuidoresid'];
             $nuevo->fechaultimopago = $nuevo->fechainicia;
 
+            switch ($request["cliente"]['promocion']) {
+                    //Un mes de promocion
+                case 1:
+                    $fecha = date("Ymd", strtotime($nuevo->fechainicia . "+ 13 months"));
+                    break;
+                    //Dos meses de promocion
+                case 2:
+                    $fecha = date("Ymd", strtotime($nuevo->fechainicia . "+ 14 months"));
+                    break;
+                    //Tres meses de promocion
+                case 3:
+                    $fecha = date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months"));
+                    break;
+                default:
+                    $fecha = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+            }
+
+
             switch ($licencia['producto_id']) {
                     //Facturacion Mensual
                 case '61':
@@ -794,7 +812,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  72;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $fecha;
                     $nuevo->producto =  2;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  1;
@@ -822,7 +840,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  150;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $fecha;
                     $nuevo->producto =  3;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  2;
@@ -850,7 +868,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  190;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $fecha;
                     $nuevo->producto =  4;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  2;
@@ -878,7 +896,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  108;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $fecha;
                     $nuevo->producto =  5;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  0;
@@ -906,7 +924,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  90;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $fecha;
                     $nuevo->producto =  8;
                     $nuevo->usuarios =  6;
                     $nuevo->numeromoviles =  0;
@@ -934,7 +952,7 @@ class IdentificacionesController extends Controller
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  87.50;
                     $nuevo->periodo =  2;
-                    $nuevo->fechacaduca = $request["cliente"]['promocion'] == 1 ? date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months")) : date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
+                    $nuevo->fechacaduca = $fecha;
                     $nuevo->producto =  11;
                     $nuevo->usuarios =  1;
                     $nuevo->numeromoviles =  1;
@@ -1644,5 +1662,38 @@ class IdentificacionesController extends Controller
         }
 
         return response()->json($version);
+    }
+
+    public function jumilo()
+    {
+        $query = "
+            SELECT
+                sis_clientes.identificacion,
+                sis_clientes.nombres,
+                sis_clientes.telefono2,
+                sis_clientes.correos,
+                sis_clientes.direccion,
+                sis_licencias_web.tipo_licencia,
+                sis_licencias_web.periodo,
+                sis_licencias_web.producto,
+                sis_clientes.sis_distribuidoresid,
+                vendedor.identificacion AS vendedor,
+                contador.identificacion AS contador_identificacion,
+                contador.razonsocial AS contador_nombres,
+                contador.correo AS contador_correo,
+                contador.celular AS contador_celular,
+                contador.direccion AS contador_direccion,
+                sis_licencias_web.modulopractico,
+                sis_licencias_web.modulocontrol,
+                sis_licencias_web.modulocontable
+            FROM
+                sis_clientes
+                INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid
+                INNER JOIN sis_revendedores AS vendedor ON vendedor.sis_revendedoresid = sis_clientes.sis_vendedoresid
+                INNER JOIN sis_revendedores AS contador ON contador.sis_revendedoresid = sis_clientes.sis_revendedoresid
+            WHERE
+            sis_clientes.identificacion <> '0604173732' ";
+
+        return json_encode(DB::select($query));
     }
 }
