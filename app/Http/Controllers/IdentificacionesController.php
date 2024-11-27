@@ -1696,4 +1696,43 @@ class IdentificacionesController extends Controller
 
         return json_encode(DB::select($query));
     }
+
+    public function consultar_licencia_web_jumilo(Request $request)
+    {
+        // ruc hace referencia al número de contrato (habían full variables para cambiar así que se le dejó)
+        $licencia = Licenciasweb::whereIn('numerocontrato', [$request->identificacion])->first();
+
+        if ($licencia) {
+            if ($licencia->producto == 12) {
+                return json_encode([
+                    "liberar" =>   true,
+                    "accion" => "renovar",
+                    "facturito" => true,
+                    "id_licencia" => $licencia->sis_licenciasid,
+                    "id_producto" => $licencia->producto,
+                    "numerocontrato" => $licencia->numerocontrato,
+                    "id_servidor" => $licencia->sis_servidoresid,
+                ]);
+            } else {
+                return json_encode([
+                    "liberar" =>   true,
+                    "accion" => "renovar",
+                    "facturito" => false,
+                    "id_licencia" => $licencia->sis_licenciasid,
+                    "id_producto" => $licencia->producto,
+                    "numerocontrato" => $licencia->numerocontrato,
+                    "id_servidor" => $licencia->sis_servidoresid,
+                ]);
+            }
+        } else {
+            return json_encode([
+                "liberar" => true,
+                "accion" => "nuevo",
+                "facturito" => false,
+                "id_licencia" => 0,
+                "id_producto" => 0,
+                "numerocontrato" => 0,
+            ]);
+        }
+    }
 }

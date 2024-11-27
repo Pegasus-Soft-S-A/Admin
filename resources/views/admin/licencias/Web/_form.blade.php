@@ -417,7 +417,7 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 $('#periodo4').addClass("d-none");
                 $('#fechacaduca').val(fechaFin);
                 $('#periodo').removeClass("disabled");
-                $('#precio').val('12');
+                $('#precio').val('11.69');
                 $('#usuarios').val('6');
                 $('#numeromoviles').val('1');
                 $('#sis_servidoresid').val('4');
@@ -502,16 +502,16 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 case '2':
                     switch ($('#periodo').val()) {
                         case '1':
-                            $('#precio').val('12');
+                            $('#precio').val('11.69');
                             fecha.setMonth(fecha.getMonth() + 1);
                             break;
                         case '2':
-                            $('#precio').val('114');
+                            $('#precio').val('113.09');
                             fecha.setMonth(fecha.getMonth() + 12);
                             break;
                         case '3':
                             $('#periodo').val("1");
-                            $('#precio').val('12');
+                            $('#precio').val('11.69');
                             fecha.setMonth(fecha.getMonth() + 1);
                             break;
                     }
@@ -537,16 +537,16 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 case '3':
                     switch ($('#periodo').val()) {
                         case '1':
-                            $('#precio').val('22.20');
+                            $('#precio').val('19.49');
                             fecha.setMonth(fecha.getMonth() + 1);
                             break;
                         case '2':
-                            $('#precio').val('219.60');
+                            $('#precio').val('202.79');
                             fecha.setMonth(fecha.getMonth() + 12);
                             break;
                         case '3':
                             $('#periodo').val("1");
-                            $('#precio').val('22.20');
+                            $('#precio').val('19.49');
                             fecha.setMonth(fecha.getMonth() + 1);
                             break;
                     }
@@ -572,18 +572,18 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 case '4':
                     switch ($('#periodo').val()) {
                         case '1':
-                            $('#precio').val('31.80');
+                            $('#precio').val('27.29');
                             fecha.setMonth(fecha.getMonth() + 1);
                             $('#activos').prop('checked', false);
                             break;
                         case '2':
-                            $('#precio').val('270');
+                            $('#precio').val('280.79');
                             fecha.setMonth(fecha.getMonth() + 12);
                             $('#activos').prop('checked', true);
                             break;
                         case '3':
                             $('#periodo').val("1");
-                            $('#precio').val('31.80');
+                            $('#precio').val('27.29');
                             fecha.setMonth(fecha.getMonth() + 1);
                             $('#activos').prop('checked', false);
                             break;
@@ -609,16 +609,16 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 case '5':
                     switch ($('#periodo').val()) {
                         case '1':
-                            $('#precio').val('16.20');
+                            $('#precio').val('15.59');
                             fecha.setMonth(fecha.getMonth() + 1);
                             break;
                         case '2':
-                            $('#precio').val('144');
+                            $('#precio').val('140.39');
                             fecha.setMonth(fecha.getMonth() + 12);
                             break;
                         case '3':
                             $('#periodo').val("1");
-                            $('#precio').val('16.20');
+                            $('#precio').val('15.59');
                             fecha.setMonth(fecha.getMonth() + 1);
                             break;
                     }
@@ -672,16 +672,16 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 case '8':
                     switch ($('#periodo').val()) {
                         case '1':
-                            $('#precio').val('12');
+                            $('#precio').val('11.69');
                             fecha.setMonth(fecha.getMonth() + 1);
                             break;
                         case '2':
-                            $('#precio').val('126');
+                            $('#precio').val('116.99');
                             fecha.setMonth(fecha.getMonth() + 12);
                             break;
                         case '3':
                             $('#periodo').val("1");
-                            $('#precio').val('12');
+                            $('#precio').val('11.69');
                             fecha.setMonth(fecha.getMonth() + 1);
                             break;
                     }
@@ -763,16 +763,16 @@ $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 
                 case '11':
                     switch ($('#periodo').val()) {
                         case '1':
-                            $('#precio').val('7.50');
+                            $('#precio').val('6.49');
                             fecha.setMonth(fecha.getMonth() + 1);
                             break;
                         case '2':
-                            $('#precio').val('89.90');
+                            $('#precio').val('77.94');
                             fecha.setMonth(fecha.getMonth() + 12);
                             break;
                         case '3':
                             $('#periodo').val("1");
-                            $('#precio').val('7.50');
+                            $('#precio').val('6.49');
                             fecha.setMonth(fecha.getMonth() + 1);
                             break;
                     }

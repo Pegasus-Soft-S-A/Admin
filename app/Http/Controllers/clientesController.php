@@ -195,11 +195,33 @@ class clientesController extends Controller
                 })
 
                 ->editColumn('identificacion', function ($cliente) {
-                    if (Auth::user()->tipo == 6 || (Auth::user()->tipo != 1 && Auth::user()->sis_distribuidoresid != $cliente->sis_distribuidoresid)) {
+                    $user = Auth::user();
+                    $userTipo = $user->tipo;
+                    $userDistribuidorId = $user->sis_distribuidoresid;
+                    $clienteDistribuidorId = $cliente->sis_distribuidoresid;
+
+                    // Si el usuario es tipo 6 o no es distribuidor permitido
+                    if (
+                        $userTipo == 6 ||
+                        ($userTipo != 1 && $userDistribuidorId != $clienteDistribuidorId)
+                    ) {
+                        // Excepciones para el tipo 3
+                        if ($userTipo == 3) {
+                            if (($userDistribuidorId == 1 && $clienteDistribuidorId == 15) ||
+                                ($userDistribuidorId == 6 && $clienteDistribuidorId == 12)
+                            ) {
+                                // Mostrar el enlace para estas excepciones específicas
+                                return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
+                            }
+                        }
+                        // En caso contrario, simplemente muestra la identificación sin enlace
                         return $cliente->identificacion;
                     }
+
+                    // Mostrar el enlace de forma predeterminada para otros casos
                     return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
                 })
+
                 ->editColumn('action', function ($cliente) {
                     if (Auth::user()->tipo != 6 && (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid)) {
                         return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" title="Editar"> <i class="la la-edit"></i> </a>';

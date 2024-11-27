@@ -27,27 +27,50 @@ class ValidarCorreo implements Rule
     public function passes($attribute, $value)
     {
         $url = 'https://emailvalidation.abstractapi.com/v1/?api_key=fae435e4569b4c93ac34e0701100778c&email=' . $value;
-        $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+
+        // Realizamos la primera petición a Abstract API
+        $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false])
             ->withOptions(["verify" => false])
             ->get($url)
             ->json();
-        if ($correo['deliverability'] != "DELIVERABLE") {
-            if ($correo['is_valid_format']['value'] == true) {
-                $url = 'https://api.debounce.io/v1/?email=' . rawurlencode($value) . '&api=6269b53f06aeb';
-                $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->get($url)
-                    ->json();
-                if (in_array($correo['debounce']['reason'], ["Deliverable", "Deliverable, Role", "Accept All, Role"])) {
-                    return true;
-                } else {
-                    return false;
+
+        // Validamos que el resultado sea el esperado antes de acceder a índices
+        if (isset($correo['deliverability']) && $correo['deliverability'] == "DELIVERABLE") {
+            return 1;
+        }
+
+        // Validamos el formato del correo antes de continuar
+        if (isset($correo['is_valid_format']['value']) && $correo['is_valid_format']['value'] == true) {
+            $url = 'https://api.debounce.io/v1/?email=' . rawurlencode($value) . '&api=6269b53f06aeb';
+
+            // Realizamos la segunda petición a Debounce API
+            $correoDebounce = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false])
+                ->withOptions(["verify" => false])
+                ->get($url)
+                ->json();
+
+            // Verificamos que la estructura esperada exista en la respuesta
+            if (isset($correoDebounce['debounce']['reason'])) {
+                $reason = $correoDebounce['debounce']['reason'];
+
+                // Revisamos los valores válidos
+                if (in_array($reason, ["Deliverable", "Deliverable, Role", "Accept All, Role", "Accept All", "Unknown"])) {
+                    return 1;
                 }
-            } else {
-                return false;
+
+                // Si es "Bounce" o "Invalid", validamos contra dominios confiables
+                if ($reason == "Bounce" || $reason == "Invalid") {
+                    $dominios_validos = ['gmail.com', 'yahoo.com', 'ferrymend.com']; // Dominios válidos
+                    $dominio_correo = substr(strrchr($value, "@"), 1); // Extraer el dominio del correo
+
+                    if (in_array($dominio_correo, $dominios_validos)) {
+                        return 1; // Consideramos válido si pertenece a un dominio confiable
+                    }
+                }
             }
-        } else {
-            return true;
+
+            // Si no hay razón válida, devolvemos 0
+            return 0;
         }
     }
 
