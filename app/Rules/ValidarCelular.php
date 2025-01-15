@@ -26,8 +26,10 @@ class ValidarCelular implements Rule
      */
     public function passes($attribute, $value)
     {
+        // Obtener claves de API desde las variables de entorno
+        $abstractApiKey = env('API_CELULAR_ABSTRACT');
         //consultar api
-        $url = 'https://phonevalidation.abstractapi.com/v1/?api_key=7678748c57244785bc99109520e35d5f&phone=593' . $value;
+        $url = 'https://phonevalidation.abstractapi.com/v1/?api_key=' . $abstractApiKey . '&phone=593' . $value;
         $celular = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
             ->withOptions(["verify" => false])
             ->get($url)

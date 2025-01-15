@@ -26,12 +26,17 @@ class ValidarCorreo implements Rule
      */
     public function passes($attribute, $value)
     {
-        $url = 'https://emailvalidation.abstractapi.com/v1/?api_key=fae435e4569b4c93ac34e0701100778c&email=' . $value;
+        // Obtener claves de API desde las variables de entorno
+        $abstractApiKey = env('API_EMAIL_ABSTRACT');
+        $debounceApiKey = env('API_EMAIL_DEBOUNCE');
+
+        // Construir URL para la primera API (Abstract API)
+        $urlAbstract = 'https://emailvalidation.abstractapi.com/v1/?api_key=' . $abstractApiKey . '&email=' . $value;
 
         // Realizamos la primera petición a Abstract API
         $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false])
             ->withOptions(["verify" => false])
-            ->get($url)
+            ->get($urlAbstract)
             ->json();
 
         // Validamos que el resultado sea el esperado antes de acceder a índices
@@ -41,12 +46,13 @@ class ValidarCorreo implements Rule
 
         // Validamos el formato del correo antes de continuar
         if (isset($correo['is_valid_format']['value']) && $correo['is_valid_format']['value'] == true) {
-            $url = 'https://api.debounce.io/v1/?email=' . rawurlencode($value) . '&api=6269b53f06aeb';
+            // Construir URL para la segunda API (Debounce API)
+            $urlDebounce = 'https://api.debounce.io/v1/?email=' . rawurlencode($value) . '&api=' . $debounceApiKey;
 
             // Realizamos la segunda petición a Debounce API
             $correoDebounce = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false])
                 ->withOptions(["verify" => false])
-                ->get($url)
+                ->get($urlDebounce)
                 ->json();
 
             // Verificamos que la estructura esperada exista en la respuesta
@@ -72,6 +78,9 @@ class ValidarCorreo implements Rule
             // Si no hay razón válida, devolvemos 0
             return 0;
         }
+
+        // Si no tiene formato válido, devolvemos 0
+        return 0;
     }
 
     /**

@@ -198,7 +198,11 @@ class IdentificacionesController extends Controller
 
     public function validar_datos(Request $request)
     {
-        $url = 'https://emailvalidation.abstractapi.com/v1/?api_key=fae435e4569b4c93ac34e0701100778c&email=' . $request->correo;
+        $abstractApiKey = env('API_EMAIL_ABSTRACT');
+        $debounceApiKey = env('API_EMAIL_DEBOUNCE');
+        $abstractCelularApiKey = env('API_CELULAR_ABSTRACT');
+
+        $url = 'https://emailvalidation.abstractapi.com/v1/?api_key=' . $abstractApiKey . '&email=' . $request->correo;
         $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
             ->withOptions(["verify" => false])
             ->get($url)
@@ -208,7 +212,7 @@ class IdentificacionesController extends Controller
 
         if ($correo['deliverability'] != "DELIVERABLE") {
             if ($correo['is_valid_format']['value'] == true) {
-                $url = 'https://api.debounce.io/v1/?email=' . rawurlencode($request->correo) . '&api=6269b53f06aeb';
+                $url = 'https://api.debounce.io/v1/?email=' . rawurlencode($request->correo) . '&api=' . $debounceApiKey;
                 $correo = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                     ->withOptions(["verify" => false])
                     ->get($url)
@@ -225,7 +229,7 @@ class IdentificacionesController extends Controller
         }
 
         //consultar api1
-        $url = 'https://phonevalidation.abstractapi.com/v1/?api_key=7678748c57244785bc99109520e35d5f&phone=593' . $request->celular;
+        $url = 'https://phonevalidation.abstractapi.com/v1/?api_key=' . $abstractCelularApiKey . '&phone=593' . $request->celular;
         $celular = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
             ->withOptions(["verify" => false])
             ->get($url)

@@ -305,37 +305,48 @@ class adminController extends Controller
                     [
                         "id" => "",
                         "nombre" => "Todos"
-                    ], [
+                    ],
+                    [
                         "id" => "2",
                         "nombre" => "Facturación"
-                    ], [
+                    ],
+                    [
                         "id" => "3",
                         "nombre" => "Servicios"
-                    ], [
+                    ],
+                    [
                         "id" => "4",
                         "nombre" => "Comercial"
-                    ], [
+                    ],
+                    [
                         "id" => "5",
                         "nombre" => "Soy Contador"
-                    ], [
+                    ],
+                    [
                         "id" => "7",
                         "nombre" => "Total"
-                    ], [
+                    ],
+                    [
                         "id" => "6",
                         "nombre" => "Perseo Lite Anterior"
-                    ], [
+                    ],
+                    [
                         "id" => "8",
                         "nombre" => "Soy Contador Servicios"
-                    ], [
+                    ],
+                    [
                         "id" => "9",
                         "nombre" => "Perseo Lite"
-                    ], [
+                    ],
+                    [
                         "id" => "10",
                         "nombre" => "Emprendedor"
-                    ], [
+                    ],
+                    [
                         "id" => "11",
                         "nombre" => "Socio Perseo"
-                    ], [
+                    ],
+                    [
                         "id" => "12",
                         "nombre" => "Facturito"
                     ]
@@ -346,13 +357,16 @@ class adminController extends Controller
                     [
                         "id" => "",
                         "nombre" => "Todos"
-                    ], [
+                    ],
+                    [
                         "id" => "1",
                         "nombre" => "Práctico"
-                    ], [
+                    ],
+                    [
                         "id" => "2",
                         "nombre" => "Control"
-                    ], [
+                    ],
+                    [
                         "id" => "3",
                         "nombre" => "Contable"
                     ]
@@ -510,7 +524,7 @@ class adminController extends Controller
             $telefono = "+593" . substr($request['telefono2'], 1, 9);
 
             // Base URL de la API
-            $baseUrl = 'https://b24-mh9fll.bitrix24.es/rest/5507/9mgnss30ssjdu1ay/crm.lead.add.json';
+            $baseUrl = 'https://perseo-soft.bitrix24.es/rest/5507/9mgnss30ssjdu1ay/crm.deal.add.json';
 
             // Construir los parámetros de consulta como un array asociativo
             $queryParams = [
