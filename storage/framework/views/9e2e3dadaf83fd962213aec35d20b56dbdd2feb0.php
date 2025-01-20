@@ -106,7 +106,7 @@
                         <div class="card-body">
                             <!--begin: Search Form-->
                             <div class="mb-15" id="filtro" style="display: none;">
-                                <div class="row mb-8">
+                                <div class="row mb-5">
                                     <div class="col-lg-3 mb-lg-0 mb-6">
                                         <label>Tipo Fecha:</label>
                                         <select class="form-control datatable-input" id="tipofecha">
@@ -147,7 +147,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="row mb-8">
+                                <div class="row mb-5">
                                     <div class="col-lg-3 mb-lg-0 mb-6">
                                         <label>Producto:</label>
                                         <select class="form-control datatable-input" id="producto" name="producto">
@@ -192,7 +192,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="row mb-8">
+                                <div class="row mb-5">
                                     <div class="col-lg-3 mb-lg-0 mb-6">
                                         <label>Provincias:</label>
                                         <select class="form-control datatable-input select2" id="provinciasid"

@@ -177,6 +177,26 @@ class clientesController extends Controller
                                     case '3':
                                         $final = $final->where('modulocontable', 1);
                                         break;
+                                        //Prime
+                                    case '4':
+                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 1);
+                                        break;
+                                    case '5':
+                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 2);
+                                        break;
+                                    case '6':
+                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 3);
+                                        break;
+                                        //Contaplus
+                                    case '7':
+                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 1);
+                                        break;
+                                    case '8':
+                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 2);
+                                        break;
+                                    case '9':
+                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 3);
+                                        break;
                                 }
                             }
                             break;
@@ -334,6 +354,12 @@ class clientesController extends Controller
                         if ($cliente->modulopractico == 1) $producto = "Práctico";
                         if ($cliente->modulocontrol == 1) $producto = "Control";
                         if ($cliente->modulocontable == 1) $producto = "Contable";
+                        if ($cliente->modulonube == 1) {
+                            $tipoNubeText = $cliente->tipo_nube == 1 ? 'Prime' : ($cliente->tipo_nube == 2 ? 'Contaplus' : 'Otro');
+                            $nivelNubeText = "Nivel " . $cliente->nivel_nube;
+
+                            $producto = "{$tipoNubeText} {$nivelNubeText}";
+                        }
                     }
                     return $producto;
                 })

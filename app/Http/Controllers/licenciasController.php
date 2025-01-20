@@ -251,6 +251,7 @@ class licenciasController extends Controller
         $request['modulopractico'] = $request->modulopractico == 'on' ? 1 : 0;
         $request['modulocontrol'] = $request->modulocontrol == 'on' ? 1 : 0;
         $request['modulocontable'] = $request->modulocontable == 'on' ? 1 : 0;
+        $request['modulonube'] = $request->modulonube == 'on' ? 1 : 0;
         $request['actulizaciones'] = $request->actulizaciones == 'on' ? 1 : 0;
         $request['plan_soporte'] = $request->plan_soporte == 'on' ? 1 : 0;
         $request['ipservidorremoto'] = $request->ipservidorremoto == '' ? '' : $request->ipservidorremoto;
@@ -340,6 +341,9 @@ class licenciasController extends Controller
         $array['modulopractico'] = $licencia->modulopractico;
         $array['modulocontable'] = $licencia->modulocontable;
         $array['modulocontrol'] = $licencia->modulocontrol;
+        $array['modulonube'] = $licencia->modulonube;
+        $array['tipo_nube'] = $licencia->tipo_nube;
+        $array['nivel_nube'] = $licencia->nivel_nube;
         $array['ipservidor'] = $licencia->ipservidor;
         $array['ipservidorremoto'] = $licencia->ipservidorremoto;
         $array['numeroequipos'] = $licencia->numeroequipos;
@@ -369,12 +373,14 @@ class licenciasController extends Controller
         $log->save();
 
         try {
-            Mail::to($emails)->queue(new enviarlicencia($array));
+            if (config('app.env') !== 'local') {
+                Mail::to($emails)->queue(new enviarlicencia($array));
+            }
         } catch (\Exception $e) {
-
             flash('Error enviando email')->error();
             return redirect()->route('licencias.Pc.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
         }
+
 
         flash('Guardado Correctamente')->success();
         return redirect()->route('licencias.Pc.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
@@ -853,6 +859,7 @@ class licenciasController extends Controller
         $request['modulopractico'] = $request->modulopractico == 'on' ? 1 : 0;
         $request['modulocontrol'] = $request->modulocontrol == 'on' ? 1 : 0;
         $request['modulocontable'] = $request->modulocontable == 'on' ? 1 : 0;
+        $request['modulonube'] = $request->modulonube == 'on' ? 1 : 0;
         $request['actulizaciones'] = $request->actulizaciones == 'on' ? 1 : 0;
         $request['plan_soporte'] = $request->plan_soporte == 'on' ? 1 : 0;
         $request['tokenrespaldo'] =  $request['tokenrespaldo'] == "" ? "" : $request['tokenrespaldo'];
@@ -960,6 +967,9 @@ class licenciasController extends Controller
         $array['modulopractico'] = $licencia->modulopractico;
         $array['modulocontable'] = $licencia->modulocontable;
         $array['modulocontrol'] = $licencia->modulocontrol;
+        $array['modulonube'] = $licencia->modulonube;
+        $array['tipo_nube'] = $licencia->tipo_nube;
+        $array['nivel_nube'] = $licencia->nivel_nube;
         $array['fechaactulizaciones'] = $licencia->fechaactulizaciones;
 
         $emails = explode(", ", $cliente->distribuidor);
@@ -973,7 +983,9 @@ class licenciasController extends Controller
         $emails = array_diff($emails, array(" ", 0, null));
 
         try {
-            Mail::to($emails)->queue(new enviarlicencia($array));
+            if (config('app.env') !== 'local') {
+                Mail::to($emails)->queue(new enviarlicencia($array));
+            }
         } catch (\Exception $e) {
             flash('Error enviando email')->error();
             return back();

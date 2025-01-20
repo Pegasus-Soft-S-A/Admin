@@ -249,6 +249,17 @@
                                                                             @if ($array['modulocontrol'] == 1)
                                                                             Perseo Control
                                                                             @endif
+                                                                            @if ($array['modulonube'] == 1)
+                                                                            @php
+                                                                            $tipoNubeText = $array['tipo_nube'] == 1 ?
+                                                                            'Prime' : ($array['tipo_nube'] == 2 ?
+                                                                            'Contaplus' : 'Otro');
+                                                                            $nivelNubeText = "Nivel " .
+                                                                            $array['nivel_nube'];
+                                                                            @endphp
+                                                                            {{ $tipoNubeText }} {{ $nivelNubeText
+                                                                            }}
+                                                                            @endif
                                                                         </td>
                                                                     </tr>
                                                                     <tr>

@@ -236,6 +236,37 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             <?php endif; ?>
         </div>
 
+        <div class="form-group row" id="div_nube" style="display: none;">
+            <div class="col-lg-4">
+                <label>Tipo:</label>
+                <select class="form-control" name="tipo_nube" id="tipo_nube">
+                    <option value="1" <?php echo e(old('tipo_nube', $licencia->tipo_nube) == '1' ? 'Selected': ''); ?>>Prime
+                    </option>
+                    <option value="2" <?php echo e(old('tipo_nube', $licencia->tipo_nube) == '2' ? 'Selected': ''); ?>>Contaplus
+                    </option>
+                </select>
+                <span class="text-danger"><?php echo e($errors->first('clave')); ?></span>
+            </div>
+            <div class="col-lg-4">
+                <label>Nivel:</label>
+                <select class="form-control" name="nivel_nube" id="nivel_nube">
+                    <option value="1" <?php echo e(old('nivel_nube', $licencia->nivel_nube) == '1' ? 'Selected': ''); ?>>Nivel 1
+                    </option>
+                    <option value="2" <?php echo e(old('nivel_nube', $licencia->nivel_nube) == '2' ? 'Selected': ''); ?>>Nivel 2
+                    </option>
+                    <option value="3" <?php echo e(old('nivel_nube', $licencia->nivel_nube) == '3' ? 'Selected': ''); ?>>Nivel 3
+                    </option>
+                </select>
+                <span class="text-danger"><?php echo e($errors->first('clave')); ?></span>
+            </div>
+            <div class="col-lg-4">
+                <label>Usuarios:</label>
+                <input type="text" class="form-control" name="usuarios_nube" autocomplete="off"
+                    value="<?php echo e($licencia->usuarios_nube); ?>" />
+                <span class="text-danger"><?php echo e($errors->first('usuarios_nube')); ?></span>
+            </div>
+        </div>
+
         <ul class="nav nav-tabs nav-tabs-line nav-bold">
             <li class="nav-item">
                 <a class="nav-link active" data-toggle="tab" href="#aplicacionesprincipales">Aplicaciones
@@ -258,7 +289,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
 
             <div class="tab-pane fade show active" id="aplicacionesprincipales" role="tabpanel">
                 <div class="form-group row">
-                    <div class="col-lg-4">
+                    <div class="col-lg-3">
                         <label>Sistema Perseo Práctico:</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
@@ -269,7 +300,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                             </label>
                         </span>
                     </div>
-                    <div class="col-lg-4">
+                    <div class="col-lg-3">
                         <label>Sistema Perseo Control:</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
@@ -280,12 +311,23 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                             </label>
                         </span>
                     </div>
-                    <div class="col-lg-4">
+                    <div class="col-lg-3">
                         <label>Sistema Perseo Contable</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
                                 <input <?php if($licencia->modulocontable== 1): ?> checked="checked" <?php endif; ?> type="checkbox"
                                 name="modulocontable" id="contable" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
+                                <?php endif; ?>/>
+                                <span></span>
+                            </label>
+                        </span>
+                    </div>
+                    <div class="col-lg-3">
+                        <label>Sistema Nube</label>
+                        <span class="switch switch-outline switch-icon switch-primary switch-sm">
+                            <label>
+                                <input <?php if($licencia->modulonube== 1): ?> checked="checked" <?php endif; ?> type="checkbox"
+                                name="modulonube" id="nube" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
                                 <?php endif; ?>/>
                                 <span></span>
                             </label>
@@ -634,22 +676,22 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         </span>
                     </div>
                 </div>
-            </div>
 
-            <div class="form-group row">
-                <label class="col-4 col-form-label">API Urbano</label>
-                <div class="col-2">
-                    <span class="switch switch-outline switch-icon switch-primary switch-sm">
-                        <label>
-                            <input <?php if(isset($modulos[0]->api_urbano)): ?> <?php if($modulos[0]->api_urbano==
-                            true): ?>)
-                            checked="checked" <?php endif; ?> <?php endif; ?>
-                            type="checkbox" name="api_urbano" id="api_urbano" <?php if($rol!=1 && $accion ==
-                            'Modificar'): ?>
-                            disabled <?php endif; ?>/>
-                            <span></span>
-                        </label>
-                    </span>
+                <div class="form-group row">
+                    <label class="col-4 col-form-label">API Urbano</label>
+                    <div class="col-2">
+                        <span class="switch switch-outline switch-icon switch-primary switch-sm">
+                            <label>
+                                <input <?php if(isset($modulos[0]->api_urbano)): ?> <?php if($modulos[0]->api_urbano==
+                                true): ?>)
+                                checked="checked" <?php endif; ?> <?php endif; ?>
+                                type="checkbox" name="api_urbano" id="api_urbano" <?php if($rol!=1 && $accion ==
+                                'Modificar'): ?>
+                                disabled <?php endif; ?>/>
+                                <span></span>
+                            </label>
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -826,6 +868,85 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
 
 <?php $__env->startSection('script'); ?>
 <script>
+    $(document).ready(function () {
+        if ("<?php echo e(isset($licencia->sis_licenciasid)); ?>" == true) {
+            if ("<?php echo e($licencia->modulonube); ?>" == 1) {
+                $('#div_nube').show();
+            }
+        }
+        //Iniciar fecha de bloqueo
+        $('#fechacaduca').datepicker({
+            language: "es",
+            todayHighlight: true,
+            orientation: "bottom left",
+            templates: {
+                leftArrow: '<i class="la la-angle-left"></i>',
+                rightArrow: '<i class="la la-angle-right"></i>'
+            }
+        });
+
+        $('#fechaactulizaciones').datepicker({
+            language: "es",
+            todayHighlight: true,
+            orientation: "bottom left",
+            templates: {
+                leftArrow: '<i class="la la-angle-left"></i>',
+                rightArrow: '<i class="la la-angle-right"></i>'
+            }
+        });
+
+        $('#fechacaduca_soporte').datepicker({
+            language: "es",
+            todayHighlight: true,
+            orientation: "bottom left",
+            templates: {
+                leftArrow: '<i class="la la-angle-left"></i>',
+                rightArrow: '<i class="la la-angle-right"></i>'
+            }
+        });
+
+        //inicializar datatable
+        var table = $('#aplicativos').DataTable({
+            responsive: true,
+            serverSide: true,
+            searching: false,
+            paging: false,
+            //Peticion ajax que devuelve los registros
+            ajax: "<?php echo e(route('subcategorias')); ?>",
+            drawCallback: function (settings) {
+
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+
+                api.column(0, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="3">' + group + '</td></tr>',
+                        );
+                        last = group;
+                    }
+                });
+            },
+            //Columnas de la tabla (Debe contener misma cantidad que thead)
+            columns: [
+                {data: 'categoriasdescripcion', name: 'categoriasdescripcion',visible:false},
+                {data: 'sis_subcategoriasid', orderable: false, searchable: false,name: 'sis_subcategoriasid'},
+                {data: 'descripcionsubcategoria',orderable: false, searchable: false, name: 'descripcionsubcategoria'},
+                {data: 'activo', name: 'activo', orderable: false, searchable: false},
+            ],
+            initComplete: function(settings, json) {
+                //Al terminar de llenar tabla, cargar permisos
+                var permisos=$("#permisos").val();
+                var array =  permisos.split(';');
+
+                for (var i = 0; i <array.length ; i++) {
+                    $('#'+array[i]).prop('checked', true);
+                }
+            }
+        });
+    });
+
     $("#renovarmensual").click(function(e) {
         confirmar('mes',"Está seguro de Renovar la Licencia?");
     });
@@ -878,11 +999,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         let inputPractico = $('#practico').prop('checked');
         let inputControl = $('#control').prop('checked');
         let inputContable = $('#contable').prop('checked');
+        let inputNube = $('#nube').prop('checked');
 
-        if (inputPractico == false && inputControl == false && inputContable == false ) {
+        if (inputPractico == false && inputControl == false && inputContable == false && inputNube == false ) {
             $.notify({
             // options
-                message: 'Seleccione si es Perseo: Práctico, Control o Contable',
+                message: 'Seleccione si es Perseo: Práctico, Control, Contable o Nube',
             },{
                 // settings
                 showProgressbar: true,
@@ -911,18 +1033,21 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
     $('#practico').click(function(){
         $('#control').prop('checked', false);
         $('#contable').prop('checked', false);
+        $('#nube').prop('checked', false);
         if ($('#practico').prop('checked')) {
             moduloPerseoPractico(true);
         }else{
             moduloPerseoPractico(false);
         }
         cambiarComboPC();
+        $('#div_nube').hide();
+        $('#div_nube select, #div_nube input').prop('disabled', true);
     });
 
     $('#control').click(function(){
         $('#practico').prop('checked', false);
         $('#contable').prop('checked', false);
-
+        $('#nube').prop('checked', false);
         if ($('#control').prop('checked')) {
             moduloPerseoPractico(true);
             moduloPerseoControl(true);
@@ -931,12 +1056,14 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             moduloPerseoControl(false);
         }
         cambiarComboPC();
+        $('#div_nube').hide();
+        $('#div_nube select, #div_nube input').prop('disabled', true);
     });
 
     $('#contable').click(function(){
         $('#control').prop('checked', false);
         $('#practico').prop('checked', false);
-
+        $('#nube').prop('checked', false);
         if ($('#contable').prop('checked')) {
             moduloPerseoPractico(true);
             moduloPerseoControl(true);
@@ -947,7 +1074,34 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             moduloPerseoContable(false);
         }
         cambiarComboPC();
+        $('#div_nube').hide();
+        $('#div_nube select, #div_nube input').prop('disabled', true);
     });
+
+    $('#nube').click(function () {
+        $('#control').prop('checked', false);
+        $('#practico').prop('checked', false);
+        $('#contable').prop('checked', false);
+
+        if ($('#nube').prop('checked')) {
+            // Lógica adicional para mostrar la fila div_nube
+            $('#div_nube').show();
+            $('#div_nube select, #div_nube input').prop('disabled', false);
+            moduloPerseoPractico(true);
+            moduloPerseoControl(true);
+            moduloPerseoContable(true);
+        } else {
+            // Lógica adicional para ocultar la fila div_nube
+            $('#div_nube').hide();
+            $('#div_nube select, #div_nube input').prop('disabled', true);
+            moduloPerseoPractico(false);
+            moduloPerseoControl(false);
+            moduloPerseoContable(false);
+        }
+
+        cambiarComboPC();
+    });
+
 
     $('#nomina').click(function(){
         if ($('#nomina').prop('checked')) {
@@ -1077,87 +1231,6 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         }
     });
 
-
-    $(document).ready(function () {
-
-        //Iniciar fecha de bloqueo
-        $('#fechacaduca').datepicker({
-            language: "es",
-            todayHighlight: true,
-            orientation: "bottom left",
-            templates: {
-                leftArrow: '<i class="la la-angle-left"></i>',
-                rightArrow: '<i class="la la-angle-right"></i>'
-            }
-        });
-
-        $('#fechaactulizaciones').datepicker({
-            language: "es",
-            todayHighlight: true,
-            orientation: "bottom left",
-            templates: {
-                leftArrow: '<i class="la la-angle-left"></i>',
-                rightArrow: '<i class="la la-angle-right"></i>'
-            }
-        });
-
-        $('#fechacaduca_soporte').datepicker({
-            language: "es",
-            todayHighlight: true,
-            orientation: "bottom left",
-            templates: {
-                leftArrow: '<i class="la la-angle-left"></i>',
-                rightArrow: '<i class="la la-angle-right"></i>'
-            }
-        });
-
-        //inicializar datatable
-        var table = $('#aplicativos').DataTable({
-            responsive: true,
-            //processing: true,
-            //Guardar pagina, busqueda, etc
-            //stateSave: true,
-            //Trabajar del lado del server
-            serverSide: true,
-            searching: false,
-            paging: false,
-            //Peticion ajax que devuelve los registros
-            ajax: "<?php echo e(route('subcategorias')); ?>",
-            drawCallback: function (settings) {
-
-				var api = this.api();
-				var rows = api.rows({ page: 'current' }).nodes();
-				var last = null;
-
-				api.column(0, { page: 'current' }).data().each(function (group, i) {
-					if (last !== group) {
-						$(rows).eq(i).before(
-							'<tr class="group"><td colspan="3">' + group + '</td></tr>',
-						);
-						last = group;
-					}
-				});
-			},
-            //Columnas de la tabla (Debe contener misma cantidad que thead)
-            columns: [
-                {data: 'categoriasdescripcion', name: 'categoriasdescripcion',visible:false},
-                {data: 'sis_subcategoriasid', orderable: false, searchable: false,name: 'sis_subcategoriasid'},
-                {data: 'descripcionsubcategoria',orderable: false, searchable: false, name: 'descripcionsubcategoria'},
-                {data: 'activo', name: 'activo', orderable: false, searchable: false},
-            ],
-            initComplete: function(settings, json) {
-                //Al terminar de llenar tabla, cargar permisos
-                var permisos=$("#permisos").val();
-                var array =  permisos.split(';');
-
-                for (var i = 0; i <array.length ; i++) {
-                    $('#'+array[i]).prop('checked', true);
-                }
-            }
-        });
-
-
-    });
 
     function moduloPerseoPractico(estado){
         //Activar o desactivar modulos
@@ -1423,6 +1496,17 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     moduloPerseoActivos(true);
                     moduloPerseoProduccion(false);
                 }
+                if ($('#nube').prop('checked')) {
+                    $('#numeroequipos').val('4');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', true);
+                    $('#activos').prop('checked', true);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(true);
+                    moduloPerseoActivos(true);
+                    moduloPerseoProduccion(false);
+                }
                 break;
             case '2':
                 fecha.setYear(fecha.getFullYear() + 1);
@@ -1460,6 +1544,17 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     moduloPerseoActivos(true);
                     moduloPerseoProduccion(false);
                 }
+                if ($('#nube').prop('checked')) {
+                    $('#numeroequipos').val('4');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', true);
+                    $('#activos').prop('checked', true);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(true);
+                    moduloPerseoActivos(true);
+                    moduloPerseoProduccion(false);
+                }
                 break;
             case '3':
                 fecha.setYear(fecha.getFullYear() + 5);
@@ -1487,6 +1582,17 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     moduloPerseoProduccion(false);
                 }
                 if ($('#contable').prop('checked')) {
+                    $('#numeroequipos').val('4');
+                    $('#numeromoviles').val('0');
+                    $('#numerosucursales').val('1');
+                    $('#nomina').prop('checked', true);
+                    $('#activos').prop('checked', true);
+                    $('#produccion').prop('checked', false);
+                    moduloPerseoNomina(true);
+                    moduloPerseoActivos(true);
+                    moduloPerseoProduccion(false);
+                }
+                if ($('#nube').prop('checked')) {
                     $('#numeroequipos').val('4');
                     $('#numeromoviles').val('0');
                     $('#numerosucursales').val('1');

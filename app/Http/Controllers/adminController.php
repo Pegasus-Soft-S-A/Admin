@@ -302,74 +302,32 @@ class adminController extends Controller
         switch ($tipo) {
             case '2':
                 $producto = [
-                    [
-                        "id" => "",
-                        "nombre" => "Todos"
-                    ],
-                    [
-                        "id" => "2",
-                        "nombre" => "Facturación"
-                    ],
-                    [
-                        "id" => "3",
-                        "nombre" => "Servicios"
-                    ],
-                    [
-                        "id" => "4",
-                        "nombre" => "Comercial"
-                    ],
-                    [
-                        "id" => "5",
-                        "nombre" => "Soy Contador"
-                    ],
-                    [
-                        "id" => "7",
-                        "nombre" => "Total"
-                    ],
-                    [
-                        "id" => "6",
-                        "nombre" => "Perseo Lite Anterior"
-                    ],
-                    [
-                        "id" => "8",
-                        "nombre" => "Soy Contador Servicios"
-                    ],
-                    [
-                        "id" => "9",
-                        "nombre" => "Perseo Lite"
-                    ],
-                    [
-                        "id" => "10",
-                        "nombre" => "Emprendedor"
-                    ],
-                    [
-                        "id" => "11",
-                        "nombre" => "Socio Perseo"
-                    ],
-                    [
-                        "id" => "12",
-                        "nombre" => "Facturito"
-                    ]
+                    ["id" => "", "nombre" => "Todos"],
+                    ["id" => "2", "nombre" => "Facturación"],
+                    ["id" => "3", "nombre" => "Servicios"],
+                    ["id" => "4", "nombre" => "Comercial"],
+                    ["id" => "5", "nombre" => "Soy Contador"],
+                    ["id" => "7", "nombre" => "Total"],
+                    ["id" => "6", "nombre" => "Perseo Lite Anterior"],
+                    ["id" => "8", "nombre" => "Soy Contador Servicios"],
+                    ["id" => "9", "nombre" => "Perseo Lite"],
+                    ["id" => "10", "nombre" => "Emprendedor"],
+                    ["id" => "11", "nombre" => "Socio Perseo"],
+                    ["id" => "12", "nombre" => "Facturito"]
                 ];
                 break;
             case '3':
                 $producto = [
-                    [
-                        "id" => "",
-                        "nombre" => "Todos"
-                    ],
-                    [
-                        "id" => "1",
-                        "nombre" => "Práctico"
-                    ],
-                    [
-                        "id" => "2",
-                        "nombre" => "Control"
-                    ],
-                    [
-                        "id" => "3",
-                        "nombre" => "Contable"
-                    ]
+                    ["id" => "", "nombre" => "Todos"],
+                    ["id" => "1", "nombre" => "Práctico"],
+                    ["id" => "2", "nombre" => "Control"],
+                    ["id" => "3", "nombre" => "Contable"],
+                    ["id" => "4", "nombre" => "Prime Nivel 1"],
+                    ["id" => "5", "nombre" => "Prime Nivel 2"],
+                    ["id" => "6", "nombre" => "Prime Nivel 3"],
+                    ["id" => "7", "nombre" => "Contaplus Nivel 1"],
+                    ["id" => "8", "nombre" => "Contaplus Nivel 2"],
+                    ["id" => "9", "nombre" => "Contaplus Nivel 3"],
                 ];
                 break;
             default:

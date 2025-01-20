@@ -54,6 +54,9 @@ class Clientes extends Model
         sis_licencias.modulopractico,
         sis_licencias.modulocontrol,
         sis_licencias.modulocontable,
+        sis_licencias.modulonube,
+        sis_licencias.tipo_nube,
+        sis_licencias.nivel_nube,
         sis_licencias.cantidadempresas,
         sis_clientes.validado,
         sis_licencias.Identificador
@@ -95,6 +98,9 @@ class Clientes extends Model
         '' AS modulopractico,
         '' AS modulocontrol,
         '' AS modulocontable,
+        '' AS modulonube,
+        '' AS tipo_nube,
+        '' AS nivel_nube,
         '' AS cantidadempresas,
         sis_clientes.validado,
         '' AS Identificador
@@ -138,6 +144,9 @@ class Clientes extends Model
         sis_licencias_web.modulopractico,
         sis_licencias_web.modulocontrol,
         sis_licencias_web.modulocontable,
+        '' AS modulonube,
+        '' AS tipo_nube,
+        '' AS nivel_nube,
         '' AS cantidadempresas,
         sis_clientes.validado,
         '' AS Identificador
@@ -179,6 +188,9 @@ class Clientes extends Model
         '' AS modulopractico,
         '' AS modulocontrol,
         '' AS modulocontable,
+        '' AS modulonube,
+        '' AS tipo_nube,
+        '' AS nivel_nube,
         '' AS cantidadempresas,
         sis_clientes.validado,
         '' AS Identificador
