@@ -3,15 +3,15 @@
     <div class="brand flex-column-auto" id="kt_brand">
         <a href="#" class="brand-logo">
             @if (session('menu') == 0)
-            <img width="200" height="35" alt="Logo" src="{{ asset('assets/media/perseologob2.png') }}" />
+                <img width="200" height="35" alt="Logo" src="{{ asset('assets/media/perseologob2.png') }}" />
             @else
-            <img width="200" height="35" alt="Logo" src="{{ asset('assets/media/perseologo.png') }}" />
+                <img width="200" height="35" alt="Logo" src="{{ asset('assets/media/perseologo.png') }}" />
             @endif
         </a>
         <button class="brand-toggle btn btn-sm px-0" id="kt_aside_toggle">
             <span class="svg-icon svg-icon svg-icon-xl">
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
-                    height="24px" viewBox="0 0 24 24" version="1.1">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24"
+                    version="1.1">
                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                         <polygon points="0 0 24 0 24 24 0 24" />
                         <path
@@ -28,96 +28,90 @@
         </button>
     </div>
     <div class="aside-menu-wrapper flex-column-fluid" id="kt_aside_menu_wrapper">
-        <div id="kt_aside_menu" class="aside-menu my-4" data-menu-vertical="1" data-menu-scroll="1"
-            data-menu-dropdown-timeout="500">
+        <div id="kt_aside_menu" class="aside-menu my-4" data-menu-vertical="1" data-menu-scroll="1" data-menu-dropdown-timeout="500">
             <ul class="menu-nav">
 
-                @if (Auth::user()->tipo!=5)
-
-                <li class="menu-item {{ areActiveRoutes(['clientes.index']) }} " aria-haspopup="true">
-                    <a href="{{ route('clientes.index') }}" class="menu-link">
-                        <i class="menu-icon fa fa-key"></i>
-                        <span class="menu-text">Registro Clientes</span>
-                    </a>
-                </li>
-
+                @if (Auth::user()->tipo != 5)
+                    <li class="menu-item {{ areActiveRoutes(['clientes.index']) }} " aria-haspopup="true">
+                        <a href="{{ route('clientes.index') }}" class="menu-link">
+                            <i class="menu-icon fa fa-key"></i>
+                            <span class="menu-text">Registro Clientes</span>
+                        </a>
+                    </li>
                 @endif
 
-                @if (Auth::user()->tipo==1)
+                @if (Auth::user()->tipo == 1)
+                    <li class="menu-item {{ areActiveRoutes(['distribuidores.index']) }}" aria-haspopup="true">
+                        <a href="{{ route('distribuidores.index') }}" class="menu-link">
+                            <i class="menu-icon fa fa-users"></i>
+                            <span class="menu-text">Distribuidores</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item {{ areActiveRoutes(['distribuidores.index']) }}" aria-haspopup="true">
-                    <a href="{{ route('distribuidores.index') }}" class="menu-link">
-                        <i class="menu-icon fa fa-users"></i>
-                        <span class="menu-text">Distribuidores</span>
-                    </a>
-                </li>
+                    <li class="menu-item {{ areActiveRoutes(['revendedores.index']) }}" aria-haspopup="true">
+                        <a href="{{ route('revendedores.index') }}" class="menu-link">
+                            <i class="menu-icon fa fa-user-plus"></i>
+                            <span class="menu-text">Revendedores</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item {{ areActiveRoutes(['revendedores.index']) }}" aria-haspopup="true">
-                    <a href="{{ route('revendedores.index') }}" class="menu-link">
-                        <i class="menu-icon fa fa-user-plus"></i>
-                        <span class="menu-text">Revendedores</span>
-                    </a>
-                </li>
+                    <li class="menu-item {{ areActiveRoutes(['usuarios.index']) }} " aria-haspopup="true">
+                        <a href="{{ route('usuarios.index') }}" class="menu-link">
+                            <i class="menu-icon fa fa-user"></i>
+                            <span class="menu-text">Usuarios</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item {{ areActiveRoutes(['usuarios.index']) }} " aria-haspopup="true">
-                    <a href="{{ route('usuarios.index') }}" class="menu-link">
-                        <i class="menu-icon fa fa-user"></i>
-                        <span class="menu-text">Usuarios</span>
-                    </a>
-                </li>
+                    <li class="menu-item {{ areActiveRoutes(['servidores.index']) }} " aria-haspopup="true">
+                        <a href="{{ route('servidores.index') }}" class="menu-link">
+                            <i class="menu-icon fa fa-server"></i>
+                            <span class="menu-text">Servidores</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item {{ areActiveRoutes(['servidores.index']) }} " aria-haspopup="true">
-                    <a href="{{ route('servidores.index') }}" class="menu-link">
-                        <i class="menu-icon fa fa-server"></i>
-                        <span class="menu-text">Servidores</span>
-                    </a>
-                </li>
+                    <li class="menu-item {{ areActiveRoutes(['migrar']) }} " aria-haspopup="true">
+                        <a href="{{ route('migrar') }}" class="menu-link">
+                            <i class="menu-icon fa fa-database"></i>
+                            <span class="menu-text">Migrar Servidor</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item {{ areActiveRoutes(['migrar']) }} " aria-haspopup="true">
-                    <a href="{{ route('migrar') }}" class="menu-link">
-                        <i class="menu-icon fa fa-database"></i>
-                        <span class="menu-text">Migrar Servidor</span>
-                    </a>
-                </li>
+                    <li class="menu-item {{ areActiveRoutes(['agrupados.index']) }} " aria-haspopup="true">
+                        <a href="{{ route('agrupados.index') }}" class="menu-link">
+                            <i class="menu-icon fa fa-users"></i>
+                            <span class="menu-text">Agrupados</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item {{ areActiveRoutes(['agrupados.index']) }} " aria-haspopup="true">
-                    <a href="{{ route('agrupados.index') }}" class="menu-link">
-                        <i class="menu-icon fa fa-users"></i>
-                        <span class="menu-text">Agrupados</span>
-                    </a>
-                </li>
+                    <li class="menu-item {{ areActiveRoutes(['links.index']) }} " aria-haspopup="true">
+                        <a href="{{ route('links.index') }}" class="menu-link">
+                            <i class="menu-icon fa fa-link"></i>
+                            <span class="menu-text">Links</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item {{ areActiveRoutes(['links.index']) }} " aria-haspopup="true">
-                    <a href="{{ route('links.index') }}" class="menu-link">
-                        <i class="menu-icon fa fa-link"></i>
-                        <span class="menu-text">Links</span>
-                    </a>
-                </li>
-
-                <li class="menu-item {{ areActiveRoutes(['reportes.index']) }} " aria-haspopup="true">
-                    <a href="{{ route('reportes.index') }}" class="menu-link">
-                        <i class="menu-icon fa fa-chart-bar"></i>
-                        <span class="menu-text">Reportes</span>
-                    </a>
-                </li>
-
+                    <li class="menu-item {{ areActiveRoutes(['reportes.index']) }} " aria-haspopup="true">
+                        <a href="{{ route('reportes.index') }}" class="menu-link">
+                            <i class="menu-icon fa fa-chart-bar"></i>
+                            <span class="menu-text">Reportes</span>
+                        </a>
+                    </li>
                 @endif
 
-                @if (Auth::user()->tipo==1 || Auth::user()->tipo==5)
-
-                <li class="menu-item {{ areActiveRoutes(['publicidades.index']) }} " aria-haspopup="true">
+                @if (Auth::user()->tipo == 1 || Auth::user()->tipo == 5 || Auth::user()->tipo == 8)
+                    {{-- <li class="menu-item {{ areActiveRoutes(['publicidades.index']) }} " aria-haspopup="true">
                     <a href="{{ route('publicidades.index') }}" class="menu-link">
                         <i class="menu-icon fa fa-file-image"></i>
                         <span class="menu-text">Publicidad</span>
                     </a>
-                </li>
+                </li> --}}
 
-                <li class="menu-item {{ areActiveRoutes(['notificaciones.index']) }}" aria-haspopup="true">
-                    <a href="{{ route('notificaciones.index') }}" class="menu-link">
-                        <i class="menu-icon fa fa-bell"></i>
-                        <span class="menu-text">Notificaciones</span>
-                    </a>
-                </li>
+                    <li class="menu-item {{ areActiveRoutes(['notificaciones.index']) }}" aria-haspopup="true">
+                        <a href="{{ route('notificaciones.index') }}" class="menu-link">
+                            <i class="menu-icon fa fa-bell"></i>
+                            <span class="menu-text">Notificaciones</span>
+                        </a>
+                    </li>
                 @endif
             </ul>
         </div>

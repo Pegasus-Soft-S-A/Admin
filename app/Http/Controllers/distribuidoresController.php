@@ -123,6 +123,7 @@ class distribuidoresController extends Controller
         try {
             $distribuidor->delete();
         } catch (QueryException $e) {
+            dd($e->getMessage());
             if ($e->errorInfo[1] == '1451') {
                 flash("Existen usuarios asociados al distribuidor")->error();
                 return back();

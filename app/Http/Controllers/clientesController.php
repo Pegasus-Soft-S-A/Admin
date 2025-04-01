@@ -157,13 +157,13 @@ class clientesController extends Controller
 
                 if ($tipolicencia != 1) {
                     switch ($tipolicencia) {
-                            //web
+                        //web
                         case '2':
                             $final = $final->where('tipo_licencia', 1);
                             if ($producto != null) $final = $final->where('producto', $producto);
                             if ($periodo != null) $final = $final->where('periodo', $periodo);
                             break;
-                            //pc
+                        //pc
                         case '3':
                             $final = $final->where('tipo_licencia', 2);
                             if ($producto != null) {
@@ -177,7 +177,7 @@ class clientesController extends Controller
                                     case '3':
                                         $final = $final->where('modulocontable', 1);
                                         break;
-                                        //Prime
+                                    //Prime
                                     case '4':
                                         $final = $final->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 1);
                                         break;
@@ -187,7 +187,7 @@ class clientesController extends Controller
                                     case '6':
                                         $final = $final->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 3);
                                         break;
-                                        //Contaplus
+                                    //Contaplus
                                     case '7':
                                         $final = $final->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 1);
                                         break;
@@ -197,10 +197,14 @@ class clientesController extends Controller
                                     case '9':
                                         $final = $final->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 3);
                                         break;
+                                    //nube
+                                    case '10':
+                                        $final = $final->where('modulonube', 1);
+                                        break;
                                 }
                             }
                             break;
-                            //vps
+                        //vps
                         case '4':
                             $final = $final->where('tipo_licencia', 3);
                             break;
@@ -213,17 +217,21 @@ class clientesController extends Controller
                     $checked = $cliente->validado == 1 ? 'checked' : '';
                     return '<label class="checkbox checkbox-single checkbox-primary mb-0"><input type="checkbox" class="checkable" ' . $checked . ' disabled><span></span></label>';
                 })
-
                 ->editColumn('identificacion', function ($cliente) {
                     $user = Auth::user();
                     $userTipo = $user->tipo;
                     $userDistribuidorId = $user->sis_distribuidoresid;
                     $clienteDistribuidorId = $cliente->sis_distribuidoresid;
 
+                    // Si el usuario es tipo 7 (Soporte Matriz) y el cliente tiene tipo_licencia == 1 (Web), siempre mostrar el enlace
+                    if ($userTipo == 7 && $cliente->tipo_licencia == 1) {
+                        return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
+                    }
+
                     // Si el usuario es tipo 6 o no es distribuidor permitido
                     if (
                         $userTipo == 6 ||
-                        ($userTipo != 1 && $userDistribuidorId != $clienteDistribuidorId)
+                        ($userTipo != 1 && $userTipo != 8 && $userDistribuidorId != $clienteDistribuidorId)
                     ) {
                         // Excepciones para el tipo 3
                         if ($userTipo == 3) {
@@ -234,6 +242,7 @@ class clientesController extends Controller
                                 return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
                             }
                         }
+
                         // En caso contrario, simplemente muestra la identificación sin enlace
                         return $cliente->identificacion;
                     }
@@ -243,7 +252,7 @@ class clientesController extends Controller
                 })
 
                 ->editColumn('action', function ($cliente) {
-                    if (Auth::user()->tipo != 6 && (Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid)) {
+                    if (Auth::user()->tipo != 6 && (Auth::user()->tipo == 1 || Auth::user()->tipo == 8 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid)) {
                         return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" title="Editar"> <i class="la la-edit"></i> </a>';
                     }
                 })
@@ -296,7 +305,7 @@ class clientesController extends Controller
                 })
                 ->editColumn('telefono2', function ($cliente) {
                     $telefono = "";
-                    if (Auth::user()->tipo == 6 || Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
+                    if (Auth::user()->tipo == 6 || Auth::user()->tipo == 1 || Auth::user()->tipo == 8 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
                         $telefono = $cliente->telefono2;
                     } else {
                         $telefono = "";
@@ -348,6 +357,24 @@ class clientesController extends Controller
                                 break;
                             case '12':
                                 $producto = "Facturito";
+                                switch ($cliente->periodo) {
+                                    //Inicial
+                                    case '1':
+                                        $producto .= " Inicial";
+                                        break;
+                                    //Basico
+                                    case '2':
+                                        $producto .= " Básico";
+                                        break;
+                                    //Pro
+                                    case '3':
+                                        $producto .= " Pro";
+                                        break;
+                                    //Gratis
+                                    case '4':
+                                        $producto .= " Gratis";
+                                        break;
+                                }
                                 break;
                         }
                     } else {

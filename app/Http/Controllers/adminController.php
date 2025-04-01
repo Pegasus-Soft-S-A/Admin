@@ -322,6 +322,7 @@ class adminController extends Controller
                     ["id" => "1", "nombre" => "Práctico"],
                     ["id" => "2", "nombre" => "Control"],
                     ["id" => "3", "nombre" => "Contable"],
+                    ["id" => "10", "nombre" => "Todos Nube"],
                     ["id" => "4", "nombre" => "Prime Nivel 1"],
                     ["id" => "5", "nombre" => "Prime Nivel 2"],
                     ["id" => "6", "nombre" => "Prime Nivel 3"],

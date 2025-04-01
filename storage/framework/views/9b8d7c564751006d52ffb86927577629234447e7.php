@@ -11,29 +11,36 @@
     }
 </style>
 <?php
-$rol=Auth::user()->tipo;
-$accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
+    $rol = Auth::user()->tipo;
+    $accion = isset($licencia->sis_licenciasid) ? 'Modificar' : 'Crear';
+
+    // Definir constantes de roles
+    define('ROL_ADMIN', 1);
+    define('ROL_DISTRIBUIDOR', 2);
+    define('ROL_SOPORTE_DISTRIBUIDOR', 3);
+    define('ROL_SOPORTE_MATRIZ', 7);
+    define('ROL_VENTAS', 4);
 ?>
 <?php if($errors->has('correopropietario') || $errors->has('correoadministrador') || $errors->has('correocontador')): ?>
-<div class="alert alert-custom alert-notice alert-light-danger fade show" role="alert">
-    <div class="alert-icon"><i class="flaticon-warning"></i></div>
-    <div class="alert-text">
-        <?php if($errors->has('correopropietario')): ?>
-        <?php echo e($errors->first('correopropietario')); ?> <br>
-        <?php endif; ?>
-        <?php if($errors->has('correoadministrador')): ?>
-        <?php echo e($errors->first('correoadministrador')); ?> <br>
-        <?php endif; ?>
-        <?php if($errors->has('correocontador')): ?>
-        <?php echo e($errors->first('correocontador')); ?> <br>
-        <?php endif; ?>
+    <div class="alert alert-custom alert-notice alert-light-danger fade show" role="alert">
+        <div class="alert-icon"><i class="flaticon-warning"></i></div>
+        <div class="alert-text">
+            <?php if($errors->has('correopropietario')): ?>
+                <?php echo e($errors->first('correopropietario')); ?> <br>
+            <?php endif; ?>
+            <?php if($errors->has('correoadministrador')): ?>
+                <?php echo e($errors->first('correoadministrador')); ?> <br>
+            <?php endif; ?>
+            <?php if($errors->has('correocontador')): ?>
+                <?php echo e($errors->first('correocontador')); ?> <br>
+            <?php endif; ?>
+        </div>
+        <div class="alert-close">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true"><i class="ki ki-close"></i></span>
+            </button>
+        </div>
     </div>
-    <div class="alert-close">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true"><i class="ki ki-close"></i></span>
-        </button>
-    </div>
-</div>
 <?php endif; ?>
 
 <ul class="nav nav-tabs nav-tabs-line nav-bold">
@@ -51,161 +58,136 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
     <div class="tab-pane fade show active" id="datoslicencia" role="tabpanel">
         <input type="hidden" name="sis_distribuidoresid" value="<?php echo e($licencia->sis_distribuidoresid); ?>">
         <input type="hidden" name="tipo" id="tipo">
-        <input type="hidden" id="permisos" name="aplicaciones" value="<?php echo e($licencia->aplicaciones); ?>">
+        <input type="hidden" id="permisos" name="aplicaciones_permisos" value="<?php echo e($licencia->aplicaciones); ?>">
         <input type="hidden" value="<?php echo e($cliente->sis_clientesid); ?>" name="sis_clientesid">
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>Numero Contrato:</label>
-                <input type="text" class="form-control <?php echo e($errors->has('numerocontrato') ? 'is-invalid' : ''); ?>"
-                    placeholder="Contrato" name="numerocontrato" autocomplete="off" id="numerocontrato"
-                    value="<?php echo e(old('numerocontrato', $licencia->numerocontrato)); ?>" readonly />
+                <input type="text" class="form-control <?php echo e($errors->has('numerocontrato') ? 'is-invalid' : ''); ?>" placeholder="Contrato"
+                    name="numerocontrato" autocomplete="off" id="numerocontrato" value="<?php echo e(old('numerocontrato', $licencia->numerocontrato)); ?>"
+                    readonly />
                 <?php if($errors->has('numerocontrato')): ?>
-                <span class="text-danger"><?php echo e($errors->first('numerocontrato')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('numerocontrato')); ?></span>
                 <?php endif; ?>
             </div>
-            <?php if(isset($licencia->sis_licenciasid) && $licencia->periodo!=3): ?>
             <div class="col-lg-4">
                 <label>Fecha Caduca:</label>
                 <div class="input-group">
-                    <input type="text"
-                        class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('fechacaduca') ? 'is-invalid' : ''); ?>"
+                    <input type="text" class="form-control <?php echo e($errors->has('fechacaduca') ? 'is-invalid' : ''); ?>"
                         placeholder="Ingrese Fecha Caducidad" name="fechacaduca" id="fechacaduca" autocomplete="off"
-                        value="<?php echo e(old('fechacaduca',$licencia->fechacaduca)); ?>" />
-                    <div class="input-group-append">
-                        <button type="button"
-                            class="btn btn-primary dropdown-toggle <?php if($rol==4 || $rol==3): ?> disabled <?php endif; ?>"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Renovar
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#" id="renovarmensual">Renovar Mensual</a>
-                            <a class="dropdown-item" href="#" id="renovaranual">Renovar Anual</a>
+                        value="<?php echo e(old('fechacaduca', $licencia->fechacaduca)); ?>" />
+
+                    <?php if(isset($licencia->sis_licenciasid) && $licencia->periodo != 3): ?>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                Renovar
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#" id="renovarmensual">Renovar Mensual</a>
+                                <a class="dropdown-item" href="#" id="renovaranual">Renovar Anual</a>
+                            </div>
                         </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
                 <?php if($errors->has('fechacaduca')): ?>
-                <span class="text-danger"><?php echo e($errors->first('fechacaduca')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('fechacaduca')); ?></span>
                 <?php endif; ?>
             </div>
-            <?php else: ?>
-            <div class="col-lg-4">
-                <label>Fecha Caduca:</label>
-                <input type="text"
-                    class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('fechacaduca') ? 'is-invalid' : ''); ?>"
-                    placeholder="Ingrese Fecha Caducidad" name="fechacaduca" id="fechacaduca" autocomplete="off"
-                    value="<?php echo e(old('fechacaduca',$licencia->fechacaduca)); ?>" />
-                <?php if($errors->has('fechacaduca')): ?>
-                <span class="text-danger"><?php echo e($errors->first('fechacaduca')); ?></span>
-                <?php endif; ?>
-            </div>
-            <?php endif; ?>
             <div class="col-lg-4">
                 <label>Estado:</label>
-                <select class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?>" name="estado" id="estado">
-                    <option value="1" <?php echo e(old('estado', $licencia->estado) == '1' ? 'Selected': ''); ?>>Activo</option>
-                    <option value="2" <?php echo e(old('estado', $licencia->estado) == '2' ? 'Selected': ''); ?>>Pendiente de pago
+                <select class="form-control" name="estado" id="estado">
+                    <option value="1" <?php echo e(old('estado', $licencia->estado) == '1' ? 'Selected' : ''); ?>>Activo
                     </option>
-                    <option value="3" <?php echo e(old('estado', $licencia->estado) == '3' ? 'Selected': ''); ?>>Inactivo</option>
+                    <option value="2" <?php echo e(old('estado', $licencia->estado) == '2' ? 'Selected' : ''); ?>>Pendiente de
+                        pago
+                    </option>
+                    <option value="3" <?php echo e(old('estado', $licencia->estado) == '3' ? 'Selected' : ''); ?>>Inactivo
+                    </option>
                 </select>
                 <?php if($errors->has('estado')): ?>
-                <span class="text-danger"><?php echo e($errors->first('estado')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('estado')); ?></span>
                 <?php endif; ?>
             </div>
         </div>
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>Identificador Servidor:</label>
-                <input type="text"
-                    class="form-control <?php if($rol==4): ?> disabled <?php endif; ?> <?php echo e($errors->has('Identificador') ? 'is-invalid' : ''); ?>"
-                    placeholder="Identificador" name="Identificador" autocomplete="off" id="Identificador"
-                    value="<?php echo e(old('Identificador', $licencia->Identificador)); ?>" />
+                <input type="text" class="form-control <?php echo e($errors->has('Identificador') ? 'is-invalid' : ''); ?>" placeholder="Identificador"
+                    name="Identificador" autocomplete="off" id="Identificador" value="<?php echo e(old('Identificador', $licencia->Identificador)); ?>" />
                 <?php if($errors->has('Identificador')): ?>
-                <span class="text-danger"><?php echo e($errors->first('Identificador')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('Identificador')); ?></span>
                 <?php endif; ?>
             </div>
             <div class="col-lg-4">
                 <label>IP Servidor Local:</label>
-                <input type="text"
-                    class="form-control <?php if($rol==4): ?> disabled <?php endif; ?> <?php echo e($errors->has('ipservidor') ? 'is-invalid' : ''); ?>"
-                    placeholder="IP Servidor Local" name="ipservidor" autocomplete="off" id="ipservidor"
-                    value="<?php echo e(old('ipservidor', $licencia->ipservidor)); ?>" />
+                <input type="text" class="form-control <?php echo e($errors->has('ipservidor') ? 'is-invalid' : ''); ?>" placeholder="IP Servidor Local"
+                    name="ipservidor" autocomplete="off" id="ipservidor" value="<?php echo e(old('ipservidor', $licencia->ipservidor)); ?>" />
                 <?php if($errors->has('ipservidor')): ?>
-                <span class="text-danger"><?php echo e($errors->first('ipservidor')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('ipservidor')); ?></span>
                 <?php endif; ?>
             </div>
             <div class="col-lg-4">
                 <label>IP Servidor Remoto:</label>
-                <input type="text"
-                    class="form-control <?php if($rol==4): ?> disabled <?php endif; ?> <?php echo e($errors->has('ipservidorremoto') ? 'is-invalid' : ''); ?>"
+                <input type="text" class="form-control <?php echo e($errors->has('ipservidorremoto') ? 'is-invalid' : ''); ?>"
                     placeholder="IP Servidor Remoto" name="ipservidorremoto" autocomplete="off" id="ipservidorremoto"
                     value="<?php echo e(old('ipservidorremoto', $licencia->ipservidorremoto)); ?>" />
                 <?php if($errors->has('ipservidorremoto')): ?>
-                <span class="text-danger"><?php echo e($errors->first('ipservidorremoto')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('ipservidorremoto')); ?></span>
                 <?php endif; ?>
             </div>
         </div>
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>N° Equipos:</label>
-                <input type="text" class="form-control <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?> <?php echo e($errors->has('numeroequipos') ? 'is-invalid' : ''); ?>" placeholder="N° Equipos" name="numeroequipos"
-                    autocomplete="off" id="numeroequipos"
-                    value="<?php echo e(old('numeroequipos', $licencia->numeroequipos)); ?>" />
+                <input type="text" class="form-control <?php echo e($errors->has('numeroequipos') ? 'is-invalid' : ''); ?>" placeholder="N° Equipos"
+                    name="numeroequipos" autocomplete="off" id="numeroequipos" value="<?php echo e(old('numeroequipos', $licencia->numeroequipos)); ?>" />
                 <?php if($errors->has('numeroequipos')): ?>
-                <span class="text-danger"><?php echo e($errors->first('numeroequipos')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('numeroequipos')); ?></span>
                 <?php endif; ?>
             </div>
             <div class="col-lg-4">
                 <label>N° Móviles:</label>
-                <input type="text"
-                    class="form-control <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?> <?php echo e($errors->has('numeromoviles') ? 'is-invalid' : ''); ?>"
-                    placeholder="N° Móviles" name="numeromoviles" autocomplete="off" id="numeromoviles"
-                    value="<?php echo e(old('numeromoviles', $licencia->numeromoviles)); ?>" />
+                <input type="text" class="form-control <?php echo e($errors->has('numeromoviles') ? 'is-invalid' : ''); ?>" placeholder="N° Móviles"
+                    name="numeromoviles" autocomplete="off" id="numeromoviles" value="<?php echo e(old('numeromoviles', $licencia->numeromoviles)); ?>" />
                 <?php if($errors->has('numeromoviles')): ?>
-                <span class="text-danger"><?php echo e($errors->first('numeromoviles')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('numeromoviles')); ?></span>
                 <?php endif; ?>
             </div>
             <div class="col-lg-4">
                 <label>N° Sucursales:</label>
-                <input type="text"
-                    class="form-control <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?> <?php echo e($errors->has('numerosucursales') ? 'is-invalid' : ''); ?>"
-                    placeholder="N° Sucursales" name="numerosucursales" autocomplete="off" id="numerosucursales"
+                <input type="text" class="form-control <?php echo e($errors->has('numerosucursales') ? 'is-invalid' : ''); ?>" placeholder="N° Sucursales"
+                    name="numerosucursales" autocomplete="off" id="numerosucursales"
                     value="<?php echo e(old('numerosucursales', $licencia->numerosucursales)); ?>" />
                 <?php if($errors->has('numerosucursales')): ?>
-                <span class="text-danger"><?php echo e($errors->first('numerosucursales')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('numerosucursales')); ?></span>
                 <?php endif; ?>
             </div>
         </div>
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>Puerto BD:</label>
-                <input type="text"
-                    class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('puerto') ? 'is-invalid' : ''); ?>"
-                    placeholder="Puerto BD" name="puerto" autocomplete="off" id="puerto"
-                    value="<?php echo e(old('puerto', $licencia->puerto)); ?>" />
+                <input type="text" class="form-control <?php echo e($errors->has('puerto') ? 'is-invalid' : ''); ?>" placeholder="Puerto BD"
+                    name="puerto" autocomplete="off" id="puerto" value="<?php echo e(old('puerto', $licencia->puerto)); ?>" />
                 <?php if($errors->has('puerto')): ?>
-                <span class="text-danger"><?php echo e($errors->first('puerto')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('puerto')); ?></span>
                 <?php endif; ?>
             </div>
             <div class="col-lg-4">
                 <label>Puerto Movil:</label>
-                <select class="form-control <?php if($rol != 1 && $rol != 2 && $rol != 3): ?> disabled <?php endif; ?>" name="puertows"
-                    id="puertows">
-                    <option value="80" <?php echo e(old('puertows', $licencia->puertows) == '80' ? 'Selected': ''); ?>>80</option>
-                    <option value="2900" <?php echo e(old('puertows', $licencia->puertows) == '2900' ? 'Selected': ''); ?>>2900
-                    </option>
-                </select>
+                <input type="text" class="form-control <?php echo e($errors->has('puertows') ? 'is-invalid' : ''); ?>" placeholder="Puerto Movil"
+                    autocomplete="off" name="puertows" id="puertows" value="<?php echo e(old('puertows', $licencia->puertows)); ?>" maxlength="4"
+                    pattern="\d{1,4}" />
                 <?php if($errors->has('puertows')): ?>
-                <span class="text-danger"><?php echo e($errors->first('puertows')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('puertows')); ?></span>
                 <?php endif; ?>
             </div>
             <div class="col-lg-4">
                 <label>Usuario BD:</label>
-                <input type="text"
-                    class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('usuario') ? 'is-invalid' : ''); ?>"
-                    placeholder="Usuario BD" name="usuario" autocomplete="off" id="usuario"
-                    value="<?php echo e(old('usuario', $licencia->usuario)); ?>" />
+                <input type="text" class="form-control <?php echo e($errors->has('usuario') ? 'is-invalid' : ''); ?>" placeholder="Usuario BD"
+                    name="usuario" autocomplete="off" id="usuario" value="<?php echo e(old('usuario', $licencia->usuario)); ?>" />
                 <?php if($errors->has('usuario')): ?>
-                <span class="text-danger"><?php echo e($errors->first('usuario')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('usuario')); ?></span>
                 <?php endif; ?>
             </div>
 
@@ -214,56 +196,70 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
         <div class="form-group row ">
             <div class="col-lg-4">
                 <label>Clave BD:</label>
-                <input type="text"
-                    class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('clave') ? 'is-invalid' : ''); ?>"
-                    placeholder="Clave BD" name="clave" autocomplete="off" id="clave"
-                    value="<?php echo e(old('clave', $licencia->clave)); ?>" />
+                <input type="text" class="form-control <?php echo e($errors->has('clave') ? 'is-invalid' : ''); ?>" placeholder="Clave BD" name="clave"
+                    autocomplete="off" id="clave" value="<?php echo e(old('clave', $licencia->clave)); ?>" />
                 <?php if($errors->has('clave')): ?>
-                <span class="text-danger"><?php echo e($errors->first('clave')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('clave')); ?></span>
                 <?php endif; ?>
             </div>
-            <?php if($accion=="Modificar"): ?>
-            <div class="col-lg-4">
-                <label>Empresas Activas:</label>
-                <input type="text" class="form-control" name="empresas_activas" autocomplete="off"
-                    value="<?php echo e($empresas->empresas_activas); ?>" readonly />
-            </div>
-            <div class="col-lg-4">
-                <label>Empresas Inactivas:</label>
-                <input type="text" class="form-control" name="empresas_inactivas" autocomplete="off"
-                    value="<?php echo e($empresas->empresas_inactivas); ?>" readonly />
-            </div>
+            <?php if($accion == 'Modificar'): ?>
+                <div class="col-lg-4">
+                    <label>Empresas Activas:</label>
+                    <input type="text" class="form-control" name="empresas_activas" autocomplete="off"
+                        value="<?php echo e($empresas->empresas_activas); ?>" readonly />
+                </div>
+                <div class="col-lg-4">
+                    <label>Empresas Inactivas:</label>
+                    <input type="text" class="form-control" name="empresas_inactivas" autocomplete="off"
+                        value="<?php echo e($empresas->empresas_inactivas); ?>" readonly />
+                </div>
             <?php endif; ?>
         </div>
 
-        <div class="form-group row" id="div_nube" style="display: none;">
-            <div class="col-lg-4">
-                <label>Tipo:</label>
-                <select class="form-control" name="tipo_nube" id="tipo_nube">
-                    <option value="1" <?php echo e(old('tipo_nube', $licencia->tipo_nube) == '1' ? 'Selected': ''); ?>>Prime
-                    </option>
-                    <option value="2" <?php echo e(old('tipo_nube', $licencia->tipo_nube) == '2' ? 'Selected': ''); ?>>Contaplus
-                    </option>
-                </select>
-                <span class="text-danger"><?php echo e($errors->first('clave')); ?></span>
+        <div id="div_nube" style="display: none;">
+            <div class="form-group row">
+                <div class="col-lg-4">
+                    <label>Tipo:</label>
+                    <select class="form-control" name="tipo_nube" id="tipo_nube">
+                        <option value="1" <?php echo e(old('tipo_nube', $licencia->tipo_nube) == '1' ? 'Selected' : ''); ?>>
+                            Prime
+                        </option>
+                        <option value="2" <?php echo e(old('tipo_nube', $licencia->tipo_nube) == '2' ? 'Selected' : ''); ?>>
+                            Contaplus
+                        </option>
+                    </select>
+                    <span class="text-danger"><?php echo e($errors->first('clave')); ?></span>
+                </div>
+                <div class="col-lg-4">
+                    <label>Nivel:</label>
+                    <select class="form-control" name="nivel_nube" id="nivel_nube">
+                        <option value="1" <?php echo e(old('nivel_nube', $licencia->nivel_nube) == '1' ? 'Selected' : ''); ?>>
+                            Nivel 1
+                        </option>
+                        <option value="2" <?php echo e(old('nivel_nube', $licencia->nivel_nube) == '2' ? 'Selected' : ''); ?>>
+                            Nivel 2
+                        </option>
+                        <option value="3" <?php echo e(old('nivel_nube', $licencia->nivel_nube) == '3' ? 'Selected' : ''); ?>>
+                            Nivel 3
+                        </option>
+                    </select>
+                    <span class="text-danger"><?php echo e($errors->first('clave')); ?></span>
+                </div>
+                <div class="col-lg-4">
+                    <label>Usuarios:</label>
+                    <input type="text" class="form-control" name="usuarios_nube" id="usuarios_nube" autocomplete="off"
+                        value="<?php echo e($licencia->usuarios_nube); ?>" />
+                    <span class="text-danger"><?php echo e($errors->first('usuarios_nube')); ?></span>
+                </div>
             </div>
-            <div class="col-lg-4">
-                <label>Nivel:</label>
-                <select class="form-control" name="nivel_nube" id="nivel_nube">
-                    <option value="1" <?php echo e(old('nivel_nube', $licencia->nivel_nube) == '1' ? 'Selected': ''); ?>>Nivel 1
-                    </option>
-                    <option value="2" <?php echo e(old('nivel_nube', $licencia->nivel_nube) == '2' ? 'Selected': ''); ?>>Nivel 2
-                    </option>
-                    <option value="3" <?php echo e(old('nivel_nube', $licencia->nivel_nube) == '3' ? 'Selected': ''); ?>>Nivel 3
-                    </option>
-                </select>
-                <span class="text-danger"><?php echo e($errors->first('clave')); ?></span>
-            </div>
-            <div class="col-lg-4">
-                <label>Usuarios:</label>
-                <input type="text" class="form-control" name="usuarios_nube" autocomplete="off"
-                    value="<?php echo e($licencia->usuarios_nube); ?>" />
-                <span class="text-danger"><?php echo e($errors->first('usuarios_nube')); ?></span>
+
+            <div class="form-group row">
+                <div class="col-lg-4">
+                    <label>Usuarios Activos:</label>
+                    <input type="text" class="form-control" name="usuarios_activos" autocomplete="off"
+                        value="<?php echo e($licencia->usuarios_activos); ?>" readonly />
+                    <span class="text-danger"><?php echo e($errors->first('usuarios_activos')); ?></span>
+                </div>
             </div>
         </div>
 
@@ -293,9 +289,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         <label>Sistema Perseo Práctico:</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if($licencia->modulopractico== 1): ?> checked="checked" <?php endif; ?> type="checkbox"
-                                name="modulopractico" id="practico" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input <?php if($licencia->modulopractico == 1): ?> checked="checked" <?php endif; ?> type="checkbox" name="modulopractico"
+                                    id="practico" />
                                 <span></span>
                             </label>
                         </span>
@@ -304,9 +299,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         <label>Sistema Perseo Control:</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if($licencia->modulocontrol== 1): ?> checked="checked" <?php endif; ?> type="checkbox"
-                                name="modulocontrol" id="control" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input <?php if($licencia->modulocontrol == 1): ?> checked="checked" <?php endif; ?> type="checkbox" name="modulocontrol"
+                                    id="control" />
                                 <span></span>
                             </label>
                         </span>
@@ -315,9 +309,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         <label>Sistema Perseo Contable</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if($licencia->modulocontable== 1): ?> checked="checked" <?php endif; ?> type="checkbox"
-                                name="modulocontable" id="contable" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input <?php if($licencia->modulocontable == 1): ?> checked="checked" <?php endif; ?> type="checkbox" name="modulocontable"
+                                    id="contable" />
                                 <span></span>
                             </label>
                         </span>
@@ -326,9 +319,8 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         <label>Sistema Nube</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if($licencia->modulonube== 1): ?> checked="checked" <?php endif; ?> type="checkbox"
-                                name="modulonube" id="nube" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input <?php if($licencia->modulonube == 1): ?> checked="checked" <?php endif; ?> type="checkbox" name="modulonube"
+                                    id="nube" />
                                 <span></span>
                             </label>
                         </span>
@@ -339,68 +331,54 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                         <label>Actualizaciones Automáticas:</label>
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if($licencia->actulizaciones== 1): ?> checked="checked" <?php endif; ?> type="checkbox"
-                                name="actulizaciones" id="actualiza" <?php if($rol!=1): ?> disabled <?php endif; ?> />
+                                <input <?php if($licencia->actulizaciones == 1): ?> checked="checked" <?php endif; ?> type="checkbox" name="actulizaciones"
+                                    id="actualiza" />
                                 <span></span>
                             </label>
                         </span>
                     </div>
-                    <?php if(isset($licencia->sis_licenciasid) && $licencia->periodo==3): ?>
                     <div class="col-lg-4">
                         <label>Fecha Pagado Actualizaciones:</label>
                         <div class="input-group">
-                            <input type="text"
-                                class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('fechaactulizaciones') ? 'is-invalid' : ''); ?>"
-                                placeholder="Ingrese Fecha Caducidad" name="fechaactulizaciones"
-                                id="fechaactulizaciones" autocomplete="off"
-                                value="<?php echo e(old('fechaactulizaciones',$licencia->fechaactulizaciones)); ?>" />
-                            <div class="input-group-append">
-                                <button class="btn btn-primary <?php if($rol==4 || $rol==3): ?> disabled <?php endif; ?>" type="button"
-                                    id="renovaractualizacion">Renovar
-                                    Anual</button>
-                            </div>
+                            <input type="text" class="form-control <?php echo e($errors->has('fechaactulizaciones') ? 'is-invalid' : ''); ?>"
+                                placeholder="Ingrese Fecha Caducidad" name="fechaactulizaciones" id="fechaactulizaciones" autocomplete="off"
+                                value="<?php echo e(old('fechaactulizaciones', $licencia->fechaactulizaciones)); ?>" />
+
+                            <?php if(isset($licencia->sis_licenciasid) && $licencia->periodo == 3): ?>
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button" id="renovaractualizacion">Renovar Anual</button>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <?php if($errors->has('fechaactulizaciones')): ?>
-                        <span class="text-danger"><?php echo e($errors->first('fechaactulizaciones')); ?></span>
+                            <span class="text-danger"><?php echo e($errors->first('fechaactulizaciones')); ?></span>
                         <?php endif; ?>
                     </div>
-                    <?php else: ?>
-                    <div class="col-lg-4">
-                        <label>Fecha Pagado Actualizaciones:</label>
-                        <input type="text"
-                            class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('fechaactulizaciones') ? 'is-invalid' : ''); ?>"
-                            placeholder="Ingrese Fecha Caducidad" name="fechaactulizaciones" id="fechaactulizaciones"
-                            autocomplete="off"
-                            value="<?php echo e(old('fechaactulizaciones',$licencia->fechaactulizaciones)); ?>" />
-                        <?php if($errors->has('fechaactulizaciones')): ?>
-                        <span class="text-danger"><?php echo e($errors->first('fechaactulizaciones')); ?></span>
-                        <?php endif; ?>
-                    </div>
-                    <?php endif; ?>
                     <div class="col-lg-4">
                         <label>Periodo:</label>
-                        <select class="form-control <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?>"
-                            name="periodo" id="periodo">
-                            <option value="1" <?php echo e(old('periodo', $licencia->periodo) == '1' ? 'Selected': ''); ?>>Mensual
+                        <select class="form-control" name="periodo" id="periodo">
+                            <option value="1" <?php echo e(old('periodo', $licencia->periodo) == '1' ? 'Selected' : ''); ?>>
+                                Mensual
                             </option>
-                            <option value="2" <?php echo e(old('periodo', $licencia->periodo) == '2' ? 'Selected': ''); ?>>Anual
+                            <option value="2" <?php echo e(old('periodo', $licencia->periodo) == '2' ? 'Selected' : ''); ?>>
+                                Anual
                             </option>
-                            <option value="3" <?php echo e(old('periodo', $licencia->periodo) == '3' ? 'Selected': ''); ?>>Venta
+                            <option value="3" <?php echo e(old('periodo', $licencia->periodo) == '3' ? 'Selected' : ''); ?>>
+                                Venta
                             </option>
                         </select>
                         <?php if($errors->has('periodo')): ?>
-                        <span class="text-danger"><?php echo e($errors->first('periodo')); ?></span>
+                            <span class="text-danger"><?php echo e($errors->first('periodo')); ?></span>
                         <?php endif; ?>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <label>Clave de Activación:</label>
-                        <textarea rows="8" class="form-control <?php echo e($errors->has('key') ? 'is-invalid' : ''); ?>"
-                            placeholder="Clave de Activación" name="key" autocomplete="off" readonly
-                            id="key"><?php echo e($licencia->key); ?></textarea>
+                        <textarea rows="8" class="form-control <?php echo e($errors->has('key') ? 'is-invalid' : ''); ?>" placeholder="Clave de Activación" name="key"
+                            autocomplete="off" readonly id="key"><?php echo e($licencia->key); ?></textarea>
                         <?php if($errors->has('key')): ?>
-                        <span class="text-danger"><?php echo e($errors->first('key')); ?></span>
+                            <span class="text-danger"><?php echo e($errors->first('key')); ?></span>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -412,9 +390,11 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->nomina)): ?> <?php if( $modulos[0]->nomina== true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="nomina" id="nomina" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->nomina)): ?> <?php if($modulos[0]->nomina == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="nomina" id="nomina"/>
                                 <span></span>
                             </label>
                         </span>
@@ -423,9 +403,11 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->activos)): ?> <?php if($modulos[0]->activos== true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="activos" id="activos" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->activos)): ?> <?php if($modulos[0]->activos == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="activos" id="activos"/>
                                 <span></span>
                             </label>
                         </span>
@@ -436,10 +418,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->produccion)): ?> <?php if($modulos[0]->produccion== true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="produccion" id="produccion" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->produccion)): ?> <?php if($modulos[0]->produccion == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="produccion" id="produccion"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -448,9 +432,11 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->operadoras)): ?> <?php if($modulos[0]->operadoras== true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="tvcable" id="tvcable" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->operadoras)): ?> <?php if($modulos[0]->operadoras == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="tvcable" id="tvcable"/>
                                 <span></span>
                             </label>
                         </span>
@@ -461,10 +447,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->encomiendas)): ?> <?php if($modulos[0]->encomiendas== true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="encomiendas" id="encomiendas" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->encomiendas)): ?> <?php if($modulos[0]->encomiendas == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="encomiendas" id="encomiendas"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -473,10 +461,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->crm_cartera)): ?> <?php if($modulos[0]->crm_cartera== true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="crmcartera" id="crmcartera" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->crm_cartera)): ?> <?php if($modulos[0]->crm_cartera == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="crmcartera" id="crmcartera"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -487,11 +477,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->api_whatsapp)): ?> <?php if($modulos[0]->api_whatsapp==
-                                true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="apiwhatsapp" id="apiwhatsapp" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->api_whatsapp)): ?> <?php if($modulos[0]->api_whatsapp == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="apiwhatsapp" id="apiwhatsapp"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -500,10 +491,11 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->perseo_hybrid)): ?> <?php if($modulos[0]->perseo_hybrid==
-                                true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="hybrid" id="hybrid" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->perseo_hybrid)): ?> <?php if($modulos[0]->perseo_hybrid == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="hybrid" id="hybrid"/>
                                 <span></span>
                             </label>
                         </span>
@@ -514,11 +506,9 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->tienda_woocommerce)): ?>
-                                <?php if($modulos[0]->tienda_woocommerce==true): ?>) checked="checked" <?php endif; ?> <?php endif; ?>
-                                type="checkbox" name="woocomerce" id="woocomerce" <?php if($rol!=1 && $accion ==
-                                'Modificar'): ?>
-                                disabled <?php endif; ?>/>
+                                <input <?php if(isset($modulos[0]->tienda_woocommerce)): ?> <?php if($modulos[0]->tienda_woocommerce == true): ?>) checked="checked" <?php endif; ?> <?php endif; ?>
+                                type="checkbox" name="woocomerce" id="woocomerce"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -527,10 +517,9 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->tienda_perseo_publico)): ?>
-                                <?php if( $modulos[0]->tienda_perseo_publico== true): ?> )checked="checked" <?php endif; ?> <?php endif; ?>
-                                type="checkbox" name="tienda" id="tienda" <?php if($rol!=1 && $accion == 'Modificar'): ?>
-                                disabled <?php endif; ?>/>
+                                <input <?php if(isset($modulos[0]->tienda_perseo_publico)): ?> <?php if($modulos[0]->tienda_perseo_publico == true): ?> )checked="checked" <?php endif; ?> <?php endif; ?>
+                                type="checkbox" name="tienda" id="tienda"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -541,10 +530,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->restaurante)): ?> <?php if($modulos[0]->restaurante== true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="restaurante" id="restaurante" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->restaurante)): ?> <?php if($modulos[0]->restaurante == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="restaurante" id="restaurante"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -553,10 +544,11 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->garantias)): ?> <?php if($modulos[0]->garantias== true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="garantias" id="garantias" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->garantias)): ?> <?php if($modulos[0]->garantias == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="garantias" id="garantias"/>
                                 <span></span>
                             </label>
                         </span>
@@ -567,10 +559,11 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->talleres)): ?> <?php if($modulos[0]->talleres== true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="talleres" id="talleres" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->talleres)): ?> <?php if($modulos[0]->talleres == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="talleres" id="talleres"/>
                                 <span></span>
                             </label>
                         </span>
@@ -579,11 +572,9 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->tienda_perseo_distribuidor)): ?>
-                                <?php if( $modulos[0]->tienda_perseo_distribuidor== true): ?>) checked="checked" <?php endif; ?>
-                                <?php endif; ?>
-                                type="checkbox" name="integraciones" id="integraciones" <?php if($rol!=1 && $accion ==
-                                'Modificar'): ?> disabled <?php endif; ?>/>
+                                <input <?php if(isset($modulos[0]->tienda_perseo_distribuidor)): ?> <?php if($modulos[0]->tienda_perseo_distribuidor == true): ?>) checked="checked" <?php endif; ?> <?php endif; ?>
+                                type="checkbox" name="integraciones" id="integraciones"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -594,11 +585,9 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->cash_manager)): ?> <?php if($modulos[0]->cash_manager==
-                                true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="cashmanager" id="cashmanager" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input <?php if(isset($modulos[0]->cash_manager)): ?> <?php if($modulos[0]->cash_manager == true): ?>) checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
+                                name="cashmanager" id="cashmanager"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -607,10 +596,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->cash_debito)): ?> <?php if($modulos[0]->cash_debito== true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?> type="checkbox"
-                                name="cashdebito" id="cashdebito" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled
-                                <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->cash_debito)): ?> <?php if($modulos[0]->cash_debito == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?> type="checkbox"
+                                name="cashdebito" id="cashdebito"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -621,11 +612,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->reporte_equifax)): ?> <?php if($modulos[0]->reporte_equifax==
-                                true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?>
-                                type="checkbox" name="equifax" id="equifax" <?php if($rol!=1 && $accion == 'Modificar'): ?>
-                                disabled <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->reporte_equifax)): ?> <?php if($modulos[0]->reporte_equifax == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?>
+                                type="checkbox" name="equifax" id="equifax"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -634,11 +626,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->caja_ahorros)): ?> <?php if($modulos[0]->caja_ahorros==
-                                true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?>
-                                type="checkbox" name="ahorros" id="ahorros" <?php if($rol!=1 && $accion == 'Modificar'): ?>
-                                disabled <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->caja_ahorros)): ?> <?php if($modulos[0]->caja_ahorros == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?>
+                                type="checkbox" name="ahorros" id="ahorros"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -649,12 +642,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->academico)): ?> <?php if($modulos[0]->academico==
-                                true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?>
-                                type="checkbox" name="academico" id="academico" <?php if($rol!=1 && $accion ==
-                                'Modificar'): ?>
-                                disabled <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->academico)): ?> <?php if($modulos[0]->academico == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?>
+                                type="checkbox" name="academico" id="academico"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -664,13 +657,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->perseo_contador)): ?> <?php if($modulos[0]->perseo_contador==
-                                true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?>
-                                type="checkbox" name="perseo_contador" id="perseo_contador" <?php if($rol!=1 && $accion
-                                ==
-                                'Modificar'): ?>
-                                disabled <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->perseo_contador)): ?> <?php if($modulos[0]->perseo_contador == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?>
+                                type="checkbox" name="perseo_contador" id="perseo_contador"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -682,12 +674,12 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                     <div class="col-2">
                         <span class="switch switch-outline switch-icon switch-primary switch-sm">
                             <label>
-                                <input <?php if(isset($modulos[0]->api_urbano)): ?> <?php if($modulos[0]->api_urbano==
-                                true): ?>)
-                                checked="checked" <?php endif; ?> <?php endif; ?>
-                                type="checkbox" name="api_urbano" id="api_urbano" <?php if($rol!=1 && $accion ==
-                                'Modificar'): ?>
-                                disabled <?php endif; ?>/>
+                                <input
+                                    <?php if(isset($modulos[0]->api_urbano)): ?> <?php if($modulos[0]->api_urbano == true): ?>)
+                                checked="checked" <?php endif; ?>
+                                    <?php endif; ?>
+                                type="checkbox" name="api_urbano" id="api_urbano"
+                                />
                                 <span></span>
                             </label>
                         </span>
@@ -698,32 +690,29 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             <div class="tab-pane fade show" id="correos" role="tabpanel">
                 <div class="form-group row">
                     <label>Correo Propietario:</label>
-                    <input
-                        class="form-control <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?> <?php echo e($errors->has('correopropietario') ? 'is-invalid' : ''); ?>"
-                        placeholder="Ingrese Correo" name="correopropietario" autocomplete="off"
-                        value="<?php echo e(old('correopropietario', $licencia->correopropietario)); ?>" id="correo" />
+                    <input class="form-control <?php echo e($errors->has('correopropietario') ? 'is-invalid' : ''); ?>" placeholder="Ingrese Correo"
+                        name="correopropietario" autocomplete="off" value="<?php echo e(old('correopropietario', $licencia->correopropietario)); ?>"
+                        id="correopropietario" />
                     <?php if($errors->has('correopropietario')): ?>
-                    <span class="text-danger"><?php echo e($errors->first('correopropietario')); ?></span>
+                        <span class="text-danger"><?php echo e($errors->first('correopropietario')); ?></span>
                     <?php endif; ?>
                 </div>
                 <div class="form-group row">
                     <label>Correo Administrador:</label>
-                    <input
-                        class="form-control <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?> <?php echo e($errors->has('correoadministrador') ? 'is-invalid' : ''); ?>"
-                        placeholder="Ingrese Correo" name="correoadministrador" autocomplete="off"
-                        value="<?php echo e(old('correoadministrador', $licencia->correoadministrador)); ?>" id="correo" />
+                    <input class="form-control <?php echo e($errors->has('correoadministrador') ? 'is-invalid' : ''); ?>" placeholder="Ingrese Correo"
+                        name="correoadministrador" autocomplete="off" value="<?php echo e(old('correoadministrador', $licencia->correoadministrador)); ?>"
+                        id="correoadministrador" />
                     <?php if($errors->has('correoadministrador')): ?>
-                    <span class="text-danger"><?php echo e($errors->first('correoadministrador')); ?></span>
+                        <span class="text-danger"><?php echo e($errors->first('correoadministrador')); ?></span>
                     <?php endif; ?>
                 </div>
                 <div class="form-group row">
                     <label>Correo Contador:</label>
-                    <input
-                        class="form-control <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled <?php endif; ?> <?php echo e($errors->has('correocontador') ? 'is-invalid' : ''); ?>"
-                        placeholder="Ingrese Correo" name="correocontador" autocomplete="off"
-                        value="<?php echo e(old('correocontador', $licencia->correocontador)); ?>" id="correo" />
+                    <input class="form-control <?php echo e($errors->has('correocontador') ? 'is-invalid' : ''); ?>" placeholder="Ingrese Correo"
+                        name="correocontador" autocomplete="off" value="<?php echo e(old('correocontador', $licencia->correocontador)); ?>"
+                        id="correocontador" />
                     <?php if($errors->has('correocontador')): ?>
-                    <span class="text-danger"><?php echo e($errors->first('correocontador')); ?></span>
+                        <span class="text-danger"><?php echo e($errors->first('correocontador')); ?></span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -731,12 +720,11 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             <div class="tab-pane fade show" id="respaldos" role="tabpanel">
                 <div class="form-group row">
                     <label>Token Dropbox:</label>
-                    <textarea rows="8"
-                        class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('tokenrespaldo') ? 'is-invalid' : ''); ?>"
-                        placeholder="Token Respaldo" name="tokenrespaldo" autocomplete="off"
-                        id="tokenrespaldo"><?php echo e($licencia->tokenrespaldo); ?></textarea>
+                    <textarea rows=10 class="form-control <?php echo e($errors->has('tokenrespaldo') ? 'is-invalid' : ''); ?>" placeholder="Token Respaldo" name="tokenrespaldo"
+                        autocomplete="off" id="tokenrespaldo"><?php echo e($licencia->tokenrespaldo); ?></textarea>
+                    <button type="button" class="btn btn-primary mt-2" onclick="copiarAlPortapapeles()">Copiar</button>
                     <?php if($errors->has('tokenrespaldo')): ?>
-                    <span class="text-danger"><?php echo e($errors->first('tokenrespaldo')); ?></span>
+                        <span class="text-danger"><?php echo e($errors->first('tokenrespaldo')); ?></span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -745,36 +733,31 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <label>Motivo Bloqueo:</label>
-                        <input
-                            class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('motivobloqueo') ? 'is-invalid' : ''); ?>"
-                            placeholder="Motivo bloqueo" name="motivobloqueo" autocomplete="off" id="motivobloqueo"
+                        <input class="form-control <?php echo e($errors->has('motivobloqueo') ? 'is-invalid' : ''); ?>" placeholder="Motivo bloqueo"
+                            name="motivobloqueo" autocomplete="off" id="motivobloqueo"
                             value="<?php echo e(old('motivobloqueo', $licencia->motivobloqueo)); ?>" />
                         <?php if($errors->has('motivobloqueo')): ?>
-                        <span class="text-danger"><?php echo e($errors->first('motivobloqueo')); ?></span>
+                            <span class="text-danger"><?php echo e($errors->first('motivobloqueo')); ?></span>
                         <?php endif; ?>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <label>Mensaje Entrar al Sistema:</label>
-                        <input
-                            class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('mensaje') ? 'is-invalid' : ''); ?>"
-                            placeholder="Mensaje" name="mensaje" autocomplete="off" id="mensaje"
-                            value="<?php echo e(old('mensaje', $licencia->mensaje)); ?>" />
+                        <input class="form-control <?php echo e($errors->has('mensaje') ? 'is-invalid' : ''); ?>" placeholder="Mensaje" name="mensaje"
+                            autocomplete="off" id="mensaje" value="<?php echo e(old('mensaje', $licencia->mensaje)); ?>" />
                         <?php if($errors->has('mensaje')): ?>
-                        <span class="text-danger"><?php echo e($errors->first('mensaje')); ?></span>
+                            <span class="text-danger"><?php echo e($errors->first('mensaje')); ?></span>
                         <?php endif; ?>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <label>Observaciones:</label>
-                        <input
-                            class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('observacion') ? 'is-invalid' : ''); ?>"
-                            placeholder="Observaciones" name="observacion" autocomplete="off" id="observacion"
-                            value="<?php echo e(old('observacion', $licencia->observacion)); ?>" />
+                        <input class="form-control <?php echo e($errors->has('observacion') ? 'is-invalid' : ''); ?>" placeholder="Observaciones"
+                            name="observacion" autocomplete="off" id="observacion" value="<?php echo e(old('observacion', $licencia->observacion)); ?>" />
                         <?php if($errors->has('observacion')): ?>
-                        <span class="text-danger"><?php echo e($errors->first('observacion')); ?></span>
+                            <span class="text-danger"><?php echo e($errors->first('observacion')); ?></span>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -802,45 +785,39 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
                 <label>Plan de Soporte:</label>
                 <span class="switch switch-outline switch-icon switch-primary switch-sm">
                     <label>
-                        <input <?php if($licencia->plan_soporte== 1): ?> checked="checked" <?php endif; ?> type="checkbox"
-                        name="plan_soporte" <?php if($rol!=1 && $accion == 'Modificar'): ?> disabled id="plan_soporte"
-                        <?php endif; ?>/>
+                        <input <?php if($licencia->plan_soporte == 1): ?> checked="checked" <?php endif; ?> type="checkbox" name="plan_soporte"
+                            <?php if($rol != 1 && $accion == 'Modificar'): ?> disabled id="plan_soporte" <?php endif; ?> />
                         <span></span>
                     </label>
                 </span>
             </div>
             <div class="col-lg-4">
                 <label>Fecha Caducidad Plan Soporte:</label>
-                <input type="text"
-                    class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('fechacaduca_soporte') ? 'is-invalid' : ''); ?>"
-                    placeholder="Ingrese Fecha Caducidad" name="fechacaduca_soporte" id="fechacaduca_soporte"
-                    autocomplete="off" value="<?php echo e(old('fechacaduca_soporte',$licencia->fechacaduca_soporte)); ?>" />
+                <input type="text" class="form-control <?php echo e($errors->has('fechacaduca_soporte') ? 'is-invalid' : ''); ?>"
+                    placeholder="Ingrese Fecha Caducidad" name="fechacaduca_soporte" id="fechacaduca_soporte" autocomplete="off"
+                    value="<?php echo e(old('fechacaduca_soporte', $licencia->fechacaduca_soporte)); ?>" />
                 <?php if($errors->has('fechacaduca_soporte')): ?>
-                <span class="text-danger"><?php echo e($errors->first('fechacaduca_soporte')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('fechacaduca_soporte')); ?></span>
                 <?php endif; ?>
             </div>
         </div>
         <div class="form-group row">
             <div class="col-lg-4">
                 <label>Numero Tickets Totales:</label>
-                <input type="text"
-                    class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('numero_tickets_totales') ? 'is-invalid' : ''); ?>"
-                    placeholder="numero_tickets_totales" name="numero_tickets_totales" autocomplete="off"
-                    id="numero_tickets_totales"
+                <input type="text" class="form-control <?php echo e($errors->has('numero_tickets_totales') ? 'is-invalid' : ''); ?>"
+                    placeholder="numero_tickets_totales" name="numero_tickets_totales" autocomplete="off" id="numero_tickets_totales"
                     value="<?php echo e(old('numero_tickets_totales', $licencia->numero_tickets_totales)); ?>" />
                 <?php if($errors->has('numero_tickets_totales')): ?>
-                <span class="text-danger"><?php echo e($errors->first('numero_tickets_totales')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('numero_tickets_totales')); ?></span>
                 <?php endif; ?>
             </div>
             <div class="col-lg-4">
                 <label>Numero Tickets Mensuales:</label>
-                <input type="text"
-                    class="form-control <?php if($rol!=1): ?> disabled <?php endif; ?> <?php echo e($errors->has('numero_tickets_mensuales') ? 'is-invalid' : ''); ?>"
-                    placeholder="numero_tickets_mensuales" name="numero_tickets_mensuales" autocomplete="off"
-                    id="numero_tickets_mensuales"
+                <input type="text" class="form-control <?php echo e($errors->has('numero_tickets_mensuales') ? 'is-invalid' : ''); ?>"
+                    placeholder="numero_tickets_mensuales" name="numero_tickets_mensuales" autocomplete="off" id="numero_tickets_mensuales"
                     value="<?php echo e(old('numero_tickets_mensuales', $licencia->numero_tickets_mensuales)); ?>" />
                 <?php if($errors->has('numero_tickets_mensuales')): ?>
-                <span class="text-danger"><?php echo e($errors->first('numero_tickets_mensuales')); ?></span>
+                    <span class="text-danger"><?php echo e($errors->first('numero_tickets_mensuales')); ?></span>
                 <?php endif; ?>
             </div>
             <div class="col-lg-4">
@@ -855,8 +832,7 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
             </div>
             <div class="col-lg-4">
                 <label>Fecha Actualizacion Ejecutable:</label>
-                <input type="text" class="form-control" value="<?php echo e($licencia->fecha_actualizacion_ejecutable); ?>"
-                    readonly />
+                <input type="text" class="form-control" value="<?php echo e($licencia->fecha_actualizacion_ejecutable); ?>" readonly />
             </div>
             <div class="col-lg-4">
                 <label>Fecha Respaldo:</label>
@@ -867,767 +843,470 @@ $accion=isset($licencia->sis_licenciasid) ? "Modificar" : "Crear";
 </div>
 
 <?php $__env->startSection('script'); ?>
-<script>
-    $(document).ready(function () {
-        if ("<?php echo e(isset($licencia->sis_licenciasid)); ?>" == true) {
-            if ("<?php echo e($licencia->modulonube); ?>" == 1) {
-                $('#div_nube').show();
-            }
+    <script>
+        function copiarAlPortapapeles() {
+            var textarea = document.getElementById("tokenrespaldo");
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // Para dispositivos móviles
+            document.execCommand("copy");
         }
-        //Iniciar fecha de bloqueo
-        $('#fechacaduca').datepicker({
-            language: "es",
-            todayHighlight: true,
-            orientation: "bottom left",
-            templates: {
-                leftArrow: '<i class="la la-angle-left"></i>',
-                rightArrow: '<i class="la la-angle-right"></i>'
+
+        // Constantes Globales
+
+        const practico = ['105', '110', '111', '112', '113', '114', '115', '117', '118', '120', '125', '126', '127', '130', '131', '135', '136', '141',
+            '142', '150', '305', '310', '315', '320', '325', '330', '335', '430', '431', '432', '433', '434', '435', '440', '445', '450', '455',
+            '456', '460', '461', '462', '463', '464', '465', '466', '469', '470', '471', '475', '480', '491', '492', '495', '630', '905', '910',
+            '915', '916', '917', '918', '919', '920', '925', '930', '931', '940', '960', '1105', '1110', '1115', '1120'
+        ];
+
+        const control = ['200', '142', '201', '205', '210', '215', '225', '230', '505', '510', '515', '516', '517', '462', '463', '485', '490', '116',
+            '140', '605', '630', '635'
+        ];
+
+        const contable = ['605', '142', '606', '610', '615', '616', '620', '625', '626', '627', '628', '630', '635', '636', '640']
+
+        const IDS_MODULO = {
+            practico: practico,
+            control: [...practico, ...control],
+            contable: [...practico, ...control, ...contable],
+            nube: [...practico, ...control, ...contable],
+            nomina: ['705', '710', '715', '720', '725', '730', '735', '740', '741', '745'],
+            activos: ['805', '806', '810', '815', '816', '820'],
+            produccion: ['1005', '1010', '1015'],
+            tvcable: ['1200', '1205', '1210', '1215', '1220'],
+            encomiendas: ['1601', '1610', '1615', '1620', '1625'],
+            crmcartera: ['220'],
+            ahorros: ['1705', '1710', '1715', '1716', '1720', '1725'],
+            apiwhatsapp: ['950'],
+            hybrid: ['950'],
+            woocomerce: ['950'],
+            tienda: ['950'],
+            restaurante: ['1500', '1505', '1510', '1515', '1520'],
+            garantias: ['1300', '1305', '1310'],
+            talleres: ['1400', '1405', '1410'],
+            academico: ['1805', '1810', '1815', '1820', '1825', '1830']
+        };
+
+        const EQUIPOS_CONFIG = {
+            practico: {
+                equipos: 2,
+                moviles: 0,
+                sucursales: 1
+            },
+            control: {
+                equipos: 3,
+                moviles: 0,
+                sucursales: 1
+            },
+            contable: {
+                equipos: 4,
+                moviles: 0,
+                sucursales: 1
+            },
+            nube: {
+                equipos: 4,
+                moviles: 0,
+                sucursales: 1
             }
-        });
+        };
 
-        $('#fechaactulizaciones').datepicker({
-            language: "es",
-            todayHighlight: true,
-            orientation: "bottom left",
-            templates: {
-                leftArrow: '<i class="la la-angle-left"></i>',
-                rightArrow: '<i class="la la-angle-right"></i>'
+        //1: Mensual, 2: Anual, 3: Semestral
+        const MESES_POR_PERIODO = {
+            '1': 1,
+            '2': 12,
+            '3': 60
+        };
+
+        // Definir constantes para los roles
+        const ROLES = {
+            ADMIN: <?php echo e(ROL_ADMIN); ?>,
+            DISTRIBUIDOR: <?php echo e(ROL_DISTRIBUIDOR); ?>,
+            ROL_SOPORTE_DISTRIBUIDOR: <?php echo e(ROL_SOPORTE_DISTRIBUIDOR); ?>,
+            ROL_SOPORTE_MATRIZ: <?php echo e(ROL_SOPORTE_MATRIZ); ?>,
+            ROL_VENTAS: <?php echo e(ROL_VENTAS); ?>,
+        };
+
+        // Definir permisos simplificados por rol
+        const PERMISOS_EDICION = {
+            // Admin puede editar todo
+            [ROLES.ADMIN]: {
+                todoElFormulario: true,
+                renovarLicencia: true
+            },
+
+            // Distribuidor - Permisos diferentes para crear y modificar
+            [ROLES.DISTRIBUIDOR]: {
+                todoElFormulario: false,
+                renovarLicencia: true,
+                camposEditables: {
+                    crear: [
+                        'Identificador', 'ipservidor', 'ipservidorremoto', 'puertows',
+                        'numeroequipos', 'numeromoviles', 'numerosucursales',
+                        'correopropietario', 'correoadministrador', 'correocontador',
+                        'tipo_nube', 'nivel_nube', 'usuarios_nube',
+                        'periodo',
+                        'practico', 'control', 'contable', 'nube',
+                    ],
+                    modificar: ['Identificador', 'ipservidor', 'ipservidorremoto', 'puertows']
+                }
+            },
+
+            [ROLES.ROL_SOPORTE_DISTRIBUIDOR]: {
+                todoElFormulario: false,
+                renovarLicencia: true,
+                camposEditables: {
+                    crear: [
+                        'Identificador', 'ipservidor', 'ipservidorremoto', 'puertows',
+                        'numeroequipos', 'numeromoviles', 'numerosucursales',
+                        'correopropietario', 'correoadministrador', 'correocontador',
+                        'tipo_nube', 'nivel_nube', 'usuarios_nube',
+                        'periodo',
+                        'practico', 'control', 'contable', 'nube',
+                    ],
+                    modificar: ['Identificador', 'ipservidor', 'ipservidorremoto', 'puertows']
+                }
+            },
+
+            [ROLES.ROL_SOPORTE_MATRIZ]: {
+                todoElFormulario: false,
+                renovarLicencia: true,
+                camposEditables: {
+                    crear: [
+                        'Identificador', 'ipservidor', 'ipservidorremoto', 'puertows',
+                        'numeroequipos', 'numeromoviles', 'numerosucursales',
+                        'correopropietario', 'correoadministrador', 'correocontador',
+                        'tipo_nube', 'nivel_nube', 'usuarios_nube',
+                        'periodo',
+                        'practico', 'control', 'contable', 'nube',
+                    ],
+                    modificar: ['Identificador', 'ipservidor', 'ipservidorremoto', 'puertows']
+                }
+            },
+
+            [ROLES.ROL_VENTAS]: {
+                todoElFormulario: false,
+                renovarLicencia: false,
+
+            },
+        };
+
+        // Función para aplicar restricciones a los campos del formulario
+        function aplicarRestriccionesPorRol() {
+            const rolUsuario = <?php echo e($rol); ?>;
+            const accion = '<?php echo e($accion); ?>'; // 'Crear' o 'Modificar'
+            const permisosRol = PERMISOS_EDICION[rolUsuario] || {
+                todoElFormulario: false,
+                camposEditables: {
+                    crear: [],
+                    modificar: []
+                }
+            };
+
+            // Si el usuario tiene permiso para editar todo, no hacemos nada
+            if (permisosRol.todoElFormulario) {
+                return;
             }
-        });
 
-        $('#fechacaduca_soporte').datepicker({
-            language: "es",
-            todayHighlight: true,
-            orientation: "bottom left",
-            templates: {
-                leftArrow: '<i class="la la-angle-left"></i>',
-                rightArrow: '<i class="la la-angle-right"></i>'
+            // Obtenemos la lista de campos editables para la acción actual
+            const camposEditablesParaAccion = permisosRol.camposEditables &&
+                permisosRol.camposEditables[accion.toLowerCase()] || [];
+
+            // Deshabilitamos TODOS los campos primero
+            const todosLosCampos = document.querySelectorAll('input, select, textarea');
+            todosLosCampos.forEach(campo => {
+                campo.classList.add('disabled');
+                campo.setAttribute('disabled', 'disabled');
+            });
+
+            camposEditablesParaAccion.forEach(campoId => {
+                const campo = document.getElementById(campoId);
+                if (campo) {
+                    campo.classList.remove('disabled');
+                    campo.removeAttribute('disabled');
+                }
+            });
+
+            // Manejo especial para checkboxes de módulos
+            if (accion.toLowerCase() === 'crear') {
+                // Verificamos si los checkboxes de módulos principales están en la lista de editables
+                const modulosPrincipales = ['practico', 'control', 'contable', 'nube'];
+                const puedeEditarModulosPrincipales = modulosPrincipales.some(modulo =>
+                    camposEditablesParaAccion.includes(modulo)
+                );
+
+                if (puedeEditarModulosPrincipales) {
+                    // Habilitamos todos los checkboxes de módulos principales
+                    modulosPrincipales.forEach(modulo => {
+                        const checkbox = document.getElementById(modulo);
+                        if (checkbox) {
+                            checkbox.classList.remove('disabled');
+                            checkbox.removeAttribute('disabled');
+                        }
+                    });
+                }
             }
-        });
 
-        //inicializar datatable
-        var table = $('#aplicativos').DataTable({
-            responsive: true,
-            serverSide: true,
-            searching: false,
-            paging: false,
-            //Peticion ajax que devuelve los registros
-            ajax: "<?php echo e(route('subcategorias')); ?>",
-            drawCallback: function (settings) {
+            // Botones de renovación (solo para quienes tienen el permiso)
+            if (!permisosRol.renovarLicencia) {
+                const botonesRenovacion = document.querySelectorAll('[id^="renovar"]');
+                botonesRenovacion.forEach(boton => {
+                    boton.classList.add('disabled');
+                    boton.setAttribute('disabled', 'disabled');
 
-                var api = this.api();
-                var rows = api.rows({ page: 'current' }).nodes();
-                var last = null;
-
-                api.column(0, { page: 'current' }).data().each(function (group, i) {
-                    if (last !== group) {
-                        $(rows).eq(i).before(
-                            '<tr class="group"><td colspan="3">' + group + '</td></tr>',
-                        );
-                        last = group;
+                    // Si el botón está dentro de un dropdown, deshabilitar también el botón del dropdown
+                    const dropdownToggle = boton.closest('.dropdown-menu')?.previousElementSibling;
+                    if (dropdownToggle && dropdownToggle.classList.contains('dropdown-toggle')) {
+                        dropdownToggle.classList.add('disabled');
                     }
                 });
-            },
-            //Columnas de la tabla (Debe contener misma cantidad que thead)
-            columns: [
-                {data: 'categoriasdescripcion', name: 'categoriasdescripcion',visible:false},
-                {data: 'sis_subcategoriasid', orderable: false, searchable: false,name: 'sis_subcategoriasid'},
-                {data: 'descripcionsubcategoria',orderable: false, searchable: false, name: 'descripcionsubcategoria'},
-                {data: 'activo', name: 'activo', orderable: false, searchable: false},
-            ],
-            initComplete: function(settings, json) {
-                //Al terminar de llenar tabla, cargar permisos
-                var permisos=$("#permisos").val();
-                var array =  permisos.split(';');
+            }
+        }
 
-                for (var i = 0; i <array.length ; i++) {
-                    $('#'+array[i]).prop('checked', true);
+        // Función para recopilar y formatear correctamente los módulos seleccionados
+        function prepararModulosParaEnvio() {
+            // Obtenemos los IDs de los checkboxes marcados en la tabla de aplicativos
+            const modulosSeleccionados = [];
+
+            // Recorremos todos los checkboxes del datatable de aplicativos
+            $('#aplicativos input[type="checkbox"]:checked').each(function() {
+                // Obtenemos el ID del checkbox que está marcado
+                const id = $(this).attr('id');
+                if (id && id !== '') {
+                    modulosSeleccionados.push(id);
                 }
-            }
-        });
-    });
-
-    $("#renovarmensual").click(function(e) {
-        confirmar('mes',"Está seguro de Renovar la Licencia?");
-    });
-
-    $("#renovaranual").click(function(e) {
-        confirmar('anual',"Está seguro de Renovar la Licencia?");
-    });
-
-    $("#renovaractualizacion").click(function(e) {
-        confirmar('actualizacion',"Está seguro de Renovar la Licencia?");
-    });
-
-    //recorrer tabla de permisos y hacer una sola cadena con los ids
-    $('#formulario').submit(function(event) {
-
-        //Enviar swirch que estan disabled
-        $("#actualiza").prop("disabled", false);
-        $("#contable").prop("disabled", false);
-        $("#control").prop("disabled", false);
-        $("#practico").prop("disabled", false);
-        $("#nomina").prop("disabled", false);
-        $("#activos").prop("disabled", false);
-        $("#produccion").prop("disabled", false);
-        $("#tvcable").prop("disabled", false);
-        $("#encomiendas").prop("disabled", false);
-        $("#crmcartera").prop("disabled", false);
-        $("#apiwhatsapp").prop("disabled", false);
-        $("#hybrid").prop("disabled", false);
-        $("#woocomerce").prop("disabled", false);
-        $("#tienda").prop("disabled", false);
-        $("#restaurante").prop("disabled", false);
-        $("#garantias").prop("disabled", false);
-        $("#talleres").prop("disabled", false);
-        $("#integraciones").prop("disabled", false);
-        $("#cashmanager").prop("disabled", false);
-        $("#equifax").prop("disabled", false);
-        $("#ahorros").prop("disabled", false);
-        $("#academico").prop("disabled", false);
-        $("#perseo_contador").prop("disabled", false);
-        $("#plan_soporte").prop("disabled", false);
-
-        event.preventDefault();
-        permisos='';
-        $("#aplicaciones tbody td input").each(function(){
-            if ($(this).prop('checked')) {
-                permisos=permisos+$(this).attr('id') + ';';
-            }
-        });
-
-        let inputPractico = $('#practico').prop('checked');
-        let inputControl = $('#control').prop('checked');
-        let inputContable = $('#contable').prop('checked');
-        let inputNube = $('#nube').prop('checked');
-
-        if (inputPractico == false && inputControl == false && inputContable == false && inputNube == false ) {
-            $.notify({
-            // options
-                message: 'Seleccione si es Perseo: Práctico, Control, Contable o Nube',
-            },{
-                // settings
-                showProgressbar: true,
-                delay: 2500,
-                mouse_over: "pause",
-                placement: {
-                from: "top",
-                align: "right",
-                },
-                animate: {
-                enter: "animated fadeInUp",
-                exit: "animated fadeOutDown",
-                },
-                ype: 'warning',
             });
-        } else {
-            $('#permisos').val(permisos)
-            $(this).unbind('submit').submit();
-        }
-    })
 
-    $('#periodo').change(function(){
-        cambiarComboPC();
-    });
+            // También revisamos los módulos principales y adicionales que pueden no estar en la tabla
+            const todosLosModulos = [
+                'practico', 'control', 'contable', 'nube', 'nomina', 'activos',
+                'produccion', 'tvcable', 'encomiendas', 'crmcartera', 'apiwhatsapp',
+                'hybrid', 'woocomerce', 'tienda', 'restaurante', 'garantias',
+                'talleres', 'integraciones', 'cashmanager', 'cashdebito', 'equifax',
+                'ahorros', 'academico', 'perseo_contador', 'api_urbano'
+            ];
 
-    $('#practico').click(function(){
-        $('#control').prop('checked', false);
-        $('#contable').prop('checked', false);
-        $('#nube').prop('checked', false);
-        if ($('#practico').prop('checked')) {
-            moduloPerseoPractico(true);
-        }else{
-            moduloPerseoPractico(false);
-        }
-        cambiarComboPC();
-        $('#div_nube').hide();
-        $('#div_nube select, #div_nube input').prop('disabled', true);
-    });
-
-    $('#control').click(function(){
-        $('#practico').prop('checked', false);
-        $('#contable').prop('checked', false);
-        $('#nube').prop('checked', false);
-        if ($('#control').prop('checked')) {
-            moduloPerseoPractico(true);
-            moduloPerseoControl(true);
-        }else{
-            moduloPerseoPractico(false);
-            moduloPerseoControl(false);
-        }
-        cambiarComboPC();
-        $('#div_nube').hide();
-        $('#div_nube select, #div_nube input').prop('disabled', true);
-    });
-
-    $('#contable').click(function(){
-        $('#control').prop('checked', false);
-        $('#practico').prop('checked', false);
-        $('#nube').prop('checked', false);
-        if ($('#contable').prop('checked')) {
-            moduloPerseoPractico(true);
-            moduloPerseoControl(true);
-            moduloPerseoContable(true);
-        }else{
-            moduloPerseoPractico(false);
-            moduloPerseoControl(false);
-            moduloPerseoContable(false);
-        }
-        cambiarComboPC();
-        $('#div_nube').hide();
-        $('#div_nube select, #div_nube input').prop('disabled', true);
-    });
-
-    $('#nube').click(function () {
-        $('#control').prop('checked', false);
-        $('#practico').prop('checked', false);
-        $('#contable').prop('checked', false);
-
-        if ($('#nube').prop('checked')) {
-            // Lógica adicional para mostrar la fila div_nube
-            $('#div_nube').show();
-            $('#div_nube select, #div_nube input').prop('disabled', false);
-            moduloPerseoPractico(true);
-            moduloPerseoControl(true);
-            moduloPerseoContable(true);
-        } else {
-            // Lógica adicional para ocultar la fila div_nube
-            $('#div_nube').hide();
-            $('#div_nube select, #div_nube input').prop('disabled', true);
-            moduloPerseoPractico(false);
-            moduloPerseoControl(false);
-            moduloPerseoContable(false);
-        }
-
-        cambiarComboPC();
-    });
-
-
-    $('#nomina').click(function(){
-        if ($('#nomina').prop('checked')) {
-            moduloPerseoNomina(true);
-        }else{
-            moduloPerseoNomina(false);
-        }
-    });
-
-    $('#activos').click(function(){
-        if ($('#activos').prop('checked')) {
-            moduloPerseoActivos(true);
-        }else{
-            moduloPerseoActivos(false);
-        }
-    });
-
-    $('#produccion').click(function(){
-        if ($('#produccion').prop('checked')) {
-            moduloPerseoProduccion(true);
-        }else{
-            moduloPerseoProduccion(false);
-        }
-    });
-
-    $('#tvcable').click(function(){
-        if ($('#tvcable').prop('checked')) {
-            moduloPerseoOperadoras(true);
-        }else{
-            moduloPerseoOperadoras(false);
-        }
-    });
-
-    $('#encomiendas').click(function(){
-        if ($('#encomiendas').prop('checked')) {
-            moduloPerseoEncomiendas(true);
-        }else{
-            moduloPerseoEncomiendas(false);
-        }
-    });
-
-    $('#crmcartera').click(function(){
-        if ($('#crmcartera').prop('checked')) {
-            moduloPerseoCrmCartera(true);
-        }else{
-            moduloPerseoCrmCartera(false);
-        }
-    });
-
-    $('#apiwhatsapp').click(function(){
-        if ($('#apiwhatsapp').prop('checked')) {
-            moduloPerseoIntegraciones(true);
-        }else{
-            moduloPerseoIntegraciones(false);
-        }
-    });
-
-    $('#hybrid').click(function(){
-        if ($('#hybrid').prop('checked')) {
-            moduloPerseoIntegraciones(true);
-        }else{
-            moduloPerseoIntegraciones(false);
-        }
-    });
-
-    $('#woocomerce').click(function(){
-        if ($('#woocomerce').prop('checked')) {
-            moduloPerseoIntegraciones(true);
-        }else{
-            moduloPerseoIntegraciones(false);
-        }
-    });
-
-    $('#tienda').click(function(){
-        if ($('#tienda').prop('checked')) {
-            moduloPerseoIntegraciones(true);
-        }else{
-            moduloPerseoIntegraciones(false);
-        }
-    });
-
-    $('#restaurante').click(function(){
-        if ($('#restaurante').prop('checked')) {
-            moduloPerseoRestaurantes(true);
-        }else{
-            moduloPerseoRestaurantes(false);
-        }
-    });
-
-    $('#garantias').click(function(){
-        if ($('#garantias').prop('checked')) {
-            moduloPerseoGarantias(true);
-        }else{
-            moduloPerseoGarantias(false);
-        }
-    });
-
-    $('#talleres').click(function(){
-        if ($('#talleres').prop('checked')) {
-            moduloPerseoTalleres(true);
-        }else{
-            moduloPerseoTalleres(false);
-        }
-    });
-
-    $('#integraciones').click(function(){
-        if ($('#integraciones').prop('checked')) {
-            moduloPerseoIntegraciones(true);
-        }else{
-            moduloPerseoIntegraciones(false);
-        }
-    });
-
-    $('#ahorros').click(function(){
-        if ($('#ahorros').prop('checked')) {
-            moduloPerseoAhorros(true);
-        }else{
-            moduloPerseoAhorros(false);
-        }
-    });
-
-    $('#academico').click(function(){
-        if ($('#academico').prop('checked')) {
-            moduloPerseoAcademico(true);
-        }else{
-            moduloPerseoAcademico(false);
-        }
-    });
-
-
-    function moduloPerseoPractico(estado){
-        //Activar o desactivar modulos
-        $('#105').prop('checked', estado);
-        $('#110').prop('checked', estado);
-        $('#111').prop('checked', estado);
-        $('#112').prop('checked', estado);
-        $('#113').prop('checked', estado);
-        $('#114').prop('checked', estado);
-        $('#115').prop('checked', estado);
-        $('#117').prop('checked', estado);
-        $('#118').prop('checked', estado);
-        $('#120').prop('checked', estado);
-        $('#125').prop('checked', estado);
-        $('#126').prop('checked', estado);
-        $('#127').prop('checked', estado);
-        $('#130').prop('checked', estado);
-        $('#131').prop('checked', estado);
-        $('#135').prop('checked', estado);
-        $('#136').prop('checked', estado);
-        $('#141').prop('checked', estado);
-        $('#142').prop('checked', estado);
-        $('#150').prop('checked', estado);
-        $('#305').prop('checked', estado);
-        $('#310').prop('checked', estado);
-        $('#315').prop('checked', estado);
-        $('#320').prop('checked', estado);
-        $('#325').prop('checked', estado);
-        $('#330').prop('checked', estado);
-        $('#335').prop('checked', estado);
-        $('#430').prop('checked', estado);
-        $('#431').prop('checked', estado);
-        $('#432').prop('checked', estado);
-        $('#433').prop('checked', estado);
-        $('#434').prop('checked', estado);
-        $('#435').prop('checked', estado);
-        $('#440').prop('checked', estado);
-        $('#445').prop('checked', estado);
-        $('#450').prop('checked', estado);
-        $('#455').prop('checked', estado);
-        $('#456').prop('checked', estado);
-        $('#460').prop('checked', estado);
-        $('#461').prop('checked', estado);
-        $('#462').prop('checked', estado);
-        $('#463').prop('checked', estado);
-        $('#464').prop('checked', estado);
-        $('#465').prop('checked', estado);
-        $('#466').prop('checked', estado);
-        $('#469').prop('checked', estado);
-        $('#470').prop('checked', estado);
-        $('#471').prop('checked', estado);
-        $('#475').prop('checked', estado);
-        $('#480').prop('checked', estado);
-        $('#491').prop('checked', estado);
-        $('#492').prop('checked', estado);
-        $('#495').prop('checked', estado);
-        $('#630').prop('checked', estado);
-        $('#905').prop('checked', estado);
-        $('#910').prop('checked', estado);
-        $('#915').prop('checked', estado);
-        $('#916').prop('checked', estado);
-        $('#917').prop('checked', estado);
-        $('#918').prop('checked', estado);
-        $('#919').prop('checked', estado);
-        $('#920').prop('checked', estado);
-        $('#925').prop('checked', estado);
-        $('#930').prop('checked', estado);
-        $('#931').prop('checked', estado);
-        $('#940').prop('checked', estado);
-        $('#960').prop('checked', estado);
-        $('#1105').prop('checked', estado);
-        $('#1110').prop('checked', estado);
-        $('#1115').prop('checked', estado);
-        $('#1120').prop('checked', estado);
-    }
-
-    function moduloPerseoControl(estado){
-        //Activar o desactivar modulos
-        $('#200').prop('checked', estado);
-        $('#142').prop('checked', estado);
-        $('#201').prop('checked', estado);
-        $('#205').prop('checked', estado);
-        $('#210').prop('checked', estado);
-        $('#215').prop('checked', estado);
-        $('#225').prop('checked', estado);
-        $('#230').prop('checked', estado);
-        $('#505').prop('checked', estado);
-        $('#510').prop('checked', estado);
-        $('#515').prop('checked', estado);
-        $('#516').prop('checked', estado);
-        $('#517').prop('checked', estado);
-        $('#462').prop('checked', estado);
-        $('#463').prop('checked', estado);
-        $('#485').prop('checked', estado);
-        $('#490').prop('checked', estado);
-        $('#116').prop('checked', estado);
-        $('#140').prop('checked', estado);
-        $('#605').prop('checked', estado);
-        $('#630').prop('checked', estado);
-        $('#635').prop('checked', estado);
-    }
-
-    function moduloPerseoContable(estado){
-        //Activar o desactivar modulos
-        $('#605').prop('checked', estado);
-        $('#142').prop('checked', estado);
-        $('#606').prop('checked', estado);
-        $('#610').prop('checked', estado);
-        $('#615').prop('checked', estado);
-        $('#616').prop('checked', estado);
-        $('#620').prop('checked', estado);
-        $('#625').prop('checked', estado);
-        $('#626').prop('checked', estado);
-        $('#627').prop('checked', estado);
-        $('#628').prop('checked', estado);
-        $('#630').prop('checked', estado);
-        $('#635').prop('checked', estado);
-        $('#636').prop('checked', estado);
-        $('#640').prop('checked', estado);
-    }
-
-    function moduloPerseoNomina(estado){
-        //Activar o desactivar modulos
-        $('#705').prop('checked', estado);
-        $('#710').prop('checked', estado);
-        $('#715').prop('checked', estado);
-        $('#720').prop('checked', estado);
-        $('#725').prop('checked', estado);
-        $('#730').prop('checked', estado);
-        $('#735').prop('checked', estado);
-        $('#740').prop('checked', estado);
-        $('#741').prop('checked', estado);
-        $('#745').prop('checked', estado);
-    }
-
-    function moduloPerseoActivos(estado){
-        //Activar o desactivar modulos
-        $('#805').prop('checked', estado);
-        $('#806').prop('checked', estado);
-        $('#810').prop('checked', estado);
-        $('#815').prop('checked', estado);
-        $('#816').prop('checked', estado);
-        $('#820').prop('checked', estado);
-    }
-
-    function moduloPerseoProduccion(estado){
-        //Activar o desactivar modulos
-        $('#1005').prop('checked', estado);
-        $('#1010').prop('checked', estado);
-        $('#1015').prop('checked', estado);
-    }
-
-    function moduloPerseoOperadoras(estado){
-        //Activar o desactivar modulos
-        $('#1200').prop('checked', estado);
-        $('#1205').prop('checked', estado);
-        $('#1210').prop('checked', estado);
-        $('#1215').prop('checked', estado);
-        $('#1220').prop('checked', estado);
-    }
-
-    function moduloPerseoEncomiendas(estado){
-        //Activar o desactivar modulos
-        $('#1601').prop('checked', estado);
-        $('#1610').prop('checked', estado);
-        $('#1615').prop('checked', estado);
-        $('#1620').prop('checked', estado);
-        $('#1625').prop('checked', estado);
-    }
-
-    function moduloPerseoCrmCartera(estado){
-        //Activar o desactivar modulos
-        $('#220').prop('checked', estado);
-    }
-
-    function moduloPerseoAhorros(estado){
-        //Activar o desactivar modulos
-        $('#1705').prop('checked', estado);
-        $('#1710').prop('checked', estado);
-        $('#1715').prop('checked', estado);
-        $('#1716').prop('checked', estado);
-        $('#1720').prop('checked', estado);
-        $('#1725').prop('checked', estado);
-    }
-
-    function moduloPerseoIntegraciones(estado){
-        //Activar o desactivar modulos
-        $('#950').prop('checked', estado);
-    }
-
-    function moduloPerseoRestaurantes(estado){
-        //Activar o desactivar modulos
-        $('#1500').prop('checked', estado);
-        $('#1505').prop('checked', estado);
-        $('#1510').prop('checked', estado);
-        $('#1515').prop('checked', estado);
-        $('#1520').prop('checked', estado);
-    }
-
-    function moduloPerseoGarantias(estado){
-        //Activar o desactivar modulos
-        $('#1300').prop('checked', estado);
-        $('#1305').prop('checked', estado);
-        $('#1310').prop('checked', estado);
-    }
-
-    function moduloPerseoTalleres(estado){
-        //Activar o desactivar modulos
-        $('#1400').prop('checked', estado);
-        $('#1405').prop('checked', estado);
-        $('#1410').prop('checked', estado);
-    }
-
-    function moduloPerseoAcademico(estado){
-        //Activar o desactivar modulos
-        $('#1805').prop('checked', estado);
-        $('#1810').prop('checked', estado);
-        $('#1815').prop('checked', estado);
-        $('#1820').prop('checked', estado);
-        $('#1825').prop('checked', estado);
-        $('#1830').prop('checked', estado);
-    }
-
-    function cambiarComboPC(){
-        var fecha = new Date();
-        var fechaPagado = new Date();
-
-        switch ($('#periodo').val()) {
-            case '1':
-                fecha.setMonth(fecha.getMonth() + 1);
-                fechaPagado.setMonth(fechaPagado.getMonth() + 1);
-
-                if ($('#practico').prop('checked')) {
-                    $('#numeroequipos').val('2');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', false);
-                    $('#activos').prop('checked', false);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(false);
-                    moduloPerseoActivos(false);
-                    moduloPerseoProduccion(false);
+            // Agregamos los IDs de cada módulo seleccionado
+            todosLosModulos.forEach(modulo => {
+                if ($('#' + modulo).prop('checked')) {
+                    if (IDS_MODULO[modulo]) {
+                        modulosSeleccionados.push(...IDS_MODULO[modulo]);
+                    }
                 }
-                if ($('#control').prop('checked')) {
-                    $('#numeroequipos').val('3');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', false);
-                    $('#activos').prop('checked', false);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(false);
-                    moduloPerseoActivos(false);
-                    moduloPerseoProduccion(false);
-                }
-                if ($('#contable').prop('checked')) {
-                    $('#numeroequipos').val('4');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', true);
-                    $('#activos').prop('checked', true);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(true);
-                    moduloPerseoActivos(true);
-                    moduloPerseoProduccion(false);
-                }
-                if ($('#nube').prop('checked')) {
-                    $('#numeroequipos').val('4');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', true);
-                    $('#activos').prop('checked', true);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(true);
-                    moduloPerseoActivos(true);
-                    moduloPerseoProduccion(false);
-                }
-                break;
-            case '2':
-                fecha.setYear(fecha.getFullYear() + 1);
-                fechaPagado.setYear(fechaPagado.getFullYear() + 1);
-                if ($('#practico').prop('checked')) {
-                    $('#numeroequipos').val('2');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', false);
-                    $('#activos').prop('checked', false);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(false);
-                    moduloPerseoActivos(false);
-                    moduloPerseoProduccion(false);
-                }
-                if ($('#control').prop('checked')) {
-                    $('#numeroequipos').val('3');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', false);
-                    $('#activos').prop('checked', false);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(false);
-                    moduloPerseoActivos(false);
-                    moduloPerseoProduccion(false);
-                }
-                if ($('#contable').prop('checked')) {
-                    $('#numeroequipos').val('4');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', true);
-                    $('#activos').prop('checked', true);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(true);
-                    moduloPerseoActivos(true);
-                    moduloPerseoProduccion(false);
-                }
-                if ($('#nube').prop('checked')) {
-                    $('#numeroequipos').val('4');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', true);
-                    $('#activos').prop('checked', true);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(true);
-                    moduloPerseoActivos(true);
-                    moduloPerseoProduccion(false);
-                }
-                break;
-            case '3':
-                fecha.setYear(fecha.getFullYear() + 5);
-                fechaPagado.setYear(fechaPagado.getFullYear() + 1);
-                if ($('#practico').prop('checked')) {
-                    $('#numeroequipos').val('2');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', false);
-                    $('#activos').prop('checked', false);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(false);
-                    moduloPerseoActivos(false);
-                    moduloPerseoProduccion(false);
-                }
-                if ($('#control').prop('checked')) {
-                    $('#numeroequipos').val('3');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', false);
-                    $('#activos').prop('checked', false);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(false);
-                    moduloPerseoActivos(false);
-                    moduloPerseoProduccion(false);
-                }
-                if ($('#contable').prop('checked')) {
-                    $('#numeroequipos').val('4');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', true);
-                    $('#activos').prop('checked', true);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(true);
-                    moduloPerseoActivos(true);
-                    moduloPerseoProduccion(false);
-                }
-                if ($('#nube').prop('checked')) {
-                    $('#numeroequipos').val('4');
-                    $('#numeromoviles').val('0');
-                    $('#numerosucursales').val('1');
-                    $('#nomina').prop('checked', true);
-                    $('#activos').prop('checked', true);
-                    $('#produccion').prop('checked', false);
-                    moduloPerseoNomina(true);
-                    moduloPerseoActivos(true);
-                    moduloPerseoProduccion(false);
-                }
-                break;
+            });
+
+            // Eliminamos duplicados para evitar IDs repetidos
+            const modulosUnicos = [...new Set(modulosSeleccionados)];
+
+            // Ordenamos los IDs para mantener consistencia
+            modulosUnicos.sort((a, b) => parseInt(a) - parseInt(b));
+
+            const valorFormateado = modulosUnicos.join(';') + ';';
+
+            $('#permisos').val(valorFormateado);
+
         }
-        let fechaFormato = ("0"+(fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth()+1)).slice(-2) + "-" + fecha.getFullYear()
-        let fechaPagadoFormato = ("0"+(fechaPagado.getDate())).slice(-2) + "-" + ("0" + (fechaPagado.getMonth()+1)).slice(-2) + "-" + fechaPagado.getFullYear()
 
-        $('#fechacaduca').val(fechaFormato);
-        $('#fechaactulizaciones').val(fechaPagadoFormato);
-    }
+        // Agregar al inicio de tus scripts
+        $(document).ready(function() {
+            // Inicializar el formulario
+            inicializarFormulario();
+            inicializarEventos();
+            aplicarRestriccionesPorRol();
 
-    function confirmar(tipo,mensaje){
-        Swal.fire({
-            title: "Advertencia",
-            text: mensaje,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Confirmar",
-            cancelButtonText: "Cancelar",
-            reverseButtons: true
-        }).then(function(result) {
-            if (result.value) {
-                $('#tipo').val(tipo);
-                $("#formulario").submit();
-            }
+            // Actualiza tu manejador de envío de formulario
+            $('#formulario').on('submit', function(e) {
+                // Primero preparamos los módulos 
+                prepararModulosParaEnvio();
+
+                // Luego habilitamos todos los campos para que se incluyan en el envío
+                $(this).find('input, select, textarea').removeAttr('disabled');
+
+                // Continuar con el envío del formulario
+                return true;
+            });
         });
-    }
 
-</script>
-<?php $__env->stopSection(); ?><?php /**PATH C:\laragon\www\admin\resources\views/admin/licencias/PC/_form.blade.php ENDPATH**/ ?>
+        // Función para inicializar formularios y componentes
+        function inicializarFormulario() {
+            if ($("#nube").prop("checked")) {
+                mostrarDivNube(true);
+            }
+            inicializarDatepickers();
+            inicializarDataTable();
+        }
+
+        // Función para inicializar eventos
+        function inicializarEventos() {
+            $("#renovarmensual").click(() => confirmarAccion('mes', "¿Está seguro de Renovar la Licencia?"));
+            $("#renovaranual").click(() => confirmarAccion('anual', "¿Está seguro de Renovar la Licencia?"));
+            $("#renovaractualizacion").click(() => confirmarAccion('actualizacion', "¿Está seguro de Renovar la Licencia?"));
+            $("#periodo, #producto").change(cambiarComboPC);
+            $(".deshabilitar").click(e => e.preventDefault());
+            inicializarEventosCheckboxes();
+        }
+
+        // Inicializar Datepickers
+        function inicializarDatepickers() {
+            $("#fechacaduca, #fechaactulizaciones, #fechacaduca_soporte").datepicker({
+                language: "es",
+                todayHighlight: true,
+                orientation: "bottom left",
+                templates: {
+                    leftArrow: '<i class="la la-angle-left"></i>',
+                    rightArrow: '<i class="la la-angle-right"></i>'
+                }
+            });
+        }
+
+        // Inicializar DataTable
+        function inicializarDataTable() {
+            $('#aplicativos').DataTable({
+                responsive: true,
+                serverSide: true,
+                searching: false,
+                paging: false,
+                ajax: "<?php echo e(route('subcategorias')); ?>",
+                drawCallback: function(settings) {
+                    const api = this.api();
+                    const rows = api.rows({
+                        page: 'current'
+                    }).nodes();
+                    let last = null;
+                    api.column(0, {
+                        page: 'current'
+                    }).data().each(function(group, i) {
+                        if (last !== group) {
+                            $(rows).eq(i).before('<tr class="group"><td colspan="3">' + group + '</td></tr>');
+                            last = group;
+                        }
+                    });
+                },
+                columns: [{
+                        data: 'categoriasdescripcion',
+                        name: 'categoriasdescripcion',
+                        visible: false
+                    },
+                    {
+                        data: 'sis_subcategoriasid',
+                        orderable: false,
+                        searchable: false,
+                        name: 'sis_subcategoriasid'
+                    },
+                    {
+                        data: 'descripcionsubcategoria',
+                        orderable: false,
+                        searchable: false,
+                        name: 'descripcionsubcategoria'
+                    },
+                    {
+                        data: 'activo',
+                        name: 'activo',
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                initComplete: function(settings, json) {
+                    const permisos = $("#permisos").val();
+                    const array = permisos.split(';');
+                    array.forEach(id => $('#' + id).prop('checked', true));
+                }
+            });
+        }
+
+        // Función para confirmar acción con SweetAlert
+        function confirmarAccion(tipo, mensaje) {
+            Swal.fire({
+                title: "Advertencia",
+                text: mensaje,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#tipo").val(tipo);
+                    $("#formulario").submit();
+                }
+            });
+        }
+
+        // Función para cambiar fechas según el período seleccionado
+        function cambiarComboPC() {
+            const fecha = new Date();
+            const fechaPagado = new Date();
+            const periodo = $("#periodo").val();
+            const meses = MESES_POR_PERIODO[periodo] || 0;
+            fecha.setMonth(fecha.getMonth() + meses);
+            fechaPagado.setMonth(fechaPagado.getMonth() + 12);
+            $("#fechacaduca").val(formatearFecha(fecha));
+            $("#fechaactulizaciones").val(formatearFecha(fechaPagado));
+        }
+
+        // Inicializar eventos para checkboxes de módulos
+        function inicializarEventosCheckboxes() {
+            const modulos = ["practico", "control", "contable", "nube", "nomina", "activos", "produccion", "tvcable", "encomiendas", "crmcartera",
+                "apiwhatsapp", "hybrid", "woocommerce", "tienda", "restaurante", "garantias", "talleres", "integraciones", "ahorros", "academico"
+            ];
+            modulos.forEach(modulo => {
+                $("#" + modulo).click(() => toggleModulo(modulo));
+            });
+        }
+
+        // Actualiza los checkboxes en la tabla para el módulo dado
+        function actualizarCheckboxesPorModulo(modulo, estado) {
+            if (IDS_MODULO[modulo]) {
+                IDS_MODULO[modulo].forEach(id => {
+                    $("#" + id).prop("checked", estado);
+                });
+            }
+        }
+
+        // Configura los valores de equipos, móviles y sucursales según el módulo seleccionado
+        function configurarEquipos(modulo, estado) {
+            if (estado && EQUIPOS_CONFIG[modulo]) {
+                $("#numeroequipos").val(EQUIPOS_CONFIG[modulo].equipos);
+                $("#numeromoviles").val(EQUIPOS_CONFIG[modulo].moviles);
+                $("#numerosucursales").val(EQUIPOS_CONFIG[modulo].sucursales);
+            }
+        }
+
+        // Función para el toggle de módulos
+        function toggleModulo(modulo) {
+            const estado = $("#" + modulo).prop("checked");
+
+            // Si se trata de un módulo principal, desmarcar los demás y reiniciar checkboxes
+            if (["practico", "control", "contable", "nube"].includes(modulo)) {
+                $("#practico, #control, #contable, #nube").not("#" + modulo).prop("checked", false);
+                $("#aplicativos input[type='checkbox']").prop("checked", false);
+
+                // Configurar módulos dependientes: "nomina" y "activos"
+                if (["contable", "nube"].includes(modulo) && estado) {
+                    $("#nomina, #activos").prop("checked", true);
+                    ["nomina", "activos"].forEach(mod => actualizarCheckboxesPorModulo(mod, true));
+                } else if (["practico", "control"].includes(modulo) && estado) {
+                    $("#nomina, #activos").prop("checked", false);
+                    ["nomina", "activos"].forEach(mod => actualizarCheckboxesPorModulo(mod, false));
+                }
+
+                configurarEquipos(modulo, estado);
+                (modulo === "nube") ? mostrarDivNube(estado): mostrarDivNube(false);
+            }
+
+            // Actualizar checkboxes asociados al módulo
+            actualizarCheckboxesPorModulo(modulo, estado);
+        }
+
+        // Muestra u oculta el div de configuración de Nube
+        function mostrarDivNube(estado) {
+            $("#div_nube").toggle(estado);
+            $("#div_nube select, #div_nube input").prop("disabled", !estado);
+        }
+
+        // Función para formatear la fecha en formato DD-MM-YYYY
+        function formatearFecha(fecha) {
+            return `${("0" + fecha.getDate()).slice(-2)}-${("0" + (fecha.getMonth() + 1)).slice(-2)}-${fecha.getFullYear()}`;
+        }
+    </script>
+<?php $__env->stopSection(); ?>
+<?php /**PATH C:\laragon\www\admin\resources\views/admin/licencias/PC/_form.blade.php ENDPATH**/ ?>

@@ -1,139 +1,129 @@
 @extends('admin.layouts.app')
 @section('contenido')
-<style>
-    #kt_datatable td {
-        padding: 3px;
-    }
-</style>
-<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-    <div class="d-flex flex-column-fluid">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <!--begin::Card-->
-                    <form id="formulario" class="form"
-                        action="{{ route('clientes.actualizar', $cliente->sis_clientesid) }}" method="POST">
-                        @method('PUT')
-                        <div class="card card-custom card-sticky" id="kt_page_sticky_card">
+    <style>
+        #kt_datatable td {
+            padding: 3px;
+        }
+    </style>
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <div class="d-flex flex-column-fluid">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!--begin::Card-->
+                        <form id="formulario" class="form" action="{{ route('clientes.actualizar', $cliente->sis_clientesid) }}" method="POST">
+                            @method('PUT')
+                            <div class="card card-custom card-sticky" id="kt_page_sticky_card">
+                                <div class="card-header flex-wrap py-5">
+                                    <div class="card-title">
+                                        <h3 class="card-label">Cliente</h3>
+                                    </div>
+                                    <div class="card-toolbar">
+                                        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="">
+                                            <div class="btn-group" role="group" aria-label="First group">
+
+                                                <a href="{{ route('clientes.index') }}" class="btn btn-secondary btn-icon" data-toggle="tooltip"
+                                                    title="Volver"><i class="la la-long-arrow-left"></i></a>
+
+                                                @if (Auth::user()->tipo == 1)
+                                                    <a class="btn btn-danger btn-icon confirm-delete" href="javascript:void(0)"
+                                                        data-href="{{ route('clientes.eliminar', $cliente->sis_clientesid) }}" data-toggle="tooltip"
+                                                        title="Eliminar"> <i class="la la-trash"></i>
+                                                    </a>
+                                                @endif
+                                                @if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2)
+                                                    <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip" title="Guardar"><i
+                                                            class="la la-save"></i></button>
+                                                @endif
+                                                @if (Auth::user()->tipo != 4 && Auth::user()->tipo != 6 && Auth::user()->tipo != 8)
+                                                    <a href="{{ route('clientes.crear') }}" class="btn btn-warning btn-icon" data-toggle="tooltip"
+                                                        title="Nuevo"><i class="la la-user-plus"></i></a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    @include('admin.clientes._form')
+
+                                </div>
+
+                                <div class="card-footer pt-2 pb-2">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <span class="font-size-sm font-weight-bolder text-dark ml-2">Auditoría</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span class="font-size-sm font-weight-bolder text-dark ml-2">Creación</span>
+                                            <span class="font-size-sm text-primary ml-2">{{ $cliente->usuariocreacion }}</span>
+                                            <span class="font-size-sm text-primary ml-2">{{ $cliente->fechacreacion }}</span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <span class="font-size-sm font-weight-bolder text-dark ml-2">Modificación</span>
+                                            <span class="font-size-sm text-primary ml-2">{{ $cliente->usuariomodificacion }}</span>
+                                            <span class="font-size-sm text-primary ml-2">{{ $cliente->fechamodificacion }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!--end::Card-->
+                        </form>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-custom">
                             <div class="card-header flex-wrap py-5">
                                 <div class="card-title">
-                                    <h3 class="card-label">Cliente</h3>
+                                    <h3 class="card-label">Licencias </h3>
                                 </div>
                                 <div class="card-toolbar">
                                     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="">
                                         <div class="btn-group" role="group" aria-label="First group">
-
-                                            <a href="{{ route('clientes.index') }}" class="btn btn-secondary btn-icon"
-                                                data-toggle="tooltip" title="Volver"><i
-                                                    class="la la-long-arrow-left"></i></a>
-
-                                            @if (Auth::user()->tipo == 1)
-                                            <a class="btn btn-danger btn-icon confirm-delete" href="javascript:void(0)"
-                                                data-href="{{ route('clientes.eliminar', $cliente->sis_clientesid) }}"
-                                                data-toggle="tooltip" title="Eliminar"> <i class="la la-trash"></i>
-                                            </a>
+                                            @if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2)
+                                                <a href="{{ route('licencias.Web.crear', $cliente->sis_clientesid) }}" class="btn btn-primary btn-icon"
+                                                    data-toggle="tooltip" title="Nuevo Web"><i class="la la-cloud"></i></a>
+                                            @endif
+                                            @if (Auth::user()->tipo != 4 && Auth::user()->tipo != 6 && Auth::user()->tipo != 8)
+                                                <a href="{{ route('licencias.Pc.crear', $cliente->sis_clientesid) }}" class="btn btn-warning btn-icon"
+                                                    data-toggle="tooltip" title="Nuevo PC"><i class="la la-tv"></i></a>
                                             @endif
                                             @if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2)
-                                            <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip"
-                                                title="Guardar"><i class="la la-save"></i></button>
-                                            @endif
-                                            @if (Auth::user()->tipo != 4)
-                                            <a href="{{ route('clientes.crear') }}" class="btn btn-warning btn-icon"
-                                                data-toggle="tooltip" title="Nuevo"><i class="la la-user-plus"></i></a>
+                                                <a href="{{ route('licencias.Vps.crear', $cliente->sis_clientesid) }}" class="btn btn-secondary btn-icon"
+                                                    data-toggle="tooltip" title="Nuevo VPS"><i class="la la-cloud"></i></a>
                                             @endif
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-body">
-                                @include('admin.clientes._form')
-
+                                <!--begin: Datatable-->
+                                <table class="table table-sm table-bordered table-head-custom table-hover" id="kt_datatable">
+                                    <thead>
+                                        <tr>
+                                            <th class="no-exportar">#</th>
+                                            <th class="no-exportar">Servidor</th>
+                                            <th data-priority="1">Contrato</th>
+                                            <th data-priority="2">Tipo</th>
+                                            <th>Fecha Caduca</th>
+                                            <th class="no-exportar">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <!--end: Datatable-->
                             </div>
-
-                            <div class="card-footer pt-2 pb-2">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <span class="font-size-sm font-weight-bolder text-dark ml-2">Auditoría</span>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <span class="font-size-sm font-weight-bolder text-dark ml-2">Creación</span>
-                                        <span class="font-size-sm text-primary ml-2">{{ $cliente->usuariocreacion
-                                            }}</span>
-                                        <span class="font-size-sm text-primary ml-2">{{ $cliente->fechacreacion
-                                            }}</span>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <span class="font-size-sm font-weight-bolder text-dark ml-2">Modificación</span>
-                                        <span class="font-size-sm text-primary ml-2">{{ $cliente->usuariomodificacion
-                                            }}</span>
-                                        <span class="font-size-sm text-primary ml-2">{{ $cliente->fechamodificacion
-                                            }}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <!--end::Card-->
-                    </form>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card card-custom">
-                        <div class="card-header flex-wrap py-5">
-                            <div class="card-title">
-                                <h3 class="card-label">Licencias </h3>
-                            </div>
-                            <div class="card-toolbar">
-                                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="">
-                                    <div class="btn-group" role="group" aria-label="First group">
-                                        @if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2)
-                                        <a href="{{ route('licencias.Web.crear', $cliente->sis_clientesid) }}"
-                                            class="btn btn-primary btn-icon" data-toggle="tooltip" title="Nuevo Web"><i
-                                                class="la la-cloud"></i></a>
-                                        @endif
-                                        @if (Auth::user()->tipo != 4)
-                                        <a href="{{ route('licencias.Pc.crear', $cliente->sis_clientesid) }}"
-                                            class="btn btn-warning btn-icon" data-toggle="tooltip" title="Nuevo PC"><i
-                                                class="la la-tv"></i></a>
-                                        @endif
-                                        @if (Auth::user()->tipo == 1 || Auth::user()->tipo == 2)
-                                        <a href="{{ route('licencias.Vps.crear', $cliente->sis_clientesid) }}"
-                                            class="btn btn-secondary btn-icon" data-toggle="tooltip"
-                                            title="Nuevo VPS"><i class="la la-cloud"></i></a>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <!--begin: Datatable-->
-                            <table class="table table-sm table-bordered table-head-custom table-hover"
-                                id="kt_datatable">
-                                <thead>
-                                    <tr>
-                                        <th class="no-exportar">#</th>
-                                        <th class="no-exportar">Servidor</th>
-                                        <th data-priority="1">Contrato</th>
-                                        <th data-priority="2">Tipo</th>
-                                        <th>Fecha Caduca</th>
-                                        <th class="no-exportar">Acciones</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                            <!--end: Datatable-->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 
 @section('modal')
-@include('modals.delete_modal')
+    @include('modals.delete_modal')
 @endsection
 
 <div id="actividad-modal" class="modal fade">
@@ -164,8 +154,8 @@
 </div>
 
 @section('script')
-<script>
-    $('#formulario').submit(function(event) {
+    <script>
+        $('#formulario').submit(function(event) {
             $("#provinciasid").prop("disabled", false);
             $("#distribuidor").prop("disabled", false);
             $("#vendedor").prop("disabled", false);
@@ -193,7 +183,7 @@
                         }
 
                         $('#ciudadesid').append('<option value="' + ciudades.ciudadesid +
-                            '" '+seleccionado+' >' + ciudades
+                            '" ' + seleccionado + ' >' + ciudades
                             .ciudad + '</option>')
                     });
 
@@ -390,5 +380,5 @@
                 }
             })
         }
-</script>
+    </script>
 @endsection

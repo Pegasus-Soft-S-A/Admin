@@ -46,7 +46,7 @@ class usuariosController extends Controller
                             $tipo = "Distribuidor";
                             break;
                         case '3':
-                            $tipo = "Soporte";
+                            $tipo = "Soporte Distribuidor";
                             break;
                         case '4':
                             $tipo = "Ventas";
@@ -56,6 +56,12 @@ class usuariosController extends Controller
                             break;
                         case '6':
                             $tipo = "Visor";
+                            break;
+                        case '7':
+                            $tipo = "Soporte Matriz";
+                            break;
+                        case '8':
+                            $tipo = "Comercial";
                             break;
                     }
                     return $tipo;

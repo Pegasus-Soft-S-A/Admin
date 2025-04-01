@@ -52,7 +52,7 @@ class licenciasController extends Controller
             } else {
                 $unir =  array_merge($data->toArray(), $data2->toArray());
             }
-            //dd($unir);
+
             return DataTables::of($unir)
 
                 ->editColumn('numerocontrato', function ($data) {
@@ -101,7 +101,7 @@ class licenciasController extends Controller
                 ->editColumn('tipo_licencia', function ($data) {
                     switch ($data['tipo_licencia']) {
                         case '1':
-                            return 'Perseo Web';
+                            return $data['producto'] != 12 ? 'Perseo Web' : 'Facturito';
                             break;
                         case '2':
                             return 'Perseo PC';
@@ -179,6 +179,7 @@ class licenciasController extends Controller
         $licencia->clave = "Invencible4050*";
         $licencia->ipservidor = "127.0.0.1";
         $licencia->puerto = "5588";
+        $licencia->puertows = "80";
         $licencia->actulizaciones = 1;
         $licencia->aplicaciones = " s";
         $licencia->plan_soporte = 1;
@@ -262,6 +263,7 @@ class licenciasController extends Controller
         $request['numerogratis'] =  0;
         $request['tokenrespaldo'] =  $request['tokenrespaldo'] == "" ? "" : $request['tokenrespaldo'];
         $request['tipo_licencia'] =  2;
+        $request['aplicaciones'] = $request->aplicaciones_permisos;
 
         $modulos = [];
         $modulos = [
@@ -310,6 +312,7 @@ class licenciasController extends Controller
             $request['perseo_contador'],
             $request['api_urbano'],
             $request['tipo'],
+            $request['aplicaciones_permisos'],
         );
         $request['modulos'] = json_encode([$modulos]);
         $servidor = Servidores::where('sis_servidoresid', 4)->first();
@@ -398,7 +401,7 @@ class licenciasController extends Controller
         $request['fechaultimopago'] = $request['fechainicia'];
 
         switch ($request['producto']) {
-                //Lite anterior
+            //Lite anterior
             case '6':
                 $parametros_json = [];
                 $parametros_json = [
@@ -413,7 +416,7 @@ class licenciasController extends Controller
                 ];
                 $request['parametros_json'] = json_encode($parametros_json);
                 break;
-                //Lite
+            //Lite
             case '9':
                 $parametros_json = [];
                 $parametros_json = [
@@ -428,7 +431,7 @@ class licenciasController extends Controller
                 ];
                 $request['parametros_json'] = json_encode($parametros_json);
                 break;
-                //Emprendedor
+            //Emprendedor
             case '10':
                 $parametros_json = [];
                 $parametros_json = [
@@ -443,7 +446,7 @@ class licenciasController extends Controller
                 ];
                 $request['parametros_json'] = json_encode($parametros_json);
                 break;
-                //Socio
+            //Socio
             case '11':
                 $parametros_json = [];
                 $parametros_json = [
@@ -460,7 +463,7 @@ class licenciasController extends Controller
                 break;
             case '12':
                 switch ($request->periodo) {
-                        //Inicial
+                    //Inicial
                     case '1':
                         $parametros_json = [];
                         $parametros_json = [
@@ -475,7 +478,7 @@ class licenciasController extends Controller
                         ];
                         $request['parametros_json'] = json_encode($parametros_json);
                         break;
-                        //Basico
+                    //Basico
                     case '2':
                         $parametros_json = [];
                         $parametros_json = [
@@ -490,7 +493,7 @@ class licenciasController extends Controller
                         ];
                         $request['parametros_json'] = json_encode($parametros_json);
                         break;
-                        //Pro
+                    //Pro
                     case '3':
                         $parametros_json = [];
                         $parametros_json = [
@@ -505,7 +508,7 @@ class licenciasController extends Controller
                         ];
                         $request['parametros_json'] = json_encode($parametros_json);
                         break;
-                        //Gratis
+                    //Gratis
                     case '4':
                         $parametros_json = [];
                         $parametros_json = [
@@ -578,7 +581,7 @@ class licenciasController extends Controller
             $licenciaId = $crearLicenciaWeb["licencias"][0]['sis_licenciasid'];
             $request['sis_licenciasid'] = $licenciaId;
 
-            Licenciasweb::create($request->all());
+            $licencia = Licenciasweb::create($request->all());
 
             $log = new Log();
             $log->usuario = Auth::user()->nombres;
@@ -655,7 +658,9 @@ class licenciasController extends Controller
             $emails = array_diff($emails, array(" ", 0, null));
 
             try {
-                Mail::to($emails)->queue(new enviarlicencia($array));
+                if (config('app.env') !== 'local') {
+                    Mail::to($emails)->queue(new enviarlicencia($array));
+                }
             } catch (\Exception $e) {
                 flash('Error enviando email')->error();
                 return redirect()->route('licencias.Web.editar', [$request['sis_clientesid'], $request->sis_servidoresid, $licenciaId]);
@@ -732,10 +737,11 @@ class licenciasController extends Controller
             Auth::user()->correo,
         ]);
 
-        //$emails = array_diff($emails, array(" ", 0, null));
-        $emails = 'jhusep95@gmail.com';
+        $emails = array_diff($emails, array(" ", 0, null));
         try {
-            Mail::to($emails)->queue(new enviarlicencia($array));
+            if (config('app.env') !== 'local') {
+                Mail::to($emails)->queue(new enviarlicencia($array));
+            }
         } catch (\Exception $e) {
             flash('Error enviando email')->error();
             return redirect()->route('licencias.Vps.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
@@ -867,6 +873,7 @@ class licenciasController extends Controller
         $request['motivobloqueo'] = $request->motivobloqueo == '' ? '' : $request->motivobloqueo;
         $request['mensaje'] = $request->mensaje == '' ? '' : $request->mensaje;
         $request['observacion'] = $request->observacion == '' ? '' : $request->observacion;
+        $request['aplicaciones'] = $request->aplicaciones_permisos;
 
 
         $modulos = [];
@@ -918,6 +925,7 @@ class licenciasController extends Controller
             $request['tipo'],
             $request['empresas_activas'],
             $request['empresas_inactivas'],
+            $request['aplicaciones_permisos'],
         );
         $request['modulos'] = json_encode([$modulos]);
 
@@ -1056,7 +1064,9 @@ class licenciasController extends Controller
         $emails = array_diff($emails, array(" ", 0, null));
 
         try {
-            Mail::to($emails)->queue(new enviarlicencia($array));
+            if (config('app.env') !== 'local') {
+                Mail::to($emails)->queue(new enviarlicencia($array));
+            }
         } catch (\Exception $e) {
             flash('Error enviando email')->error();
             return back();
@@ -1283,7 +1293,9 @@ class licenciasController extends Controller
             $emails = array_diff($emails, array(" ", 0, null));
 
             try {
-                Mail::to($emails)->queue(new enviarlicencia($array));
+                if (config('app.env') !== 'local') {
+                    Mail::to($emails)->queue(new enviarlicencia($array));
+                }
             } catch (\Exception $e) {
                 //dd($e->getMessage());
                 flash('Error enviando email')->error();
@@ -1397,7 +1409,9 @@ class licenciasController extends Controller
             $emails = array_diff($emails, array(" ", 0, null));
 
             try {
-                Mail::to($emails)->queue(new enviarlicencia($array));
+                if (config('app.env') !== 'local') {
+                    Mail::to($emails)->queue(new enviarlicencia($array));
+                }
             } catch (\Exception $e) {
                 dd($e->getMessage());
                 flash('Error enviando email')->error();

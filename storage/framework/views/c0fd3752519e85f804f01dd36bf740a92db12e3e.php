@@ -3,15 +3,15 @@
     <div class="brand flex-column-auto" id="kt_brand">
         <a href="#" class="brand-logo">
             <?php if(session('menu') == 0): ?>
-            <img width="200" height="35" alt="Logo" src="<?php echo e(asset('assets/media/perseologob2.png')); ?>" />
+                <img width="200" height="35" alt="Logo" src="<?php echo e(asset('assets/media/perseologob2.png')); ?>" />
             <?php else: ?>
-            <img width="200" height="35" alt="Logo" src="<?php echo e(asset('assets/media/perseologo.png')); ?>" />
+                <img width="200" height="35" alt="Logo" src="<?php echo e(asset('assets/media/perseologo.png')); ?>" />
             <?php endif; ?>
         </a>
         <button class="brand-toggle btn btn-sm px-0" id="kt_aside_toggle">
             <span class="svg-icon svg-icon svg-icon-xl">
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
-                    height="24px" viewBox="0 0 24 24" version="1.1">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24"
+                    version="1.1">
                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                         <polygon points="0 0 24 0 24 24 0 24" />
                         <path
@@ -28,98 +28,88 @@
         </button>
     </div>
     <div class="aside-menu-wrapper flex-column-fluid" id="kt_aside_menu_wrapper">
-        <div id="kt_aside_menu" class="aside-menu my-4" data-menu-vertical="1" data-menu-scroll="1"
-            data-menu-dropdown-timeout="500">
+        <div id="kt_aside_menu" class="aside-menu my-4" data-menu-vertical="1" data-menu-scroll="1" data-menu-dropdown-timeout="500">
             <ul class="menu-nav">
 
-                <?php if(Auth::user()->tipo!=5): ?>
-
-                <li class="menu-item <?php echo e(areActiveRoutes(['clientes.index'])); ?> " aria-haspopup="true">
-                    <a href="<?php echo e(route('clientes.index')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-key"></i>
-                        <span class="menu-text">Registro Clientes</span>
-                    </a>
-                </li>
-
+                <?php if(Auth::user()->tipo != 5): ?>
+                    <li class="menu-item <?php echo e(areActiveRoutes(['clientes.index'])); ?> " aria-haspopup="true">
+                        <a href="<?php echo e(route('clientes.index')); ?>" class="menu-link">
+                            <i class="menu-icon fa fa-key"></i>
+                            <span class="menu-text">Registro Clientes</span>
+                        </a>
+                    </li>
                 <?php endif; ?>
 
-                <?php if(Auth::user()->tipo==1): ?>
+                <?php if(Auth::user()->tipo == 1): ?>
+                    <li class="menu-item <?php echo e(areActiveRoutes(['distribuidores.index'])); ?>" aria-haspopup="true">
+                        <a href="<?php echo e(route('distribuidores.index')); ?>" class="menu-link">
+                            <i class="menu-icon fa fa-users"></i>
+                            <span class="menu-text">Distribuidores</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item <?php echo e(areActiveRoutes(['distribuidores.index'])); ?>" aria-haspopup="true">
-                    <a href="<?php echo e(route('distribuidores.index')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-users"></i>
-                        <span class="menu-text">Distribuidores</span>
-                    </a>
-                </li>
+                    <li class="menu-item <?php echo e(areActiveRoutes(['revendedores.index'])); ?>" aria-haspopup="true">
+                        <a href="<?php echo e(route('revendedores.index')); ?>" class="menu-link">
+                            <i class="menu-icon fa fa-user-plus"></i>
+                            <span class="menu-text">Revendedores</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item <?php echo e(areActiveRoutes(['revendedores.index'])); ?>" aria-haspopup="true">
-                    <a href="<?php echo e(route('revendedores.index')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-user-plus"></i>
-                        <span class="menu-text">Revendedores</span>
-                    </a>
-                </li>
+                    <li class="menu-item <?php echo e(areActiveRoutes(['usuarios.index'])); ?> " aria-haspopup="true">
+                        <a href="<?php echo e(route('usuarios.index')); ?>" class="menu-link">
+                            <i class="menu-icon fa fa-user"></i>
+                            <span class="menu-text">Usuarios</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item <?php echo e(areActiveRoutes(['usuarios.index'])); ?> " aria-haspopup="true">
-                    <a href="<?php echo e(route('usuarios.index')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-user"></i>
-                        <span class="menu-text">Usuarios</span>
-                    </a>
-                </li>
+                    <li class="menu-item <?php echo e(areActiveRoutes(['servidores.index'])); ?> " aria-haspopup="true">
+                        <a href="<?php echo e(route('servidores.index')); ?>" class="menu-link">
+                            <i class="menu-icon fa fa-server"></i>
+                            <span class="menu-text">Servidores</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item <?php echo e(areActiveRoutes(['servidores.index'])); ?> " aria-haspopup="true">
-                    <a href="<?php echo e(route('servidores.index')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-server"></i>
-                        <span class="menu-text">Servidores</span>
-                    </a>
-                </li>
+                    <li class="menu-item <?php echo e(areActiveRoutes(['migrar'])); ?> " aria-haspopup="true">
+                        <a href="<?php echo e(route('migrar')); ?>" class="menu-link">
+                            <i class="menu-icon fa fa-database"></i>
+                            <span class="menu-text">Migrar Servidor</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item <?php echo e(areActiveRoutes(['migrar'])); ?> " aria-haspopup="true">
-                    <a href="<?php echo e(route('migrar')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-database"></i>
-                        <span class="menu-text">Migrar Servidor</span>
-                    </a>
-                </li>
+                    <li class="menu-item <?php echo e(areActiveRoutes(['agrupados.index'])); ?> " aria-haspopup="true">
+                        <a href="<?php echo e(route('agrupados.index')); ?>" class="menu-link">
+                            <i class="menu-icon fa fa-users"></i>
+                            <span class="menu-text">Agrupados</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item <?php echo e(areActiveRoutes(['agrupados.index'])); ?> " aria-haspopup="true">
-                    <a href="<?php echo e(route('agrupados.index')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-users"></i>
-                        <span class="menu-text">Agrupados</span>
-                    </a>
-                </li>
+                    <li class="menu-item <?php echo e(areActiveRoutes(['links.index'])); ?> " aria-haspopup="true">
+                        <a href="<?php echo e(route('links.index')); ?>" class="menu-link">
+                            <i class="menu-icon fa fa-link"></i>
+                            <span class="menu-text">Links</span>
+                        </a>
+                    </li>
 
-                <li class="menu-item <?php echo e(areActiveRoutes(['links.index'])); ?> " aria-haspopup="true">
-                    <a href="<?php echo e(route('links.index')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-link"></i>
-                        <span class="menu-text">Links</span>
-                    </a>
-                </li>
-
-                <li class="menu-item <?php echo e(areActiveRoutes(['reportes.index'])); ?> " aria-haspopup="true">
-                    <a href="<?php echo e(route('reportes.index')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-chart-bar"></i>
-                        <span class="menu-text">Reportes</span>
-                    </a>
-                </li>
-
+                    <li class="menu-item <?php echo e(areActiveRoutes(['reportes.index'])); ?> " aria-haspopup="true">
+                        <a href="<?php echo e(route('reportes.index')); ?>" class="menu-link">
+                            <i class="menu-icon fa fa-chart-bar"></i>
+                            <span class="menu-text">Reportes</span>
+                        </a>
+                    </li>
                 <?php endif; ?>
 
-                <?php if(Auth::user()->tipo==1 || Auth::user()->tipo==5): ?>
+                <?php if(Auth::user()->tipo == 1 || Auth::user()->tipo == 5 || Auth::user()->tipo == 8): ?>
+                    
 
-                <li class="menu-item <?php echo e(areActiveRoutes(['publicidades.index'])); ?> " aria-haspopup="true">
-                    <a href="<?php echo e(route('publicidades.index')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-file-image"></i>
-                        <span class="menu-text">Publicidad</span>
-                    </a>
-                </li>
-
-                <li class="menu-item <?php echo e(areActiveRoutes(['notificaciones.index'])); ?>" aria-haspopup="true">
-                    <a href="<?php echo e(route('notificaciones.index')); ?>" class="menu-link">
-                        <i class="menu-icon fa fa-bell"></i>
-                        <span class="menu-text">Notificaciones</span>
-                    </a>
-                </li>
+                    <li class="menu-item <?php echo e(areActiveRoutes(['notificaciones.index'])); ?>" aria-haspopup="true">
+                        <a href="<?php echo e(route('notificaciones.index')); ?>" class="menu-link">
+                            <i class="menu-icon fa fa-bell"></i>
+                            <span class="menu-text">Notificaciones</span>
+                        </a>
+                    </li>
                 <?php endif; ?>
             </ul>
         </div>
     </div>
-</div><?php /**PATH C:\laragon\www\admin\resources\views/admin/inc/menuLateral.blade.php ENDPATH**/ ?>
+</div>
+<?php /**PATH C:\laragon\www\admin\resources\views/admin/inc/menuLateral.blade.php ENDPATH**/ ?>

@@ -5,15 +5,13 @@
         <select class="form-control select2" name="sis_distribuidoresid" id="distribuidor">
             <option value="0">Todos</option>
             @foreach ($distribuidores as $distribuidor)
-            <option value="{{ $distribuidor->sis_distribuidoresid }}" {{ $distribuidor->sis_distribuidoresid==
-                $notificaciones->sis_distribuidoresid
-                ? 'Selected'
-                : '' }}>
-                {{ $distribuidor->razonsocial }}</option>
+                <option value="{{ $distribuidor->sis_distribuidoresid }}"
+                    {{ $distribuidor->sis_distribuidoresid == $notificaciones->sis_distribuidoresid ? 'Selected' : '' }}>
+                    {{ $distribuidor->razonsocial }}</option>
             @endforeach
         </select>
         @if ($errors->has('sis_distribuidoresid'))
-        <span class="text-danger">{{ $errors->first('sis_distribuidoresid') }}</span>
+            <span class="text-danger">{{ $errors->first('sis_distribuidoresid') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
@@ -25,7 +23,7 @@
             </option>
         </select>
         @if ($errors->has('usuarios'))
-        <span class="text-danger">{{ $errors->first('usuarios') }}</span>
+            <span class="text-danger">{{ $errors->first('usuarios') }}</span>
         @endif
     </div>
 </div>
@@ -41,20 +39,19 @@
             </option>
         </select>
         @if ($errors->has('tipo'))
-        <span class="text-danger">{{ $errors->first('tipo') }}</span>
+            <span class="text-danger">{{ $errors->first('tipo') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
         <label>Tipo Mensaje:</label>
         <select class="form-control select2" id="tipo_mensaje" name="tipo_mensaje">
-            <option value="1" {{ old('tipo_mensaje', $notificaciones->tipo_mensaje) == '1' ? 'Selected' : ''
-                }}>Informativo
+            <option value="1" {{ old('tipo_mensaje', $notificaciones->tipo_mensaje) == '1' ? 'Selected' : '' }}>Informativo
             </option>
             <option value="2" {{ old('tipo_mensaje', $notificaciones->tipo_mensaje) == '2' ? 'Selected' : '' }}>Alerta
             </option>
         </select>
         @if ($errors->has('tipo'))
-        <span class="text-danger">{{ $errors->first('tipo') }}</span>
+            <span class="text-danger">{{ $errors->first('tipo') }}</span>
         @endif
     </div>
 </div>
@@ -62,35 +59,41 @@
     <div class="col-lg-6">
         <label>Tipo Contenido:</label>
         <select class="form-control select2" id="tipo_contenido" name="tipo_contenido">
-            <option value="1" {{ old('tipo_contenido', $notificaciones->tipo_contenido) == '1' ? 'Selected' : ''
-                }}>HTML
+            <option value="1" {{ old('tipo_contenido', $notificaciones->tipo_contenido) == '1' ? 'Selected' : '' }}>HTML
             </option>
             <option value="2" {{ old('tipo_contenido', $notificaciones->tipo_contenido) == '2' ? 'Selected' : '' }}>URL
             </option>
         </select>
         @if ($errors->has('tipo'))
-        <span class="text-danger">{{ $errors->first('tipo') }}</span>
+            <span class="text-danger">{{ $errors->first('tipo') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
-        <label>Fecha Publicacion:</label>
-        <input type="text" class="form-control {{ $errors->has('fechapublicacion') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Fecha Publicacion" name="fechapublicacion" id="fechapublicacion" autocomplete="off"
-            value="{{ old('fechapublicacion', $notificaciones->fechapublicacion) }}" />
-        @if ($errors->has('fechapublicacion'))
-        <span class="text-danger">{{ $errors->first('fechapublicacion') }}</span>
+        <label>Asunto:</label>
+        <input type="text" class="form-control {{ $errors->has('asunto') ? 'is-invalid' : '' }}" placeholder="Ingrese asunto" name="asunto"
+            autocomplete="off" value="{{ old('asunto', $notificaciones->asunto) }}" id="asunto" />
+        @if ($errors->has('asunto'))
+            <span class="text-danger">{{ $errors->first('asunto') }}</span>
         @endif
     </div>
-
 </div>
 <div class="form-group row">
     <div class="col-lg-6">
-        <label>Asunto:</label>
-        <input type="text" class="form-control {{ $errors->has('asunto') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese asunto" name="asunto" autocomplete="off"
-            value="{{ old('asunto', $notificaciones->asunto) }}" id="asunto" />
-        @if ($errors->has('asunto'))
-        <span class="text-danger">{{ $errors->first('asunto') }}</span>
+        <label>Fecha Publicacion Desde:</label>
+        <input type="text" class="form-control {{ $errors->has('fecha_publicacion_desde') ? 'is-invalid' : '' }}"
+            placeholder="Ingrese Fecha Publicacion Desde" name="fecha_publicacion_desde" id="fecha_publicacion_desde" autocomplete="off"
+            value="{{ old('fecha_publicacion_desde', $notificaciones->fecha_publicacion_desde) }}" />
+        @if ($errors->has('fecha_publicacion_desde'))
+            <span class="text-danger">{{ $errors->first('fecha_publicacion_desde') }}</span>
+        @endif
+    </div>
+    <div class="col-lg-6">
+        <label>Fecha Publicacion Hasta:</label>
+        <input type="text" class="form-control {{ $errors->has('fecha_publicacion_hasta') ? 'is-invalid' : '' }}"
+            placeholder="Ingrese Fecha Publicacion Hasta" name="fecha_publicacion_hasta" id="fecha_publicacion_hasta" autocomplete="off"
+            value="{{ old('fecha_publicacion_hasta', $notificaciones->fecha_publicacion_hasta) }}" />
+        @if ($errors->has('fecha_publicacion_hasta'))
+            <span class="text-danger">{{ $errors->first('fecha_publicacion_hasta') }}</span>
         @endif
     </div>
 </div>
@@ -100,15 +103,15 @@
         <textarea class="summernote" name="contenido" id="contenido">{{ old('contenido', $notificaciones->contenido) }}
         </textarea>
         @if ($errors->has('contenido'))
-        <span class="text-danger">{{ $errors->first('contenido') }}</span>
+            <span class="text-danger">{{ $errors->first('contenido') }}</span>
         @endif
     </div>
 </div>
 @section('script')
-<script>
-    $(document).ready(function() {
-         //Iniciar fecha
-        $('#fechapublicacion').datepicker({
+    <script>
+        $(document).ready(function() {
+            //Iniciar fecha
+            $('#fecha_publicacion_desde, #fecha_publicacion_hasta').datepicker({
                 language: "es",
                 todayHighlight: true,
                 orientation: "bottom left",
@@ -116,17 +119,17 @@
                     leftArrow: '<i class="la la-angle-left"></i>',
                     rightArrow: '<i class="la la-angle-right"></i>'
                 }
-        });
-        $('.summernote').summernote({
-            height: 200,
-            lang:'es-ES'
-        });
+            });
+            $('.summernote').summernote({
+                height: 500,
+                lang: 'es-ES'
+            });
 
-        if ("{{ isset($notificaciones->sis_notificacionesid) }}" == false) {
-        var fecha = new Date();
-        let fechaInicia = ("0" + (fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth() + 1)).slice(-2) + "-" + fecha.getFullYear()
-        $('#fechapublicacion').val(fechaInicia);
-        }
-    });
-</script>
+            if ("{{ isset($notificaciones->sis_notificacionesid) }}" == false) {
+                var fecha = new Date();
+                let fechaInicia = ("0" + (fecha.getDate())).slice(-2) + "-" + ("0" + (fecha.getMonth() + 1)).slice(-2) + "-" + fecha.getFullYear()
+                $('#fecha_publicacion_desde, #fecha_publicacion_hasta').val(fechaInicia);
+            }
+        });
+    </script>
 @endsection

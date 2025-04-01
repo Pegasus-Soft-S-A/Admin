@@ -11,11 +11,12 @@ use App\Models\Identificaciones;
 use App\Models\Licencias;
 use App\Models\Licenciasweb;
 use App\Models\Log;
-use App\Models\MovilVersion;
 use App\Models\Notificaciones;
 use App\Models\Revendedores;
 use App\Models\Servidores;
+use App\Models\MovilVersion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -28,6 +29,7 @@ class IdentificacionesController extends Controller
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
         $buscar = Identificaciones::whereIn('identificacion', [$identificacionIngresada, $request->identificacion, $request->identificacion . '001'])->first();
+        //$buscar = Identificaciones::where('identificacion', 'like', $identificacionIngresada . '%')->first();
 
         if (!$buscar) {
             try {
@@ -51,7 +53,7 @@ class IdentificacionesController extends Controller
                             <arg2>1001</arg2>
                             <arg3>1001</arg3>
                             <arg4>perseo</arg4>
-                            <arg5>software</arg5>
+                            <arg5>perseo</arg5>
                             <arg6>IGESeec92e31032ab99345a4d4f3ecea</arg6>
                             </nombreCedulaRegistroCivilRequest>
                         </soap:Body>
@@ -83,7 +85,6 @@ class IdentificacionesController extends Controller
                 $request->telefono3 = '';
                 $request->tipo_contribuyente = '0';
                 $request->obligado = '0';
-
                 return json_encode($this->crearIdentificacion($request));
             } catch (\Exception $e) {
             }
@@ -148,7 +149,13 @@ class IdentificacionesController extends Controller
     {
         $identificacionIngresada = substr($request->identificacion, 0, 10);
         $cliente = Clientes::select('sis_clientesid')->where(DB::raw('substr(identificacion, 1, 10)'), $identificacionIngresada)->get();
-        $servidores = Servidores::where('estado', 1)->get();
+
+        if ($request->tipo == 1) {
+            $servidores = Servidores::where('estado', 1)->where('sis_servidoresid', '!=', 2)->get();
+        } else {
+            $servidores = Servidores::where('estado', 1)->where('sis_servidoresid', 2)->get();
+        }
+        // $servidores = Servidores::where('estado', 1)->get();
         $array = [];
 
         foreach ($cliente as $usuario) {
@@ -302,23 +309,12 @@ class IdentificacionesController extends Controller
                 return json_encode(["licencia" => true, "cliente" => $cliente->nombres]);
             }
 
-            $servidores = Servidores::where('estado', 1)->get();
-            $web = [];
-
-            foreach ($servidores as  $servidor) {
-                $url = $servidor->dominio . '/registros/consulta_licencia';
-                $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
-                    ->json();
-                if (isset($resultado['licencias'])) {
-                    $web = array_merge($web, $resultado['licencias']);
-                }
-            }
+            $web = Licenciasweb::where('sis_clientesid', $cliente->sis_clientesid)->get();
 
             if ($web) {
                 return json_encode(["licencia" => true, "cliente" => $cliente->nombres]);
             }
+
             return json_encode(["licencia" => false]);
         } else {
             return json_encode(["licencia" => false]);
@@ -347,19 +343,7 @@ class IdentificacionesController extends Controller
                 ]);
             }
 
-            $servidores = Servidores::where('estado', 1)->get();
-            $web = [];
-
-            foreach ($servidores as  $servidor) {
-                $url = $servidor->dominio . '/registros/consulta_licencia';
-                $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
-                    ->json();
-                if (isset($resultado['licencias'])) {
-                    $web = array_merge($web, $resultado['licencias']);
-                }
-            }
+            $web = Licenciasweb::where('sis_clientesid', $cliente->sis_clientesid)->get()->toArray();
 
             if (count($web) == 0) {
                 return json_encode([
@@ -408,6 +392,45 @@ class IdentificacionesController extends Controller
         }
     }
 
+    public function consultar_licencia_web_jumilo(Request $request)
+    {
+        // ruc hace referencia al número de contrato (habían full variables para cambiar así que se le dejó)
+        $licencia = Licenciasweb::whereIn('numerocontrato', [$request->identificacion])->first();
+
+        if ($licencia) {
+            if ($licencia->producto == 12) {
+                return json_encode([
+                    "liberar" =>   true,
+                    "accion" => "renovar",
+                    "facturito" => true,
+                    "id_licencia" => $licencia->sis_licenciasid,
+                    "id_producto" => $licencia->producto,
+                    "numerocontrato" => $licencia->numerocontrato,
+                    "id_servidor" => $licencia->sis_servidoresid,
+                ]);
+            } else {
+                return json_encode([
+                    "liberar" =>   true,
+                    "accion" => "renovar",
+                    "facturito" => false,
+                    "id_licencia" => $licencia->sis_licenciasid,
+                    "id_producto" => $licencia->producto,
+                    "numerocontrato" => $licencia->numerocontrato,
+                    "id_servidor" => $licencia->sis_servidoresid,
+                ]);
+            }
+        } else {
+            return json_encode([
+                "liberar" => true,
+                "accion" => "nuevo",
+                "facturito" => false,
+                "id_licencia" => 0,
+                "id_producto" => 0,
+                "numerocontrato" => 0,
+            ]);
+        }
+    }
+
     public function renovar_web(Request $request)
     {
         $servidor = Servidores::where('sis_servidoresid', $request->id_servidor)->first();
@@ -424,6 +447,7 @@ class IdentificacionesController extends Controller
 
         $vendedor = Revendedores::where('sis_revendedoresid', $cliente->sis_vendedoresid)->first();
         $vendedor_tienda = Revendedores::where('sis_revendedoresid', $request->sis_vendedoresid)->first();
+
         //Si el vendedor no corresponde al vendedor del cliente
         if ($request->sis_vendedoresid != 0 && $request->sis_vendedoresid != $cliente->sis_vendedoresid) {
             try {
@@ -447,7 +471,8 @@ class IdentificacionesController extends Controller
             }
             return json_encode(["licencia" => ['El vendedor no corresponde al registrado en la licencia']]);
         }
-        //En caso de renovar mensual, anual o actualizar
+
+        //En caso de renovar mensual, anual o actualizar 
         switch ($request->renovar) {
             case '1':
                 $datos['fechacaduca'] = date("Ymd", strtotime($licencia->fechacaduca . "+ 1 month"));
@@ -464,7 +489,6 @@ class IdentificacionesController extends Controller
                 }
                 break;
         }
-
         $datos['periodo'] = $licencia->periodo;
         $datos['sis_clientesid'] = $licencia->sis_clientesid;
         $datos['sis_servidoresid'] = $licencia->sis_servidoresid;
@@ -615,7 +639,7 @@ class IdentificacionesController extends Controller
     {
         $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
         $licencia->tokenrespaldo = $request->token;
-        $licencia->tokenrespaldo = $request->token;
+        $licencia->usuarios_activos = $request->usuarios_activos;
         $cantidadempresas = [];
         $cantidadempresas = [
             'empresas_activas' => $request->empresas_activas,
@@ -721,7 +745,6 @@ class IdentificacionesController extends Controller
                 }
                 return json_encode(["licencia" => ['El vendedor no corresponde al registrado en la licencia']]);
             }
-
             //Si el contador no corresponde al contador del cliente
             if ($request["cliente"]['contador'] != 0) {
                 $identificacionIngresada = substr($request["cliente"]['contador'], 0, 10);
@@ -779,15 +802,15 @@ class IdentificacionesController extends Controller
             $nuevo->fechaultimopago = $nuevo->fechainicia;
 
             switch ($request["cliente"]['promocion']) {
-                    //Un mes de promocion
+                //Un mes de promocion
                 case 1:
                     $fecha = date("Ymd", strtotime($nuevo->fechainicia . "+ 13 months"));
                     break;
-                    //Dos meses de promocion
+                //Dos meses de promocion
                 case 2:
                     $fecha = date("Ymd", strtotime($nuevo->fechainicia . "+ 14 months"));
                     break;
-                    //Tres meses de promocion
+                //Tres meses de promocion
                 case 3:
                     $fecha = date("Ymd", strtotime($nuevo->fechainicia . "+ 15 months"));
                     break;
@@ -797,7 +820,7 @@ class IdentificacionesController extends Controller
 
 
             switch ($licencia['producto_id']) {
-                    //Facturacion Mensual
+                //Facturacion Mensual
                 case '61':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  9.50;
@@ -811,7 +834,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Facturacion Anual
+                //Facturacion Anual
                 case '60':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  72;
@@ -825,7 +848,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Servicios Mensual
+                //Servicios Mensual
                 case '59':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  17;
@@ -839,7 +862,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Servicios Anual
+                //Servicios Anual
                 case '58':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  150;
@@ -853,7 +876,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Comercial Mensual
+                //Comercial Mensual
                 case '57':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  24;
@@ -867,7 +890,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Comercial Anual
+                //Comercial Anual
                 case '56':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  190;
@@ -881,7 +904,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Soy Contador Comercial Mensual
+                //Soy Contador Comercial Mensual
                 case '63':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  13;
@@ -895,7 +918,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Soy Contador Comercial Anual
+                //Soy Contador Comercial Anual
                 case '62':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  108;
@@ -909,7 +932,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Soy Contador Servicios Mensual
+                //Soy Contador Servicios Mensual
                 case '65':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  9.80;
@@ -923,7 +946,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Soy Contador Servicios Anual
+                //Soy Contador Servicios Anual
                 case '64':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  90;
@@ -937,7 +960,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Socio Perseo Mensual
+                //Socio Perseo Mensual
                 case '67':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  7;
@@ -951,7 +974,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Socio Perseo Anual
+                //Socio Perseo Anual
                 case '66':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  87.50;
@@ -965,7 +988,7 @@ class IdentificacionesController extends Controller
                     $nuevo->tipo_licencia =  1;
                     $nuevo->empresas = 1;
                     break;
-                    //Facturito Inicial
+                //Facturito Inicial
                 case '1':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  5.40;
@@ -991,7 +1014,7 @@ class IdentificacionesController extends Controller
                     ];
                     $nuevo->parametros_json = json_encode($parametros_json);
                     break;
-                    //Facturito Basico
+                //Facturito Basico
                 case '2':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  8.99;
@@ -1017,7 +1040,7 @@ class IdentificacionesController extends Controller
                     ];
                     $nuevo->parametros_json = json_encode($parametros_json);
                     break;
-                    //Facturito Pro
+                //Facturito Pro
                 case '3':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  17.99;
@@ -1043,7 +1066,7 @@ class IdentificacionesController extends Controller
                     ];
                     $nuevo->parametros_json = json_encode($parametros_json);
                     break;
-                    //Facturito Gratis
+                //Facturito Gratis
                 case '81':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  4;
@@ -1069,7 +1092,7 @@ class IdentificacionesController extends Controller
                     ];
                     $nuevo->parametros_json = json_encode($parametros_json);
                     break;
-                    //Perseo Lite
+                //Perseo Lite
                 case '1000':
                     $nuevo->Identificador = $contrato;
                     $nuevo->precio =  0;
@@ -1195,7 +1218,10 @@ class IdentificacionesController extends Controller
 
     public function consulta_notificaciones(Request $request)
     {
-        $notificaciones = Notificaciones::whereBetween('fechapublicacion', [$request->inicio, $request->fin])
+        $notificaciones = Notificaciones::where(function ($query) use ($request) {
+            $query->where('fecha_publicacion_desde', '<=', $request->inicio)
+                ->where('fecha_publicacion_hasta', '>=', $request->inicio);
+        })
             ->whereIn('tipo', [0, $request->tipo])
             ->whereIn('sis_distribuidoresid', [0, $request->distribuidor])
             ->get();
@@ -1330,7 +1356,7 @@ class IdentificacionesController extends Controller
             if ($licencia->modulopractico == 1) $producto = "Práctico";
             if ($licencia->modulocontrol == 1) $producto = "Control";
             if ($licencia->modulocontable == 1) $producto = "Contable";
-            if ($licencia->modulocontable == 1) $producto = "Contable";
+            if ($producto == "") $producto = "Sin Asignar";
         }
 
         return $producto;
@@ -1495,7 +1521,8 @@ class IdentificacionesController extends Controller
                 contador.direccion AS contador_direccion,
                 sis_licencias.modulopractico,
                 sis_licencias.modulocontrol,
-                sis_licencias.modulocontable
+                sis_licencias.modulocontable,
+                sis_licencias.modulonube
             FROM
                 sis_licencias
                 INNER JOIN sis_clientes ON sis_licencias.sis_clientesid = sis_clientes.sis_clientesid
@@ -1524,14 +1551,15 @@ class IdentificacionesController extends Controller
                 contador.direccion AS contador_direccion,
                 sis_licencias_web.modulopractico,
                 sis_licencias_web.modulocontrol,
-                sis_licencias_web.modulocontable
+                sis_licencias_web.modulocontable,
+                 '' as modulonube
             FROM
                 sis_clientes
                 INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid
                 INNER JOIN sis_revendedores AS vendedor ON vendedor.sis_revendedoresid = sis_clientes.sis_vendedoresid
                 INNER JOIN sis_revendedores AS contador ON contador.sis_revendedoresid = sis_clientes.sis_revendedoresid
             WHERE
-            sis_licencias_web.periodo <> 4 AND
+            sis_licencias_web.periodo<>4 AND
                 DATEDIFF(
                     sis_licencias_web.fechacaduca,
                 NOW()) = 5
@@ -1546,7 +1574,7 @@ class IdentificacionesController extends Controller
 
     public function plan_soporte(Request $request)
     {
-        $web = Clientes::select('sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_licencias_web.numerocontrato', 'sis_licencias_web.producto', 'sis_licencias_web.tipo_licencia', 'sis_licencias_web.sis_distribuidoresid', 'sis_servidores.dominio')
+        $web = Clientes::select('sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_licencias_web.numerocontrato', 'sis_licencias_web.producto', 'sis_licencias_web.tipo_licencia', 'sis_clientes.sis_distribuidoresid', 'sis_servidores.dominio')
             ->join('sis_licencias_web', 'sis_licencias_web.sis_clientesid', 'sis_clientes.sis_clientesid')
             ->join('sis_servidores', 'sis_servidores.sis_servidoresid', 'sis_licencias_web.sis_servidoresid')
             ->where('sis_licencias_web.numerocontrato', $request->numerocontrato)
@@ -1558,7 +1586,7 @@ class IdentificacionesController extends Controller
             return response()->json($web);
         }
 
-        $pc = Clientes::select('sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_licencias.numerocontrato', 'sis_licencias.tipo_licencia', 'sis_licencias.plan_soporte', 'sis_licencias.fechacaduca_soporte', 'sis_licencias.sis_distribuidoresid')
+        $pc = Clientes::select('sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_licencias.numerocontrato', 'sis_licencias.tipo_licencia', 'sis_licencias.plan_soporte', 'sis_licencias.fechacaduca_soporte', 'sis_clientes.sis_distribuidoresid')
             ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
             ->where('sis_licencias.numerocontrato', $request->numerocontrato)
             ->where('sis_licencias.plan_soporte', 1)
@@ -1571,6 +1599,20 @@ class IdentificacionesController extends Controller
         }
 
         return response()->json(['error' => 'No se encontraron resultados']);
+    }
+
+    public function update_licencia(Request $request)
+    {
+        $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
+
+        if ($licencia) {
+            $licencia->version_ejecutable = $request->version_ejecutable;
+            $licencia->fecha_actualizacion_ejecutable = date('Y-m-d', strtotime($request->fecha_actualizacion_ejecutable));
+            $licencia->fecha_respaldo = date('Y-m-d', strtotime($request->fecha_respaldo));
+            $licencia->save();
+        }
+
+        return response()->json($licencia);
     }
 
     public function informacion_licencia(Request $request)
@@ -1610,30 +1652,6 @@ class IdentificacionesController extends Controller
         return json_encode(DB::selectOne($query));
     }
 
-    public function update_licencia(Request $request)
-    {
-        $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
-
-        if ($licencia) {
-
-            if ($request->has('fecha_respaldo')) {
-                $licencia->fecha_respaldo = date('Y-m-d', strtotime($request->fecha_respaldo));
-            }
-
-            if ($request->has('version_ejecutable')) {
-                $licencia->version_ejecutable = $request->version_ejecutable;
-            }
-
-            if ($request->has('fecha_actualizacion_ejecutable')) {
-                $licencia->fecha_actualizacion_ejecutable = date('Y-m-d', strtotime($request->fecha_actualizacion_ejecutable));
-            }
-
-            $licencia->save();
-        }
-
-        return response()->json($licencia);
-    }
-
     public function correos_licencia(Request $request)
     {
         $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
@@ -1670,73 +1688,191 @@ class IdentificacionesController extends Controller
 
     public function jumilo()
     {
-        $query = "
-            SELECT
-                sis_clientes.identificacion,
-                sis_clientes.nombres,
-                sis_clientes.telefono2,
-                sis_clientes.correos,
-                sis_clientes.direccion,
-                sis_licencias_web.tipo_licencia,
-                sis_licencias_web.periodo,
-                sis_licencias_web.producto,
-                sis_clientes.sis_distribuidoresid,
-                vendedor.identificacion AS vendedor,
-                contador.identificacion AS contador_identificacion,
-                contador.razonsocial AS contador_nombres,
-                contador.correo AS contador_correo,
-                contador.celular AS contador_celular,
-                contador.direccion AS contador_direccion,
-                sis_licencias_web.modulopractico,
-                sis_licencias_web.modulocontrol,
-                sis_licencias_web.modulocontable
-            FROM
-                sis_clientes
-                INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid
-                INNER JOIN sis_revendedores AS vendedor ON vendedor.sis_revendedoresid = sis_clientes.sis_vendedoresid
-                INNER JOIN sis_revendedores AS contador ON contador.sis_revendedoresid = sis_clientes.sis_revendedoresid
-            WHERE
-            sis_clientes.identificacion <> '0604173732' ";
+        $query = "SELECT * FROM (SELECT
+        sis_clientes.sis_clientesid,
+        sis_clientes.identificacion,
+        sis_clientes.nombres,
+        sis_clientes.telefono1,
+        sis_clientes.telefono2,
+        sis_clientes.correos,
+        sis_clientes.grupo,
+        sis_licencias.tipo_licencia,
+        UNIX_TIMESTAMP( sis_licencias.fechainicia ) AS fechainicia,
+        UNIX_TIMESTAMP( sis_licencias.fechacaduca ) AS fechacaduca,
+        UNIX_TIMESTAMP( sis_licencias.fechaactulizaciones ) AS fechaactulizaciones,
+        UNIX_TIMESTAMP( sis_licencias.fechaultimopago ) AS fechaultimopago,
+        DATEDIFF(
+            sis_licencias.fechacaduca,
+        NOW()) AS diasvencer,
+        sis_licencias.numerocontrato,
+        sis_licencias.precio,
+        sis_licencias.periodo,
+        sis_licencias.producto,
+        sis_clientes.red_origen,
+        sis_clientes.sis_distribuidoresid,
+        sis_clientes.sis_vendedoresid,
+        sis_clientes.sis_revendedoresid,
+        sis_clientes.provinciasid,
+        sis_clientes.ciudadesid,
+        sis_licencias.empresas,
+        sis_licencias.usuarios,
+        sis_licencias.numeroequipos,
+        sis_licencias.numeromoviles,
+        sis_clientes.usuariocreacion,
+        sis_clientes.usuariomodificacion,
+        sis_clientes.fechacreacion,
+        sis_clientes.fechamodificacion,
+        sis_licencias.modulopractico,
+        sis_licencias.modulocontrol,
+        sis_licencias.modulocontable,
+        sis_licencias.modulonube,
+        sis_licencias.tipo_nube,
+        sis_licencias.nivel_nube,
+        sis_licencias.cantidadempresas,
+        sis_clientes.validado,
+        sis_licencias.Identificador
+    FROM
+        sis_licencias
+        INNER JOIN sis_clientes ON sis_licencias.sis_clientesid = sis_clientes.sis_clientesid UNION
+    SELECT
+        sis_clientes.sis_clientesid,
+        sis_clientes.identificacion,
+        sis_clientes.nombres,
+        sis_clientes.telefono1,
+        sis_clientes.telefono2,
+        sis_clientes.correos,
+        sis_clientes.grupo,
+        sis_licencias_vps.tipo_licencia,
+        '' AS fechainicia,
+        UNIX_TIMESTAMP( sis_licencias_vps.fecha_corte_cliente ) AS fechacaduca,
+        '' AS fechaactulizaciones,
+        '' AS fechaultimopago,
+        '' AS diasvencer,
+        sis_licencias_vps.numerocontrato,
+        '' AS precio,
+        '' AS periodo,
+        '' AS producto,
+        sis_clientes.red_origen,
+        sis_clientes.sis_distribuidoresid,
+        sis_clientes.sis_vendedoresid,
+        sis_clientes.sis_revendedoresid,
+        sis_clientes.provinciasid,
+        sis_clientes.ciudadesid,
+        '' AS empresas,
+        '' AS usuarios,
+        '' AS numeroequipos,
+        '' AS numeromoviles,
+        sis_clientes.usuariocreacion,
+        sis_clientes.usuariomodificacion,
+        sis_clientes.fechacreacion,
+        sis_clientes.fechamodificacion,
+        '' AS modulopractico,
+        '' AS modulocontrol,
+        '' AS modulocontable,
+        '' AS modulonube,
+        '' AS tipo_nube,
+        '' AS nivel_nube,
+        '' AS cantidadempresas,
+        sis_clientes.validado,
+        '' AS Identificador
+    FROM
+        sis_licencias_vps
+        INNER JOIN sis_clientes ON sis_licencias_vps.sis_clientesid = sis_clientes.sis_clientesid UNION
+    SELECT
+        sis_clientes.sis_clientesid,
+        sis_clientes.identificacion,
+        sis_clientes.nombres,
+        sis_clientes.telefono1,
+        sis_clientes.telefono2,
+        sis_clientes.correos,
+        sis_clientes.grupo,
+        sis_licencias_web.tipo_licencia,
+        UNIX_TIMESTAMP( sis_licencias_web.fechainicia ) AS fechainicia,
+        UNIX_TIMESTAMP( sis_licencias_web.fechacaduca ) AS fechacaduca,
+        UNIX_TIMESTAMP( sis_licencias_web.fechaactulizaciones ) AS fechaactulizaciones,
+        UNIX_TIMESTAMP( sis_licencias_web.fechaultimopago ) AS fechaultimopago,
+        DATEDIFF(
+            sis_licencias_web.fechacaduca,
+        NOW()) AS diasvencer,
+        sis_licencias_web.numerocontrato,
+        sis_licencias_web.precio,
+        sis_licencias_web.periodo,
+        sis_licencias_web.producto,
+        sis_clientes.red_origen,
+        sis_clientes.sis_distribuidoresid,
+        sis_clientes.sis_vendedoresid,
+        sis_clientes.sis_revendedoresid,
+        sis_clientes.provinciasid,
+        sis_clientes.ciudadesid,
+        sis_licencias_web.empresas,
+        sis_licencias_web.usuarios,
+        sis_licencias_web.numeroequipos,
+        sis_licencias_web.numeromoviles,
+        sis_clientes.usuariocreacion,
+        sis_clientes.usuariomodificacion,
+        sis_clientes.fechacreacion,
+        sis_clientes.fechamodificacion,
+        sis_licencias_web.modulopractico,
+        sis_licencias_web.modulocontrol,
+        sis_licencias_web.modulocontable,
+        '' AS modulonube,
+        '' AS tipo_nube,
+        '' AS nivel_nube,
+        '' AS cantidadempresas,
+        sis_clientes.validado,
+        '' AS Identificador
+    FROM
+        sis_clientes
+        INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid UNION
+    SELECT
+        sis_clientes.sis_clientesid,
+        sis_clientes.identificacion,
+        sis_clientes.nombres,
+        sis_clientes.telefono1,
+        sis_clientes.telefono2,
+        sis_clientes.correos,
+        sis_clientes.grupo,
+        '' AS tipo_licencia,
+        '' AS fechainicia,
+        '' AS fechacaduca,
+        '' AS fechaactulizaciones,
+        '' AS fechaultimopago,
+        '' AS diasvencer,
+        '' AS numerocontrato,
+        '' AS precio,
+        '' AS periodo,
+        '' AS producto,
+        sis_clientes.red_origen,
+        sis_clientes.sis_distribuidoresid,
+        sis_clientes.sis_vendedoresid,
+        sis_clientes.sis_revendedoresid,
+        sis_clientes.provinciasid,
+        sis_clientes.ciudadesid,
+        '' AS empresas,
+        '' AS usuarios,
+        '' AS numeroequipos,
+        '' AS numeromoviles,
+        sis_clientes.usuariocreacion,
+        sis_clientes.usuariomodificacion,
+        sis_clientes.fechacreacion,
+        sis_clientes.fechamodificacion,
+        '' AS modulopractico,
+        '' AS modulocontrol,
+        '' AS modulocontable,
+        '' AS modulonube,
+        '' AS tipo_nube,
+        '' AS nivel_nube,
+        '' AS cantidadempresas,
+        sis_clientes.validado,
+        '' AS Identificador
+    FROM
+        sis_clientes
+    WHERE
+        NOT EXISTS ( SELECT 1 FROM sis_licencias WHERE sis_licencias.sis_clientesid = sis_clientes.sis_clientesid )
+        AND NOT EXISTS ( SELECT 1 FROM sis_licencias_web WHERE sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid )) as U
+        WHERE
+            u.identificacion = '0604173732'";
 
         return json_encode(DB::select($query));
-    }
-
-    public function consultar_licencia_web_jumilo(Request $request)
-    {
-        // ruc hace referencia al número de contrato (habían full variables para cambiar así que se le dejó)
-        $licencia = Licenciasweb::whereIn('numerocontrato', [$request->identificacion])->first();
-
-        if ($licencia) {
-            if ($licencia->producto == 12) {
-                return json_encode([
-                    "liberar" =>   true,
-                    "accion" => "renovar",
-                    "facturito" => true,
-                    "id_licencia" => $licencia->sis_licenciasid,
-                    "id_producto" => $licencia->producto,
-                    "numerocontrato" => $licencia->numerocontrato,
-                    "id_servidor" => $licencia->sis_servidoresid,
-                ]);
-            } else {
-                return json_encode([
-                    "liberar" =>   true,
-                    "accion" => "renovar",
-                    "facturito" => false,
-                    "id_licencia" => $licencia->sis_licenciasid,
-                    "id_producto" => $licencia->producto,
-                    "numerocontrato" => $licencia->numerocontrato,
-                    "id_servidor" => $licencia->sis_servidoresid,
-                ]);
-            }
-        } else {
-            return json_encode([
-                "liberar" => true,
-                "accion" => "nuevo",
-                "facturito" => false,
-                "id_licencia" => 0,
-                "id_producto" => 0,
-                "numerocontrato" => 0,
-            ]);
-        }
     }
 }

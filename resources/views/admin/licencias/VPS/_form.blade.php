@@ -1,42 +1,41 @@
 @php
-$rol = Auth::user()->tipo;
+    $rol = Auth::user()->tipo;
 @endphp
 @csrf
-<input type="hidden" value="{{$cliente->sis_clientesid}}" name="sis_clientesid">
+<input type="hidden" value="{{ $cliente->sis_clientesid }}" name="sis_clientesid">
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Numero Contrato:</label>
-        <input type="text" class="form-control {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}"
-            placeholder="Contrato" name="numerocontrato" autocomplete="off" id="numerocontrato"
-            value="{{ old('numerocontrato', $licencia->numerocontrato) }}" readonly />
+        <input type="text" class="form-control {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}" placeholder="Contrato" name="numerocontrato"
+            autocomplete="off" id="numerocontrato" value="{{ old('numerocontrato', $licencia->numerocontrato) }}" readonly />
         @if ($errors->has('numerocontrato'))
-        <span class="text-danger">{{ $errors->first('numerocontrato') }}</span>
+            <span class="text-danger">{{ $errors->first('numerocontrato') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
         <label>IP:</label>
-        <input type="text" class="form-control {{ $errors->has('ip') ? 'is-invalid' : '' }}" placeholder="IP" name="ip"
-            autocomplete="off" id="ip" value="{{ old('ip', $licencia->ip) }}" />
+        <input type="text" class="form-control {{ $errors->has('ip') ? 'is-invalid' : '' }}" placeholder="IP" name="ip" autocomplete="off"
+            id="ip" value="{{ old('ip', $licencia->ip) }}" />
         @if ($errors->has('ip'))
-        <span class="text-danger">{{ $errors->first('ip') }}</span>
+            <span class="text-danger">{{ $errors->first('ip') }}</span>
         @endif
     </div>
 </div>
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Usuario:</label>
-        <input type="text" class="form-control {{ $errors->has('usuario') ? 'is-invalid' : '' }}" placeholder="Usuario"
-            name="usuario" autocomplete="off" id="usuario" value="{{ old('usuario', $licencia->usuario) }}" />
+        <input type="text" class="form-control {{ $errors->has('usuario') ? 'is-invalid' : '' }}" placeholder="Usuario" name="usuario"
+            autocomplete="off" id="usuario" value="{{ old('usuario', $licencia->usuario) }}" />
         @if ($errors->has('usuario'))
-        <span class="text-danger">{{ $errors->first('usuario') }}</span>
+            <span class="text-danger">{{ $errors->first('usuario') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
         <label>Clave:</label>
-        <input type="text" class="form-control {{ $errors->has('clave') ? 'is-invalid' : '' }}" placeholder="Clave"
-            name="clave" autocomplete="off" id="clave" value="{{ old('clave', $licencia->clave) }}" />
+        <input type="text" class="form-control {{ $errors->has('clave') ? 'is-invalid' : '' }}" placeholder="Clave" name="clave"
+            autocomplete="off" id="clave" value="{{ old('clave', $licencia->clave) }}" />
         @if ($errors->has('clave'))
-        <span class="text-danger">{{ $errors->first('clave') }}</span>
+            <span class="text-danger">{{ $errors->first('clave') }}</span>
         @endif
     </div>
 </div>
@@ -45,45 +44,43 @@ $rol = Auth::user()->tipo;
     <div class="col-lg-6">
         <label>Fecha Corte Proveedor:</label>
         <input type="text" class="form-control {{ $errors->has('fecha_corte_proveedor') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Fecha Corte Proveedor" name="fecha_corte_proveedor" id="fecha_corte_proveedor"
-            autocomplete="off" value="{{ old('fecha_corte_proveedor', $licencia->fecha_corte_proveedor) }}" />
+            placeholder="Ingrese Fecha Corte Proveedor" name="fecha_corte_proveedor" id="fecha_corte_proveedor" autocomplete="off"
+            value="{{ old('fecha_corte_proveedor', $licencia->fecha_corte_proveedor) }}" />
         @if ($errors->has('fecha_corte_proveedor'))
-        <span class="text-danger">{{ $errors->first('fecha_corte_proveedor') }}</span>
+            <span class="text-danger">{{ $errors->first('fecha_corte_proveedor') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
         <label>Fecha Corte Cliente:</label>
         <input type="text" class="form-control {{ $errors->has('fecha_corte_cliente') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Fecha Corte Cliente" name="fecha_corte_cliente" id="fecha_corte_cliente"
-            autocomplete="off" value="{{ old('fecha_corte_cliente', $licencia->fecha_corte_cliente) }}" />
+            placeholder="Ingrese Fecha Corte Cliente" name="fecha_corte_cliente" id="fecha_corte_cliente" autocomplete="off"
+            value="{{ old('fecha_corte_cliente', $licencia->fecha_corte_cliente) }}" />
         @if ($errors->has('fecha_corte_cliente'))
-        <span class="text-danger">{{ $errors->first('fecha_corte_cliente') }}</span>
+            <span class="text-danger">{{ $errors->first('fecha_corte_cliente') }}</span>
         @endif
     </div>
 </div>
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Costo Proveedor:</label>
-        <input type="text" class="form-control precio {{ $errors->has('costo_proveedor') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Costo" id="costo_proveedor" name="costo_proveedor" autocomplete="off"
-            value="{{ old('costo_proveedor', $licencia->costo_proveedor) }}" />
+        <input type="text" class="form-control precio {{ $errors->has('costo_proveedor') ? 'is-invalid' : '' }}" placeholder="Ingrese Costo"
+            id="costo_proveedor" name="costo_proveedor" autocomplete="off" value="{{ old('costo_proveedor', $licencia->costo_proveedor) }}" />
         @if ($errors->has('costo_proveedor'))
-        <span class="text-danger">{{ $errors->first('costo_proveedor') }}</span>
+            <span class="text-danger">{{ $errors->first('costo_proveedor') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
         <label>Precio cliente:</label>
-        <input type="text" class="form-control precio {{ $errors->has('precio_cliente') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Precio" id="precio_cliente" name="precio_cliente" autocomplete="off"
-            value="{{ old('precio_cliente', $licencia->precio_cliente) }}" />
+        <input type="text" class="form-control precio {{ $errors->has('precio_cliente') ? 'is-invalid' : '' }}" placeholder="Ingrese Precio"
+            id="precio_cliente" name="precio_cliente" autocomplete="off" value="{{ old('precio_cliente', $licencia->precio_cliente) }}" />
         @if ($errors->has('precio_cliente'))
-        <span class="text-danger">{{ $errors->first('precio_cliente') }}</span>
+            <span class="text-danger">{{ $errors->first('precio_cliente') }}</span>
         @endif
     </div>
 </div>
 @section('script')
-<script>
-    $(document).ready(function() {
+    <script>
+        $(document).ready(function() {
             $('.deshabilitar').click(function() {
                 return false;
             });
@@ -134,6 +131,5 @@ $rol = Auth::user()->tipo;
                 $('#fecha_corte_cliente').val(fecha_corte);
             }
         });
-
-</script>
+    </script>
 @endsection
