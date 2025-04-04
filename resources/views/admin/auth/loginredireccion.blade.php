@@ -19,8 +19,11 @@
 <body>
     <div class="row h-100 w-100 mx-auto">
 
-        <div class="col-md-8 d-none d-xl-block"
-            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-inicio3.jpg') }}); background-size: 100% 100%; ">
+
+
+
+        <div id="myDiv" class="col-md-8 d-none d-xl-block"
+            style="width:100%;height:100%;background-image:url({{ asset('assets/media/perseo-login-redireccion.png') }});background-size:100% 100%;">
         </div>
 
         <div class="mx-auto col-md-4 m-0 p-0 d-flex align-items-center">
@@ -38,11 +41,10 @@
                                         <li class="fa fa-user"></li>
                                     </span>
                                 </div>
-                                <input
-                                    class="form-control form-control-lg {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
-                                    type="text" name="identificacion" id="identificacion" autocomplete="off"
-                                    onblur="verificarLogin()" value="{{ old('identificacion') }}"
-                                    placeholder="Ingrese Identificaci&#243;n" onkeypress="return validarEnter(event)" />
+                                <input class="form-control form-control-lg {{ $errors->has('identificacion') ? 'is-invalid' : '' }}" type="text"
+                                    name="identificacion" id="identificacion" autocomplete="off" onblur="verificarLogin()"
+                                    value="{{ old('identificacion') }}" placeholder="Ingrese Identificaci&#243;n"
+                                    onkeypress="return validarEnter(event)" />
 
                                 <div id="spinner">
                                 </div>
@@ -50,7 +52,7 @@
 
                             <span>Ingrese identificaci&#243;n y presione <b>ENTER</b></span>
                             @if ($errors->has('identificacion'))
-                            <span class=" text-danger">{{ $errors->first('identificacion') }}</span>
+                                <span class=" text-danger">{{ $errors->first('identificacion') }}</span>
                             @endif
                         </div>
                         <div class="fv-row mb-10 d-none" id="perfilEscoger">
@@ -64,8 +66,7 @@
                         </div>
                         <div class="text-center ">
                             <a href="" id="redireccion">
-                                <button type="button" disabled="disabled" class="btn btn-lg btn-primary w-100 mb-5"
-                                    id="ingresar">
+                                <button type="button" disabled="disabled" class="btn btn-lg btn-primary w-100 mb-5" id="ingresar">
                                     <span class="indicator-label">INGRESAR</span>
                                 </button>
                             </a>
@@ -86,8 +87,7 @@
                         <div class="p-2">
                             <div class="row">
                                 <div class="col-6  text-center">
-                                    <a target="_blank"
-                                        href="https://www.dropbox.com/s/4ntn6njpyjihec8/Instalador%20Perseo%20Web.exe?dl=1"
+                                    <a target="_blank" href="https://www.dropbox.com/s/iwwqywxfdcekiv1/Instalador%20Perseo%20Web.exe?dl=1"
                                         style="color:black">
                                         <i class="fab fa-windows">
                                         </i>
@@ -95,8 +95,7 @@
                                     </a>
                                 </div>
                                 <div class="col-6 text-center">
-                                    <a target="_blank"
-                                        href="https://www.dropbox.com/s/jwl78lilc5su0hj/Perseo-Software-Web.dmg?dl=1"
+                                    <a target="_blank" href="https://www.dropbox.com/s/jwl78lilc5su0hj/Perseo-Software-Web.dmg?dl=1"
                                         style="color:black">
                                         <i class="fab fa-apple">
                                         </i>
@@ -116,8 +115,7 @@
                         <div class="p-2">
                             <div class="row">
                                 <div class="col-6  text-center">
-                                    <a target="_blank"
-                                        href="https://play.google.com/store/apps/details?id=com.perseo.perseomovil"
+                                    <a target="_blank" href="https://play.google.com/store/apps/details?id=com.perseo.perseomovil"
                                         style="color:black">
                                         <i class="fab fa-google-play">
                                         </i>
@@ -125,8 +123,7 @@
                                     </a>
                                 </div>
                                 <div class="col-6  text-center">
-                                    <a target="_blank" href="https://apps.apple.com/us/app/perseo-movil/id1571805731"
-                                        style="color:black">
+                                    <a target="_blank" href="https://apps.apple.com/us/app/perseo-movil/id1571805731" style="color:black">
                                         <i class="fab fa-apple">
                                         </i>
                                         App Store
@@ -146,35 +143,36 @@
         document.getElementById("identificacion").focus();
         //Notificaciones
         @foreach (session('flash_notification', collect())->toArray() as $message)
-            $.notify(
-            {
-            // options
-            message: '{{ $message['message'] }}',
-            },
-            {
-            // settings
-            showProgressbar: true,
-            delay: 2500,
-            mouse_over: "pause",
-            placement: {
-            from: "top",
-            align: "right",
-            },
-            animate: {
-            enter: "animated fadeInUp",
-            exit: "animated fadeOutDown",
-            },
-            type: '{{ $message['level'] }}',
-            }
-            );
+            $.notify({
+                // options
+                message: '{{ $message['message'] }}',
+            }, {
+                // settings
+                showProgressbar: true,
+                delay: 2500,
+                mouse_over: "pause",
+                placement: {
+                    from: "top",
+                    align: "right",
+                },
+                animate: {
+                    enter: "animated fadeInUp",
+                    exit: "animated fadeOutDown",
+                },
+                type: '{{ $message['level'] }}',
+            });
         @endforeach
+        const myDiv = document.getElementById('myDiv');
+        myDiv.addEventListener('click', function() {
+            window.location.href = 'https://perseo.ec/implementaciones-globales/';
+        });
 
         function verificarLogin() {
             let identificacion = $('#identificacion').val();
- 	
+
             if (identificacion.length > 0) {
-		jQuery("#perfil").attr("disabled","disabled");
- 		$("#spinner").addClass("spinner spinner-success spinner-right");
+                jQuery("#perfil").attr("disabled", "disabled");
+                $("#spinner").addClass("spinner spinner-success spinner-right");
                 var select = document.getElementById("perfil");
                 $.post('{{ route('post_loginredireccion') }}', {
                     _token: '{{ csrf_token() }}',
@@ -203,8 +201,8 @@
                                 jQuery("#redireccion").attr("href", resultado[0].dominio);
 
                             }
-			
- 			jQuery("#perfil").removeAttr("disabled");
+
+                            jQuery("#perfil").removeAttr("disabled");
                         }
 
                     } else {
@@ -229,7 +227,7 @@
                         $('#perfilEscoger').addClass('d-none');
                         jQuery("#ingresar").attr("disabled", "disabled");
                     }
-			$("#spinner").removeClass("spinner spinner-success spinner-right");
+                    $("#spinner").removeClass("spinner spinner-success spinner-right");
                 })
             } else {
                 $.notify({

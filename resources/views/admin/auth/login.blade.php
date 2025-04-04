@@ -21,7 +21,7 @@
 <body>
     <div class="row h-100 w-100 mx-auto">
         <div class="col-md-8 d-none d-xl-block"
-            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-admin.jpg') }}); background-size: 100% 100%; ">
+            style="width : 100%;height : 100%;background-image: url({{ asset('assets/media/perseo-login-admin.jpg') }}); background-size: 100% 100%; ">
         </div>
 
         <div class="mx-auto col-md-4 m-0 p-0 d-flex align-items-center">
@@ -45,15 +45,14 @@
                                         </span>
                                     </div>
 
-                                    <input
-                                        class="form-control form-control-lg  h-auto  {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
-                                        type="text" name="identificacion" autocomplete="off" id="usuario"
-                                        placeholder="Ingrese Identificación" value="{{ old('identificacion') }}" />
+                                    <input class="form-control form-control-lg  h-auto  {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
+                                        type="text" name="identificacion" autocomplete="off" id="usuario" placeholder="Ingrese Identificación"
+                                        value="{{ old('identificacion') }}" />
 
                                 </div>
 
                                 @if ($errors->has('identificacion'))
-                                <span class="font-size-h6 text-danger">{{ $errors->first('identificacion') }}</span>
+                                    <span class="font-size-h6 text-danger">{{ $errors->first('identificacion') }}</span>
                                 @endif
                             </div>
 
@@ -64,13 +63,11 @@
                                             <i class="fa fa-key"></i>
                                         </span>
                                     </div>
-                                    <input
-                                        class="form-control form-control-lg  h-auto  {{ $errors->has('contrasena') ? 'is-invalid' : '' }}"
-                                        type="password" name="contrasena" autocomplete="off"
-                                        placeholder="Ingrese clave" />
+                                    <input class="form-control form-control-lg  h-auto  {{ $errors->has('contrasena') ? 'is-invalid' : '' }}"
+                                        type="password" name="contrasena" autocomplete="off" placeholder="Ingrese clave" />
                                 </div>
                                 @if ($errors->has('contrasena'))
-                                <span class="font-size-h6 text-danger">{{ $errors->first('contrasena') }}</span><br>
+                                    <span class="font-size-h6 text-danger">{{ $errors->first('contrasena') }}</span><br>
                                 @endif
                             </div>
 
@@ -101,27 +98,24 @@
     <script>
         //Notificaciones
         @foreach (session('flash_notification', collect())->toArray() as $message)
-            $.notify(
-            {
-            // options
-            message: '{{ $message['message'] }}',
-            },
-            {
-            // settings
-            showProgressbar: true,
-            delay: 2500,
-            mouse_over: "pause",
-            placement: {
-            from: "top",
-            align: "right",
-            },
-            animate: {
-            enter: "animated fadeInUp",
-            exit: "animated fadeOutDown",
-            },
-            type: '{{ $message['level'] }}',
-            }
-            );
+            $.notify({
+                // options
+                message: '{{ $message['message'] }}',
+            }, {
+                // settings
+                showProgressbar: true,
+                delay: 2500,
+                mouse_over: "pause",
+                placement: {
+                    from: "top",
+                    align: "right",
+                },
+                animate: {
+                    enter: "animated fadeInUp",
+                    exit: "animated fadeOutDown",
+                },
+                type: '{{ $message['level'] }}',
+            });
         @endforeach
     </script>
 </body>
