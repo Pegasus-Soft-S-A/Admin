@@ -1589,8 +1589,8 @@ class IdentificacionesController extends Controller
         $pc = Clientes::select('sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_licencias.numerocontrato', 'sis_licencias.tipo_licencia', 'sis_licencias.plan_soporte', 'sis_licencias.fechacaduca_soporte', 'sis_clientes.sis_distribuidoresid')
             ->join('sis_licencias', 'sis_licencias.sis_clientesid', 'sis_clientes.sis_clientesid')
             ->where('sis_licencias.numerocontrato', $request->numerocontrato)
-            ->where('sis_licencias.plan_soporte', 1)
-            ->where('sis_licencias.fechacaduca_soporte', '>=', date('Y-m-d'))
+            //->where('sis_licencias.plan_soporte', 1)
+            // ->where('sis_licencias.fechacaduca_soporte', '>=', date('Y-m-d'))
             ->first();
 
         if ($pc) {
