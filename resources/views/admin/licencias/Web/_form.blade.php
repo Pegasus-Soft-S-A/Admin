@@ -340,6 +340,7 @@
             $('#periodo3, #periodo4').removeClass("d-none");
         }
 
+        // Ajustar la función cambiarComboWeb para que respete los valores existentes en modo edición
         function cambiarComboWeb() {
             const producto = $('#producto').val();
             let periodo = $('#periodo').val();
@@ -376,43 +377,51 @@
                 }
             }
 
-            const configuraciones = obtenerConfiguraciones(producto, periodo);
-            // Si estamos editando y el producto cambió, actualizamos los módulos
+            // Determinar si debemos actualizar los módulos
             const debeActualizarModulos = esEdicion && producto != productoAnterior;
+
+            // Solo aplicar configuraciones predeterminadas cuando sea necesario
+            const configuraciones = obtenerConfiguraciones(producto, periodo);
             aplicarConfiguraciones(configuraciones, fecha, esEdicion, debeActualizarModulos);
         }
 
         function aplicarConfiguraciones(config, fecha, esEdicion, debeActualizarModulos) {
             if (config) {
-                $('#precio').val(config.precio);
-                $('#usuarios').val(config.usuarios);
-                $('#numeromoviles').val(config.moviles);
-
-                // Solo aplicar configuración del servidor en modo creación
-                if ("{{ $accion }}" == "Crear") {
-                    $('#sis_servidoresid').val(config.servidor);
-                }
-
-                // Actualizar módulos si:
-                // 1. Es una nueva licencia
-                // 2. Estamos editando y el producto cambió
-                if (!esEdicion || debeActualizarModulos) {
-                    $('#ecommerce').prop('checked', config.modulos[0]);
-                    $('#produccion').prop('checked', config.modulos[1]);
-                    $('#nomina').prop('checked', config.modulos[2]);
-                    $('#activos').prop('checked', config.modulos[3]);
-                    $('#restaurantes').prop('checked', config.modulos[4]);
-                    $('#talleres').prop('checked', config.modulos[5]);
-                    $('#garantias').prop('checked', config.modulos[6]);
-                }
-
-                // Calcular fecha de caducidad solo en creación
+                // Solo aplicar valores por defecto en modo creación
                 if (!esEdicion) {
+                    // Para nueva licencia, aplicar todos los valores predeterminados
+                    $('#precio').val(config.precio);
+                    $('#usuarios').val(config.usuarios);
+                    $('#numeromoviles').val(config.moviles);
+                    $('#numerosucursales').val(config.sucursales || 0);
+                    $('#empresas').val(config.empresas || 1);
+                    $('#sis_servidoresid').val(config.servidor);
+
+                    // Actualizar módulos para nueva licencia
+                    actualizarModulos(config.modulos);
+
+                    // Calcular fecha de caducidad
                     const fechaCaducidad = new Date(fecha);
                     fechaCaducidad.setMonth(fechaCaducidad.getMonth() + config.meses);
                     $('#fechacaduca').val(formatearFecha(fechaCaducidad));
+                } else if (debeActualizarModulos) {
+                    // En modo edición, solo actualizar módulos si cambia el producto
+                    // pero NUNCA los valores numéricos o configurables por el usuario
+                    actualizarModulos(config.modulos);
                 }
+                // En cualquier otro caso de edición, no hacemos nada para preservar los valores del usuario
             }
+        }
+
+        // Función auxiliar para actualizar los módulos
+        function actualizarModulos(modulos) {
+            $('#ecommerce').prop('checked', modulos[0]);
+            $('#produccion').prop('checked', modulos[1]);
+            $('#nomina').prop('checked', modulos[2]);
+            $('#activos').prop('checked', modulos[3]);
+            $('#restaurantes').prop('checked', modulos[4]);
+            $('#talleres').prop('checked', modulos[5]);
+            $('#garantias').prop('checked', modulos[6]);
         }
 
         function obtenerConfiguraciones(producto, periodo) {
