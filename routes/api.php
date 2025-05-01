@@ -31,6 +31,7 @@ Route::group(['middleware' => 'authAPILicencia'], function () {
     Route::post('/movil_versiones', [IdentificacionesController::class, 'movil_versiones'])->name('licencia.movil_versiones');
     Route::post('/update_versiones', [IdentificacionesController::class, 'update_versiones'])->name('licencia.update_versiones');
     Route::post('/jumilo', [IdentificacionesController::class, 'jumilo'])->name('licencia.jumilo');
+    Route::post('/actualizar_identificador', [IdentificacionesController::class, 'actualizar_identificador'])->name('licencia.actualizar_identificador');
 });
 
 Route::get('/datos_powerbi', [IdentificacionesController::class, 'datos_powerbi'])->name('licencia.datos_powerbi');

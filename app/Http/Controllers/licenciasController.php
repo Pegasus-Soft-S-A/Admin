@@ -255,7 +255,6 @@ class licenciasController extends Controller
         $request['modulonube'] = $request->modulonube == 'on' ? 1 : 0;
         $request['actulizaciones'] = $request->actulizaciones == 'on' ? 1 : 0;
         $request['plan_soporte'] = $request->plan_soporte == 'on' ? 1 : 0;
-        $request['ipservidorremoto'] = $request->ipservidorremoto == '' ? '' : $request->ipservidorremoto;
         $request['motivobloqueo'] = $request->motivobloqueo == '' ? '' : $request->motivobloqueo;
         $request['mensaje'] = $request->mensaje == '' ? '' : $request->mensaje;
         $request['observacion'] = $request->observacion == '' ? '' : $request->observacion;

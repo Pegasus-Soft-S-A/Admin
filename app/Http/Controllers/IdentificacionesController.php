@@ -1875,4 +1875,29 @@ class IdentificacionesController extends Controller
 
         return json_encode(DB::select($query));
     }
+
+    public function actualizar_identificador(Request $request)
+    {
+        $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
+
+        $licencia->identificador = $request->identificador;
+        $licencia->ipservidor = $request->ipservidor;
+
+        $servidor = Servidores::where('sis_servidoresid', 4)->first();
+        $urlLicencia = $servidor->dominio . '/registros/generador_licencia';
+
+        $urlLicencia = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+            ->withOptions(["verify" => false])
+            ->post($urlLicencia, $licencia->toArray())
+            ->json();
+
+        if ($licencia) {
+            $licencia->Identificador = $licencia->identificador;
+            $licencia->ipservidor = $licencia->ipservidor;
+            $licencia->key = $urlLicencia['licencia'];
+            $licencia->save();
+
+            return response()->json($urlLicencia['licencia']);
+        }
+    }
 }
