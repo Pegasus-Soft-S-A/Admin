@@ -1880,8 +1880,12 @@ class IdentificacionesController extends Controller
     {
         $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
 
-        $licencia->identificador = $request->identificador;
-        $licencia->ipservidor = $request->ipservidor;
+        $licencia->Identificador = $request->identificador;
+
+        // Solo actualiza ipservidor si se ha enviado en la solicitud
+        if ($request->has('ipservidor')) {
+            $licencia->ipservidor = $request->ipservidor;
+        }
 
         $servidor = Servidores::where('sis_servidoresid', 4)->first();
         $urlLicencia = $servidor->dominio . '/registros/generador_licencia';
@@ -1892,8 +1896,6 @@ class IdentificacionesController extends Controller
             ->json();
 
         if ($licencia) {
-            $licencia->Identificador = $licencia->identificador;
-            $licencia->ipservidor = $licencia->ipservidor;
             $licencia->key = $urlLicencia['licencia'];
             $licencia->save();
 
