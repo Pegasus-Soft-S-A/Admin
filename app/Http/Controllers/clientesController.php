@@ -212,49 +212,87 @@ class clientesController extends Controller
                 }
             }
 
+            $userTypes = [
+                'ADMIN' => 1,
+                'DISTRIBUIDOR' => 2,
+                'SOPORTE_DISTRIBUIDOR' => 3,
+                'VENTAS' => 4,
+                'MARKETING' => 5,
+                'VISOR' => 6,
+                'SOPORTE_MATRIZ' => 7,
+                'COMERCIAL' => 8
+            ];
+
+            $specialDistribuidores = [
+                'ALFA' => 1,
+                'MATRIZ' => 6,
+                'SIGMA' => 15,
+                'SOCIO' => 12
+            ];
+
+            // Define funciones auxiliares
+            $canEditClient = function ($userTipo, $userDistribuidorId, $clienteDistribuidorId, $clienteTipoLicencia) use ($userTypes, $specialDistribuidores) {
+                // Soporte Matriz puede editar licencias Web (tipo_licencia=1) 
+                // O licencias PC (tipo_licencia=2) que sean de SOCIO
+                if ($userTipo == $userTypes['SOPORTE_MATRIZ']) {
+                    if (
+                        $clienteTipoLicencia == 1 ||
+                        ($clienteTipoLicencia == 2 && $clienteDistribuidorId == $specialDistribuidores['SOCIO'])
+                    ) {
+                        return true;
+                    }
+                }
+
+                // Administradores y Comerciales siempre pueden editar
+                if (in_array($userTipo, [$userTypes['ADMIN'], $userTypes['COMERCIAL']])) {
+                    return true;
+                }
+
+                // Visores nunca pueden editar
+                if ($userTipo == $userTypes['VISOR']) {
+                    return false;
+                }
+
+                // Soporte Distribuidor con excepciones específicas
+                if ($userTipo == $userTypes['SOPORTE_DISTRIBUIDOR']) {
+                    if (($userDistribuidorId == $specialDistribuidores['ALFA'] &&
+                            $clienteDistribuidorId == $specialDistribuidores['SIGMA']) ||
+                        ($userDistribuidorId == $specialDistribuidores['MATRIZ'] &&
+                            $clienteDistribuidorId == $specialDistribuidores['SOCIO'])
+                    ) {
+                        return true;
+                    }
+                }
+
+                // Por defecto, un usuario puede editar clientes de su mismo distribuidor
+                return $userDistribuidorId == $clienteDistribuidorId;
+            };
+
+            $canViewSensitiveInfo = function ($userTipo, $userDistribuidorId, $clienteDistribuidorId) use ($userTypes) {
+                return in_array($userTipo, [$userTypes['VISOR'], $userTypes['ADMIN'], $userTypes['COMERCIAL']]) ||
+                    $userDistribuidorId == $clienteDistribuidorId;
+            };
+
             $datatable = DataTables::of($final)
                 ->editColumn('validado', function ($cliente) {
                     $checked = $cliente->validado == 1 ? 'checked' : '';
                     return '<label class="checkbox checkbox-single checkbox-primary mb-0"><input type="checkbox" class="checkable" ' . $checked . ' disabled><span></span></label>';
                 })
-                ->editColumn('identificacion', function ($cliente) {
+                ->editColumn('identificacion', function ($cliente) use ($canEditClient, $userTypes) {
                     $user = Auth::user();
-                    $userTipo = $user->tipo;
-                    $userDistribuidorId = $user->sis_distribuidoresid;
-                    $clienteDistribuidorId = $cliente->sis_distribuidoresid;
-
-                    // Si el usuario es tipo 7 (Soporte Matriz) y el cliente tiene tipo_licencia == 1 (Web), siempre mostrar el enlace
-                    if ($userTipo == 7 && $cliente->tipo_licencia == 1) {
+                    // Utilizamos la función para determinar si puede editar
+                    if ($canEditClient($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid, $cliente->tipo_licencia)) {
                         return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
                     }
-
-                    // Si el usuario es tipo 6 o no es distribuidor permitido
-                    if (
-                        $userTipo == 6 ||
-                        ($userTipo != 1 && $userTipo != 8 && $userDistribuidorId != $clienteDistribuidorId)
-                    ) {
-                        // Excepciones para el tipo 3
-                        if ($userTipo == 3) {
-                            if (($userDistribuidorId == 1 && $clienteDistribuidorId == 15) ||
-                                ($userDistribuidorId == 6 && $clienteDistribuidorId == 12)
-                            ) {
-                                // Mostrar el enlace para estas excepciones específicas
-                                return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
-                            }
-                        }
-
-                        // En caso contrario, simplemente muestra la identificación sin enlace
-                        return $cliente->identificacion;
-                    }
-
-                    // Mostrar el enlace de forma predeterminada para otros casos
-                    return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
+                    return $cliente->identificacion;
                 })
-
-                ->editColumn('action', function ($cliente) {
-                    if (Auth::user()->tipo != 6 && (Auth::user()->tipo == 1 || Auth::user()->tipo == 8 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid)) {
+                ->editColumn('action', function ($cliente) use ($canEditClient) {
+                    $user = Auth::user();
+                    // Utilizamos la función para determinar si puede editar
+                    if ($canEditClient($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid, $cliente->tipo_licencia)) {
                         return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" title="Editar"> <i class="la la-edit"></i> </a>';
                     }
+                    return '';
                 })
                 ->editColumn('sis_distribuidoresid', function ($cliente) use ($distribuidores) {
                     $posicion = array_search($cliente->sis_distribuidoresid, $distribuidores);
@@ -303,23 +341,23 @@ class clientesController extends Controller
 
                     return $licencia;
                 })
-                ->editColumn('telefono2', function ($cliente) {
-                    $telefono = "";
-                    if (Auth::user()->tipo == 6 || Auth::user()->tipo == 1 || Auth::user()->tipo == 8 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
-                        $telefono = $cliente->telefono2;
-                    } else {
-                        $telefono = "";
+                ->editColumn('telefono2', function ($cliente) use ($canViewSensitiveInfo) {
+                    $user = Auth::user();
+
+                    if ($canViewSensitiveInfo($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid)) {
+                        return $cliente->telefono2;
                     }
-                    return $telefono;
+
+                    return '';
                 })
-                ->editColumn('correos', function ($cliente) {
-                    $correos = "";
-                    if (Auth::user()->tipo == 6 || Auth::user()->tipo == 1 || Auth::user()->sis_distribuidoresid == $cliente->sis_distribuidoresid) {
-                        $correos = $cliente->correos;
-                    } else {
-                        $correos = "";
+                ->editColumn('correos', function ($cliente) use ($canViewSensitiveInfo) {
+                    $user = Auth::user();
+
+                    if ($canViewSensitiveInfo($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid)) {
+                        return $cliente->correos;
                     }
-                    return $correos;
+
+                    return '';
                 })
                 ->editColumn('producto', function ($cliente) {
                     $producto = "";

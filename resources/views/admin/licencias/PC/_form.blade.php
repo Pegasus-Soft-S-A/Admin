@@ -14,12 +14,6 @@
     $rol = Auth::user()->tipo;
     $accion = isset($licencia->sis_licenciasid) ? 'Modificar' : 'Crear';
 
-    // Definir constantes de roles
-    define('ROL_ADMIN', 1);
-    define('ROL_DISTRIBUIDOR', 2);
-    define('ROL_SOPORTE_DISTRIBUIDOR', 3);
-    define('ROL_SOPORTE_MATRIZ', 7);
-    define('ROL_VENTAS', 4);
 @endphp
 @if ($errors->has('correopropietario') || $errors->has('correoadministrador') || $errors->has('correocontador'))
     <div class="alert alert-custom alert-notice alert-light-danger fade show" role="alert">
@@ -969,7 +963,7 @@
 
             [ROLES.ROL_SOPORTE_MATRIZ]: {
                 todoElFormulario: false,
-                renovarLicencia: true,
+                renovarLicencia: false,
                 camposEditables: {
                     crear: [
                         'Identificador', 'ipservidor', 'ipservidorremoto', 'puertows',
@@ -979,7 +973,7 @@
                         'periodo',
                         'practico', 'control', 'contable', 'nube',
                     ],
-                    modificar: ['Identificador', 'ipservidor', 'ipservidorremoto', 'puertows']
+                    modificar: ['Identificador', 'ipservidor', 'ipservidorremoto', 'puerto', 'puertows']
                 }
             },
 
