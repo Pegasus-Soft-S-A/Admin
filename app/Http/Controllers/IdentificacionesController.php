@@ -1522,7 +1522,8 @@ class IdentificacionesController extends Controller
                 sis_licencias.modulopractico,
                 sis_licencias.modulocontrol,
                 sis_licencias.modulocontable,
-                sis_licencias.modulonube
+                sis_licencias.modulonube,
+                sis_licencias.numerocontrato
             FROM
                 sis_licencias
                 INNER JOIN sis_clientes ON sis_licencias.sis_clientesid = sis_clientes.sis_clientesid
@@ -1552,7 +1553,8 @@ class IdentificacionesController extends Controller
                 sis_licencias_web.modulopractico,
                 sis_licencias_web.modulocontrol,
                 sis_licencias_web.modulocontable,
-                 '' as modulonube
+                 '' as modulonube,
+                 sis_licencias_web.numerocontrato
             FROM
                 sis_clientes
                 INNER JOIN sis_licencias_web ON sis_licencias_web.sis_clientesid = sis_clientes.sis_clientesid
