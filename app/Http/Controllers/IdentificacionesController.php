@@ -1533,7 +1533,7 @@ class IdentificacionesController extends Controller
                 sis_licencias.periodo <> 3
                 AND DATEDIFF(
                     sis_licencias.fechacaduca,
-                NOW()) = 10 UNION
+                NOW()) = 5 UNION
             SELECT
                 sis_clientes.identificacion,
                 sis_clientes.nombres,
@@ -1564,7 +1564,7 @@ class IdentificacionesController extends Controller
             sis_licencias_web.periodo<>4 AND
                 DATEDIFF(
                     sis_licencias_web.fechacaduca,
-                NOW()) = 10
+                NOW()) = 5
             ) AS U";
         //Si el distribuidor es diferente de cero se agrega la condicion
         if ($distribuidor) {
