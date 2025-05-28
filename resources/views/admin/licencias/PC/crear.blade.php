@@ -6,6 +6,7 @@
     define('ROL_SOPORTE_DISTRIBUIDOR', 3);
     define('ROL_SOPORTE_MATRIZ', 7);
     define('ROL_VENTAS', 4);
+    define('ROL_POSVENTA', 9);
 @endphp
 @extends('admin.layouts.app')
 @section('contenido')
