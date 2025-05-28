@@ -220,7 +220,8 @@ class clientesController extends Controller
                 'MARKETING' => 5,
                 'VISOR' => 6,
                 'SOPORTE_MATRIZ' => 7,
-                'COMERCIAL' => 8
+                'COMERCIAL' => 8,
+                'POSVENTA' => 9
             ];
 
             $specialDistribuidores = [
@@ -244,7 +245,7 @@ class clientesController extends Controller
                 }
 
                 // Administradores y Comerciales siempre pueden editar
-                if (in_array($userTipo, [$userTypes['ADMIN'], $userTypes['COMERCIAL']])) {
+                if (in_array($userTipo, [$userTypes['ADMIN'], $userTypes['COMERCIAL'], $userTypes['POSVENTA']])) {
                     return true;
                 }
 
@@ -255,10 +256,8 @@ class clientesController extends Controller
 
                 // Soporte Distribuidor con excepciones específicas
                 if ($userTipo == $userTypes['SOPORTE_DISTRIBUIDOR']) {
-                    if (($userDistribuidorId == $specialDistribuidores['ALFA'] &&
-                            $clienteDistribuidorId == $specialDistribuidores['SIGMA']) ||
-                        ($userDistribuidorId == $specialDistribuidores['MATRIZ'] &&
-                            $clienteDistribuidorId == $specialDistribuidores['SOCIO'])
+                    if (($userDistribuidorId == $specialDistribuidores['ALFA'] && $clienteDistribuidorId == $specialDistribuidores['SIGMA']) ||
+                        ($userDistribuidorId == $specialDistribuidores['MATRIZ'] && $clienteDistribuidorId == $specialDistribuidores['SOCIO'])
                     ) {
                         return true;
                     }
@@ -269,7 +268,7 @@ class clientesController extends Controller
             };
 
             $canViewSensitiveInfo = function ($userTipo, $userDistribuidorId, $clienteDistribuidorId) use ($userTypes) {
-                return in_array($userTipo, [$userTypes['VISOR'], $userTypes['ADMIN'], $userTypes['COMERCIAL']]) ||
+                return in_array($userTipo, [$userTypes['VISOR'], $userTypes['ADMIN'], $userTypes['COMERCIAL'], $userTypes['POSVENTA']]) ||
                     $userDistribuidorId == $clienteDistribuidorId;
             };
 

@@ -6,9 +6,9 @@
     }
 </style>
 @php
-$rol = Auth::user()->tipo;
-$accion = isset($cliente->sis_clientesid) ? 'Modificar' : 'Crear';
-$grupos = App\Models\Grupos::get();
+    $rol = Auth::user()->tipo;
+    $accion = isset($cliente->sis_clientesid) ? 'Modificar' : 'Crear';
+    $grupos = App\Models\Grupos::get();
 
 @endphp
 @csrf
@@ -16,25 +16,23 @@ $grupos = App\Models\Grupos::get();
     <div class="col-lg-6">
         <label>Identificacion:</label>
         <div id="spinner">
-            <input type="text" class="form-control {{ $errors->has('identificacion') ? 'is-invalid' : '' }}"
-                placeholder="Ingrese identificacion" name="identificacion" autocomplete="off"
-                value="{{ old('identificacion', $cliente->identificacion) }}" id="identificacion"
-                onkeypress="return validarNumero(event)" @if ($rol !=1 && $accion=='Modificar' ) readonly @else
+            <input type="text" class="form-control {{ $errors->has('identificacion') ? 'is-invalid' : '' }}" placeholder="Ingrese identificacion"
+                name="identificacion" autocomplete="off" value="{{ old('identificacion', $cliente->identificacion) }}" id="identificacion"
+                onkeypress="return validarNumero(event)"
+                @if ($rol != 1 && $accion == 'Modificar') readonly @else
                 onblur="validarIdentificacion()" @endif />
         </div>
         <span class="text-danger d-none" id="mensajeBandera">La cédula o Ruc no es válido</span>
         @if ($errors->has('identificacion'))
-        <span class="text-danger">{{ $errors->first('identificacion') }}</span>
+            <span class="text-danger">{{ $errors->first('identificacion') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
         <label>Nombres:</label>
-        <input type="text" class="form-control {{ $errors->has('nombres') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Nombres" name="nombres" autocomplete="off"
-            value="{{ old('nombres', $cliente->nombres) }}" id="nombres" @if ($rol !=1 && $accion=='Modificar' )
-            readonly @endif />
+        <input type="text" class="form-control {{ $errors->has('nombres') ? 'is-invalid' : '' }}" placeholder="Ingrese Nombres" name="nombres"
+            autocomplete="off" value="{{ old('nombres', $cliente->nombres) }}" id="nombres" @if ($rol != 1 && $accion == 'Modificar') readonly @endif />
         @if ($errors->has('nombres'))
-        <span class="text-danger">{{ $errors->first('nombres') }}</span>
+            <span class="text-danger">{{ $errors->first('nombres') }}</span>
         @endif
     </div>
 </div>
@@ -42,21 +40,19 @@ $grupos = App\Models\Grupos::get();
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Dirección:</label>
-        <input type="text" class="form-control {{ $errors->has('direccion') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Dirección" name="direccion" autocomplete="off" id="direccion"
-            value="{{ old('direccion', $cliente->direccion) }}" @if ($rol !=1 && $accion=='Modificar' ) readonly
-            @endif />
+        <input type="text" class="form-control {{ $errors->has('direccion') ? 'is-invalid' : '' }}" placeholder="Ingrese Dirección"
+            name="direccion" autocomplete="off" id="direccion" value="{{ old('direccion', $cliente->direccion) }}"
+            @if ($rol != 1 && $accion == 'Modificar') readonly @endif />
         @if ($errors->has('direccion'))
-        <span class="text-danger">{{ $errors->first('direccion') }}</span>
+            <span class="text-danger">{{ $errors->first('direccion') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
         <label>Correo:</label>
-        <input class="form-control {{ $errors->has('correos') ? 'is-invalid' : '' }}" placeholder="Ingrese Correo"
-            name="correos" autocomplete="off" value="{{ old('correos', $cliente->correos) }}" id="correos" @if ($rol !=1
-            && $accion=='Modificar' ) readonly @endif />
+        <input class="form-control {{ $errors->has('correos') ? 'is-invalid' : '' }}" placeholder="Ingrese Correo" name="correos" autocomplete="off"
+            value="{{ old('correos', $cliente->correos) }}" id="correos" @if ($rol != 1 && $accion == 'Modificar') readonly @endif />
         @if ($errors->has('correos'))
-        <span class="text-danger">{{ $errors->first('correos') }}</span>
+            <span class="text-danger">{{ $errors->first('correos') }}</span>
         @endif
     </div>
 </div>
@@ -65,12 +61,12 @@ $grupos = App\Models\Grupos::get();
     <div class="col-lg-6">
         <label>Provincia:</label>
         <select class="form-control select2" name="provinciasid" id="provinciasid" onchange="cambiarCiudad(this);      "
-            @if ($rol !=1 && $accion=='Modificar' ) disabled @endif>
+            @if ($rol != 1 && $accion == 'Modificar') disabled @endif>
             <option value="">Seleccione una provincia</option>
             <option value="01" {{ $cliente->provinciasid == '01' ? 'Selected' : '' }}>
                 Azuay
             </option>
-            <option value="02" {{ $cliente->provinciasid== '02' ? 'Selected' : '' }}>
+            <option value="02" {{ $cliente->provinciasid == '02' ? 'Selected' : '' }}>
                 Bolivar
             </option>
             <option value="03" {{ $cliente->provinciasid == '03' ? 'Selected' : '' }}>
@@ -125,7 +121,7 @@ $grupos = App\Models\Grupos::get();
             <option value="24" {{ $cliente->provinciasid == '24' ? 'Selected' : '' }}>
                 Santa Elena
             </option>
-            <option value="23" {{ $cliente->provinciasid== '23' ? 'Selected' : '' }}>
+            <option value="23" {{ $cliente->provinciasid == '23' ? 'Selected' : '' }}>
                 Santo Domingo
                 De Los Tsachilas</option>
             <option value="21" {{ $cliente->provinciasid == '21' ? 'Selected' : '' }}>
@@ -139,7 +135,7 @@ $grupos = App\Models\Grupos::get();
                 Chinchipe</option>
         </select>
         @if ($errors->has('provinciasid'))
-        <span class="text-danger">{{ $errors->first('provinciasid') }}</span>
+            <span class="text-danger">{{ $errors->first('provinciasid') }}</span>
         @endif
     </div>
     <div class="col-lg-6">
@@ -150,7 +146,7 @@ $grupos = App\Models\Grupos::get();
         </select>
 
         @if ($errors->has('ciudadesid'))
-        <span class="text-danger">{{ $errors->first('ciudadesid') }}</span>
+            <span class="text-danger">{{ $errors->first('ciudadesid') }}</span>
         @endif
     </div>
 
@@ -161,89 +157,80 @@ $grupos = App\Models\Grupos::get();
         <select class="form-control select2" name="grupo" id="grupo">
             <option value="">Seleccione un Tipo de Negocio</option>
             @foreach ($grupos as $grupo)
-            <option value="{{ $grupo->gruposid }}" {{ old('grupo', $cliente->grupo) == $grupo->gruposid ? 'selected' :
-                '' }}>
-                {{ $grupo->descripcion }}</option>
+                <option value="{{ $grupo->gruposid }}" {{ old('grupo', $cliente->grupo) == $grupo->gruposid ? 'selected' : '' }}>
+                    {{ $grupo->descripcion }}</option>
             @endforeach
 
         </select>
         @if ($errors->has('grupo'))
-        <span class="text-danger">{{ $errors->first('grupo') }}</span>
+            <span class="text-danger">{{ $errors->first('grupo') }}</span>
         @endif
 
     </div>
     <div class="col-lg-3">
         <label>Convencional:</label>
-        <input type="text" class="form-control {{ $errors->has('telefono1') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Numero Convencional" name="telefono1" onkeypress="return validarNumero(event)"
-            autocomplete="off" value="{{ old('telefono1', $cliente->telefono1) }}" id="telefono1" @if ($rol !=1 && $rol
-            !=2 && $accion=='Modificar' ) readonly @endif />
+        <input type="text" class="form-control {{ $errors->has('telefono1') ? 'is-invalid' : '' }}" placeholder="Ingrese Numero Convencional"
+            name="telefono1" onkeypress="return validarNumero(event)" autocomplete="off" value="{{ old('telefono1', $cliente->telefono1) }}"
+            id="telefono1" @if ($rol != 1 && $rol != 2 && $accion == 'Modificar') readonly @endif />
         @if ($errors->has('telefono1'))
-        <span class="text-danger">{{ $errors->first('telefono1') }}</span>
+            <span class="text-danger">{{ $errors->first('telefono1') }}</span>
         @endif
     </div>
     <div class="col-lg-3">
         <label>Celular:</label>
-        <input type="text" class="form-control {{ $errors->has('telefono2') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Numero Celular" onkeypress="return validarNumero(event)" name="telefono2"
-            autocomplete="off" value="{{ old('telefono2', $cliente->telefono2) }}" id="telefono2" @if ($rol !=1 && $rol
-            !=2 && $accion=='Modificar' ) readonly @endif />
+        <input type="text" class="form-control {{ $errors->has('telefono2') ? 'is-invalid' : '' }}" placeholder="Ingrese Numero Celular"
+            onkeypress="return validarNumero(event)" name="telefono2" autocomplete="off" value="{{ old('telefono2', $cliente->telefono2) }}"
+            id="telefono2" @if ($rol != 1 && $rol != 2 && $accion == 'Modificar') readonly @endif />
         @if ($errors->has('telefono2'))
-        <span class="text-danger">{{ $errors->first('telefono2') }}</span>
+            <span class="text-danger">{{ $errors->first('telefono2') }}</span>
         @endif
     </div>
 </div>
 <div class="form-group row">
     <div class="col-lg-3">
         <label>Distribuidor:</label>
-        <select class="form-control select2 @if ($rol != 1 && $accion == 'Modificar') disabled @endif"
-            name="sis_distribuidoresid" id="distribuidor" @if ($rol !=1 && $accion=='Modificar' ) disabled @endif>
+        <select class="form-control select2 @if ($rol != 1 && $accion == 'Modificar') disabled @endif" name="sis_distribuidoresid" id="distribuidor"
+            @if ($rol != 1 && $accion == 'Modificar') disabled @endif>
             <option value="">Seleccione un distribuidor</option>
             @foreach ($distribuidores as $distribuidor)
-            <option value="{{ $distribuidor->sis_distribuidoresid }}" {{ $distribuidor->sis_distribuidoresid==
-                $cliente->sis_distribuidoresid
-                ? 'Selected'
-                : '' }}>
-                {{ $distribuidor->razonsocial }}</option>
+                <option value="{{ $distribuidor->sis_distribuidoresid }}"
+                    {{ $distribuidor->sis_distribuidoresid == $cliente->sis_distribuidoresid ? 'Selected' : '' }}>
+                    {{ $distribuidor->razonsocial }}</option>
             @endforeach
         </select>
         @if ($errors->has('sis_distribuidoresid'))
-        <span class="text-danger">{{ $errors->first('sis_distribuidoresid') }}</span>
+            <span class="text-danger">{{ $errors->first('sis_distribuidoresid') }}</span>
         @endif
     </div>
     <div class="col-lg-3">
         <label>Vendedor:</label>
-        <select class="form-control select2" name="sis_vendedoresid" id="vendedor" @if ($rol !=1 && $rol !=2 &&
-            $accion=='Modificar' ) disabled @endif>
+        <select class="form-control select2" name="sis_vendedoresid" id="vendedor" @if ($rol != 1 && $rol != 2 && $accion == 'Modificar') disabled @endif>
             <option value="">Seleccione un Vendedor</option>
         </select>
         @if ($errors->has('sis_vendedoresid'))
-        <span class="text-danger">{{ $errors->first('sis_vendedoresid') }}</span>
+            <span class="text-danger">{{ $errors->first('sis_vendedoresid') }}</span>
         @endif
     </div>
     <div class="col-lg-3">
         <label>Revendedor:</label>
-        <select class="form-control select2" name="sis_revendedoresid" id="revendedor" @if ($rol !=1 && $rol !=2 &&
-            $accion=='Modificar' ) disabled @endif>
+        <select class="form-control select2" name="sis_revendedoresid" id="revendedor" @if ($rol != 1 && $rol != 2 && $accion == 'Modificar') disabled @endif>
             <option value="">Seleccione un Revendedor</option>
         </select>
         @if ($errors->has('sis_revendedoresid'))
-        <span class="text-danger">{{ $errors->first('sis_revendedoresid') }}</span>
+            <span class="text-danger">{{ $errors->first('sis_revendedoresid') }}</span>
         @endif
     </div>
     <div class="col-lg-3">
         <label>Origen:</label>
         <select class="form-control select2" id="red_origen" name="red_origen">
             @foreach ($links as $link)
-            <option value="{{ $link->sis_linksid }}" {{ $link->sis_linksid==
-                $cliente->red_origen
-                ? 'Selected'
-                : '' }}>
-                {{ $link->codigo }}</option>
+                <option value="{{ $link->sis_linksid }}"
+                    {{ $link->sis_linksid == $cliente->red_origen ? 'Selected' : '' }}>
+                    {{ $link->codigo }}</option>
             @endforeach
         </select>
         @if ($errors->has('red_origen'))
-        <span class="text-danger">{{ $errors->first('red_origen') }}</span>
+            <span class="text-danger">{{ $errors->first('red_origen') }}</span>
         @endif
     </div>
 </div>

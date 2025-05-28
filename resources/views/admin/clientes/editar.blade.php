@@ -42,14 +42,11 @@
                                                         title="Eliminar"> <i class="la la-trash"></i>
                                                     </a>
                                                 @endif
-                                                @if (Auth::user()->tipo == ROL_ADMIN || Auth::user()->tipo == ROL_DISTRIBUIDOR)
+                                                @if (Auth::user()->puedeGuardarClientes())
                                                     <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip" title="Guardar"><i
                                                             class="la la-save"></i></button>
                                                 @endif
-                                                @if (Auth::user()->tipo != ROL_VENTAS &&
-                                                        Auth::user()->tipo != ROL_VISOR &&
-                                                        Auth::user()->tipo != ROL_COMERCIAL &&
-                                                        Auth::user()->tipo != ROL_SOPORTE_MATRIZ)
+                                                @if (Auth::user()->puedeCrearClientes())
                                                     <a href="{{ route('clientes.crear') }}" class="btn btn-warning btn-icon" data-toggle="tooltip"
                                                         title="Nuevo"><i class="la la-user-plus"></i></a>
                                                 @endif
@@ -96,15 +93,15 @@
                                 <div class="card-toolbar">
                                     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="">
                                         <div class="btn-group" role="group" aria-label="First group">
-                                            @if (Auth::user()->tipo == ROL_ADMIN || Auth::user()->tipo == ROL_DISTRIBUIDOR)
+                                            @if (Auth::user()->puedeCrearWeb())
                                                 <a href="{{ route('licencias.Web.crear', $cliente->sis_clientesid) }}" class="btn btn-primary btn-icon"
                                                     data-toggle="tooltip" title="Nuevo Web"><i class="la la-cloud"></i></a>
                                             @endif
-                                            @if (Auth::user()->tipo != ROL_VENTAS && Auth::user()->tipo != 6 && Auth::user()->tipo != 8 && Auth::user()->tipo != ROL_SOPORTE_MATRIZ)
+                                            @if (Auth::user()->puedeCrearPc())
                                                 <a href="{{ route('licencias.Pc.crear', $cliente->sis_clientesid) }}" class="btn btn-warning btn-icon"
                                                     data-toggle="tooltip" title="Nuevo PC"><i class="la la-tv"></i></a>
                                             @endif
-                                            @if (Auth::user()->tipo == ROL_ADMIN || Auth::user()->tipo == ROL_DISTRIBUIDOR)
+                                            @if (Auth::user()->puedeCrearVps())
                                                 <a href="{{ route('licencias.Vps.crear', $cliente->sis_clientesid) }}" class="btn btn-secondary btn-icon"
                                                     data-toggle="tooltip" title="Nuevo VPS"><i class="la la-cloud"></i></a>
                                             @endif

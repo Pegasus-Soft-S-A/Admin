@@ -32,4 +32,40 @@ class User extends Authenticatable
     {
         return 'nombres';
     }
+
+    public function puedeCrearClientes()
+    {
+        $permitidos = config('tipos_usuario.permisos.crear_clientes', []);
+        return in_array($this->tipo, $permitidos);
+    }
+
+    public function puedeGuardarClientes()
+    {
+        $permitidos = config('tipos_usuario.permisos.guardar_clientes', []);
+        return in_array($this->tipo, $permitidos);
+    }
+
+    public function puedeCrearWeb()
+    {
+        $permitidos = config('tipos_usuario.permisos.crear_web', []);
+        return in_array($this->tipo, $permitidos);
+    }
+
+    public function puedeResetearClaveWeb()
+    {
+        $permitidos = config('tipos_usuario.permisos.resetear_clave_web', []);
+        return in_array($this->tipo, $permitidos);
+    }
+
+    public function puedeCrearPc()
+    {
+        $permitidos = config('tipos_usuario.permisos.crear_pc', []);
+        return in_array($this->tipo, $permitidos);
+    }
+
+    public function puedeCrearVps()
+    {
+        $permitidos = config('tipos_usuario.permisos.crear_vps', []);
+        return in_array($this->tipo, $permitidos);
+    }
 }

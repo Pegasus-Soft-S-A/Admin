@@ -90,7 +90,7 @@
                                         <!--end::Dropdown Menu-->
                                     </div>
 
-                                    @if (Auth::user()->tipo != 4 && Auth::user()->tipo != 6 && Auth::user()->tipo != 8)
+                                    @if (Auth::user()->puedeCrearClientes())
                                         <a href="{{ route('clientes.crear') }}" class="btn btn-primary font-weight-bolder">
                                             <span class="svg-icon svg-icon-md">
                                                 <i class="flaticon2-plus-1"></i>

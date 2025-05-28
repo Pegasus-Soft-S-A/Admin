@@ -63,6 +63,9 @@ class usuariosController extends Controller
                         case '8':
                             $tipo = "Comercial";
                             break;
+                        case '9':
+                            $tipo = "Posventa";
+                            break;
                     }
                     return $tipo;
                 })

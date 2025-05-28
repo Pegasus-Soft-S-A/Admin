@@ -18,7 +18,7 @@
         'editar_campos_numericos' => $rol == 1, // Solo admin puede editar valores numéricos
         'editar_fechas' => $rol == 1, // Solo admin puede editar fechas
         'editar_modulos' => $rol == 1, // Solo admin puede editar módulos
-        'mostrar_renovar' => $rol == 1 || $rol == 2, // Ciertos roles no pueden renovar
+        'mostrar_renovar' => $rol == 1 || $rol == 2 || $rol == 9, // Ciertos roles no pueden renovar
     ];
 
 @endphp

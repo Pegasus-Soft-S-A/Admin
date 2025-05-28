@@ -918,6 +918,7 @@
             ROL_SOPORTE_DISTRIBUIDOR: {{ ROL_SOPORTE_DISTRIBUIDOR }},
             ROL_SOPORTE_MATRIZ: {{ ROL_SOPORTE_MATRIZ }},
             ROL_VENTAS: {{ ROL_VENTAS }},
+            ROL_POSVENTA: {{ ROL_POSVENTA }},
         };
 
         // Definir permisos simplificados por rol
@@ -980,7 +981,11 @@
             [ROLES.ROL_VENTAS]: {
                 todoElFormulario: false,
                 renovarLicencia: false,
+            },
 
+            [ROLES.ROL_POSVENTA]: {
+                todoElFormulario: false,
+                renovarLicencia: true,
             },
         };
 

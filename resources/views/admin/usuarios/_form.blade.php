@@ -106,6 +106,9 @@
             <option value="8" {{ old('tipo', $usuarios->tipo) == '8' ? 'Selected' : '' }}>
                 Comercial
             </option>
+            <option value="9" {{ old('tipo', $usuarios->tipo) == '9' ? 'Selected' : '' }}>
+                Posventa
+            </option>
         </select>
         @if ($errors->has('tipo'))
             <span class="text-danger">{{ $errors->first('tipo') }}</span>
