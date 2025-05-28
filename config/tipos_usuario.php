@@ -1,5 +1,4 @@
-<?php
-// config/tipos_usuario.php
+<?php // config/tipos_usuario.php
 return [
     'tipos' => [
         1 => 'Admin',
@@ -14,11 +13,23 @@ return [
     ],
 
     'permisos' => [
-        'crear_clientes' => [1, 2, 3],
-        'guardar_clientes' => [1, 2],
-        'crear_web' => [1, 2],
-        'resetear_clave_web' => [1, 2, 3, 5, 6, 7],
-        'crear_pc' => [1, 2, 3],
-        'crear_vps' => [1, 2]
+
+        'clientes' => [
+            'crear_clientes' => [1, 2, 3],
+            'guardar_clientes' => [1, 2],
+        ],
+
+        'web' => [
+            'crear_web' => [1, 2],
+            'resetear_clave_web' => [1, 2, 3, 5, 6, 7],
+        ],
+
+        'pc' => [
+            'crear_pc' => [1, 2, 3],
+        ],
+
+        'vps' => [
+            'crear_vps' => [1, 2,],
+        ],
     ]
 ];

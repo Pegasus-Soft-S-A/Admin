@@ -20,12 +20,13 @@
                                                 <a href="{{ route('clientes.editar', $cliente->sis_clientesid) }}" class="btn btn-secondary btn-icon"
                                                     data-toggle="tooltip" title="Volver"><i class="la la-long-arrow-left"></i></a>
 
-                                                @if (Auth::user()->puedeCrearVps())
+                                                @if (puede('vps', 'crear_vps'))
                                                     <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip" title="Guardar"><i
                                                             class="la la-save"></i></button>
 
-                                                    <a href="{{ route('licencias.Vps.crear', $cliente->sis_clientesid) }}" class="btn btn-warning btn-icon"
-                                                        data-toggle="tooltip" title="Nuevo"><i class="la la-user-plus"></i></a>
+                                                    <a href="{{ route('licencias.Vps.crear', $cliente->sis_clientesid) }}"
+                                                        class="btn btn-warning btn-icon" data-toggle="tooltip" title="Nuevo"><i
+                                                            class="la la-user-plus"></i></a>
                                                 @endif
                                             </div>
                                         </div>

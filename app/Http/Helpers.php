@@ -29,3 +29,17 @@ if (!function_exists('encrypt_openssl')) {
         return base64_encode($encryptedMessage);
     }
 }
+
+if (!function_exists('puede')) {
+    function puede($categoria, $permiso, $usuario = null)
+    {
+        $usuario = $usuario ?: auth()->user();
+
+        if (!$usuario) {
+            return false;
+        }
+
+        $permisos = config("tipos_usuario.permisos.{$categoria}.{$permiso}", []);
+        return in_array($usuario->tipo, $permisos);
+    }
+}

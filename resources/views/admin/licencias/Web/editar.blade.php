@@ -21,7 +21,7 @@
                                                 <a href="{{ route('clientes.editar', $cliente->sis_clientesid) }}" class="btn btn-secondary btn-icon"
                                                     data-toggle="tooltip" title="Volver"><i class="la la-long-arrow-left"></i></a>
 
-                                                @if (Auth::user()->puedeCrearWeb())
+                                                @if (puede('web', 'crear_web'))
                                                     <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip" title="Guardar"><i
                                                             class="la la-save"></i></button>
 
@@ -40,7 +40,7 @@
                                                         title="Recargar 240 Documentos"><i class="la la-file-medical"></i></a>
                                                 @endif
 
-                                                @if (Auth::user()->puedeResetearClaveWeb())
+                                                @if (puede('web', 'resetear_clave_web'))
                                                     <a href="{{ route('licencias.Web.enviaremail', [$cliente->sis_clientesid, $licencia->producto]) }}"
                                                         class="btn btn-primary btn-icon" data-toggle="tooltip" title="Enviar Email"><i
                                                             class="socicon-mail"></i></a>

@@ -42,11 +42,11 @@
                                                         title="Eliminar"> <i class="la la-trash"></i>
                                                     </a>
                                                 @endif
-                                                @if (Auth::user()->puedeGuardarClientes())
+                                                @if (puede('clientes', 'guardar_clientes'))
                                                     <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip" title="Guardar"><i
                                                             class="la la-save"></i></button>
                                                 @endif
-                                                @if (Auth::user()->puedeCrearClientes())
+                                                @if (puede('pc', 'crear_pc'))
                                                     <a href="{{ route('clientes.crear') }}" class="btn btn-warning btn-icon" data-toggle="tooltip"
                                                         title="Nuevo"><i class="la la-user-plus"></i></a>
                                                 @endif
@@ -93,15 +93,15 @@
                                 <div class="card-toolbar">
                                     <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="">
                                         <div class="btn-group" role="group" aria-label="First group">
-                                            @if (Auth::user()->puedeCrearWeb())
+                                            @if (puede('web', 'crear_web'))
                                                 <a href="{{ route('licencias.Web.crear', $cliente->sis_clientesid) }}" class="btn btn-primary btn-icon"
                                                     data-toggle="tooltip" title="Nuevo Web"><i class="la la-cloud"></i></a>
                                             @endif
-                                            @if (Auth::user()->puedeCrearPc())
+                                            @if (puede('pc', 'crear_pc'))
                                                 <a href="{{ route('licencias.Pc.crear', $cliente->sis_clientesid) }}" class="btn btn-warning btn-icon"
                                                     data-toggle="tooltip" title="Nuevo PC"><i class="la la-tv"></i></a>
                                             @endif
-                                            @if (Auth::user()->puedeCrearVps())
+                                            @if (puede('vps', 'crear_vps'))
                                                 <a href="{{ route('licencias.Vps.crear', $cliente->sis_clientesid) }}" class="btn btn-secondary btn-icon"
                                                     data-toggle="tooltip" title="Nuevo VPS"><i class="la la-cloud"></i></a>
                                             @endif

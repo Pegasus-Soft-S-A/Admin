@@ -90,7 +90,7 @@
                                         <!--end::Dropdown Menu-->
                                     </div>
 
-                                    @if (Auth::user()->puedeCrearClientes())
+                                    @if (puede('clientes', 'crear_clientes'))
                                         <a href="{{ route('clientes.crear') }}" class="btn btn-primary font-weight-bolder">
                                             <span class="svg-icon svg-icon-md">
                                                 <i class="flaticon2-plus-1"></i>
