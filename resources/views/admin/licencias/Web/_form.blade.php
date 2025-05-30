@@ -276,7 +276,7 @@
             $('#precio').val('11.69');
             $('#usuarios').val('6');
             $('#numeromoviles').val('1');
-            $('#sis_servidoresid').val('4');
+            $('#sis_servidoresid').val('3');
             $('#ecommerce').prop('checked', false);
             $('#produccion').prop('checked', true);
             $('#nomina').prop('checked', false);
@@ -430,7 +430,7 @@
                     precio: periodo == 1 ? '11.69' : '113.09',
                     usuarios: 6,
                     moviles: 1,
-                    servidor: 4,
+                    servidor: 3,
                     modulos: [true, true, false, false, true, false, false],
                     meses: periodo == 1 ? 1 : 12
                 },
@@ -438,7 +438,7 @@
                     precio: periodo == 1 ? '19.49' : '202.79',
                     usuarios: 6,
                     moviles: 0,
-                    servidor: 4,
+                    servidor: 3,
                     modulos: [false, false, true, true, false, false, false],
                     meses: periodo == 1 ? 1 : 12
                 },
@@ -446,7 +446,7 @@
                     precio: periodo == 1 ? '27.29' : '280.79',
                     usuarios: 6,
                     moviles: 2,
-                    servidor: 4,
+                    servidor: 3,
                     modulos: [true, true, true, periodo == 2, false, true, true],
                     meses: periodo == 1 ? 1 : 12
                 },
@@ -454,7 +454,7 @@
                     precio: periodo == 1 ? '15.59' : '140.39',
                     usuarios: 6,
                     moviles: 0,
-                    servidor: 4,
+                    servidor: 3,
                     modulos: [true, true, true, true, true, false, false],
                     meses: periodo == 1 ? 1 : 12
                 },
@@ -470,7 +470,7 @@
                     precio: periodo == 1 ? '11.69' : '116.99',
                     usuarios: 6,
                     moviles: 0,
-                    servidor: 4,
+                    servidor: 3,
                     modulos: [false, false, false, false, false, false, false],
                     meses: periodo == 1 ? 1 : 12
                 },
@@ -486,7 +486,7 @@
                     precio: '24.50',
                     usuarios: 6,
                     moviles: 0,
-                    servidor: 4,
+                    servidor: 3,
                     modulos: [false, false, false, false, false, false, false],
                     meses: 12
                 },
@@ -494,7 +494,7 @@
                     precio: periodo == 1 ? '6.49' : '77.94',
                     usuarios: 1,
                     moviles: 1,
-                    servidor: 4,
+                    servidor: 3,
                     modulos: [true, true, true, true, true, true, true],
                     meses: periodo == 1 ? 1 : 12
                 },
