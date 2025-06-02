@@ -22,20 +22,39 @@ class licenciasController extends Controller
 
     public function index(Request $request, Clientes $cliente)
     {
-
         if ($request->ajax()) {
-
             $servidores = Servidores::where('estado', 1)->get();
             $web = [];
 
-            foreach ($servidores as  $servidor) {
-                $url = $servidor->dominio . '/registros/consulta_licencia';
-                $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
-                    ->json();
-                if (isset($resultado['licencias'])) {
-                    $web = array_merge($web, $resultado['licencias']);
+            foreach ($servidores as $servidor) {
+                try {
+                    $url = $servidor->dominio . '/registros/consulta_licencia';
+
+                    // Configurar timeout más corto para evitar esperas largas
+                    $response = Http::withHeaders([
+                        'Content-Type' => 'application/json; charset=UTF-8',
+                        'verify' => false,
+                    ])
+                        ->withOptions([
+                            "verify" => false,
+                            "timeout" => 10, // 10 segundos de timeout
+                            "connect_timeout" => 5 // 5 segundos para conectar
+                        ])
+                        ->post($url, ['sis_clientesid' => $cliente->sis_clientesid]);
+
+                    // Verificar si la respuesta fue exitosa
+                    if ($response->successful()) {
+                        $resultado = $response->json();
+                        if (isset($resultado['licencias'])) {
+                            $web = array_merge($web, $resultado['licencias']);
+                        }
+                    }
+                } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                    continue; // Continúa con el siguiente servidor
+                } catch (\Illuminate\Http\Client\RequestException $e) {
+                    continue;
+                } catch (\Exception $e) {
+                    continue;
                 }
             }
 
@@ -50,11 +69,10 @@ class licenciasController extends Controller
             if ($web) {
                 $unir = array_merge($web, $data->toArray(), $data2->toArray());
             } else {
-                $unir =  array_merge($data->toArray(), $data2->toArray());
+                $unir = array_merge($data->toArray(), $data2->toArray());
             }
 
             return DataTables::of($unir)
-
                 ->editColumn('numerocontrato', function ($data) {
                     switch ($data['tipo_licencia']) {
                         case '1':
