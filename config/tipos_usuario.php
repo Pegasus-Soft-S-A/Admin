@@ -16,7 +16,7 @@ return [
 
         'clientes' => [
             'crear_clientes' => [1, 2, 3],
-            'guardar_clientes' => [1, 2, 7],
+            'guardar_clientes' => [1, 2],
         ],
 
         'web' => [
@@ -25,7 +25,7 @@ return [
         ],
 
         'pc' => [
-            'crear_pc' => [1, 2, 3],
+            'crear_pc' => [1, 2, 3, 7],
         ],
 
         'vps' => [
