@@ -25,7 +25,8 @@ return [
         ],
 
         'pc' => [
-            'crear_pc' => [1, 2, 3, 7],
+            'crear_pc' => [1, 2, 3],
+            'guardar_pc' => [1, 2, 3, 7],
         ],
 
         'vps' => [

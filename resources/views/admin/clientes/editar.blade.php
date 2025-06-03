@@ -46,7 +46,7 @@
                                                     <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip" title="Guardar"><i
                                                             class="la la-save"></i></button>
                                                 @endif
-                                                @if (puede('pc', 'crear_pc'))
+                                                @if (puede('clientes', 'crear_clientes'))
                                                     <a href="{{ route('clientes.crear') }}" class="btn btn-warning btn-icon" data-toggle="tooltip"
                                                         title="Nuevo"><i class="la la-user-plus"></i></a>
                                                 @endif
