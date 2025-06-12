@@ -1904,4 +1904,18 @@ class IdentificacionesController extends Controller
             return response()->json($urlLicencia['licencia']);
         }
     }
+
+    public function consulta_clientes(Request $request)
+    {
+        $clientes = Clientes::where('sis_clientesid', $request->sis_clientesid)
+            ->select('sis_clientes.sis_clientesid', 'sis_clientes.identificacion', 'sis_clientes.nombres',  'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_distribuidores.razonsocial as distribuidor')
+            ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
+            ->first();
+
+        if (!$clientes) {
+            return response()->json(['error' => 'Cliente no encontrado'], 404);
+        }
+
+        return response()->json($clientes);
+    }
 }

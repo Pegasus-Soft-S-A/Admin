@@ -6,21 +6,9 @@
     }
 </style>
 @php
-    $rol = Auth::user()->tipo;
     $accion = isset($licencia->sis_licenciasid) ? 'Modificar' : 'Crear';
     $servidoresid = isset($licencia->sis_licenciasid) ? $licencia->sis_servidoresid : 0;
     $licenciasid = isset($licencia->sis_licenciasid) ? $licencia->sis_licenciasid : 0;
-
-    // Centralizamos la lógica de permisos basada en roles
-    $permisos = [
-        'editar_producto' => $rol == 1, // Solo admin (rol 1) puede editar producto en modo modificación
-        'editar_periodo' => $rol == 1 || $accion == 'Crear', // Todos pueden editar periodo en creación
-        'editar_campos_numericos' => $rol == 1, // Solo admin puede editar valores numéricos
-        'editar_fechas' => $rol == 1, // Solo admin puede editar fechas
-        'editar_modulos' => $rol == 1, // Solo admin puede editar módulos
-        'mostrar_renovar' => $rol == 1 || $rol == 2 || $rol == 9, // Ciertos roles no pueden renovar
-    ];
-
 @endphp
 @csrf
 <div class="form-group row">
@@ -37,7 +25,8 @@
     </div>
     <div class="col-lg-6">
         <label>Producto:</label>
-        <select class="form-control {{ !$permisos['editar_producto'] && $accion == 'Modificar' ? 'disabled' : '' }}" name="producto" id="producto">
+        <select class="form-control {{ !puede('web', 'editar_producto_modificar') && $accion == 'Modificar' ? 'disabled' : '' }}" name="producto"
+            id="producto">
             @if ($accion == 'Modificar' && $licencia->producto == '12')
                 <option value="12" {{ old('producto', $licencia->producto) == '12' ? 'Selected' : '' }}>Facturito</option>
             @else
@@ -68,7 +57,8 @@
     <div class="col-lg-6">
         <label>Periodo:</label>
         <div class="input-group">
-            <select class="form-control {{ !$permisos['editar_periodo'] ? 'disabled' : '' }}" name="periodo" id="periodo">
+            <select class="form-control {{ !puede('web', 'editar_periodo_' . strtolower($accion)) ? 'disabled' : '' }}" name="periodo"
+                id="periodo">
                 <option id="periodo1" value="1" {{ old('periodo', $licencia->periodo) == '1' ? 'Selected' : '' }}>Mensual</option>
                 <option id="periodo2" value="2" {{ old('periodo', $licencia->periodo) == '2' ? 'Selected' : '' }}>Anual</option>
                 <option id="periodo3" value="3" {{ old('periodo', $licencia->periodo) == '3' ? 'Selected' : '' }}>Premium</option>
@@ -77,7 +67,7 @@
             @if (isset($licencia->sis_licenciasid) && $licencia->producto != 6 && $licencia->producto != 9)
                 <div class="input-group-append">
                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                        {{ !$permisos['mostrar_renovar'] ? 'disabled' : '' }}>
+                        {{ !puede('web', 'mostrar_renovar') ? 'disabled' : '' }}>
                         Renovar
                     </button>
                     <div class="dropdown-menu">
@@ -93,7 +83,7 @@
     <div class="col-lg-6">
         <label>Precio:</label>
         <input type="text"
-            class="form-control {{ !$permisos['editar_campos_numericos'] ? 'disabled' : '' }} 
+            class="form-control {{ !puede('web', 'editar_campos_numericos') ? 'disabled' : '' }} 
                 {{ $errors->has('precio') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Precio" id="precio" name="precio" autocomplete="off" value="{{ old('precio', $licencia->precio) }}" />
         @if ($errors->has('precio'))
@@ -105,7 +95,7 @@
     <div class="col-lg-6">
         <label>Fecha Inicia:</label>
         <input type="text"
-            class="form-control {{ !$permisos['editar_fechas'] ? 'disabled' : '' }} 
+            class="form-control {{ !puede('web', 'editar_fechas') ? 'disabled' : '' }} 
                 {{ $errors->has('fechainicia') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Fecha Inicio" name="fechainicia" id="fechainicia" autocomplete="off"
             value="{{ old('fechainicia', $licencia->fechainicia) }}" />
@@ -116,7 +106,7 @@
     <div class="col-lg-6">
         <label>Fecha Caduca:</label>
         <input type="text"
-            class="form-control {{ !$permisos['editar_fechas'] ? 'disabled' : '' }} 
+            class="form-control {{ !puede('web', 'editar_fechas') ? 'disabled' : '' }} 
                 {{ $errors->has('fechacaduca') ? 'is-invalid' : '' }}"
             placeholder="Ingrese Fecha Caducidad" name="fechacaduca" id="fechacaduca" autocomplete="off"
             value="{{ old('fechacaduca', $licencia->fechacaduca) }}" />
@@ -129,7 +119,7 @@
     <div class="col-lg-6">
         <label>N° Empresas:</label>
         <input type="text"
-            class="form-control {{ !$permisos['editar_campos_numericos'] ? 'disabled' : '' }} 
+            class="form-control {{ !puede('web', 'editar_campos_numericos') ? 'disabled' : '' }} 
                 {{ $errors->has('empresas') ? 'is-invalid' : '' }}"
             placeholder="N° Empresas" name="empresas" autocomplete="off" id="empresas" value="{{ old('empresas', $licencia->empresas) }}" />
         @if ($errors->has('empresas'))
@@ -139,7 +129,7 @@
     <div class="col-lg-6">
         <label>N° Usuarios:</label>
         <input type="text"
-            class="form-control {{ !$permisos['editar_campos_numericos'] ? 'disabled' : '' }} 
+            class="form-control {{ !puede('web', 'editar_campos_numericos') ? 'disabled' : '' }} 
                 {{ $errors->has('usuarios') ? 'is-invalid' : '' }}"
             placeholder="N° Usuarios" name="usuarios" autocomplete="off" id="usuarios" value="{{ old('usuarios', $licencia->usuarios) }}" />
         @if ($errors->has('usuarios'))
@@ -151,7 +141,7 @@
     <div class="col-lg-6">
         <label>N° Móviles:</label>
         <input type="text"
-            class="form-control {{ !$permisos['editar_campos_numericos'] ? 'disabled' : '' }} 
+            class="form-control {{ !puede('web', 'editar_campos_numericos') ? 'disabled' : '' }} 
                 {{ $errors->has('numeromoviles') ? 'is-invalid' : '' }}"
             placeholder="N° Móviles" name="numeromoviles" autocomplete="off" id="numeromoviles"
             value="{{ old('numeromoviles', $licencia->numeromoviles) }}" />
@@ -162,7 +152,7 @@
     <div class="col-lg-6">
         <label>N° Sucursales:</label>
         <input type="text"
-            class="form-control {{ !$permisos['editar_campos_numericos'] ? 'disabled' : '' }} 
+            class="form-control {{ !puede('web', 'editar_campos_numericos') ? 'disabled' : '' }} 
                 {{ $errors->has('numerosucursales') ? 'is-invalid' : '' }}"
             placeholder="N° Sucursales" name="numerosucursales" autocomplete="off" id="numerosucursales"
             value="{{ old('numerosucursales', $licencia->numerosucursales) }}" />
@@ -189,7 +179,7 @@
     <div class="col-lg-6">
         <label>Agrupados:</label>
         <select class="form-control select2" name="sis_agrupadosid" id="sis_agrupadosid"
-            {{ !$permisos['editar_campos_numericos'] ? 'disabled' : '' }}>
+            {{ !puede('web', 'editar_agrupados') ? 'disabled' : '' }}>
             <option value="0">Sin grupo</option>
             @foreach ($agrupados as $agrupado)
                 <option value="{{ $agrupado->sis_agrupadosid }}" {{ $agrupado->sis_agrupadosid == $licencia->sis_agrupadosid ? 'selected' : '' }}>
@@ -224,7 +214,7 @@
                 <span class="switch switch-outline switch-icon switch-primary switch-sm">
                     <label>
                         <input @if ($modulo['value'] == 1) checked="checked" @endif type="checkbox" name="{{ $modulo['name'] }}"
-                            id="{{ $modulo['name'] }}" @if (!$permisos['editar_modulos']) class="deshabilitar" @endif />
+                            id="{{ $modulo['name'] }}" @if (!puede('web', 'editar_modulos')) class="deshabilitar" @endif />
                         <span></span>
                     </label>
                 </span>
@@ -235,6 +225,9 @@
 
 @section('script')
     <script>
+        // Obtener configuraciones de productos desde PHP
+        const configuracionesProductos = @json(config('sistema.productos.web'));
+
         $(document).ready(function() {
             inicializarFormulario();
 
@@ -308,8 +301,8 @@
 
         function inicializarInputNumerico() {
             $('#precio').TouchSpin({
-                buttondown_class: 'btn btn-secondary {{ $rol != 1 ? 'disabled' : '' }}',
-                buttonup_class: 'btn btn-secondary {{ $rol != 1 ? 'disabled' : '' }}',
+                buttondown_class: 'btn btn-secondary {{ !puede('web', 'editar_campos_numericos') ? 'disabled' : '' }}',
+                buttonup_class: 'btn btn-secondary {{ !puede('web', 'editar_campos_numericos') ? 'disabled' : '' }}',
                 min: 0,
                 max: 10000000,
                 step: 1,
@@ -369,10 +362,11 @@
             if ([6, 9, 10].includes(parseInt(producto))) {
                 $('#periodo').addClass("disabled");
             } else {
-                const rol = "{{ $rol }}";
+                // Verificar permisos usando la nueva lógica centralizada
                 const accion = "{{ $accion }}";
+                const puedeEditarPeriodo = @json(puede('web', 'editar_periodo_' . strtolower($accion)));
 
-                if (rol == 1 || accion == 'Crear') {
+                if (puedeEditarPeriodo) {
                     $('#periodo').removeClass("disabled");
                 }
             }
@@ -415,98 +409,58 @@
 
         // Función auxiliar para actualizar los módulos
         function actualizarModulos(modulos) {
-            $('#ecommerce').prop('checked', modulos[0]);
-            $('#produccion').prop('checked', modulos[1]);
-            $('#nomina').prop('checked', modulos[2]);
-            $('#activos').prop('checked', modulos[3]);
-            $('#restaurantes').prop('checked', modulos[4]);
-            $('#talleres').prop('checked', modulos[5]);
-            $('#garantias').prop('checked', modulos[6]);
+            $('#ecommerce').prop('checked', modulos.ecommerce);
+            $('#produccion').prop('checked', modulos.produccion);
+            $('#nomina').prop('checked', modulos.nomina);
+            $('#activos').prop('checked', modulos.activos);
+            $('#restaurantes').prop('checked', modulos.restaurantes);
+            $('#talleres').prop('checked', modulos.talleres);
+            $('#garantias').prop('checked', modulos.garantias);
         }
 
         function obtenerConfiguraciones(producto, periodo) {
+            const config = configuracionesProductos[producto];
+            if (!config) return null;
+
+            // Mapear período a clave de configuración
+            let tipoPeriodo;
+            if (producto == 12) {
+                const mapaPeriodos = {
+                    1: 'inicial',
+                    2: 'basico',
+                    3: 'premium',
+                    4: 'gratis'
+                };
+                tipoPeriodo = mapaPeriodos[periodo] || 'inicial';
+            } else {
+                tipoPeriodo = periodo == 1 ? 'mensual' : 'anual';
+            }
+
+            // Si no existe el período solicitado, usar el primero disponible
+            const periodoConfig = config[tipoPeriodo] || config[Object.keys(config).find(key => typeof config[key] === 'object' && config[key].precio)];
+
+            if (!periodoConfig) return null;
+
+            // Determinar qué módulos usar
+            let modulosAUsar;
+            if (periodoConfig.modulos) {
+                // Usar módulos específicos del período (ej: Comercial mensual vs anual)
+                modulosAUsar = periodoConfig.modulos;
+            } else {
+                // Usar módulos generales del producto
+                modulosAUsar = config.modulos;
+            }
+
             return {
-                2: {
-                    precio: periodo == 1 ? '11.69' : '113.09',
-                    usuarios: 6,
-                    moviles: 1,
-                    servidor: 3,
-                    modulos: [true, true, false, false, true, false, false],
-                    meses: periodo == 1 ? 1 : 12
-                },
-                3: {
-                    precio: periodo == 1 ? '19.49' : '202.79',
-                    usuarios: 6,
-                    moviles: 0,
-                    servidor: 3,
-                    modulos: [false, false, true, true, false, false, false],
-                    meses: periodo == 1 ? 1 : 12
-                },
-                4: {
-                    precio: periodo == 1 ? '27.29' : '280.79',
-                    usuarios: 6,
-                    moviles: 2,
-                    servidor: 3,
-                    modulos: [true, true, true, periodo == 2, false, true, true],
-                    meses: periodo == 1 ? 1 : 12
-                },
-                5: {
-                    precio: periodo == 1 ? '15.59' : '140.39',
-                    usuarios: 6,
-                    moviles: 0,
-                    servidor: 3,
-                    modulos: [true, true, true, true, true, false, false],
-                    meses: periodo == 1 ? 1 : 12
-                },
-                6: {
-                    precio: '0',
-                    usuarios: 3,
-                    moviles: 1,
-                    servidor: 3,
-                    modulos: [false, true, true, true, true, true, true],
-                    meses: 12
-                },
-                8: {
-                    precio: periodo == 1 ? '11.69' : '116.99',
-                    usuarios: 6,
-                    moviles: 0,
-                    servidor: 3,
-                    modulos: [false, false, false, false, false, false, false],
-                    meses: periodo == 1 ? 1 : 12
-                },
-                9: {
-                    precio: '0',
-                    usuarios: 6,
-                    moviles: 1,
-                    servidor: 3,
-                    modulos: [true, true, true, true, true, true, true],
-                    meses: 1
-                },
-                10: {
-                    precio: '24.50',
-                    usuarios: 6,
-                    moviles: 0,
-                    servidor: 3,
-                    modulos: [false, false, false, false, false, false, false],
-                    meses: 12
-                },
-                11: {
-                    precio: periodo == 1 ? '6.49' : '77.94',
-                    usuarios: 1,
-                    moviles: 1,
-                    servidor: 3,
-                    modulos: [true, true, true, true, true, true, true],
-                    meses: periodo == 1 ? 1 : 12
-                },
-                12: {
-                    precio: periodo == 1 ? '5.40' : periodo == 2 ? '8.99' : periodo == 3 ? '17.99' : '4',
-                    usuarios: 50,
-                    moviles: 1,
-                    servidor: 2,
-                    modulos: [false, false, false, false, false, false, false],
-                    meses: 12
-                }
-            } [producto];
+                precio: periodoConfig.precio,
+                usuarios: config.usuarios,
+                moviles: config.moviles,
+                sucursales: config.sucursales,
+                empresas: config.empresas,
+                servidor: config.servidor,
+                modulos: modulosAUsar,
+                meses: periodoConfig.meses
+            };
         }
 
         function confirmarAccion(tipo, mensaje) {

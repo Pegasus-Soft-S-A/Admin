@@ -51,201 +51,159 @@ class clientesController extends Controller
     {
         if ($request->ajax()) {
 
-            $tipo = $request->tipofecha;
-            $tipolicencia = $request->tipolicencia;
-            $fecha = $request->fecha;
-            $distribuidor = $request->distribuidor;
-            $vendedor = $request->vendedor;
-            $revendedor = $request->revendedor;
-            $origen = $request->origen;
-            $validado = $request->validado;
-            $producto = $request->producto;
-            $periodo = $request->periodo;
-            $provinciasid = $request->provinciasid;
-            $distribuidores = Distribuidores::pluck('sis_distribuidoresid', 'razonsocial')->toArray();
-            $links = Links::all()->toArray();
-            $grupos = Grupos::all()->toArray();
-            $vendedores = Revendedores::all()->toArray();
+            // ========== DICCIONARIOS DE DATOS ==========
 
-            //Busqueda
-            $search = $request->search['value'];
-            if ($search <> null) {
-                //Variable con los datos de la tabla
-                $final = Clientes::Clientes(0, $search);
-                //Total de registros
-                $records = count(Session::get('data'));
-            } else {
-                //Variable con los datos de la tabla
-                $merged = Session::get('data');
-                //Total de registros
-                $records = $merged->count();
-                //Posicion inicial
-                $start = $request->start;
-                //Cantidad de registros a mostrar
-                $limit = $request->length;
-                //Resultado final del offset
-                $final = $merged->slice($start, $limit);
-                //Total de paginas
-                $totalPages = ceil($records / $limit);
-            }
-
-            //Filtros
-            if ($request->buscar_filtro == 1) {
-                //Buscar en todos los campos
-                $final = $merged;
-
-                if ($tipo != null) {
-                    switch ($tipo) {
-                        case '1':
-                            $tipo_fecha = "fechainicia";
-                            break;
-                        case '2':
-                            $tipo_fecha = "fechacaduca";
-                            break;
-                        case '3':
-                            $tipo_fecha = "fechaactulizaciones";
-                            break;
-                        case '4':
-                            $tipo_fecha = "fechamodificacion";
-                            break;
-                    }
-
-                    if ($fecha) {
-
-                        $desde =  explode(" / ", $fecha)[0];
-                        $hasta =  explode(" / ", $fecha)[1];
-
-                        if ($tipo_fecha == "fechamodificacion") {
-                            $desde = date('Y-m-d H:i:s', strtotime($desde));
-                            $hasta = date('Y-m-d H:i:s', strtotime($hasta . ' +1 day -1 second'));
-                        } else {
-                            $desde = strtotime(date('Y-m-d', strtotime($desde)));
-                            $hasta = strtotime(date('Y-m-d', strtotime($hasta)));
-                        }
-
-                        $final = $final->whereBetween($tipo_fecha, [$desde, $hasta]);
-                    }
-                }
-
-                if ($distribuidor != null) {
-                    $final = $final->where('sis_distribuidoresid', $distribuidor);
-                }
-
-                if ($vendedor != null) {
-                    $final = $final->where('sis_vendedoresid', $vendedor);
-                }
-
-                if ($revendedor != null) {
-                    $final = $final->where('sis_revendedoresid', $revendedor);
-                }
-
-                if ($origen != null) {
-                    $final = $final->where('red_origen', $origen);
-                }
-
-                if ($validado != null) {
-                    if ($validado == 1) {
-                        $final = $final->where('validado', 1);
-                    } else {
-                        $final = $final->whereIn('validado', [0, null]);
-                    }
-                }
-
-                if ($provinciasid != null) {
-                    $final = $final->where('provinciasid', $provinciasid);
-                }
-
-                if ($tipolicencia != 1) {
-                    switch ($tipolicencia) {
-                        //web
-                        case '2':
-                            $final = $final->where('tipo_licencia', 1);
-                            if ($producto != null) $final = $final->where('producto', $producto);
-                            if ($periodo != null) $final = $final->where('periodo', $periodo);
-                            break;
-                        //pc
-                        case '3':
-                            $final = $final->where('tipo_licencia', 2);
-                            if ($producto != null) {
-                                switch ($producto) {
-                                    case '1':
-                                        $final = $final->where('modulopractico', 1);
-                                        break;
-                                    case '2':
-                                        $final = $final->where('modulocontrol', 1);
-                                        break;
-                                    case '3':
-                                        $final = $final->where('modulocontable', 1);
-                                        break;
-                                    //Prime
-                                    case '4':
-                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 1);
-                                        break;
-                                    case '5':
-                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 2);
-                                        break;
-                                    case '6':
-                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 3);
-                                        break;
-                                    //Contaplus
-                                    case '7':
-                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 1);
-                                        break;
-                                    case '8':
-                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 2);
-                                        break;
-                                    case '9':
-                                        $final = $final->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 3);
-                                        break;
-                                    //nube
-                                    case '10':
-                                        $final = $final->where('modulonube', 1);
-                                        break;
-                                }
-                            }
-                            break;
-                        //vps
-                        case '4':
-                            $final = $final->where('tipo_licencia', 3);
-                            break;
-                    }
-                }
-            }
-
+            // Tipos de usuario
             $userTypes = [
                 'ADMIN' => 1,
-                'DISTRIBUIDOR' => 2,
                 'SOPORTE_DISTRIBUIDOR' => 3,
-                'VENTAS' => 4,
-                'MARKETING' => 5,
                 'VISOR' => 6,
                 'SOPORTE_MATRIZ' => 7,
                 'COMERCIAL' => 8,
                 'POSVENTA' => 9
             ];
 
-            $specialDistribuidores = [
-                'ALFA' => 1,
-                'MATRIZ' => 6,
-                'SIGMA' => 15,
-                'SOCIO' => 12
+            // Roles que pueden editar y ver información sensible
+            $editableRoles = [$userTypes['ADMIN'], $userTypes['COMERCIAL'], $userTypes['POSVENTA']];
+            $viewSensitiveRoles = [$userTypes['VISOR'], $userTypes['ADMIN'], $userTypes['COMERCIAL'], $userTypes['POSVENTA']];
+
+            // Tipos de licencia
+            $licenseTypes = [
+                1 => 'Web',
+                2 => 'PC',
+                3 => 'VPS'
             ];
 
-            // Define funciones auxiliares
-            $canEditClient = function ($userTipo, $userDistribuidorId, $clienteDistribuidorId, $clienteTipoLicencia) use ($userTypes, $specialDistribuidores) {
-                // Soporte Matriz puede editar licencias Web (tipo_licencia=1) 
-                // O licencias PC (tipo_licencia=2) que sean de SOCIO
+            // Campos de fecha según tipo
+            $dateFields = [
+                1 => 'fechainicia',
+                2 => 'fechacaduca',
+                3 => 'fechaactulizaciones',
+                4 => 'fechamodificacion'
+            ];
+
+            // Distribuidores específicos
+            $distributors = [
+                'ALFA' => 1,
+                'MATRIZ' => 6,
+                'SOCIO' => 12,
+                'SIGMA' => 15
+            ];
+
+            // Productos Web
+            $webProducts = [
+                2 => 'Facturación',
+                3 => 'Servicios',
+                4 => 'Comercial',
+                5 => 'Soy Contador Comercial',
+                6 => 'Perseo Lite Anterior',
+                7 => 'Total',
+                8 => 'Soy Contador Servicios',
+                9 => 'Perseo Lite',
+                10 => 'Emprendedor',
+                11 => 'Socio Perseo',
+                12 => 'Facturito'
+            ];
+
+            // Periodos de Facturito
+            $facturitoPeriods = [
+                1 => ' Inicial',
+                2 => ' Básico',
+                3 => ' Pro',
+                4 => ' Gratis'
+            ];
+
+            // Periodos generales
+            $billingPeriods = [
+                1 => 'Mensual',
+                2 => 'Anual'
+            ];
+
+            // Tipos de nube
+            $cloudTypes = [
+                1 => 'Prime',
+                2 => 'Contaplus'
+            ];
+
+            // Provincias del Ecuador
+            $provinces = [
+                1 => 'AZUAY',
+                2 => 'BOLIVAR',
+                3 => 'CAÑAR',
+                4 => 'CARCHI',
+                5 => 'CHIMBORAZO',
+                6 => 'COTOPAXI',
+                7 => 'EL ORO',
+                8 => 'ESMERALDAS',
+                9 => 'GUAYAS',
+                10 => 'IMBABURA',
+                11 => 'LOJA',
+                12 => 'LOS RIOS',
+                13 => 'MANABI',
+                14 => 'MORONA SANTIAGO',
+                15 => 'NAPO',
+                16 => 'PASTAZA',
+                17 => 'PICHINCHA',
+                18 => 'TUNGURAHUA',
+                19 => 'ZAMORA CHINCHIPE',
+                20 => 'GALAPAGOS',
+                21 => 'SUCUMBIOS',
+                22 => 'ORELLANA',
+                23 => 'SANTO DOMINGO DE LOS TSACHILAS',
+                24 => 'SANTA ELENA'
+            ];
+
+            // ========== OBTENER PARÁMETROS DEL REQUEST ==========
+
+            $searchParams = $this->extractSearchParameters($request);
+            $distribuidores = Distribuidores::pluck('sis_distribuidoresid', 'razonsocial')->toArray();
+            $links = Links::all()->toArray();
+            $grupos = Grupos::all()->toArray();
+            $vendedores = Revendedores::all()->toArray();
+
+            // ========== OBTENER Y PROCESAR DATOS ==========
+
+            $searchResult = $this->getDataWithSearch($searchParams['search']);
+            $final = $searchResult['data'];
+            $records = $searchResult['records'];
+            $totalPages = $searchResult['totalPages'] ?? null;
+            $start = $searchResult['start'] ?? null;
+
+            // ========== APLICAR FILTROS ==========
+
+            if ($searchParams['buscar_filtro'] == 1) {
+                $final = $searchResult['merged'] ?? Session::get('data');
+
+                // Aplicar filtro de fechas
+                $final = $this->applyDateFilter($final, $searchParams['tipo'], $searchParams['fecha'], $dateFields);
+
+                // Aplicar filtros básicos
+                $final = $this->applyBasicFilters(
+                    $final,
+                    $searchParams['distribuidor'],
+                    $searchParams['vendedor'],
+                    $searchParams['revendedor'],
+                    $searchParams['origen'],
+                    $searchParams['validado'],
+                    $searchParams['provinciasid']
+                );
+
+                // Aplicar filtros de licencia y productos
+                $final = $this->applyLicenseAndProductFilter($final, $searchParams['tipolicencia'], $searchParams['producto'], $searchParams['periodo']);
+            }
+
+            // ========== FUNCIONES DE PERMISOS ==========
+
+            $canEditClient = function ($userTipo, $userDistribuidorId, $clienteDistribuidorId, $clienteTipoLicencia) use ($userTypes, $editableRoles, $distributors) {
+                // Soporte Matriz puede editar licencias Web O licencias PC que sean de SOCIO
                 if ($userTipo == $userTypes['SOPORTE_MATRIZ']) {
-                    if (
-                        $clienteTipoLicencia == 1 ||
-                        ($clienteTipoLicencia == 2 && $clienteDistribuidorId == $specialDistribuidores['SOCIO'])
-                    ) {
+                    if ($clienteTipoLicencia == 1 || ($clienteTipoLicencia == 2 && $clienteDistribuidorId == $distributors['SOCIO'])) {
                         return true;
                     }
                 }
 
-                // Administradores y Comerciales siempre pueden editar
-                if (in_array($userTipo, [$userTypes['ADMIN'], $userTypes['COMERCIAL'], $userTypes['POSVENTA']])) {
+                // Administradores, Comerciales y Posventa siempre pueden editar
+                if (in_array($userTipo, $editableRoles)) {
                     return true;
                 }
 
@@ -256,285 +214,365 @@ class clientesController extends Controller
 
                 // Soporte Distribuidor con excepciones específicas
                 if ($userTipo == $userTypes['SOPORTE_DISTRIBUIDOR']) {
-                    if (($userDistribuidorId == $specialDistribuidores['ALFA'] && $clienteDistribuidorId == $specialDistribuidores['SIGMA']) ||
-                        ($userDistribuidorId == $specialDistribuidores['MATRIZ'] && $clienteDistribuidorId == $specialDistribuidores['SOCIO'])
+                    if (($userDistribuidorId == $distributors['ALFA'] && $clienteDistribuidorId == $distributors['SIGMA']) ||
+                        ($userDistribuidorId == $distributors['MATRIZ'] && $clienteDistribuidorId == $distributors['SOCIO'])
                     ) {
                         return true;
                     }
                 }
 
-                // Por defecto, un usuario puede editar clientes de su mismo distribuidor
                 return $userDistribuidorId == $clienteDistribuidorId;
             };
 
-            $canViewSensitiveInfo = function ($userTipo, $userDistribuidorId, $clienteDistribuidorId) use ($userTypes) {
-                return in_array($userTipo, [$userTypes['VISOR'], $userTypes['ADMIN'], $userTypes['COMERCIAL'], $userTypes['POSVENTA']]) ||
-                    $userDistribuidorId == $clienteDistribuidorId;
+            $canViewSensitiveInfo = function ($userTipo, $userDistribuidorId, $clienteDistribuidorId) use ($viewSensitiveRoles) {
+                return in_array($userTipo, $viewSensitiveRoles) || $userDistribuidorId == $clienteDistribuidorId;
             };
 
-            $datatable = DataTables::of($final)
-                ->editColumn('validado', function ($cliente) {
-                    $checked = $cliente->validado == 1 ? 'checked' : '';
-                    return '<label class="checkbox checkbox-single checkbox-primary mb-0"><input type="checkbox" class="checkable" ' . $checked . ' disabled><span></span></label>';
-                })
-                ->editColumn('identificacion', function ($cliente) use ($canEditClient, $userTypes) {
-                    $user = Auth::user();
-                    // Utilizamos la función para determinar si puede editar
-                    if ($canEditClient($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid, $cliente->tipo_licencia)) {
-                        return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
-                    }
-                    return $cliente->identificacion;
-                })
-                ->editColumn('action', function ($cliente) use ($canEditClient) {
-                    $user = Auth::user();
-                    // Utilizamos la función para determinar si puede editar
-                    if ($canEditClient($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid, $cliente->tipo_licencia)) {
-                        return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" title="Editar"> <i class="la la-edit"></i> </a>';
-                    }
-                    return '';
-                })
-                ->editColumn('sis_distribuidoresid', function ($cliente) use ($distribuidores) {
-                    $posicion = array_search($cliente->sis_distribuidoresid, $distribuidores);
-                    return $posicion;
-                })
-                ->editColumn('sis_vendedoresid', function ($cliente) use ($vendedores) {
-                    $posicion = array_search($cliente->sis_vendedoresid, array_column($vendedores, 'sis_revendedoresid'));
-                    return $vendedores[$posicion]['razonsocial'];
-                })
-                ->editColumn('sis_revendedoresid', function ($cliente) use ($vendedores) {
-                    $posicion = array_search($cliente->sis_revendedoresid, array_column($vendedores, 'sis_revendedoresid'));
-                    return $vendedores[$posicion]['razonsocial'];
-                })
-                ->editColumn('grupo', function ($cliente) use ($grupos) {
-                    $posicion = array_search($cliente->grupo, array_column($grupos, 'gruposid'));
-                    if ($posicion) {
-                        return $grupos[$posicion]['descripcion'];
-                    }
-                    return '';
-                })
-                ->editColumn('fechainicia', function ($cliente) {
-                    return $cliente->fechainicia == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechainicia);
-                })
-                ->editColumn('fechacaduca', function ($cliente) {
-                    return $cliente->fechacaduca == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechacaduca);
-                })
-                ->editColumn('fechaultimopago', function ($cliente) {
-                    return $cliente->fechaultimopago == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechaultimopago);
-                })
-                ->editColumn('fechaactulizaciones', function ($cliente) {
-                    return $cliente->fechaactulizaciones == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechaactulizaciones);
-                })
-                ->editColumn('tipo_licencia', function ($cliente) {
-                    $licencia = "";
-                    switch ($cliente->tipo_licencia) {
-                        case '1':
-                            $licencia = "Web";
-                            break;
-                        case '2':
-                            $licencia = "PC";
-                            break;
-                        case '3':
-                            $licencia = "VPS";
-                            break;
-                    }
+            // ========== GENERAR DATATABLE ==========
 
-                    return $licencia;
-                })
-                ->editColumn('telefono2', function ($cliente) use ($canViewSensitiveInfo) {
-                    $user = Auth::user();
+            $datatable = $this->buildDataTable($final, $canEditClient, $canViewSensitiveInfo, $distribuidores, $vendedores, $grupos, $links, $licenseTypes, $webProducts, $facturitoPeriods, $cloudTypes, $provinces, $billingPeriods);
 
-                    if ($canViewSensitiveInfo($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid)) {
-                        return $cliente->telefono2;
+            // ========== PREPARAR RESPUESTA ==========
+
+            return $this->buildDataTableResponse($datatable, $searchParams, $records, $totalPages, $start);
+        }
+    }
+
+    // ========== MÉTODOS DE BÚSQUEDA Y PAGINACIÓN ==========
+
+    /**
+     * Extrae todos los parámetros de búsqueda del request
+     */
+    private function extractSearchParameters(Request $request): array
+    {
+        return [
+            'search' => $request->search['value'] ?? null,
+            'buscar_filtro' => $request->buscar_filtro,
+            'start' => $request->start,
+            'length' => $request->length,
+            'tipo' => $request->tipofecha,
+            'tipolicencia' => $request->tipolicencia,
+            'fecha' => $request->fecha,
+            'distribuidor' => $request->distribuidor,
+            'vendedor' => $request->vendedor,
+            'revendedor' => $request->revendedor,
+            'origen' => $request->origen,
+            'validado' => $request->validado,
+            'producto' => $request->producto,
+            'periodo' => $request->periodo,
+            'provinciasid' => $request->provinciasid,
+        ];
+    }
+
+    /**
+     * Obtiene los datos aplicando búsqueda o paginación según corresponda
+     */
+    private function getDataWithSearch(?string $search): array
+    {
+        if ($search !== null) {
+            // Modo búsqueda: obtener resultados filtrados por búsqueda
+            return [
+                'data' => Clientes::Clientes(0, $search),
+                'records' => count(Session::get('data'))
+            ];
+        } else {
+            // Modo paginación: obtener datos desde sesión y aplicar paginación
+            $merged = Session::get('data');
+            $records = $merged->count();
+
+            // Obtener parámetros de paginación desde request global
+            $start = request()->start;
+            $limit = request()->length;
+
+            // Aplicar paginación
+            $final = $merged->slice($start, $limit);
+            $totalPages = ceil($records / $limit);
+
+            return [
+                'data' => $final,
+                'records' => $records,
+                'totalPages' => $totalPages,
+                'start' => $start,
+                'merged' => $merged
+            ];
+        }
+    }
+
+    /**
+     * Construye el DataTable con todas las columnas formateadas
+     */
+    private function buildDataTable($data, $canEditClient, $canViewSensitiveInfo, $distribuidores, $vendedores, $grupos, $links, $licenseTypes, $webProducts, $facturitoPeriods, $cloudTypes, $provinces, $billingPeriods)
+    {
+        return DataTables::of($data)
+            ->editColumn('validado', function ($cliente) {
+                $checked = $cliente->validado == 1 ? 'checked' : '';
+                return '<label class="checkbox checkbox-single checkbox-primary mb-0"><input type="checkbox" class="checkable" ' . $checked . ' disabled><span></span></label>';
+            })
+            ->editColumn('identificacion', function ($cliente) use ($canEditClient) {
+                $user = Auth::user();
+                if ($canEditClient($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid, $cliente->tipo_licencia)) {
+                    return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
+                }
+                return $cliente->identificacion;
+            })
+            ->editColumn('action', function ($cliente) use ($canEditClient) {
+                $user = Auth::user();
+                if ($canEditClient($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid, $cliente->tipo_licencia)) {
+                    return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" title="Editar"> <i class="la la-edit"></i> </a>';
+                }
+                return '';
+            })
+            ->editColumn('sis_distribuidoresid', function ($cliente) use ($distribuidores) {
+                $posicion = array_search($cliente->sis_distribuidoresid, $distribuidores);
+                return $posicion;
+            })
+            ->editColumn('sis_vendedoresid', function ($cliente) use ($vendedores) {
+                $posicion = array_search($cliente->sis_vendedoresid, array_column($vendedores, 'sis_revendedoresid'));
+                return $vendedores[$posicion]['razonsocial'];
+            })
+            ->editColumn('sis_revendedoresid', function ($cliente) use ($vendedores) {
+                $posicion = array_search($cliente->sis_revendedoresid, array_column($vendedores, 'sis_revendedoresid'));
+                return $vendedores[$posicion]['razonsocial'];
+            })
+            ->editColumn('grupo', function ($cliente) use ($grupos) {
+                $posicion = array_search($cliente->grupo, array_column($grupos, 'gruposid'));
+                if ($posicion) {
+                    return $grupos[$posicion]['descripcion'];
+                }
+                return '';
+            })
+            ->editColumn('fechainicia', function ($cliente) {
+                return $cliente->fechainicia == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechainicia);
+            })
+            ->editColumn('fechacaduca', function ($cliente) {
+                return $cliente->fechacaduca == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechacaduca);
+            })
+            ->editColumn('fechaultimopago', function ($cliente) {
+                return $cliente->fechaultimopago == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechaultimopago);
+            })
+            ->editColumn('fechaactulizaciones', function ($cliente) {
+                return $cliente->fechaactulizaciones == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechaactulizaciones);
+            })
+            ->editColumn('tipo_licencia', function ($cliente) use ($licenseTypes) {
+                return $licenseTypes[$cliente->tipo_licencia] ?? '';
+            })
+            ->editColumn('telefono2', function ($cliente) use ($canViewSensitiveInfo) {
+                $user = Auth::user();
+                if ($canViewSensitiveInfo($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid)) {
+                    return $cliente->telefono2;
+                }
+                return '';
+            })
+            ->editColumn('correos', function ($cliente) use ($canViewSensitiveInfo) {
+                $user = Auth::user();
+                if ($canViewSensitiveInfo($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid)) {
+                    return $cliente->correos;
+                }
+                return '';
+            })
+            ->editColumn('producto', function ($cliente) use ($webProducts, $facturitoPeriods, $cloudTypes) {
+                $producto = "";
+                if ($cliente->tipo_licencia == 1) {
+                    // Productos Web
+                    $producto = $webProducts[$cliente->producto] ?? '';
+
+                    // Si es Facturito, agregar el periodo
+                    if ($cliente->producto == 12 && isset($facturitoPeriods[$cliente->periodo])) {
+                        $producto .= $facturitoPeriods[$cliente->periodo];
                     }
-
-                    return '';
-                })
-                ->editColumn('correos', function ($cliente) use ($canViewSensitiveInfo) {
-                    $user = Auth::user();
-
-                    if ($canViewSensitiveInfo($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid)) {
-                        return $cliente->correos;
+                } else {
+                    // Productos PC
+                    if ($cliente->modulopractico == 1) $producto = "Práctico";
+                    if ($cliente->modulocontrol == 1) $producto = "Control";
+                    if ($cliente->modulocontable == 1) $producto = "Contable";
+                    if ($cliente->modulonube == 1) {
+                        $tipoNubeText = $cloudTypes[$cliente->tipo_nube] ?? 'Otro';
+                        $nivelNubeText = "Nivel " . $cliente->nivel_nube;
+                        $producto = "{$tipoNubeText} {$nivelNubeText}";
                     }
+                }
+                return $producto;
+            })
+            ->editColumn('red_origen', function ($cliente) use ($links) {
+                $posicion = array_search($cliente->red_origen, array_column($links, 'sis_linksid'));
+                return $links[$posicion]['codigo'];
+            })
+            ->editColumn('provinciasid', function ($cliente) use ($provinces) {
+                return $provinces[$cliente->provinciasid] ?? '';
+            })
+            ->editColumn('periodo', function ($cliente) use ($billingPeriods) {
+                return $billingPeriods[$cliente->periodo] ?? '';
+            })
+            ->rawColumns(['action', 'identificacion', 'validado']);
+    }
 
-                    return '';
-                })
-                ->editColumn('producto', function ($cliente) {
-                    $producto = "";
-                    if ($cliente->tipo_licencia == 1) {
-                        switch ($cliente->producto) {
-                            case '2':
-                                $producto = "Facturación";
-                                break;
-                            case '3':
-                                $producto = "Servicios";
-                                break;
-                            case '4':
-                                $producto = "Comercial";
-                                break;
-                            case '5':
-                                $producto = "Soy Contador Comercial";
-                                break;
-                            case '6':
-                                $producto = "Perseo Lite Anterior";
-                                break;
-                            case '7':
-                                $producto = "Total";
-                                break;
-                            case '8':
-                                $producto = "Soy Contador Servicios";
-                                break;
-                            case '9':
-                                $producto = "Perseo Lite";
-                                break;
-                            case '10':
-                                $producto = "Emprendedor";
-                                break;
-                            case '11':
-                                $producto = "Socio Perseo";
-                                break;
-                            case '12':
-                                $producto = "Facturito";
-                                switch ($cliente->periodo) {
-                                    //Inicial
-                                    case '1':
-                                        $producto .= " Inicial";
-                                        break;
-                                    //Basico
-                                    case '2':
-                                        $producto .= " Básico";
-                                        break;
-                                    //Pro
-                                    case '3':
-                                        $producto .= " Pro";
-                                        break;
-                                    //Gratis
-                                    case '4':
-                                        $producto .= " Gratis";
-                                        break;
-                                }
-                                break;
-                        }
-                    } else {
-                        if ($cliente->modulopractico == 1) $producto = "Práctico";
-                        if ($cliente->modulocontrol == 1) $producto = "Control";
-                        if ($cliente->modulocontable == 1) $producto = "Contable";
-                        if ($cliente->modulonube == 1) {
-                            $tipoNubeText = $cliente->tipo_nube == 1 ? 'Prime' : ($cliente->tipo_nube == 2 ? 'Contaplus' : 'Otro');
-                            $nivelNubeText = "Nivel " . $cliente->nivel_nube;
+    /**
+     * Construye la respuesta final del DataTable según el tipo de consulta
+     */
+    private function buildDataTableResponse($datatable, array $searchParams, int $records, ?int $totalPages, ?int $start)
+    {
+        if ($searchParams['buscar_filtro'] == 1 || $searchParams['search'] !== null) {
+            // Respuesta para búsqueda o filtros aplicados
+            return $datatable
+                ->with('recordsTotal', $records)
+                ->make(true);
+        } else {
+            // Respuesta para paginación normal
+            return $datatable
+                ->setOffset($start)
+                ->with('recordsTotal', $records)
+                ->with('recordsFiltered', $records)
+                ->with('totalPages', $totalPages)
+                ->make(true);
+        }
+    }
 
-                            $producto = "{$tipoNubeText} {$nivelNubeText}";
-                        }
-                    }
-                    return $producto;
-                })
-                ->editColumn('red_origen', function ($cliente) use ($links) {
-                    $posicion = array_search($cliente->red_origen, array_column($links, 'sis_linksid'));
-                    return $links[$posicion]['codigo'];
-                })
-                ->editColumn('provinciasid', function ($cliente) {
+    // ========== MÉTODOS DE FILTROS ==========
 
-                    $provincia = "";
-                    switch ($cliente->provinciasid) {
-                        case '1':
-                            $provincia = "AZUAY";
-                            break;
-                        case '2':
-                            $provincia = "BOLIVAR";
-                            break;
-                        case '3':
-                            $provincia = "CAÑAR";
-                            break;
-                        case '4':
-                            $provincia = "CARCHI";
-                            break;
-                        case '5':
-                            $provincia = "CHIMBORAZO";
-                            break;
-                        case '6':
-                            $provincia = "COTOPAXI";
-                            break;
-                        case '7':
-                            $provincia = "EL ORO";
-                            break;
-                        case '8':
-                            $provincia = "ESMERALDAS";
-                            break;
-                        case '9':
-                            $provincia = "GUAYAS";
-                            break;
-                        case '10':
-                            $provincia = "IMBABURA";
-                            break;
-                        case '11':
-                            $provincia = "LOJA";
-                            break;
-                        case '12':
-                            $provincia = "LOS RIOS";
-                            break;
-                        case '13':
-                            $provincia = "MANABI";
-                            break;
-                        case '14':
-                            $provincia = "MORONA SANTIAGO";
-                            break;
-                        case '15':
-                            $provincia = "NAPO";
-                            break;
-                        case '16':
-                            $provincia = "PASTAZA";
-                            break;
-                        case '17':
-                            $provincia = "PICHINCHA";
-                            break;
-                        case '18':
-                            $provincia = "TUNGURAHUA";
-                            break;
-                        case '19':
-                            $provincia = "ZAMORA CHINCHIPE";
-                            break;
-                        case '20':
-                            $provincia = "GALAPAGOS";
-                            break;
-                        case '21':
-                            $provincia = "SUCUMBIOS";
-                            break;
-                        case '22':
-                            $provincia = "ORELLANA";
-                            break;
-                        case '23':
-                            $provincia = "SANTO DOMINGO DE LOS TSACHILAS";
-                            break;
-                        case '24':
-                            $provincia = "SANTA ELENA";
-                            break;
-                    }
-                    return $provincia;
-                })
-                ->editColumn('periodo', function ($cliente) {
-                    $periodo = "";
-                    if ($cliente->periodo == 1) {
-                        $periodo = "Mensual";
-                    } elseif ($cliente->periodo == 2) {
-                        $periodo = "Anual";
-                    }
-                    return $periodo;
-                })
-                ->rawColumns(['action', 'identificacion', 'validado']);
+    /**
+     * Aplica filtros de fecha según el tipo especificado
+     */
+    private function applyDateFilter($query, $tipo, $fecha, $dateFields)
+    {
+        if ($tipo == null || $fecha == null) {
+            return $query;
+        }
 
-            if ($request->buscar_filtro == 1 || $search <> null) {
-                $datatable = $datatable
-                    ->with('recordsTotal', $records)
-                    ->make(true);
+        $tipo_fecha = $dateFields[$tipo] ?? null;
+        if (!$tipo_fecha) {
+            return $query;
+        }
+
+        $fechas = explode(" / ", $fecha);
+        if (count($fechas) !== 2) {
+            return $query;
+        }
+
+        $desde = $fechas[0];
+        $hasta = $fechas[1];
+
+        if ($tipo_fecha == "fechamodificacion") {
+            // Para fechas de modificación usamos datetime
+            $desde = date('Y-m-d H:i:s', strtotime($desde));
+            $hasta = date('Y-m-d H:i:s', strtotime($hasta . ' +1 day -1 second'));
+        } else {
+            // Para otras fechas usamos timestamp
+            $desde = strtotime(date('Y-m-d', strtotime($desde)));
+            $hasta = strtotime(date('Y-m-d', strtotime($hasta)));
+        }
+
+        return $query->whereBetween($tipo_fecha, [$desde, $hasta]);
+    }
+
+    /**
+     * Aplica filtros básicos (distribuidor, vendedor, revendedor, origen, validado, provincias)
+     */
+    private function applyBasicFilters($query, $distribuidor, $vendedor, $revendedor, $origen, $validado, $provinciasid)
+    {
+        if ($distribuidor != null) {
+            $query = $query->where('sis_distribuidoresid', $distribuidor);
+        }
+
+        if ($vendedor != null) {
+            $query = $query->where('sis_vendedoresid', $vendedor);
+        }
+
+        if ($revendedor != null) {
+            $query = $query->where('sis_revendedoresid', $revendedor);
+        }
+
+        if ($origen != null) {
+            $query = $query->where('red_origen', $origen);
+        }
+
+        if ($validado != null) {
+            if ($validado == 1) {
+                $query = $query->where('validado', 1);
             } else {
-                $datatable = $datatable
-                    ->setOffset($start)
-                    ->with('recordsTotal', $records)
-                    ->with('recordsFiltered', $records)
-                    ->with('totalPages', $totalPages)
-                    ->make(true);
+                $query = $query->whereIn('validado', [0, null]);
             }
+        }
 
-            return  $datatable;
+        if ($provinciasid != null) {
+            $query = $query->where('provinciasid', $provinciasid);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Aplica filtros de tipo de licencia y productos
+     */
+    private function applyLicenseAndProductFilter($query, $tipolicencia, $producto, $periodo)
+    {
+        if ($tipolicencia == 1) {
+            return $query; // Sin filtros adicionales
+        }
+
+        switch ($tipolicencia) {
+            case '2': // Licencias Web
+                $query = $query->where('tipo_licencia', 1);
+                if ($producto != null) {
+                    $query = $query->where('producto', $producto);
+                }
+                if ($periodo != null) {
+                    $query = $query->where('periodo', $periodo);
+                }
+                break;
+
+            case '3': // Licencias PC
+                $query = $query->where('tipo_licencia', 2);
+                if ($producto != null) {
+                    $query = $this->applyPcProductFilter($query, $producto);
+                }
+                break;
+
+            case '4': // Licencias VPS
+                $query = $query->where('tipo_licencia', 3);
+                break;
+        }
+
+        return $query;
+    }
+
+    /**
+     * Aplica filtros específicos para productos PC
+     */
+    private function applyPcProductFilter($query, $producto)
+    {
+        switch ($producto) {
+            case '1': // Práctico
+                return $query->where('modulopractico', 1);
+
+            case '2': // Control
+                return $query->where('modulocontrol', 1);
+
+            case '3': // Contable
+                return $query->where('modulocontable', 1);
+
+            case '4': // Prime Nivel 1
+                return $query->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 1);
+
+            case '5': // Prime Nivel 2
+                return $query->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 2);
+
+            case '6': // Prime Nivel 3
+                return $query->where('modulonube', 1)->where('tipo_nube', 1)->where('nivel_nube', 3);
+
+            case '7': // Contaplus Nivel 1
+                return $query->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 1);
+
+            case '8': // Contaplus Nivel 2
+                return $query->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 2);
+
+            case '9': // Contaplus Nivel 3
+                return $query->where('modulonube', 1)->where('tipo_nube', 2)->where('nivel_nube', 3);
+
+            case '10': // Nube (general)
+                return $query->where('modulonube', 1);
+
+            default:
+                return $query;
         }
     }
 

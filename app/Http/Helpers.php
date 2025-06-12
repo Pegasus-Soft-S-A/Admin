@@ -39,7 +39,7 @@ if (!function_exists('puede')) {
             return false;
         }
 
-        $permisos = config("tipos_usuario.permisos.{$categoria}.{$permiso}", []);
+        $permisos = config("sistema.permisos.{$categoria}.{$permiso}", []);
         return in_array($usuario->tipo, $permisos);
     }
 }

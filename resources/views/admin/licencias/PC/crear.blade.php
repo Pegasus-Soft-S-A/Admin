@@ -1,13 +1,3 @@
-@php
-    $rol = Auth::user()->tipo;
-    // Definir constantes de roles
-    define('ROL_ADMIN', 1);
-    define('ROL_DISTRIBUIDOR', 2);
-    define('ROL_SOPORTE_DISTRIBUIDOR', 3);
-    define('ROL_SOPORTE_MATRIZ', 7);
-    define('ROL_VENTAS', 4);
-    define('ROL_POSVENTA', 9);
-@endphp
 @extends('admin.layouts.app')
 @section('contenido')
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
