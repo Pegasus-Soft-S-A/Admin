@@ -1908,7 +1908,7 @@ class IdentificacionesController extends Controller
     public function consulta_clientes(Request $request)
     {
         $clientes = Clientes::where('sis_clientesid', $request->sis_clientesid)
-            ->select('sis_clientes.sis_clientesid', 'sis_clientes.identificacion', 'sis_clientes.nombres',  'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_distribuidores.razonsocial as distribuidor')
+            ->select('sis_clientes.sis_clientesid', 'sis_clientes.identificacion', 'sis_clientes.nombres',  'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_distribuidores.razonsocial as distribuidor', 'sis_clientes.direccion')
             ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
             ->first();
 
