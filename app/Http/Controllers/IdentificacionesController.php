@@ -16,82 +16,109 @@ use App\Models\Revendedores;
 use App\Models\Servidores;
 use App\Models\MovilVersion;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
-use SimpleXMLElement;
-use SoapClient;
 
 class IdentificacionesController extends Controller
 {
     public function index(Request $request)
     {
+
         $identificacionIngresada = substr($request->identificacion, 0, 10);
-        $buscar = Identificaciones::whereIn('identificacion', [$identificacionIngresada, $request->identificacion, $request->identificacion . '001'])->first();
-        //$buscar = Identificaciones::where('identificacion', 'like', $identificacionIngresada . '%')->first();
 
-        if (!$buscar) {
-            try {
-                $curl = curl_init();
+        // Buscar en base de datos local
+        $buscar = Identificaciones::whereIn('identificacion', [
+            $identificacionIngresada,
+            $request->identificacion,
+            $request->identificacion . '001'
+        ])->first();
 
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => 'http://merlyna.com/merlyna/abc/webserviceSRI-RegistroCivil.php',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => '',
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => 'POST',
-                    CURLOPT_POSTFIELDS => '<?xml version="1.0" encoding="utf-8"?>
-                        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-                        <soap:Body>
-                            <nombreCedulaRegistroCivilRequest>
-                            <arg0>' . $identificacionIngresada . '</arg0>
-                            <arg1>212</arg1>
-                            <arg2>1001</arg2>
-                            <arg3>1001</arg3>
-                            <arg4>perseo</arg4>
-                            <arg5>perseo</arg5>
-                            <arg6>IGESeec92e31032ab99345a4d4f3ecea</arg6>
-                            </nombreCedulaRegistroCivilRequest>
-                        </soap:Body>
-                        </soap:Envelope>
-        ',
-                    CURLOPT_HTTPHEADER => array(
-                        'Content-Type: text/xml; charset=utf-8',
-                        'SOAPAction: http://merlyna.com//abc/webserviceSRI-RegistroCivil.php'
-                    ),
-                ));
-
-                $response = curl_exec($curl);
-                curl_close($curl);
-
-                $xml = simplexml_load_string($response);
-                $data = $xml->children('SOAP-ENV', true)->Body->children('ns1', true)->nombreCedulaRegistroCivilResponse->children()->return;
-                $arrOutput = json_decode(json_encode($data), TRUE);
-                //$buscar = array("razon_social" => $arrOutput['0']);
-
-                $request->razon_social =  $arrOutput['0'];
-                $request->nombre_comercial =  '';
-                $request->direccion =  '';
-                $request->correo = '';
-                $request->provinciasid = '17';
-                $request->ciudadesid =  '1701';
-                $request->parroquiasid =  '170150';
-                $request->telefono1 = '';
-                $request->telefono2 =  '';
-                $request->telefono3 = '';
-                $request->tipo_contribuyente = '0';
-                $request->obligado = '0';
-                return json_encode($this->crearIdentificacion($request));
-            } catch (\Exception $e) {
-            }
-        } else {
+        if ($buscar) {
             $buscar->parametros_json = json_decode($buscar->parametros_json);
+            return response()->json($buscar);
         }
-        return json_encode($buscar);
+
+        // Si no existe localmente, consultar webservice externo
+        try {
+            // Configuración del servicio web
+            $soapBody = '<?xml version="1.0" encoding="utf-8"?>
+            <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <nombreCedulaRegistroCivilRequest>
+                        <arg0>' . htmlspecialchars($identificacionIngresada) . '</arg0>
+                        <arg1>212</arg1>
+                        <arg2>1001</arg2>
+                        <arg3>1001</arg3>
+                        <arg4>perseo</arg4>
+                        <arg5>perseo</arg5>
+                        <arg6>IGESeec92e31032ab99345a4d4f3ecea</arg6>
+                    </nombreCedulaRegistroCivilRequest>
+                </soap:Body>
+            </soap:Envelope>';
+
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+                CURLOPT_URL => 'http://merlyna.com/merlyna/abc/webserviceSRI-RegistroCivil.php',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30, // Timeout más largo pero razonable
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => $soapBody,
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: text/xml; charset=utf-8',
+                    'SOAPAction: http://merlyna.com//abc/webserviceSRI-RegistroCivil.php'
+                ],
+                CURLOPT_SSL_VERIFYPEER => false, // Solo si es necesario
+                CURLOPT_SSL_VERIFYHOST => false, // Solo si es necesario
+            ]);
+
+            $response = curl_exec($curl);
+            curl_close($curl);
+
+            // Procesar respuesta XML
+            libxml_use_internal_errors(true); // Habilitar manejo de errores XML
+            $xml = simplexml_load_string($response);
+
+            // Extraer datos del XML con validación
+            $data = $xml->children('SOAP-ENV', true)
+                ->Body
+                ->children('ns1', true)
+                ->nombreCedulaRegistroCivilResponse
+                ->children()
+                ->return ?? null;
+
+            $arrOutput = json_decode(json_encode($data), true);
+
+            // Crear objeto de respuesta con datos por defecto
+            $datosIdentificacion = new \stdClass();
+            $datosIdentificacion->identificacion = $identificacionIngresada;
+            $datosIdentificacion->razon_social = $arrOutput[0] ?? 'Sin nombre';
+            $datosIdentificacion->nombre_comercial = '';
+            $datosIdentificacion->direccion = '';
+            $datosIdentificacion->correo = '';
+            $datosIdentificacion->provinciasid = '17';
+            $datosIdentificacion->ciudadesid = '1701';
+            $datosIdentificacion->parroquiasid = '170150';
+            $datosIdentificacion->telefono1 = '';
+            $datosIdentificacion->telefono2 = '';
+            $datosIdentificacion->telefono3 = '';
+            $datosIdentificacion->tipo_contribuyente = '0';
+            $datosIdentificacion->obligado = '0';
+
+            // Crear nueva identificación en base de datos
+            $nuevaIdentificacion = $this->crearIdentificacion((object)$datosIdentificacion);
+
+            return response()->json($nuevaIdentificacion);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'error' => 'Error interno del servidor. Por favor, intente nuevamente.'
+            ], 500);
+        }
     }
 
     public function actualiza(Request $request)

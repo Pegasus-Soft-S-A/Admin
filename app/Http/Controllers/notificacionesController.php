@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Distribuidores;
 use App\Models\Log;
 use App\Models\Notificaciones;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables as DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -74,13 +75,7 @@ class notificacionesController extends Controller
 
         $notificaciones =   Notificaciones::create($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Notificaciones";
-        $log->tipooperacion = "Crear";
-        $log->fecha = now();
-        $log->detalle = $notificaciones;
-        $log->save();
+        LogService::crear('Notificaciones', $notificaciones);
 
         flash('Notificacion creado correctamente')->success();
         return redirect()->route('notificaciones.editar', $notificaciones->sis_notificacionesid);
@@ -121,13 +116,7 @@ class notificacionesController extends Controller
 
         $notificaciones->update($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Notificaciones";
-        $log->tipooperacion = "Modificar";
-        $log->fecha = now();
-        $log->detalle = $notificaciones;
-        $log->save();
+        LogService::modificar('Notificaciones', $notificaciones);
 
         flash('Actualizado Correctamente')->success();
         return back();
@@ -137,13 +126,7 @@ class notificacionesController extends Controller
     {
         $notificaciones->delete();
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Notificaciones";
-        $log->tipooperacion = "Eliminar";
-        $log->fecha = now();
-        $log->detalle = $notificaciones;
-        $log->save();
+        LogService::eliminar('Notificaciones', $notificaciones);
 
         flash("Eliminado Correctamente")->success();
         return back();

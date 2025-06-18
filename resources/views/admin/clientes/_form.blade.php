@@ -12,6 +12,7 @@
 
 @endphp
 @csrf
+
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Identificacion:</label>
@@ -60,84 +61,51 @@
 <div class="form-group row">
     <div class="col-lg-6">
         <label>Provincia:</label>
-        <select class="form-control select2" name="provinciasid" id="provinciasid" onchange="cambiarCiudad(this);      "
+
+        @php
+            $provincias = [
+                ['id' => '01', 'nombre' => 'Azuay'],
+                ['id' => '02', 'nombre' => 'Bolivar'],
+                ['id' => '03', 'nombre' => 'Cañar'],
+                ['id' => '04', 'nombre' => 'Carchi'],
+                ['id' => '05', 'nombre' => 'Cotopaxi'],
+                ['id' => '06', 'nombre' => 'Chimborazo'],
+                ['id' => '07', 'nombre' => 'El Oro'],
+                ['id' => '08', 'nombre' => 'Esmeraldas'],
+                ['id' => '09', 'nombre' => 'Guayas'],
+                ['id' => '20', 'nombre' => 'Galapagos'],
+                ['id' => '10', 'nombre' => 'Imbabura'],
+                ['id' => '11', 'nombre' => 'Loja'],
+                ['id' => '12', 'nombre' => 'Los Rios'],
+                ['id' => '13', 'nombre' => 'Manabi'],
+                ['id' => '14', 'nombre' => 'Morona Santiago'],
+                ['id' => '15', 'nombre' => 'Napo'],
+                ['id' => '22', 'nombre' => 'Orellana'],
+                ['id' => '16', 'nombre' => 'Pastaza'],
+                ['id' => '17', 'nombre' => 'Pichincha'],
+                ['id' => '24', 'nombre' => 'Santa Elena'],
+                ['id' => '23', 'nombre' => 'Santo Domingo De Los Tsachilas'],
+                ['id' => '21', 'nombre' => 'Sucumbios'],
+                ['id' => '18', 'nombre' => 'Tungurahua'],
+                ['id' => '19', 'nombre' => 'Zamora Chinchipe'],
+            ];
+        @endphp
+
+        <select class="form-control select2" name="provinciasid" id="provinciasid" onchange="cambiarCiudad(this);"
             @if ($rol != 1 && $accion == 'Modificar') disabled @endif>
             <option value="">Seleccione una provincia</option>
-            <option value="01" {{ $cliente->provinciasid == '01' ? 'Selected' : '' }}>
-                Azuay
-            </option>
-            <option value="02" {{ $cliente->provinciasid == '02' ? 'Selected' : '' }}>
-                Bolivar
-            </option>
-            <option value="03" {{ $cliente->provinciasid == '03' ? 'Selected' : '' }}>
-                Cañar
-            </option>
-            <option value="04" {{ $cliente->provinciasid == '04' ? 'Selected' : '' }}>
-                Carchi
-            </option>
-            <option value="05" {{ $cliente->provinciasid == '05' ? 'Selected' : '' }}>
-                Cotopaxi
-            </option>
-            <option value="06" {{ $cliente->provinciasid == '06' ? 'Selected' : '' }}>
-                Chimborazo
-            </option>
-            <option value="07" {{ $cliente->provinciasid == '07' ? 'Selected' : '' }}>
-                El Oro
-            </option>
-            <option value="08" {{ $cliente->provinciasid == '08' ? 'Selected' : '' }}>
-                Esmeraldas
-            </option>
-            <option value="09" {{ $cliente->provinciasid == '09' ? 'Selected' : '' }}>
-                Guayas
-            </option>
-            <option value="20" {{ $cliente->provinciasid == '20' ? 'Selected' : '' }}>
-                Galapagos
-            </option>
-            <option value="10" {{ $cliente->provinciasid == '10' ? 'Selected' : '' }}>
-                Imbabura
-            </option>
-            <option value="11" {{ $cliente->provinciasid == '11' ? 'Selected' : '' }}>
-                Loja</option>
-            <option value="12" {{ $cliente->provinciasid == '12' ? 'Selected' : '' }}>
-                Los Rios
-            </option>
-            <option value="13" {{ $cliente->provinciasid == '13' ? 'Selected' : '' }}>
-                Manabi
-            </option>
-            <option value="14" {{ $cliente->provinciasid == '14' ? 'Selected' : '' }}>
-                Morona
-                Santiago</option>
-            <option value="15" {{ $cliente->provinciasid == '15' ? 'Selected' : '' }}>
-                Napo</option>
-            <option value="22" {{ $cliente->provinciasid == '22' ? 'Selected' : '' }}>
-                Orellana
-            </option>
-            <option value="16" {{ $cliente->provinciasid == '16' ? 'Selected' : '' }}>
-                Pastaza
-            </option>
-            <option value="17" {{ $cliente->provinciasid == '17' ? 'Selected' : '' }}>
-                Pichincha
-            </option>
-            <option value="24" {{ $cliente->provinciasid == '24' ? 'Selected' : '' }}>
-                Santa Elena
-            </option>
-            <option value="23" {{ $cliente->provinciasid == '23' ? 'Selected' : '' }}>
-                Santo Domingo
-                De Los Tsachilas</option>
-            <option value="21" {{ $cliente->provinciasid == '21' ? 'Selected' : '' }}>
-                Sucumbios
-            </option>
-            <option value="18" {{ $cliente->provinciasid == '18' ? 'Selected' : '' }}>
-                Tungurahua
-            </option>
-            <option value="19" {{ $cliente->provinciasid == '19' ? 'Selected' : '' }}>
-                Zamora
-                Chinchipe</option>
+            @foreach ($provincias as $provincia)
+                <option value="{{ $provincia['id'] }}" {{ $cliente->provinciasid == $provincia['id'] ? 'selected' : '' }}>
+                    {{ $provincia['nombre'] }}
+                </option>
+            @endforeach
         </select>
+
         @if ($errors->has('provinciasid'))
             <span class="text-danger">{{ $errors->first('provinciasid') }}</span>
         @endif
     </div>
+
     <div class="col-lg-6">
         <label>Ciudad:</label>
         <select class="form-control select2" name="ciudadesid" id="ciudadesid">
@@ -224,8 +192,7 @@
         <label>Origen:</label>
         <select class="form-control select2" id="red_origen" name="red_origen">
             @foreach ($links as $link)
-                <option value="{{ $link->sis_linksid }}"
-                    {{ $link->sis_linksid == $cliente->red_origen ? 'Selected' : '' }}>
+                <option value="{{ $link->sis_linksid }}" {{ $link->sis_linksid == $cliente->red_origen ? 'Selected' : '' }}>
                     {{ $link->codigo }}</option>
             @endforeach
         </select>

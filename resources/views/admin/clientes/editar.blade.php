@@ -1,14 +1,3 @@
-@php
-    $rol = Auth::user()->tipo;
-    // Definir constantes de roles
-    define('ROL_ADMIN', 1);
-    define('ROL_DISTRIBUIDOR', 2);
-    define('ROL_SOPORTE_DISTRIBUIDOR', 3);
-    define('ROL_SOPORTE_MATRIZ', 7);
-    define('ROL_VISOR', 6);
-    define('ROL_COMERCIAL', 8);
-    define('ROL_VENTAS', 4);
-@endphp
 @extends('admin.layouts.app')
 @section('contenido')
     <style>
@@ -36,20 +25,23 @@
                                                 <a href="{{ route('clientes.index') }}" class="btn btn-secondary btn-icon" data-toggle="tooltip"
                                                     title="Volver"><i class="la la-long-arrow-left"></i></a>
 
-                                                @if (Auth::user()->tipo == ROL_ADMIN)
+                                                @if (puede('clientes', 'eliminar_clientes'))
                                                     <a class="btn btn-danger btn-icon confirm-delete" href="javascript:void(0)"
                                                         data-href="{{ route('clientes.eliminar', $cliente->sis_clientesid) }}" data-toggle="tooltip"
                                                         title="Eliminar"> <i class="la la-trash"></i>
                                                     </a>
                                                 @endif
+
                                                 @if (puede('clientes', 'guardar_clientes'))
                                                     <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip" title="Guardar"><i
                                                             class="la la-save"></i></button>
                                                 @endif
+
                                                 @if (puede('clientes', 'crear_clientes'))
                                                     <a href="{{ route('clientes.crear') }}" class="btn btn-warning btn-icon" data-toggle="tooltip"
                                                         title="Nuevo"><i class="la la-user-plus"></i></a>
                                                 @endif
+
                                             </div>
                                         </div>
                                     </div>

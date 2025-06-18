@@ -1,6 +1,6 @@
 <?php // config/sistema.php
 return [
-    'tipos' => [
+    'tipos_roles' => [
         1 => 'Admin',
         2 => 'Distribuidor',
         3 => 'Soporte distribuidor',
@@ -12,12 +12,17 @@ return [
         9 => 'Posventa'
     ],
 
-    // Distribuidores especiales con reglas específicas para la visibilidad de clientes 
-    'distribuidores_especiales' => [
-        1  => 'ALFA',
-        6  => 'MATRIZ',
-        15 => 'SIGMA',
-        12 => 'SOCIO'
+    'tipos_productos' => [
+        1 => 'Web',
+        2 => 'PC',
+        3 => 'VPS'
+    ],
+
+    'tipos_venta_adicionales' => [
+        1 => 'Usuarios',
+        2 => 'Moviles',
+        3 => 'Sucursales',
+        4 => 'Estaciones',
     ],
 
     'permisos' => [
@@ -25,6 +30,7 @@ return [
         'clientes' => [
             'crear_clientes' => [1, 2, 3],
             'guardar_clientes' => [1, 2],
+            'eliminar_clientes' => [1],
         ],
 
         'web' => [
@@ -46,6 +52,7 @@ return [
             'crear_pc' => [1, 2, 3],
             'guardar_pc' => [1, 2, 3, 7],
             'renovar_licencia' => [1, 2, 3, 9],
+            'ver_adicionales' => [1, 8, 9],
 
             // === PERMISOS PARA CREAR ===
             'editar_configuracion_tecnica_crear' => [1, 2, 3, 7], // Identificador, IPs
@@ -337,6 +344,7 @@ return [
                     'equipos' => 2,
                     'moviles' => 0,
                     'sucursales' => 1,
+                    'precio' => 100,
                     'ids_aplicativos' => ['105', '110', '111', '112', '113', '114', '115', '117', '118', '120', '125', '126', '127', '130', '131', '135', '136', '141', '142', '150', '305', '310', '315', '320', '325', '330', '335', '430', '431', '432', '433', '434', '435', '440', '445', '450', '455', '456', '460', '461', '462', '463', '464', '465', '466', '469', '470', '471', '475', '480', '491', '492', '495', '630', '905', '910', '915', '916', '917', '918', '919', '920', '925', '930', '931', '940', '960', '1105', '1110', '1115', '1120'],
                     'incluye_nomina' => false,
                     'incluye_activos' => false
@@ -345,6 +353,7 @@ return [
                     'equipos' => 3,
                     'moviles' => 0,
                     'sucursales' => 1,
+                    'precio' => 200,
                     'ids_aplicativos' => ['200', '142', '201', '205', '210', '215', '225', '230', '505', '510', '515', '516', '517', '462', '463', '485', '490', '116', '140', '605', '630', '635'],
                     'incluye_nomina' => false,
                     'incluye_activos' => false,
@@ -354,6 +363,7 @@ return [
                     'equipos' => 4,
                     'moviles' => 0,
                     'sucursales' => 1,
+                    'precio' => 300,
                     'ids_aplicativos' => ['605', '142', '606', '610', '615', '616', '620', '625', '626', '627', '628', '630', '635', '636', '640'],
                     'incluye_nomina' => true,
                     'incluye_activos' => true,
@@ -363,6 +373,10 @@ return [
                     'equipos' => 4,
                     'moviles' => 0,
                     'sucursales' => 1,
+                    'precio' => [
+                        'prime' => 400,
+                        'contaplus' => 500
+                    ],
                     'ids_aplicativos' => [], // Hereda todo de contable
                     'incluye_nomina' => true,
                     'incluye_activos' => true,
@@ -460,7 +474,10 @@ return [
 
             // Configuración específica de nube
             'configuracion_nube' => [
-                'usuarios_defecto' => 1
+                'usuarios_por_tipo' => [
+                    1 => 4, // Prime
+                    2 => 6  // Contaplus
+                ]
             ]
         ]
     ]

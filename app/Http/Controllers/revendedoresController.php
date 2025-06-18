@@ -6,6 +6,7 @@ use App\Models\Log;
 use App\Models\Revendedores;
 use App\Rules\IdentificacionRevendedor;
 use App\Rules\ValidarCelular;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables as DataTables;
@@ -84,15 +85,10 @@ class revendedoresController extends Controller
         $request['tipoidentificacion'] = $contadorIdentificacion == 10 ? 'C' : 'R';
         $request['fechacreacion'] = now();
         $request['usuariocreacion'] = Auth::user()->nombres;
+
         $revendedor = Revendedores::create($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Revendedores";
-        $log->tipooperacion = "Crear";
-        $log->fecha = now();
-        $log->detalle = $revendedor;
-        $log->save();
+        LogService::crear('Revendedores', $revendedor);
 
         flash('Revendedor creado correctamente')->success();
         return redirect()->route('revendedores.editar', $revendedor->sis_revendedoresid);
@@ -135,13 +131,7 @@ class revendedoresController extends Controller
         $request['usuariomodificacion'] = Auth::user()->nombres;
         $revendedor->update($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Revendedores";
-        $log->tipooperacion = "Modificar";
-        $log->fecha = now();
-        $log->detalle = $revendedor;
-        $log->save();
+        LogService::modificar('Revendedores', $revendedor);
 
         flash('Actualizado Correctamente')->success();
         return back();
@@ -151,13 +141,8 @@ class revendedoresController extends Controller
     {
 
         $revendedor->delete();
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Revendedores";
-        $log->tipooperacion = "Eliminar";
-        $log->fecha = now();
-        $log->detalle = $revendedor;
-        $log->save();
+
+        LogService::eliminar('Revendedores', $revendedor);
 
         flash("Eliminado Correctamente")->success();
         return back();

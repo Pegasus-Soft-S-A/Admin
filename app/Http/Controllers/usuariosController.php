@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Log;
 use App\Models\Usuarios;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables as DataTables;
@@ -135,13 +136,7 @@ class usuariosController extends Controller
         $request['usuariocreacion'] = Auth::user()->nombres;
         $usuarios =   Usuarios::create($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Usuarios";
-        $log->tipooperacion = "Crear";
-        $log->fecha = now();
-        $log->detalle = $usuarios;
-        $log->save();
+        LogService::crear('Usuarios', $usuarios);
 
         flash('Usuario creado correctamente')->success();
         return redirect()->route('usuarios.editar', $usuarios->sis_distribuidores_usuariosid);
@@ -190,13 +185,7 @@ class usuariosController extends Controller
         $request['usuariomodificacion'] = Auth::user()->nombres;
         $usuarios->update($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Usuarios";
-        $log->tipooperacion = "Modificar";
-        $log->fecha = now();
-        $log->detalle = $usuarios;
-        $log->save();
+        LogService::modificar('Usuarios', $usuarios);
 
         flash('Actualizado Correctamente')->success();
         return back();
@@ -206,13 +195,7 @@ class usuariosController extends Controller
     {
         $usuarios->delete();
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Usuarios";
-        $log->tipooperacion = "Eliminar";
-        $log->fecha = now();
-        $log->detalle = $usuarios;
-        $log->save();
+        LogService::eliminar('Usuarios', $usuarios);
 
         flash("Eliminado Correctamente")->success();
         return back();

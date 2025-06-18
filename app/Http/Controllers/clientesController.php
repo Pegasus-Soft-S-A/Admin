@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ciudades;
 use App\Models\Clientes;
 use App\Models\Distribuidores;
 use App\Models\Grupos;
 use App\Models\Licencias;
 use App\Models\Licenciasweb;
 use App\Models\Links;
-use App\Models\Log;
 use App\Models\Revendedores;
 use App\Models\Servidores;
 use App\Rules\UniqueSimilar;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
-use Carbon\Carbon;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -68,11 +66,7 @@ class clientesController extends Controller
             $viewSensitiveRoles = [$userTypes['VISOR'], $userTypes['ADMIN'], $userTypes['COMERCIAL'], $userTypes['POSVENTA']];
 
             // Tipos de licencia
-            $licenseTypes = [
-                1 => 'Web',
-                2 => 'PC',
-                3 => 'VPS'
-            ];
+            $licenseTypes = config('sistema.tipos_productos');
 
             // Campos de fecha según tipo
             $dateFields = [
@@ -238,11 +232,7 @@ class clientesController extends Controller
         }
     }
 
-    // ========== MÉTODOS DE BÚSQUEDA Y PAGINACIÓN ==========
-
-    /**
-     * Extrae todos los parámetros de búsqueda del request
-     */
+    //Extrae todos los parámetros de búsqueda del request
     private function extractSearchParameters(Request $request): array
     {
         return [
@@ -264,9 +254,7 @@ class clientesController extends Controller
         ];
     }
 
-    /**
-     * Obtiene los datos aplicando búsqueda o paginación según corresponda
-     */
+    //Obtiene los datos aplicando búsqueda o paginación según corresponda
     private function getDataWithSearch(?string $search): array
     {
         if ($search !== null) {
@@ -298,9 +286,7 @@ class clientesController extends Controller
         }
     }
 
-    /**
-     * Construye el DataTable con todas las columnas formateadas
-     */
+    //Construye el DataTable con todas las columnas formateadas
     private function buildDataTable($data, $canEditClient, $canViewSensitiveInfo, $distribuidores, $vendedores, $grupos, $links, $licenseTypes, $webProducts, $facturitoPeriods, $cloudTypes, $provinces, $billingPeriods)
     {
         return DataTables::of($data)
@@ -308,19 +294,52 @@ class clientesController extends Controller
                 $checked = $cliente->validado == 1 ? 'checked' : '';
                 return '<label class="checkbox checkbox-single checkbox-primary mb-0"><input type="checkbox" class="checkable" ' . $checked . ' disabled><span></span></label>';
             })
+            ->editColumn('numerocontrato', function ($cliente) use ($canEditClient) {
+                $user = Auth::user();
+                if ($canEditClient($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid, $cliente->tipo_licencia)) {
+
+                    // Determinar la ruta según el tipo de licencia
+                    $ruta = '';
+                    switch ($cliente->tipo_licencia) {
+                        case 1: // Web - necesita cliente, servidor, licencia
+                            $ruta = route('licencias.Web.editar', [
+                                'cliente' => $cliente->sis_clientesid,
+                                'servidor' => $cliente->sis_servidoresid,
+                                'licencia' => $cliente->sis_licenciasid
+                            ]);
+                            break;
+                        case 2: // PC - necesita cliente, licencia
+                            $ruta = route('licencias.Pc.editar', [
+                                'cliente' => $cliente->sis_clientesid,
+                                'licencia' => $cliente->sis_licenciasid
+                            ]);
+                            break;
+                        case 3: // VPS - necesita cliente, licencia
+                            $ruta = route('licencias.Vps.editar', [
+                                'cliente' => $cliente->sis_clientesid,
+                                'licencia' => $cliente->sis_licenciasid
+                            ]);
+                            break;
+                        default:
+                            // Ruta por defecto si no coincide con ningún tipo
+                            $ruta = route('clientes.editar', $cliente->sis_clientesid);
+                            break;
+                    }
+
+                    return '<a class="text-success" href="' . $ruta . '" data-toggle="tooltip" title="Editar Licencia">
+                    <i class="la la-cog mr-1"></i>' . $cliente->numerocontrato . ' 
+                </a>';
+                }
+                return $cliente->numerocontrato;
+            })
             ->editColumn('identificacion', function ($cliente) use ($canEditClient) {
                 $user = Auth::user();
                 if ($canEditClient($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid, $cliente->tipo_licencia)) {
-                    return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '">' . $cliente->identificacion . ' </a>';
+                    return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" data-toggle="tooltip" title="Editar Cliente">
+                    <i class="la la-user mr-1"></i>' . $cliente->identificacion . ' 
+                </a>';
                 }
                 return $cliente->identificacion;
-            })
-            ->editColumn('action', function ($cliente) use ($canEditClient) {
-                $user = Auth::user();
-                if ($canEditClient($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid, $cliente->tipo_licencia)) {
-                    return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" title="Editar"> <i class="la la-edit"></i> </a>';
-                }
-                return '';
             })
             ->editColumn('sis_distribuidoresid', function ($cliente) use ($distribuidores) {
                 $posicion = array_search($cliente->sis_distribuidoresid, $distribuidores);
@@ -342,19 +361,28 @@ class clientesController extends Controller
                 return '';
             })
             ->editColumn('fechainicia', function ($cliente) {
-                return $cliente->fechainicia == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechainicia);
+                return $cliente->fechainicia == null ? ''  : date('d-m-Y', $cliente->fechainicia);
             })
             ->editColumn('fechacaduca', function ($cliente) {
-                return $cliente->fechacaduca == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechacaduca);
+                return $cliente->fechacaduca == null ? ''  : date('d-m-Y', $cliente->fechacaduca);
             })
             ->editColumn('fechaultimopago', function ($cliente) {
-                return $cliente->fechaultimopago == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechaultimopago);
+                return $cliente->fechaultimopago == null ? ''  : date('d-m-Y', $cliente->fechaultimopago);
             })
             ->editColumn('fechaactulizaciones', function ($cliente) {
-                return $cliente->fechaactulizaciones == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $cliente->fechaactulizaciones);
+                return $cliente->fechaactulizaciones == null ? ''  : date('d-m-Y', $cliente->fechaactulizaciones);
             })
             ->editColumn('tipo_licencia', function ($cliente) use ($licenseTypes) {
-                return $licenseTypes[$cliente->tipo_licencia] ?? '';
+                $texto = $licenseTypes[$cliente->tipo_licencia] ?? '';
+                $icono = '';
+
+                if ($cliente->tipo_licencia == 1) {
+                    $icono = '<i class="la la-cloud text-primary mr-1"></i>';
+                } elseif ($cliente->tipo_licencia == 2 || $cliente->tipo_licencia == 3) {
+                    $icono = '<i class="la la-tv text-warning mr-1"></i>';
+                }
+
+                return $icono . $texto;
             })
             ->editColumn('telefono2', function ($cliente) use ($canViewSensitiveInfo) {
                 $user = Auth::user();
@@ -403,12 +431,10 @@ class clientesController extends Controller
             ->editColumn('periodo', function ($cliente) use ($billingPeriods) {
                 return $billingPeriods[$cliente->periodo] ?? '';
             })
-            ->rawColumns(['action', 'identificacion', 'validado']);
+            ->rawColumns(['identificacion', 'validado', 'numerocontrato', 'tipo_licencia']);
     }
 
-    /**
-     * Construye la respuesta final del DataTable según el tipo de consulta
-     */
+    //Construye la respuesta final del DataTable según el tipo de consulta
     private function buildDataTableResponse($datatable, array $searchParams, int $records, ?int $totalPages, ?int $start)
     {
         if ($searchParams['buscar_filtro'] == 1 || $searchParams['search'] !== null) {
@@ -427,11 +453,7 @@ class clientesController extends Controller
         }
     }
 
-    // ========== MÉTODOS DE FILTROS ==========
-
-    /**
-     * Aplica filtros de fecha según el tipo especificado
-     */
+    // Aplica filtros de fecha según el tipo especificado
     private function applyDateFilter($query, $tipo, $fecha, $dateFields)
     {
         if ($tipo == null || $fecha == null) {
@@ -464,9 +486,7 @@ class clientesController extends Controller
         return $query->whereBetween($tipo_fecha, [$desde, $hasta]);
     }
 
-    /**
-     * Aplica filtros básicos (distribuidor, vendedor, revendedor, origen, validado, provincias)
-     */
+    //Aplica filtros básicos (distribuidor, vendedor, revendedor, origen, validado, provincias)
     private function applyBasicFilters($query, $distribuidor, $vendedor, $revendedor, $origen, $validado, $provinciasid)
     {
         if ($distribuidor != null) {
@@ -500,9 +520,7 @@ class clientesController extends Controller
         return $query;
     }
 
-    /**
-     * Aplica filtros de tipo de licencia y productos
-     */
+    // Aplica filtros de licencia y productos según el tipo de licencia
     private function applyLicenseAndProductFilter($query, $tipolicencia, $producto, $periodo)
     {
         if ($tipolicencia == 1) {
@@ -525,6 +543,9 @@ class clientesController extends Controller
                 if ($producto != null) {
                     $query = $this->applyPcProductFilter($query, $producto);
                 }
+                if ($periodo != null) {
+                    $query = $query->where('periodo', $periodo);
+                }
                 break;
 
             case '4': // Licencias VPS
@@ -535,9 +556,7 @@ class clientesController extends Controller
         return $query;
     }
 
-    /**
-     * Aplica filtros específicos para productos PC
-     */
+    //Aplica filtro de productos para licencias PC
     private function applyPcProductFilter($query, $producto)
     {
         switch ($producto) {
@@ -588,9 +607,106 @@ class clientesController extends Controller
         return view('admin.clientes.crear', compact('cliente', 'distribuidores', 'links'));
     }
 
+    // public function guardar(Request $request)
+    // {
+    //     //Validaciones
+    //     $request->validate(
+    //         [
+    //             'identificacion' => ['required', new UniqueSimilar],
+    //             'nombres' => 'required',
+    //             'direccion' => 'required',
+    //             'correos' => ['required', 'email', new ValidarCorreo],
+    //             'provinciasid' => 'required',
+    //             'telefono2' => ['required', 'size:10', new ValidarCelular],
+    //             'sis_distribuidoresid' => 'required',
+    //             'sis_vendedoresid' => 'required',
+    //             'sis_revendedoresid' => 'required',
+    //             'red_origen' => 'required',
+    //             'ciudadesid' => 'required',
+    //             'grupo' => 'required'
+    //         ],
+    //         [
+    //             'identificacion.required' => 'Ingrese su cédula o RUC ',
+    //             'nombres.required' => 'Ingrese los Nombres',
+    //             'direccion.required' => 'Ingrese una Dirección',
+    //             'correos.required' => 'Ingrese un Correo',
+    //             'correos.email' => 'Ingrese un Correo válido',
+    //             'provinciasid.required' => 'Seleccione una Provincia',
+    //             'telefono1.required' => 'Ingrese un Número Convencional',
+    //             'telefono2.required' => 'Ingrese un Número Celular',
+    //             'telefono2.size' => 'Ingrese 10 dígitos',
+    //             'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',
+    //             'sis_vendedoresid.required' => 'Seleccione un Vendedor',
+    //             'sis_revendedoresid.required' => 'Seleccione un Revendedor',
+    //             'red_origen.required' => 'Seleccione un Origen',
+    //             'grupo.required' => 'Seleccione un Tipo de Negocio',
+    //             'ciudadesid.required' => 'Seleccione una Ciudad'
+    //         ],
+    //     );
+
+    //     $request['fechacreacion'] = now();
+    //     $request['usuariocreacion'] = Auth::user()->nombres;
+    //     $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
+    //     $request['telefono1'] = $request['telefono1'] <> "" ? $request['telefono1'] : "";
+
+    //     DB::beginTransaction();
+
+    //     $servidores = Servidores::all();
+    //     $cliente = Clientes::create($request->all());
+
+    //     $clientes_creados = []; // variable para almacenar los clientes creados en los servidores remotos
+
+    //     // Verificar si se creó el cliente en el servidor local
+    //     if (!$cliente) {
+    //         flash('Ocurrió un error al crear el cliente')->warning();
+    //         DB::rollBack();
+    //         return back();
+    //     }
+
+    //     $request['sis_clientesid'] = $cliente->sis_clientesid;
+
+    //     // Insertar el cliente en cada uno de los servidores remotos
+    //     foreach ($servidores as $servidor) {
+    //         $url = $servidor->dominio . '/registros/crear_clientes';
+    //         $crearCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+    //             ->withOptions(["verify" => false])
+    //             ->post($url, $request->all())
+    //             ->json();
+
+    //         if (isset($crearCliente['sis_clientes'])) {
+    //             $clientes_creados[] = [
+    //                 'dominio' => $servidor->dominio,
+    //                 'sis_clientesid' => $crearCliente["sis_clientes"][0]['sis_clientesid']
+    //             ];
+    //         } else {
+    //             foreach ($clientes_creados as $registro) {
+    //                 $url = $registro['dominio'] . '/registros/eliminar_cliente';
+    //                 $eliminarCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
+    //                     ->withOptions(["verify" => false])
+    //                     ->post($url, ["sis_clientesid" => $registro['sis_clientesid']])
+    //                     ->json();
+    //             }
+
+    //             flash('Ocurrió un error al crear el cliente, intentelo nuevamente')->warning();
+    //             DB::rollBack();
+    //             return back();
+    //         }
+    //     }
+
+    //     //Registro de log
+    //     LogService::crear('Clientes', $cliente);
+
+    //     $request['sis_clientesid'] = $cliente->sis_clientesid;
+
+    //     DB::commit();
+
+    //     flash('Guardado Correctamente')->success();
+    //     return redirect()->route('clientes.editar', $cliente->sis_clientesid);
+    // }
+
     public function guardar(Request $request)
     {
-        //Validaciones
+        // Validaciones
         $request->validate(
             [
                 'identificacion' => ['required', new UniqueSimilar],
@@ -598,7 +714,6 @@ class clientesController extends Controller
                 'direccion' => 'required',
                 'correos' => ['required', 'email', new ValidarCorreo],
                 'provinciasid' => 'required',
-                //'telefono1' => ['required', 'min:7|max:10'],
                 'telefono2' => ['required', 'size:10', new ValidarCelular],
                 'sis_distribuidoresid' => 'required',
                 'sis_vendedoresid' => 'required',
@@ -608,15 +723,12 @@ class clientesController extends Controller
                 'grupo' => 'required'
             ],
             [
-                'identificacion.required' => 'Ingrese su cédula o RUC ',
+                'identificacion.required' => 'Ingrese su cédula o RUC',
                 'nombres.required' => 'Ingrese los Nombres',
                 'direccion.required' => 'Ingrese una Dirección',
                 'correos.required' => 'Ingrese un Correo',
                 'correos.email' => 'Ingrese un Correo válido',
                 'provinciasid.required' => 'Seleccione una Provincia',
-                'telefono1.required' => 'Ingrese un Número Convencional',
-                //'telefono1.min' => 'Mínimo 7 dígitos',
-                //'telefono1.max' => 'Máximo 10 dígitos',
                 'telefono2.required' => 'Ingrese un Número Celular',
                 'telefono2.size' => 'Ingrese 10 dígitos',
                 'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',
@@ -625,71 +737,163 @@ class clientesController extends Controller
                 'red_origen.required' => 'Seleccione un Origen',
                 'grupo.required' => 'Seleccione un Tipo de Negocio',
                 'ciudadesid.required' => 'Seleccione una Ciudad'
-            ],
+            ]
         );
 
+        // Preparar datos
         $request['fechacreacion'] = now();
         $request['usuariocreacion'] = Auth::user()->nombres;
         $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
-        $request['telefono1'] = $request['telefono1'] <> "" ? $request['telefono1'] : "";
+        $request['telefono1'] = $request['telefono1'] ?: "";
+
+        $servidores = Servidores::all();
+
+        // ===== PRE-VALIDACIÓN: VERIFICAR DISPONIBILIDAD DE TODOS LOS SERVIDORES =====
+        $servidoresNoDisponibles = $this->verificarDisponibilidadServidores($servidores);
+
+        if (!empty($servidoresNoDisponibles)) {
+            $mensajeError = 'Los siguientes servidores no están disponibles: ' .
+                implode(', ', $servidoresNoDisponibles) .
+                '. Intente nuevamente más tarde.';
+
+            flash($mensajeError)->warning();
+            return back()->withInput();
+        }
+
+        // Si llegamos aquí, todos los servidores están disponibles
+        $clientesCreados = [];
 
         DB::beginTransaction();
 
-        $servidores = Servidores::all();
-        $cliente = Clientes::create($request->all());
+        try {
+            // 1. Crear cliente en servidor local
+            $cliente = Clientes::create($request->all());
 
-        $clientes_creados = []; // variable para almacenar los clientes creados en los servidores remotos
+            if (!$cliente) {
+                throw new \Exception('Error al crear cliente en servidor local');
+            }
 
-        // Verificar si se creó el cliente en el servidor local
-        if (!$cliente) {
-            flash('Ocurrió un error al crear el cliente')->warning();
-            DB::rollBack();
-            return back();
-        }
+            $request['sis_clientesid'] = $cliente->sis_clientesid;
 
-        $request['sis_clientesid'] = $cliente->sis_clientesid;
+            // 2. Crear en servidores remotos 
+            foreach ($servidores as $servidor) {
+                $resultado = $this->crearClienteRemoto($servidor, $request->all());
 
-        // Insertar el cliente en cada uno de los servidores remotos
-        foreach ($servidores as $servidor) {
-            $url = $servidor->dominio . '/registros/crear_clientes';
-            $crearCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-                ->withOptions(["verify" => false])
-                ->post($url, $request->all())
-                ->json();
+                if ($resultado['success']) {
+                    $clientesCreados[] = [
+                        'servidor' => $servidor,
+                        'sis_clientesid' => $resultado['sis_clientesid']
+                    ];
+                } else {
+                    // Esto es ahora muy improbable, pero mantenemos el rollback por seguridad
+                    $this->ejecutarRollbackSimple($clientesCreados);
+                    DB::rollBack();
 
-            if (isset($crearCliente['sis_clientes'])) {
-                $clientes_creados[] = [
-                    'dominio' => $servidor->dominio,
-                    'sis_clientesid' => $crearCliente["sis_clientes"][0]['sis_clientesid']
-                ];
-            } else {
-                foreach ($clientes_creados as $registro) {
-                    $url = $registro['dominio'] . '/registros/eliminar_cliente';
-                    $eliminarCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-                        ->withOptions(["verify" => false])
-                        ->post($url, ["sis_clientesid" => $registro['sis_clientesid']])
-                        ->json();
+                    flash('Error inesperado al sincronizar con ' . $servidor->dominio . ': ' . $resultado['error'])->error();
+                    return back()->withInput();
                 }
+            }
 
-                flash('Ocurrió un error al crear el cliente, intentelo nuevamente')->warning();
-                DB::rollBack();
-                return back();
+            // 3. Todo exitoso
+            LogService::crear('Clientes', $cliente);
+            DB::commit();
+
+            flash('Cliente guardado correctamente')->success();
+            return redirect()->route('clientes.editar', $cliente->sis_clientesid);
+        } catch (\Exception $e) {
+            $this->ejecutarRollbackSimple($clientesCreados);
+            DB::rollBack();
+
+            flash('Ocurrió un error al crear el cliente: ' . $e->getMessage())->error();
+            return back()->withInput();
+        }
+    }
+
+    // Verifica la disponibilidad de todos los servidores y devuelve una lista de los que no están disponibles
+    private function verificarDisponibilidadServidores($servidores)
+    {
+        $servidoresNoDisponibles = [];
+
+        foreach ($servidores as $servidor) {
+            if (!$this->verificarDisponibilidadServidor($servidor)) {
+                $servidoresNoDisponibles[] = $servidor->descripcion;
             }
         }
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Clientes";
-        $log->tipooperacion = "Crear";
-        $log->fecha = now();
-        $log->detalle = $cliente;
-        $log->save();
-        $request['sis_clientesid'] = $cliente->sis_clientesid;
+        return $servidoresNoDisponibles;
+    }
 
-        DB::commit();
+    // Verifica si un servidor está disponible (responde a HEAD)
+    private function verificarDisponibilidadServidor($servidor)
+    {
+        try {
+            $response = Http::timeout(6)
+                ->withOptions(['verify' => false])
+                ->head($servidor->dominio);
 
-        flash('Guardado Correctamente')->success();
-        return redirect()->route('clientes.editar', $cliente->sis_clientesid);
+            // 200, 301, 302, 403, 404 son respuestas válidas (servidor responde)
+            // 500+ significa servidor con problemas
+            return $response->status() < 500;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    // Crea un cliente en un servidor remoto y maneja errores
+    private function crearClienteRemoto($servidor, $data)
+    {
+        try {
+            $url = $servidor->dominio . '/registros/crear_clientes';
+
+            $response = Http::timeout(30)
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json'
+                ])
+                ->withOptions(['verify' => false])
+                ->post($url, $data);
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+
+                if (isset($responseData['sis_clientes']) && !empty($responseData['sis_clientes'])) {
+                    return [
+                        'success' => true,
+                        'sis_clientesid' => $responseData['sis_clientes'][0]['sis_clientesid']
+                    ];
+                }
+            }
+
+            return [
+                'success' => false,
+                'error' => 'HTTP ' . $response->status() . ': ' . $response->body()
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Excepción: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // Rollback simple para eliminar clientes creados en servidores remotos
+    private function ejecutarRollbackSimple($clientesCreados)
+    {
+        if (empty($clientesCreados)) {
+            return;
+        }
+
+        foreach ($clientesCreados as $clienteCreado) {
+            try {
+                $url = $clienteCreado['servidor']->dominio . '/registros/eliminar_cliente';
+
+                Http::timeout(15)
+                    ->withOptions(['verify' => false])
+                    ->post($url, ['sis_clientesid' => $clienteCreado['sis_clientesid']]);
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
     }
 
     public function editar(Request $request, clientes $cliente)
@@ -699,9 +903,87 @@ class clientesController extends Controller
         return view('admin.clientes.editar', compact('cliente', 'distribuidores', 'links'));
     }
 
+    // public function actualizar(Request $request, Clientes $cliente)
+    // {
+    //     //Validaciones
+    //     $request->validate(
+    //         [
+    //             'identificacion' => ['required', new UniqueSimilar($cliente->sis_clientesid)],
+    //             'nombres' => 'required',
+    //             'direccion' => 'required',
+    //             'correos' => ['required', 'email', new ValidarCorreo],
+    //             'provinciasid' => 'required',
+    //             'telefono2' => ['required', 'size:10', new ValidarCelular],
+    //             'sis_distribuidoresid' => 'required',
+    //             'sis_vendedoresid' => 'required',
+    //             'sis_revendedoresid' => 'required',
+    //             'red_origen' => 'required',
+    //             'ciudadesid' => 'required',
+    //             'grupo' => 'required'
+    //         ],
+    //         [
+    //             'identificacion.required' => 'Ingrese su cédula o RUC ',
+    //             'nombres.required' => 'Ingrese los Nombres',
+    //             'direccion.required' => 'Ingrese una Dirección',
+    //             'correos.required' => 'Ingrese un Correo',
+    //             'correos.email' => 'Ingrese un Correo válido',
+    //             'provinciasid.required' => 'Seleccione una Provincia',
+    //             'telefono1.required' => 'Ingrese un Número Convencional',
+    //             'telefono2.required' => 'Ingrese un Número Celular',
+    //             'telefono2.size' => 'Ingrese 10 dígitos',
+    //             'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',
+    //             'sis_vendedoresid.required' => 'Seleccione un Vendedor',
+    //             'sis_revendedoresid.required' => 'Seleccione un Revendedor',
+    //             'red_origen.required' => 'Seleccione un Origen',
+    //             'grupo.required' => 'Seleccione un Tipo de Negocio',
+    //             'ciudadesid.required' => 'Seleccione una Ciudad'
+    //         ],
+    //     );
+
+
+    //     DB::beginTransaction();
+    //     try {
+    //         $servidores = Servidores::where('estado', 1)->get();
+    //         $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
+    //         $request['fechamodificacion'] =  now();
+    //         $request['usuariomodificacion'] = Auth::user()->nombres;
+    //         $request['telefono1'] = $request['telefono1'] <> "" ? $request['telefono1'] : "";
+
+    //         $cliente->update($request->all());
+
+    //         //Registro de log
+    //         LogService::modificar('Clientes', $cliente);
+
+    //         $request['sis_clientesid'] = $cliente->sis_clientesid;
+    //         $request['fechamodificacion'] =   date('YmdHis', strtotime($request['fechamodificacion']));
+
+    //         foreach ($servidores as $servidor) {
+
+    //             $urlEditar = $servidor->dominio . '/registros/editar_clientes';
+    //             $clienteEditar = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
+    //                 ->withOptions(["verify" => false])
+    //                 ->post($urlEditar, $request->all())
+    //                 ->json();
+
+    //             if (!isset($clienteEditar['sis_clientes'])) {
+    //                 DB::rollBack();
+    //                 flash('Ocurrió un error vuelva a intentarlo')->warning();
+    //                 return back();
+    //             }
+    //         }
+    //         flash('Guardado Correctamente')->success();
+    //         DB::commit();
+    //     } catch (\Exception $e) {
+
+    //         DB::rollBack();
+    //         flash('Ocurrió un error vuelva a intentarlo')->warning();
+    //     };
+    //     return back();
+    // }
+
     public function actualizar(Request $request, Clientes $cliente)
     {
-        //Validaciones
+        // Validaciones
         $request->validate(
             [
                 'identificacion' => ['required', new UniqueSimilar($cliente->sis_clientesid)],
@@ -709,7 +991,6 @@ class clientesController extends Controller
                 'direccion' => 'required',
                 'correos' => ['required', 'email', new ValidarCorreo],
                 'provinciasid' => 'required',
-                //'telefono1' => ['required', 'min:7|max:10'],
                 'telefono2' => ['required', 'size:10', new ValidarCelular],
                 'sis_distribuidoresid' => 'required',
                 'sis_vendedoresid' => 'required',
@@ -719,15 +1000,12 @@ class clientesController extends Controller
                 'grupo' => 'required'
             ],
             [
-                'identificacion.required' => 'Ingrese su cédula o RUC ',
+                'identificacion.required' => 'Ingrese su cédula o RUC',
                 'nombres.required' => 'Ingrese los Nombres',
                 'direccion.required' => 'Ingrese una Dirección',
                 'correos.required' => 'Ingrese un Correo',
                 'correos.email' => 'Ingrese un Correo válido',
                 'provinciasid.required' => 'Seleccione una Provincia',
-                'telefono1.required' => 'Ingrese un Número Convencional',
-                //'telefono1.min' => 'Mínimo 7 dígitos',
-                //'telefono1.max' => 'Máximo 10 dígitos',
                 'telefono2.required' => 'Ingrese un Número Celular',
                 'telefono2.size' => 'Ingrese 10 dígitos',
                 'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',
@@ -736,53 +1014,102 @@ class clientesController extends Controller
                 'red_origen.required' => 'Seleccione un Origen',
                 'grupo.required' => 'Seleccione un Tipo de Negocio',
                 'ciudadesid.required' => 'Seleccione una Ciudad'
-            ],
+            ]
         );
 
+        // Preparar datos
+        $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
+        $request['fechamodificacion'] = now();
+        $request['usuariomodificacion'] = Auth::user()->nombres;
+        $request['telefono1'] = $request['telefono1'] ?: "";
+        $request['sis_clientesid'] = $cliente->sis_clientesid;
 
         DB::beginTransaction();
+
         try {
-            $servidores = Servidores::where('estado', 1)->get();
-            $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
-            $request['fechamodificacion'] =  now();
-            $request['usuariomodificacion'] = Auth::user()->nombres;
-            $request['telefono1'] = $request['telefono1'] <> "" ? $request['telefono1'] : "";
-
+            // 1. ACTUALIZAR SERVIDOR LOCAL PRIMERO (fuente de verdad)
             $cliente->update($request->all());
+            LogService::modificar('Clientes', $cliente);
 
-            $log = new Log();
-            $log->usuario = Auth::user()->nombres;
-            $log->pantalla = "Clientes";
-            $log->tipooperacion = "Modificar";
-            $log->fecha = now();
-            $log->detalle = $cliente;
-            $log->save();
+            DB::commit();
 
-            $request['sis_clientesid'] = $cliente->sis_clientesid;
-            $request['fechamodificacion'] =   date('YmdHis', strtotime($request['fechamodificacion']));
+            // 2. SINCRONIZAR A SERVIDORES REMOTOS (sin afectar local si fallan)
+            $servidores = Servidores::where('estado', 1)->get();
+            $erroresSincronizacion = [];
+
+            // Formatear fecha para envío
+            $dataFormatted = $request->all();
+            if (isset($dataFormatted['fechamodificacion'])) {
+                $dataFormatted['fechamodificacion'] = date('YmdHis', strtotime($dataFormatted['fechamodificacion']));
+            }
 
             foreach ($servidores as $servidor) {
+                try {
+                    // Verificar disponibilidad (opcional)
+                    if (!$this->verificarDisponibilidadServidor($servidor)) {
+                        $erroresSincronizacion[] = "{$servidor->descripcion}: No disponible";
+                        continue;
+                    }
 
-                $urlEditar = $servidor->dominio . '/registros/editar_clientes';
-                $clienteEditar = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                    ->withOptions(["verify" => false])
-                    ->post($urlEditar, $request->all())
-                    ->json();
+                    $resultado = $this->actualizarClienteRemoto($servidor, $dataFormatted);
 
-                if (!isset($clienteEditar['sis_clientes'])) {
-                    DB::rollBack();
-                    flash('Ocurrió un error vuelva a intentarlo')->warning();
-                    return back();
+                    if (!$resultado['success']) {
+                        $erroresSincronizacion[] = "{$servidor->descripcion}: {$resultado['error']}";
+                    }
+                } catch (\Exception $e) {
+                    $erroresSincronizacion[] = "{$servidor->descripcion}: {$e->getMessage()}";
                 }
             }
-            flash('Guardado Correctamente')->success();
-            DB::commit();
-        } catch (\Exception $e) {
 
+            // 3. MOSTRAR RESULTADO
+            if (empty($erroresSincronizacion)) {
+                flash('Cliente actualizado correctamente')->success();
+            } else {
+                $mensajeWarning = 'Cliente actualizado correctamente. Errores de sincronización: ' .
+                    implode(', ', $erroresSincronizacion);
+                flash($mensajeWarning)->warning();
+            }
+
+            return back();
+        } catch (\Exception $e) {
             DB::rollBack();
-            flash('Ocurrió un error vuelva a intentarlo')->warning();
-        };
-        return back();
+            flash('Error al actualizar el cliente: ' . $e->getMessage())->error();
+            return back()->withInput();
+        }
+    }
+
+    //Actualizar cliente en servidor remoto
+    private function actualizarClienteRemoto($servidor, $data)
+    {
+        try {
+            $url = $servidor->dominio . '/registros/editar_clientes';
+
+            $response = Http::timeout(20)
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json'
+                ])
+                ->withOptions(['verify' => false])
+                ->post($url, $data);
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+
+                if (isset($responseData['sis_clientes'])) {
+                    return ['success' => true];
+                }
+            }
+
+            return [
+                'success' => false,
+                'error' => 'HTTP ' . $response->status()
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
     }
 
     public function eliminar(Clientes $cliente)
@@ -839,13 +1166,10 @@ class clientesController extends Controller
             Licenciasweb::where('sis_clientesid', $cliente->sis_clientesid)->delete();
 
             $cliente->delete();
-            $log = new Log();
-            $log->usuario = Auth::user()->nombres;
-            $log->pantalla = "Cliente";
-            $log->tipooperacion = "Eliminar";
-            $log->fecha = now();
-            $log->detalle = $cliente;
-            $log->save();
+
+            //Registro de log
+            LogService::eliminar('Clientes', $cliente);
+
             flash('Eliminado Correctamente')->success();
             DB::commit();
         } catch (\Exception $e) {

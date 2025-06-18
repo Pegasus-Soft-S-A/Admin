@@ -6,6 +6,7 @@ use App\Mail\enviarlicencia;
 use App\Models\Ciudades;
 use App\Models\Clientes;
 use App\Models\Licencias;
+use App\Models\Licenciasvps;
 use App\Models\Licenciasweb;
 use App\Models\Links;
 use App\Models\Log;
@@ -17,6 +18,7 @@ use App\Models\Usuarios;
 use App\Rules\UniqueSimilar;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
+use App\Services\LogService;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -569,6 +571,7 @@ class adminController extends Controller
             }
 
             $log = new Log();
+            LogService::crear('Licencia Web', $request->all());
             $log->usuario = "Perseo Lite";
             $log->pantalla = "Clientes";
             $log->tipooperacion = "Crear";
@@ -656,20 +659,15 @@ class adminController extends Controller
 
     public function generarContrato()
     {
-        $randomString = "";
-        while (strlen($randomString) < 10) {
-            $numero = rand(1, 9);
-            $randomString = $randomString . $numero;
-        }
+        do {
+            $numeroContrato = (string) random_int(1000000000, 9999999999);
 
-        $pc = Licencias::where('numerocontrato', $randomString)->first();
-        $web = Licenciasweb::where('numerocontrato', $randomString)->first();
+            $existe = Licencias::where('numerocontrato', $numeroContrato)->exists() ||
+                Licenciasweb::where('numerocontrato', $numeroContrato)->exists() ||
+                Licenciasvps::where('numerocontrato', $numeroContrato)->exists();
+        } while ($existe);
 
-        if ($pc || $web) {
-            $randomString = $this->generarContrato();
-        }
-
-        return $randomString;
+        return $numeroContrato;
     }
 
     public function recuperarciudades(Request $request)

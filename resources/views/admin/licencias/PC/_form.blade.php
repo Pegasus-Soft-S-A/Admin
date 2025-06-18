@@ -196,20 +196,16 @@
                     <span class="text-danger">{{ $errors->first('clave') }}</span>
                 @endif
             </div>
-            @if ($accion == 'Modificar')
-                <div class="col-lg-4">
-                    <label>Empresas Activas:</label>
-                    <input type="text" class="form-control" value="{{ $empresas->empresas_activas }}" readonly />
-                </div>
-                <div class="col-lg-4">
-                    <label>Empresas Inactivas:</label>
-                    <input type="text" class="form-control" value="{{ $empresas->empresas_inactivas }}" readonly />
-                </div>
-            @endif
+            <div class="col-lg-4">
+                <label>Precio:</label>
+                <input type="text" class="form-control" placeholder="Ingrese Precio" id="precio" name="precio" autocomplete="off"
+                    disabled />
+            </div>
         </div>
 
         <!-- Configuración Nube (se muestra/oculta según selección) -->
         <div id="div_nube" style="display: none;">
+            <hr>
             <div class="form-group row">
                 <div class="col-lg-4">
                     <label>Tipo:</label>
@@ -242,9 +238,24 @@
             </div>
         </div>
 
+        @if ($accion == 'Modificar')
+            <hr>
+            <div class="form-group row">
+                <div class="col-lg-4">
+                    <label>Empresas Activas:</label>
+                    <input type="text" class="form-control" value="{{ $empresas->empresas_activas }}" readonly />
+                </div>
+                <div class="col-lg-4">
+                    <label>Empresas Inactivas:</label>
+                    <input type="text" class="form-control" value="{{ $empresas->empresas_inactivas }}" readonly />
+                </div>
+            </div>
+        @endif
+
         <!-- Sub-tabs para módulos -->
         <ul class="nav nav-tabs nav-tabs-line nav-bold">
-            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#aplicacionesprincipales">Aplicaciones Principales</a></li>
+            <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#aplicacionesprincipales">Aplicaciones Principales</a>
+            </li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#modulosadicionales">Módulos Adicionales</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#correos">Correos</a></li>
             <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#respaldos">Respaldos</a></li>
@@ -589,6 +600,7 @@
                 mostrarDivNube(true);
             }
 
+            inicializarPrecioDesdeConfiguracion();
             inicializarDatepickers();
             inicializarDataTable();
         }
@@ -598,6 +610,26 @@
             $("#renovaranual").click(() => confirmarAccion('anual', "¿Está seguro de Renovar la Licencia?"));
             $("#renovaractualizacion").click(() => confirmarAccion('actualizacion', "¿Está seguro de Renovar la Licencia?"));
             $("#periodo").change(cambiarComboPC);
+
+            $("#tipo_nube").change(function() {
+                const tipoNube = $(this).val();
+                const usuarios = configuracionPC.configuracion_nube.usuarios_por_tipo[tipoNube] || 4;
+                $("#usuarios_nube").val(usuarios);
+                //Actualizar precio cuando cambia el tipo de nube
+                if ($("#nube").prop("checked")) {
+                    actualizarPrecioNube();
+                }
+            });
+
+            // Cuando se hace clic en el botón "ver adicionales"
+            $("#ver_adicionales").click(function() {
+                // Obtener el número de contrato del atributo data
+                var numerocontrato = $(this).data('numerocontrato');
+
+                // Abre el modal
+                $("#modal_adicionales").modal('show');
+            });
+
             inicializarEventosCheckboxes();
         }
 
@@ -698,6 +730,7 @@
                 fechaActualizaciones.setMonth(fechaActualizaciones.getMonth() + configuracionPeriodo.meses_actualizaciones);
                 $("#fechaactulizaciones").val(formatearFecha(fechaActualizaciones));
             }
+            inicializarPrecioDesdeConfiguracion();
         }
 
         function inicializarEventosCheckboxes() {
@@ -735,6 +768,15 @@
                     $("#numeromoviles").val(config.moviles);
                     $("#numerosucursales").val(config.sucursales);
 
+                    // Manejar precio especial para nube
+                    if (modulo === "nube") {
+                        // Para nube, el precio depende del tipo seleccionado
+                        actualizarPrecioNube();
+                    } else {
+                        // Para otros módulos, usar precio directo
+                        $("#precio").val(config.precio);
+                    }
+
                     // Activar módulos incluidos
                     if (config.incluye_nomina) {
                         $("#nomina").prop("checked", true);
@@ -753,6 +795,49 @@
                 mostrarDivNube(modulo === "nube");
             } else {
                 mostrarDivNube(false);
+                $("#precio").val('0');
+            }
+        }
+
+        // Función mejorada para actualizar precio de nube
+        function actualizarPrecioNube() {
+            const tipoNube = $("#tipo_nube").val() || '1'; // Por defecto Prime
+            const config = configuracionPC.modulos_principales.nube;
+
+            if (config && config.precio) {
+                let precio = 0;
+                if (tipoNube === '1') {
+                    precio = config.precio.prime;
+                } else if (tipoNube === '2') {
+                    precio = config.precio.contaplus;
+                }
+                $("#precio").val(precio);
+            }
+        }
+
+        // Función para inicializar el precio al cargar la página
+        function inicializarPrecioDesdeConfiguracion() {
+            // Detectar qué módulo principal está activo
+            const modulosPrincipales = ["practico", "control", "contable", "nube"];
+            let moduloActivo = null;
+
+            modulosPrincipales.forEach(modulo => {
+                if ($("#" + modulo).prop("checked")) {
+                    moduloActivo = modulo;
+                }
+            });
+
+            if (moduloActivo) {
+                const config = configuracionPC.modulos_principales[moduloActivo];
+                if (config) {
+                    if (moduloActivo === "nube") {
+                        actualizarPrecioNube();
+                    } else {
+                        $("#precio").val(config.precio);
+                    }
+                }
+            } else {
+                $("#precio").val('0');
             }
         }
 
@@ -789,7 +874,12 @@
         function mostrarDivNube(estado) {
             $("#div_nube").toggle(estado);
             if (estado && configuracionPC.configuracion_nube) {
-                $("#usuarios_nube").val(configuracionPC.configuracion_nube.usuarios_defecto);
+                // Obtener el tipo de nube seleccionado
+                const tipoNube = $("#tipo_nube").val() || 1; // Por defecto Prime
+                const usuarios = configuracionPC.configuracion_nube.usuarios_por_tipo[tipoNube] || 4;
+                $("#usuarios_nube").val(usuarios);
+                // Actualizar precio al mostrar la configuración de nube
+                actualizarPrecioNube();
             }
         }
 

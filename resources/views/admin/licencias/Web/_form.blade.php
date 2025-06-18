@@ -82,10 +82,8 @@
     </div>
     <div class="col-lg-6">
         <label>Precio:</label>
-        <input type="text"
-            class="form-control {{ !puede('web', 'editar_campos_numericos') ? 'disabled' : '' }} 
-                {{ $errors->has('precio') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Precio" id="precio" name="precio" autocomplete="off" value="{{ old('precio', $licencia->precio) }}" />
+        <input type="text" class="form-control disabled  {{ $errors->has('precio') ? 'is-invalid' : '' }}" placeholder="Ingrese Precio"
+            id="precio" name="precio" autocomplete="off" />
         @if ($errors->has('precio'))
             <span class="text-danger">{{ $errors->first('precio') }}</span>
         @endif
@@ -256,7 +254,6 @@
                 configurarFormularioExistente();
             }
 
-            inicializarInputNumerico();
             inicializarDatepicker();
         }
 
@@ -297,20 +294,6 @@
             }
 
             cambiarComboWeb();
-        }
-
-        function inicializarInputNumerico() {
-            $('#precio').TouchSpin({
-                buttondown_class: 'btn btn-secondary {{ !puede('web', 'editar_campos_numericos') ? 'disabled' : '' }}',
-                buttonup_class: 'btn btn-secondary {{ !puede('web', 'editar_campos_numericos') ? 'disabled' : '' }}',
-                min: 0,
-                max: 10000000,
-                step: 1,
-                decimals: 2,
-                boostat: 5,
-                maxboostedstep: 10,
-                forcestepdivisibility: 'none'
-            });
         }
 
         function inicializarDatepicker() {
@@ -381,6 +364,8 @@
 
         function aplicarConfiguraciones(config, fecha, esEdicion, debeActualizarModulos) {
             if (config) {
+                // SIEMPRE aplicar el precio desde las configuraciones (tanto en creación como en edición)
+                $('#precio').val(config.precio);
                 // Solo aplicar valores por defecto en modo creación
                 if (!esEdicion) {
                     // Para nueva licencia, aplicar todos los valores predeterminados

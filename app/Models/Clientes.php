@@ -14,14 +14,6 @@ class Clientes extends Model
     public $timestamps = false;
     protected $guarded = [];
 
-    /**
-     * Scope para obtener clientes con sus licencias (web, vps y regulares)
-     * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param int $distribuidor ID del distribuidor (0 para todos)
-     * @param string $busqueda Término de búsqueda
-     * @return \Illuminate\Support\Collection
-     */
     public function scopeClientes($query, $distribuidor = 0, $busqueda = '')
     {
         // Consulta unificada usando Query Builder en lugar de SQL directo
@@ -73,17 +65,13 @@ class Clientes extends Model
         return $result->get();
     }
 
-    /**
-     * Obtiene los clientes con licencias PC
-     * 
-     * @return \Illuminate\Database\Query\Builder
-     */
     private function getClientsWithPCLicenses()
     {
         return DB::table('sis_licencias')
             ->join('sis_clientes', 'sis_licencias.sis_clientesid', '=', 'sis_clientes.sis_clientesid')
             ->select([
                 'sis_clientes.sis_clientesid',
+                'sis_licencias.sis_licenciasid',
                 'sis_clientes.identificacion',
                 'sis_clientes.nombres',
                 'sis_clientes.telefono1',
@@ -123,21 +111,18 @@ class Clientes extends Model
                 'sis_licencias.cantidadempresas',
                 'sis_clientes.validado',
                 'sis_licencias.Identificador',
-                'sis_licencias.usuarios_activos'
+                'sis_licencias.usuarios_activos',
+                DB::raw("'' AS sis_servidoresid"),
             ]);
     }
 
-    /**
-     * Obtiene los clientes con licencias VPS
-     * 
-     * @return \Illuminate\Database\Query\Builder
-     */
     private function getClientsWithVpsLicenses()
     {
         return DB::table('sis_licencias_vps')
             ->join('sis_clientes', 'sis_licencias_vps.sis_clientesid', '=', 'sis_clientes.sis_clientesid')
             ->select([
                 'sis_clientes.sis_clientesid',
+                'sis_licencias_vps.sis_licenciasid',
                 'sis_clientes.identificacion',
                 'sis_clientes.nombres',
                 'sis_clientes.telefono1',
@@ -177,21 +162,18 @@ class Clientes extends Model
                 DB::raw("'' AS cantidadempresas"),
                 'sis_clientes.validado',
                 DB::raw("'' AS Identificador"),
-                DB::raw("'' AS usuarios_activos")
+                DB::raw("'' AS usuarios_activos"),
+                DB::raw("'' AS sis_servidoresid"),
             ]);
     }
 
-    /**
-     * Obtiene los clientes con licencias web
-     * 
-     * @return \Illuminate\Database\Query\Builder
-     */
     private function getClientsWithWebLicenses()
     {
         return DB::table('sis_clientes')
             ->join('sis_licencias_web', 'sis_licencias_web.sis_clientesid', '=', 'sis_clientes.sis_clientesid')
             ->select([
                 'sis_clientes.sis_clientesid',
+                'sis_licencias_web.sis_licenciasid',
                 'sis_clientes.identificacion',
                 'sis_clientes.nombres',
                 'sis_clientes.telefono1',
@@ -231,15 +213,11 @@ class Clientes extends Model
                 DB::raw("'' AS cantidadempresas"),
                 'sis_clientes.validado',
                 DB::raw("'' AS Identificador"),
-                DB::raw("'' AS usuarios_activos")
+                DB::raw("'' AS usuarios_activos"),
+                'sis_licencias_web.sis_servidoresid',
             ]);
     }
 
-    /**
-     * Obtiene los clientes sin licencias
-     * 
-     * @return \Illuminate\Database\Query\Builder
-     */
     private function getClientsWithoutLicenses()
     {
         return DB::table('sis_clientes')
@@ -255,6 +233,7 @@ class Clientes extends Model
             })
             ->select([
                 'sis_clientes.sis_clientesid',
+                DB::raw("'' AS sis_licenciasid"),
                 'sis_clientes.identificacion',
                 'sis_clientes.nombres',
                 'sis_clientes.telefono1',
@@ -294,7 +273,8 @@ class Clientes extends Model
                 DB::raw("'' AS cantidadempresas"),
                 'sis_clientes.validado',
                 DB::raw("'' AS Identificador"),
-                DB::raw("'' AS usuarios_activos")
+                DB::raw("'' AS usuarios_activos"),
+                DB::raw("'' AS sis_servidoresid"),
             ]);
     }
 }

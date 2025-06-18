@@ -63,6 +63,7 @@ Route::group(['prefix' => 'admin'], function () {
 
         /* Licencias */
         Route::get('/licencias/actividad/{servidor}/{licencia}', [licenciasController::class, 'actividad'])->name('licencias.actividad');
+        Route::get('licencias/adicionales/{numerocontrato}', [licenciasController::class, 'adicionales'])->name('licencias.adicionales');
         Route::get('/licencias/{cliente}', [licenciasController::class, 'index'])->name('licencias.index');
         Route::get('/licencias/{cliente}/crearweb', [licenciasController::class, 'crearWeb'])->name('licencias.Web.crear');
         Route::get('/licencias/{cliente}/crearpc', [licenciasController::class, 'crearPC'])->name('licencias.Pc.crear');

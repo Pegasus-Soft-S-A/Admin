@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Distribuidores;
 use App\Models\Log;
+use App\Services\LogService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,13 +65,7 @@ class distribuidoresController extends Controller
         $request['usuariocreacion'] = Auth::user()->nombres;
         $distribuidor =   Distribuidores::create($request->all());
 
-        // $log = new Log();
-        // $log->usuario = Auth::user()->nombres;
-        // $log->pantalla = "Distribuidores";
-        // $log->tipooperacion = "Crear";
-        // $log->fecha = now();
-        // $log->detalle = $distribuidor;
-        // $log->save();
+        LogService::crear('Distribuidores', $distribuidor);
 
         flash('Guardado Correctamente')->success();
         return redirect()->route('distribuidores.editar', $distribuidor->sis_distribuidoresid);
@@ -97,7 +92,6 @@ class distribuidoresController extends Controller
                 'razonsocial.required' => 'Ingrese una Razón Social',
                 'nombrecomercial.required' => 'Ingrese un Nombre Comercial',
                 'correos.required' => 'Ingrese un Correo',
-                //'correos.*.email' => 'Ingrese un Correo válido',
             ],
         );
 
@@ -106,13 +100,7 @@ class distribuidoresController extends Controller
         $request['usuariomodificacion'] = Auth::user()->nombres;
         $distribuidor->update($request->all());
 
-        // $log = new Log();
-        // $log->usuario = Auth::user()->nombres;
-        // $log->pantalla = "Distribuidores";
-        // $log->tipooperacion = "Modificar";
-        // $log->fecha = now();
-        // $log->detalle = $distribuidor;
-        // $log->save();
+        LogService::modificar('Distribuidores', $distribuidor);
 
         flash('Actualizado Correctamente')->success();
         return back();
@@ -123,20 +111,13 @@ class distribuidoresController extends Controller
         try {
             $distribuidor->delete();
         } catch (QueryException $e) {
-            dd($e->getMessage());
             if ($e->errorInfo[1] == '1451') {
                 flash("Existen usuarios asociados al distribuidor")->error();
                 return back();
             }
         }
 
-        // $log = new Log();
-        // $log->usuario = Auth::user()->nombres;
-        // $log->pantalla = "Distribuidores";
-        // $log->tipooperacion = "Eliminar";
-        // $log->fecha = now();
-        // $log->detalle = $distribuidor;
-        // $log->save();
+        LogService::eliminar('Distribuidores', $distribuidor);
 
         flash("Eliminado Correctamente")->success();
         return back();

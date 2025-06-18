@@ -69,7 +69,7 @@
                         </a>
                     </li>
 
-                    <li class="menu-item {{ areActiveRoutes(['migrar']) }} " aria-haspopup="true">
+                    {{-- <li class="menu-item {{ areActiveRoutes(['migrar']) }} " aria-haspopup="true">
                         <a href="{{ route('migrar') }}" class="menu-link">
                             <i class="menu-icon fa fa-database"></i>
                             <span class="menu-text">Migrar Servidor</span>
@@ -80,7 +80,7 @@
                         <a href="{{ route('agrupados.index') }}" class="menu-link">
                             <i class="menu-icon fa fa-users"></i>
                             <span class="menu-text">Agrupados</span>
-                        </a>
+                        </a> --}}
                     </li>
 
                     <li class="menu-item {{ areActiveRoutes(['links.index']) }} " aria-haspopup="true">

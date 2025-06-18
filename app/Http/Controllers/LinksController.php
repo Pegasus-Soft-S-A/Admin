@@ -6,6 +6,7 @@ use App\Models\Clientes;
 use App\Models\Distribuidores;
 use App\Models\Links;
 use App\Models\Log;
+use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\DataTables as DataTables;
@@ -62,13 +63,7 @@ class LinksController extends Controller
 
         $links =   Links::create($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Links";
-        $log->tipooperacion = "Crear";
-        $log->fecha = now();
-        $log->detalle = $links;
-        $log->save();
+        LogService::crear('Links', $links);
 
         flash('Link creado correctamente')->success();
         return redirect()->route('links.editar', $links->sis_linksid);
@@ -100,13 +95,7 @@ class LinksController extends Controller
 
         $links->update($request->all());
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Links";
-        $log->tipooperacion = "Modificar";
-        $log->fecha = now();
-        $log->detalle = $links;
-        $log->save();
+        LogService::modificar('Links', $links);
 
         flash('Actualizado Correctamente')->success();
         return back();
@@ -123,13 +112,7 @@ class LinksController extends Controller
 
         $links->delete();
 
-        $log = new Log();
-        $log->usuario = Auth::user()->nombres;
-        $log->pantalla = "Links";
-        $log->tipooperacion = "Eliminar";
-        $log->fecha = now();
-        $log->detalle = $links;
-        $log->save();
+        LogService::eliminar('Links', $links);
 
         flash("Eliminado Correctamente")->success();
         return back();

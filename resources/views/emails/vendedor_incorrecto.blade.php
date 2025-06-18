@@ -1,7 +1,5 @@
-<!DOCTYPE HTML
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
-    xmlns:o="urn:schemas-microsoft-com:office:office">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
 <head>
     <!--[if gte mso 9]>
@@ -111,8 +109,7 @@
 
 </head>
 
-<body class="clean-body u_body"
-    style="margin: 0;padding: 0;-webkit-text-size-adjust: 100%;background-color: #f9f9f9;color: #000000">
+<body class="clean-body u_body" style="margin: 0;padding: 0;-webkit-text-size-adjust: 100%;background-color: #f9f9f9;color: #000000">
     <!--[if IE]><div class="ie-container"><![endif]-->
     <!--[if mso]><div class="mso-container"><![endif]-->
     <table id="u_body"
@@ -127,31 +124,27 @@
                     <div class="u-row-container" style="padding: 0px;background-color: transparent">
                         <div class="u-row"
                             style="Margin: 0 auto;min-width: 320px;max-width: 600px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #ffffff;">
-                            <div
-                                style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
+                            <div style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
                                 <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #ffffff;"><![endif]-->
 
                                 <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
-                                <div class="u-col u-col-100"
-                                    style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
+                                <div class="u-col u-col-100" style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
                                     <div style="height: 100%;width: 100% !important;">
                                         <!--[if (!mso)&(!IE)]><!-->
                                         <div
                                             style="height: 100%; padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;">
                                             <!--<![endif]-->
 
-                                            <table style="font-family:'Cabin',sans-serif;" role="presentation"
-                                                cellpadding="0" cellspacing="0" width="100%" border="0">
+                                            <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0"
+                                                width="100%" border="0">
                                                 <tbody>
                                                     <tr>
                                                         <td style="overflow-wrap:break-word;word-break:break-word;padding:20px;font-family:'Cabin',sans-serif;"
                                                             align="left">
 
-                                                            <table width="100%" cellpadding="0" cellspacing="0"
-                                                                border="0">
+                                                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                                                 <tr>
-                                                                    <td style="padding-right: 0px;padding-left: 0px;"
-                                                                        align="center">
+                                                                    <td style="padding-right: 0px;padding-left: 0px;" align="center">
 
                                                                         <img align="center" border="0"
                                                                             src="https://assets.unlayer.com/projects/114301/1668735896394-LOGO1.png"
@@ -184,31 +177,27 @@
                     <div class="u-row-container" style="padding: 0px;background-color: transparent">
                         <div class="u-row"
                             style="Margin: 0 auto;min-width: 320px;max-width: 600px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #6e8fff;">
-                            <div
-                                style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
+                            <div style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
                                 <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #6e8fff;"><![endif]-->
 
                                 <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
-                                <div class="u-col u-col-100"
-                                    style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
+                                <div class="u-col u-col-100" style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
                                     <div style="height: 100%;width: 100% !important;">
                                         <!--[if (!mso)&(!IE)]><!-->
                                         <div
                                             style="height: 100%; padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;">
                                             <!--<![endif]-->
 
-                                            <table style="font-family:'Cabin',sans-serif;" role="presentation"
-                                                cellpadding="0" cellspacing="0" width="100%" border="0">
+                                            <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0"
+                                                width="100%" border="0">
                                                 <tbody>
                                                     <tr>
                                                         <td style="overflow-wrap:break-word;word-break:break-word;padding:40px 10px 10px;font-family:'Cabin',sans-serif;"
                                                             align="left">
 
-                                                            <table width="100%" cellpadding="0" cellspacing="0"
-                                                                border="0">
+                                                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                                                 <tr>
-                                                                    <td style="padding-right: 0px;padding-left: 0px;"
-                                                                        align="center">
+                                                                    <td style="padding-right: 0px;padding-left: 0px;" align="center">
 
                                                                         <img align="center" border="0"
                                                                             src="https://cdn.templates.unlayer.com/assets/1597218650916-xxxxc.png"
@@ -225,8 +214,8 @@
                                                 </tbody>
                                             </table>
 
-                                            <table style="font-family:'Cabin',sans-serif;" role="presentation"
-                                                cellpadding="0" cellspacing="0" width="100%" border="0">
+                                            <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0"
+                                                width="100%" border="0">
                                                 <tbody>
                                                     <tr>
                                                         <td style="overflow-wrap:break-word;word-break:break-word;padding:0px 10px 31px;font-family:'Cabin',sans-serif;"
@@ -263,28 +252,25 @@
                     <div class="u-row-container" style="padding: 0px;background-color: transparent">
                         <div class="u-row"
                             style="Margin: 0 auto;min-width: 320px;max-width: 600px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #ffffff;">
-                            <div
-                                style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
+                            <div style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
                                 <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #ffffff;"><![endif]-->
 
                                 <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
-                                <div class="u-col u-col-100"
-                                    style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
+                                <div class="u-col u-col-100" style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
                                     <div style="height: 100%;width: 100% !important;">
                                         <!--[if (!mso)&(!IE)]><!-->
                                         <div
                                             style="height: 100%; padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;">
                                             <!--<![endif]-->
 
-                                            <table style="font-family:'Cabin',sans-serif;" role="presentation"
-                                                cellpadding="0" cellspacing="0" width="100%" border="0">
+                                            <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0"
+                                                width="100%" border="0">
                                                 <tbody>
                                                     <tr>
                                                         <td style="overflow-wrap:break-word;word-break:break-word;padding:33px 55px;font-family:'Cabin',sans-serif;"
                                                             align="left">
 
-                                                            <div
-                                                                style="line-height: 160%; text-align: center; word-wrap: break-word;">
+                                                            <div style="line-height: 160%; text-align: center; word-wrap: break-word;">
                                                                 <p style="font-size: 14px; line-height: 160%;">
                                                                     <strong><span
                                                                             style="font-size: 22px; line-height: 35.2px; font-family: 'Open Sans', sans-serif;">¡Atención!
@@ -292,9 +278,8 @@
                                                                             pertenece, por favor direcciónalo hacia su
                                                                             asesor.</span></strong>
                                                                 </p>
-                                                                <p
-                                                                    style="font-size: 14px; line-height: 160%; text-align: left;">
-                                                                     </p>
+                                                                <p style="font-size: 14px; line-height: 160%; text-align: left;">
+                                                                    </p>
 
                                                             </div>
 
@@ -319,21 +304,19 @@
                     <div class="u-row-container" style="padding: 0px;background-color: transparent">
                         <div class="u-row"
                             style="Margin: 0 auto;min-width: 320px;max-width: 600px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #e5eaf5;">
-                            <div
-                                style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
+                            <div style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
                                 <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #e5eaf5;"><![endif]-->
 
                                 <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
-                                <div class="u-col u-col-100"
-                                    style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
+                                <div class="u-col u-col-100" style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
                                     <div style="height: 100%;width: 100% !important;">
                                         <!--[if (!mso)&(!IE)]><!-->
                                         <div
                                             style="height: 100%; padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;">
                                             <!--<![endif]-->
 
-                                            <table style="font-family:'Cabin',sans-serif;" role="presentation"
-                                                cellpadding="0" cellspacing="0" width="100%" border="0">
+                                            <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0"
+                                                width="100%" border="0">
                                                 <tbody>
                                                     <tr>
                                                         <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Cabin',sans-serif;"
@@ -345,19 +328,17 @@
 
 
                                                                     <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 17px;" valign="top"><![endif]-->
-                                                                    <table align="left" border="0" cellspacing="0"
-                                                                        cellpadding="0" width="32" height="32"
+                                                                    <table align="left" border="0" cellspacing="0" cellpadding="0"
+                                                                        width="32" height="32"
                                                                         style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 17px">
                                                                         <tbody>
                                                                             <tr style="vertical-align: top">
                                                                                 <td align="left" valign="middle"
                                                                                     style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                                                                                     <a href="https://www.facebook.com/sistemacontableperseoec/"
-                                                                                        title="Facebook"
-                                                                                        target="_blank">
+                                                                                        title="Facebook" target="_blank">
                                                                                         <img src="https://cdn.tools.unlayer.com/social/icons/circle-black/facebook.png"
-                                                                                            alt="Facebook"
-                                                                                            title="Facebook" width="32"
+                                                                                            alt="Facebook" title="Facebook" width="32"
                                                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                                                                     </a>
                                                                                 </td>
@@ -367,19 +348,17 @@
                                                                     <!--[if (mso)|(IE)]></td><![endif]-->
 
                                                                     <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 17px;" valign="top"><![endif]-->
-                                                                    <table align="left" border="0" cellspacing="0"
-                                                                        cellpadding="0" width="32" height="32"
+                                                                    <table align="left" border="0" cellspacing="0" cellpadding="0"
+                                                                        width="32" height="32"
                                                                         style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 17px">
                                                                         <tbody>
                                                                             <tr style="vertical-align: top">
                                                                                 <td align="left" valign="middle"
                                                                                     style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                                                                                     <a href="https://www.instagram.com/sistemacontableperseoec/"
-                                                                                        title="Instagram"
-                                                                                        target="_blank">
+                                                                                        title="Instagram" target="_blank">
                                                                                         <img src="https://cdn.tools.unlayer.com/social/icons/circle-black/instagram.png"
-                                                                                            alt="Instagram"
-                                                                                            title="Instagram" width="32"
+                                                                                            alt="Instagram" title="Instagram" width="32"
                                                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                                                                     </a>
                                                                                 </td>
@@ -389,8 +368,8 @@
                                                                     <!--[if (mso)|(IE)]></td><![endif]-->
 
                                                                     <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 17px;" valign="top"><![endif]-->
-                                                                    <table align="left" border="0" cellspacing="0"
-                                                                        cellpadding="0" width="32" height="32"
+                                                                    <table align="left" border="0" cellspacing="0" cellpadding="0"
+                                                                        width="32" height="32"
                                                                         style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 17px">
                                                                         <tbody>
                                                                             <tr style="vertical-align: top">
@@ -399,8 +378,7 @@
                                                                                     <a href="https://www.tiktok.com/@sistemacontableperseoec?_t=8Uiia3yZibO&_r=1"
                                                                                         title="TikTok" target="_blank">
                                                                                         <img src="https://cdn.tools.unlayer.com/social/icons/circle-black/tiktok.png"
-                                                                                            alt="TikTok" title="TikTok"
-                                                                                            width="32"
+                                                                                            alt="TikTok" title="TikTok" width="32"
                                                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                                                                     </a>
                                                                                 </td>
@@ -410,19 +388,17 @@
                                                                     <!--[if (mso)|(IE)]></td><![endif]-->
 
                                                                     <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 17px;" valign="top"><![endif]-->
-                                                                    <table align="left" border="0" cellspacing="0"
-                                                                        cellpadding="0" width="32" height="32"
+                                                                    <table align="left" border="0" cellspacing="0" cellpadding="0"
+                                                                        width="32" height="32"
                                                                         style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 17px">
                                                                         <tbody>
                                                                             <tr style="vertical-align: top">
                                                                                 <td align="left" valign="middle"
                                                                                     style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                                                                                     <a href="https://www.linkedin.com/company/sistemacontableperseoec/mycompany/"
-                                                                                        title="LinkedIn"
-                                                                                        target="_blank">
+                                                                                        title="LinkedIn" target="_blank">
                                                                                         <img src="https://cdn.tools.unlayer.com/social/icons/circle-black/linkedin.png"
-                                                                                            alt="LinkedIn"
-                                                                                            title="LinkedIn" width="32"
+                                                                                            alt="LinkedIn" title="LinkedIn" width="32"
                                                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                                                                     </a>
                                                                                 </td>
@@ -432,8 +408,8 @@
                                                                     <!--[if (mso)|(IE)]></td><![endif]-->
 
                                                                     <!--[if (mso)|(IE)]><td width="32" style="width:32px; padding-right: 0px;" valign="top"><![endif]-->
-                                                                    <table align="left" border="0" cellspacing="0"
-                                                                        cellpadding="0" width="32" height="32"
+                                                                    <table align="left" border="0" cellspacing="0" cellpadding="0"
+                                                                        width="32" height="32"
                                                                         style="width: 32px !important;height: 32px !important;display: inline-block;border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;margin-right: 0px">
                                                                         <tbody>
                                                                             <tr style="vertical-align: top">
@@ -442,8 +418,7 @@
                                                                                     <a href="https://www.youtube.com/channel/UC5vW4mwvCNbWpCxRr_aqI7g"
                                                                                         title="YouTube" target="_blank">
                                                                                         <img src="https://cdn.tools.unlayer.com/social/icons/circle-black/youtube.png"
-                                                                                            alt="YouTube"
-                                                                                            title="YouTube" width="32"
+                                                                                            alt="YouTube" title="YouTube" width="32"
                                                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                                                                                     </a>
                                                                                 </td>
@@ -478,21 +453,19 @@
                     <div class="u-row-container" style="padding: 0px;background-color: transparent">
                         <div class="u-row"
                             style="Margin: 0 auto;min-width: 320px;max-width: 600px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #5e58fc;">
-                            <div
-                                style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
+                            <div style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
                                 <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: #5e58fc;"><![endif]-->
 
                                 <!--[if (mso)|(IE)]><td align="center" width="600" style="width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
-                                <div class="u-col u-col-100"
-                                    style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
+                                <div class="u-col u-col-100" style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
                                     <div style="height: 100%;width: 100% !important;">
                                         <!--[if (!mso)&(!IE)]><!-->
                                         <div
                                             style="height: 100%; padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;">
                                             <!--<![endif]-->
 
-                                            <table style="font-family:'Cabin',sans-serif;" role="presentation"
-                                                cellpadding="0" cellspacing="0" width="100%" border="0">
+                                            <table style="font-family:'Cabin',sans-serif;" role="presentation" cellpadding="0" cellspacing="0"
+                                                width="100%" border="0">
                                                 <tbody>
                                                     <tr>
                                                         <td style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Cabin',sans-serif;"
@@ -502,12 +475,11 @@
                                                                 style="color: #fafafa; line-height: 180%; text-align: center; word-wrap: break-word;">
                                                                 <p style="font-size: 14px; line-height: 180%;"><span
                                                                         style="font-size: 16px; line-height: 28.8px;">Perseo
-                                                                        Soft 2022 © | Todos los derechos
+                                                                        Soft {{ date('Y') }} © | Todos los derechos
                                                                         reservados.</span></p>
                                                                 <p style="font-size: 14px; line-height: 180%;"><span
                                                                         style="color: #ecf0f1; font-size: 14px; line-height: 25.2px;"><a
-                                                                            rel="noopener" href="https://www.perseo.ec"
-                                                                            target="_blank"
+                                                                            rel="noopener" href="https://www.perseo.ec" target="_blank"
                                                                             style="color: #ecf0f1;">www.perseo.ec</a></span>
                                                                 </p>
                                                             </div>

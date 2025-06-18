@@ -189,113 +189,78 @@
                                     <div class="row mb-5">
                                         <div class="col-lg-3 mb-lg-0 mb-6">
                                             <label>Provincias:</label>
+
+                                            @php
+                                                $provincias = [
+                                                    ['id' => '01', 'nombre' => 'Azuay'],
+                                                    ['id' => '02', 'nombre' => 'Bolivar'],
+                                                    ['id' => '03', 'nombre' => 'Cañar'],
+                                                    ['id' => '04', 'nombre' => 'Carchi'],
+                                                    ['id' => '05', 'nombre' => 'Chimborazo'],
+                                                    ['id' => '06', 'nombre' => 'Cotopaxi'],
+                                                    ['id' => '07', 'nombre' => 'El Oro'],
+                                                    ['id' => '08', 'nombre' => 'Esmeraldas'],
+                                                    ['id' => '09', 'nombre' => 'Guayas'],
+                                                    ['id' => '20', 'nombre' => 'Galapagos'],
+                                                    ['id' => '10', 'nombre' => 'Imbabura'],
+                                                    ['id' => '11', 'nombre' => 'Loja'],
+                                                    ['id' => '12', 'nombre' => 'Los Rios'],
+                                                    ['id' => '13', 'nombre' => 'Manabi'],
+                                                    ['id' => '14', 'nombre' => 'Morona Santiago'],
+                                                    ['id' => '15', 'nombre' => 'Napo'],
+                                                    ['id' => '22', 'nombre' => 'Orellana'],
+                                                    ['id' => '16', 'nombre' => 'Pastaza'],
+                                                    ['id' => '17', 'nombre' => 'Pichincha'],
+                                                    ['id' => '24', 'nombre' => 'Santa Elena'],
+                                                    ['id' => '23', 'nombre' => 'Santo Domingo De Los Tsachilas'],
+                                                    ['id' => '21', 'nombre' => 'Sucumbios'],
+                                                    ['id' => '18', 'nombre' => 'Tungurahua'],
+                                                    ['id' => '19', 'nombre' => 'Zamora Chinchipe'],
+                                                ];
+                                            @endphp
+
                                             <select class="form-control datatable-input select2" id="provinciasid" name="provinciasid">
                                                 <option value="">Seleccione una provincia</option>
-                                                <option value="01">
-                                                    Azuay
-                                                </option>
-                                                <option value="02">
-                                                    Bolivar
-                                                </option>
-                                                <option value="03">
-                                                    Cañar
-                                                </option>
-                                                <option value="04">
-                                                    Carchi
-                                                </option>
-                                                <option value="05">
-                                                    Chimborazo
-                                                </option>
-                                                <option value="06">
-                                                    Cotopaxi
-                                                </option>
-                                                <option value="07">
-                                                    El Oro
-                                                </option>
-                                                <option value="08">
-                                                    Esmeraldas
-                                                </option>
-                                                <option value="09">
-                                                    Guayas
-                                                </option>
-                                                <option value="20">
-                                                    Galapagos
-                                                </option>
-                                                <option value="10">
-                                                    Imbabura
-                                                </option>
-                                                <option value="11">
-                                                    Loja</option>
-                                                <option value="12">
-                                                    Los Rios
-                                                </option>
-                                                <option value="13">
-                                                    Manabi
-                                                </option>
-                                                <option value="14">
-                                                    Morona
-                                                    Santiago</option>
-                                                <option value="15">
-                                                    Napo</option>
-                                                <option value="22">
-                                                    Orellana
-                                                </option>
-                                                <option value="16">
-                                                    Pastaza
-                                                </option>
-                                                <option value="17">
-                                                    Pichincha
-                                                </option>
-                                                <option value="24">
-                                                    Santa Elena
-                                                </option>
-                                                <option value="23">
-                                                    Santo Domingo
-                                                    De Los Tsachilas</option>
-                                                <option value="21">
-                                                    Sucumbios
-                                                </option>
-                                                <option value="18">
-                                                    Tungurahua
-                                                </option>
-                                                <option value="19">
-                                                    Zamora
-                                                    Chinchipe</option>
+                                                @foreach ($provincias as $provincia)
+                                                    <option value="{{ $provincia['id'] }}">{{ $provincia['nombre'] }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
+
                                         @if (Auth::user()->tipo == 1)
                                             <div class="col-lg-3 mb-lg-0 mb-6">
                                                 <label>Origen:</label>
+
+                                                @php
+                                                    $origenes = [
+                                                        ['id' => '', 'nombre' => 'Todos'],
+                                                        ['id' => '1', 'nombre' => 'Perseo'],
+                                                        ['id' => '2', 'nombre' => 'Contafácil'],
+                                                        ['id' => '3', 'nombre' => 'UIO-01'],
+                                                        ['id' => '8', 'nombre' => 'UIO-02'],
+                                                        ['id' => '5', 'nombre' => 'GYE-02'],
+                                                        ['id' => '6', 'nombre' => 'CUE-01'],
+                                                        ['id' => '7', 'nombre' => 'STO-01'],
+                                                        ['id' => '10', 'nombre' => 'CNV-01'],
+                                                        ['id' => '11', 'nombre' => 'MATRIZ'],
+                                                        ['id' => '12', 'nombre' => 'CUE-02'],
+                                                        ['id' => '13', 'nombre' => 'CUE-03'],
+                                                        ['id' => '14', 'nombre' => 'UIO-03'],
+                                                        ['id' => '15', 'nombre' => 'UIO-04'],
+                                                        ['id' => '16', 'nombre' => 'UIO-05'],
+                                                        ['id' => '18', 'nombre' => 'SP-01'],
+                                                        ['id' => '19', 'nombre' => 'SP-02'],
+                                                        ['id' => '20', 'nombre' => 'SP-03'],
+                                                        ['id' => '21', 'nombre' => 'SP-04'],
+                                                        ['id' => '22', 'nombre' => 'SP-05'],
+                                                        ['id' => '17', 'nombre' => 'Tienda'],
+                                                    ];
+                                                @endphp
+
                                                 <select class="form-control datatable-input select2" id="origen" name="origen">
-                                                    <option value="">Todos</option>
-                                                    <option value="1">Perseo</option>
-                                                    <option value="2">Contafácil</option>
-                                                    <option value="3">UIO-01</option>
-                                                    <option value="8">UIO-02</option>
-                                                    <option value="5">GYE-02</option>
-                                                    <option value="6">CUE-01</option>
-                                                    <option value="7">STO-01</option>
-                                                    <option value="10">CNV-01</option>
-                                                    <option value="11">MATRIZ</option>
-                                                    <option value="12">CUE-02</option>
-                                                    <option value="13">CUE-03</option>
-                                                    <option value="14">UIO-03</option>
-                                                    <option value="15">UIO-04</option>
-                                                    <option value="16">UIO-05</option>
-                                                    <option value="18">SP-01</option>
-                                                    <option value="19">SP-02</option>
-                                                    <option value="20">SP-03</option>
-                                                    <option value="21">SP-04</option>
-                                                    <option value="22">SP-05</option>
-                                                    <option value="17">Tienda</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-lg-3 mb-lg-0 mb-6">
-                                                <label>Validado:</label>
-                                                <select class="form-control datatable-input select2" id="validado" name="validado">
-                                                    <option value="">Todos</option>
-                                                    <option value="1">Si</option>
-                                                    <option value="0">No</option>
+                                                    @foreach ($origenes as $origen)
+                                                        <option value="{{ $origen['id'] }}">{{ $origen['nombre'] }}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         @endif
@@ -325,17 +290,17 @@
                                         <tr>
                                             <th class="no-exportar"></th>
                                             <th class="no-exportar">#</th>
-                                            <th>Contrato</th>
+                                            <th data-priority="1">Contrato</th>
                                             <th class="no-exportar">Identificador</th>
-                                            <th data-priority="1">Identificacion</th>
-                                            <th data-priority="2">Nombres</th>
-                                            <th data-priority="3">Distribuidor</th>
+                                            <th data-priority="2">Identificacion</th>
+                                            <th data-priority="3">Nombres</th>
+                                            <th data-priority="4">Distribuidor</th>
                                             <th>Celular</th>
                                             <th style="display:none">Correos</th>
-                                            <th data-priority="4">Tipo</th>
-                                            <th data-priority="5">Producto</th>
-                                            <th data-priority="6">Inicia</th>
-                                            <th data-priority="7">Caduca</th>
+                                            <th data-priority="5">Tipo</th>
+                                            <th data-priority="6">Producto</th>
+                                            <th data-priority="7">Inicia</th>
+                                            <th data-priority="8">Caduca</th>
                                             <th style="display:none">Grupo</th>
                                             <th style="display:none">Dias Hasta Vencer</th>
                                             <th style="display:none">Precio</th>
@@ -352,7 +317,6 @@
                                             <th style="display:none">Moviles</th>
                                             <th style="display:none">Cantidad Empresas</th>
                                             <th style="display:none">Usuarios Activos</th>
-                                            <th class="no-exportar">Acciones</th>
 
                                         </tr>
                                     </thead>
@@ -530,7 +494,7 @@
                     {
                         data: 'numerocontrato',
                         name: 'numerocontrato',
-                        visible: false
+                        visible: true
                     },
                     {
                         data: 'Identificador',
@@ -678,13 +642,7 @@
                         visible: false,
                         searchable: false
                     },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false,
-                        className: "text-center"
-                    },
+
                 ],
                 //botones para exportar
                 buttons: [{
