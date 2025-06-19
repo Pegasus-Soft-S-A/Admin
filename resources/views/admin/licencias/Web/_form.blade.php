@@ -81,13 +81,17 @@
         </div>
     </div>
     <div class="col-lg-6">
-        <label>Precio:</label>
-        <input type="text" class="form-control disabled  {{ $errors->has('precio') ? 'is-invalid' : '' }}" placeholder="Ingrese Precio"
-            id="precio" name="precio" autocomplete="off" />
-        @if ($errors->has('precio'))
-            <span class="text-danger">{{ $errors->first('precio') }}</span>
-        @endif
+        <label> Precio </label>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text text-white">
+                    <i class="la la-dollar"></i>
+                </span>
+            </div>
+            <input type="text" class="form-control text-success font-weight-bold disabled" id="precio" name="precio" autocomplete="off" />
+        </div>
     </div>
+
 </div>
 <div class="form-group row">
     <div class="col-lg-6">

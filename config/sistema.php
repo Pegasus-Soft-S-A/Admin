@@ -92,11 +92,11 @@ return [
         'web' => [
             2 => [ // Facturación
                 'mensual' => [
-                    'precio' => '11.69',
+                    'precio' => '17.99',
                     'meses' => 1,
                 ],
                 'anual' => [
-                    'precio' => '113.09',
+                    'precio' => '173.99',
                     'meses' => 12,
                 ],
                 'usuarios' => 6,
@@ -116,11 +116,11 @@ return [
             ],
             3 => [ // Servicios
                 'mensual' => [
-                    'precio' => '19.49',
+                    'precio' => '29.99',
                     'meses' => 1,
                 ],
                 'anual' => [
-                    'precio' => '202.79',
+                    'precio' => '311.99',
                     'meses' => 12,
                 ],
                 'usuarios' => 6,
@@ -140,7 +140,7 @@ return [
             ],
             4 => [ // Comercial
                 'mensual' => [
-                    'precio' => '27.29',
+                    'precio' => '41.99',
                     'meses' => 1,
                     'modulos' => [
                         'ecommerce' => true,
@@ -153,7 +153,7 @@ return [
                     ]
                 ],
                 'anual' => [
-                    'precio' => '280.79',
+                    'precio' => '431.99',
                     'meses' => 12,
                     'modulos' => [
                         'ecommerce' => true,
@@ -173,11 +173,11 @@ return [
             ],
             5 => [ // Soy Contador Comercial
                 'mensual' => [
-                    'precio' => '15.59',
+                    'precio' => '23.99',
                     'meses' => 1,
                 ],
                 'anual' => [
-                    'precio' => '140.39',
+                    'precio' => '215.99',
                     'meses' => 12,
                 ],
                 'usuarios' => 6,
@@ -217,11 +217,11 @@ return [
             ],
             8 => [ // Soy Contador Servicios
                 'mensual' => [
-                    'precio' => '11.69',
+                    'precio' => '17.99',
                     'meses' => 1,
                 ],
                 'anual' => [
-                    'precio' => '116.99',
+                    'precio' => '179.99',
                     'meses' => 12,
                 ],
                 'usuarios' => 6,
@@ -281,11 +281,11 @@ return [
             ],
             11 => [ // Socio Perseo
                 'mensual' => [
-                    'precio' => '6.49',
+                    'precio' => '9.99',
                     'meses' => 1,
                 ],
                 'anual' => [
-                    'precio' => '77.94',
+                    'precio' => '119.90',
                     'meses' => 12,
                 ],
                 'usuarios' => 1,
@@ -305,15 +305,15 @@ return [
             ],
             12 => [ // Facturito
                 'inicial' => [
-                    'precio' => '5.40',
-                    'meses' => 12,
-                ],
-                'basico' => [
                     'precio' => '8.99',
                     'meses' => 12,
                 ],
+                'basico' => [
+                    'precio' => '14.99',
+                    'meses' => 12,
+                ],
                 'premium' => [
-                    'precio' => '17.99',
+                    'precio' => '29.99',
                     'meses' => 12,
                 ],
                 'gratis' => [
@@ -344,7 +344,11 @@ return [
                     'equipos' => 2,
                     'moviles' => 0,
                     'sucursales' => 1,
-                    'precio' => 100,
+                    'precios' => [
+                        'mensual' => 33,
+                        'anual' => 310,
+                        'venta' => 700
+                    ],
                     'ids_aplicativos' => ['105', '110', '111', '112', '113', '114', '115', '117', '118', '120', '125', '126', '127', '130', '131', '135', '136', '141', '142', '150', '305', '310', '315', '320', '325', '330', '335', '430', '431', '432', '433', '434', '435', '440', '445', '450', '455', '456', '460', '461', '462', '463', '464', '465', '466', '469', '470', '471', '475', '480', '491', '492', '495', '630', '905', '910', '915', '916', '917', '918', '919', '920', '925', '930', '931', '940', '960', '1105', '1110', '1115', '1120'],
                     'incluye_nomina' => false,
                     'incluye_activos' => false
@@ -353,7 +357,11 @@ return [
                     'equipos' => 3,
                     'moviles' => 0,
                     'sucursales' => 1,
-                    'precio' => 200,
+                    'precios' => [
+                        'mensual' => 63,
+                        'anual' => 560,
+                        'venta' => 1400
+                    ],
                     'ids_aplicativos' => ['200', '142', '201', '205', '210', '215', '225', '230', '505', '510', '515', '516', '517', '462', '463', '485', '490', '116', '140', '605', '630', '635'],
                     'incluye_nomina' => false,
                     'incluye_activos' => false,
@@ -363,7 +371,11 @@ return [
                     'equipos' => 4,
                     'moviles' => 0,
                     'sucursales' => 1,
-                    'precio' => 300,
+                    'precios' => [
+                        'mensual' => 77,
+                        'anual' => 660,
+                        'venta' => 2000
+                    ],
                     'ids_aplicativos' => ['605', '142', '606', '610', '615', '616', '620', '625', '626', '627', '628', '630', '635', '636', '640'],
                     'incluye_nomina' => true,
                     'incluye_activos' => true,
@@ -373,9 +385,17 @@ return [
                     'equipos' => 4,
                     'moviles' => 0,
                     'sucursales' => 1,
-                    'precio' => [
-                        'prime' => 400,
-                        'contaplus' => 500
+                    'precios' => [
+                        'prime' => [
+                            'nivel1' => 970,
+                            'nivel2' => 1300,
+                            'nivel3' => 1420
+                        ],
+                        'contaplus' => [
+                            'nivel1' => 700,
+                            'nivel2' => 950,
+                            'nivel3' => 1200
+                        ]
                     ],
                     'ids_aplicativos' => [], // Hereda todo de contable
                     'incluye_nomina' => true,

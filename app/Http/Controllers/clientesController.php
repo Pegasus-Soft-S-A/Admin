@@ -110,7 +110,8 @@ class clientesController extends Controller
             // Periodos generales
             $billingPeriods = [
                 1 => 'Mensual',
-                2 => 'Anual'
+                2 => 'Anual',
+                3 => 'Venta',
             ];
 
             // Tipos de nube
@@ -286,6 +287,79 @@ class clientesController extends Controller
         }
     }
 
+    private function calcularPrecio($cliente)
+    {
+        $configuracion = config('sistema.productos');
+
+        if ($cliente->tipo_licencia == 1) {
+            // Licencias Web
+            return $this->calcularPrecioWeb($cliente, $configuracion['web']);
+        } elseif ($cliente->tipo_licencia == 2) {
+            // Licencias PC
+            return $this->calcularPrecioPC($cliente, $configuracion['pc']);
+        }
+
+        return 0; // VPS o tipos no definidos
+    }
+
+    private function calcularPrecioWeb($cliente, $configWeb)
+    {
+        $producto = $configWeb[$cliente->producto] ?? null;
+        if (!$producto) return 0;
+
+        // Casos especiales
+        if ($cliente->producto == 12) { // Facturito
+            $periodos = ['inicial', 'basico', 'premium', 'gratis'];
+            $periodo = $periodos[$cliente->periodo - 1] ?? 'gratis';
+            return $producto[$periodo]['precio'] ?? 0;
+        }
+
+        if ($cliente->producto == 4) { // Comercial - tiene módulos diferentes por período
+            $periodo = $cliente->periodo == 1 ? 'mensual' : 'anual';
+            return $producto[$periodo]['precio'] ?? 0;
+        }
+
+        // Productos normales
+        $periodo = $cliente->periodo == 1 ? 'mensual' : 'anual';
+        return $producto[$periodo]['precio'] ?? 0;
+    }
+
+    private function calcularPrecioPC($cliente, $configPC)
+    {
+        $modulosPrincipales = $configPC['modulos_principales'];
+        $periodos = ['mensual', 'anual', 'venta'];
+
+        // Determinar el módulo activo
+        $moduloActivo = null;
+        if ($cliente->modulonube == 1) {
+            $moduloActivo = 'nube';
+        } elseif ($cliente->modulocontable == 1) {
+            $moduloActivo = 'contable';
+        } elseif ($cliente->modulocontrol == 1) {
+            $moduloActivo = 'control';
+        } elseif ($cliente->modulopractico == 1) {
+            $moduloActivo = 'practico';
+        }
+
+        if (!$moduloActivo || !isset($modulosPrincipales[$moduloActivo])) {
+            return 0;
+        }
+
+        $config = $modulosPrincipales[$moduloActivo];
+
+        if ($moduloActivo === 'nube') {
+            // Para nube, usar tipo y nivel
+            $tipoNube = $cliente->tipo_nube == 1 ? 'prime' : 'contaplus';
+            $nivel = 'nivel' . $cliente->nivel_nube;
+
+            return $config['precios'][$tipoNube][$nivel] ?? 0;
+        } else {
+            // Para otros módulos, usar período
+            $periodo = $periodos[$cliente->periodo - 1] ?? 'anual';
+            return $config['precios'][$periodo] ?? 0;
+        }
+    }
+
     //Construye el DataTable con todas las columnas formateadas
     private function buildDataTable($data, $canEditClient, $canViewSensitiveInfo, $distribuidores, $vendedores, $grupos, $links, $licenseTypes, $webProducts, $facturitoPeriods, $cloudTypes, $provinces, $billingPeriods)
     {
@@ -421,6 +495,14 @@ class clientesController extends Controller
                 }
                 return $producto;
             })
+            ->editColumn('precio', function ($cliente) {
+                $precio = $this->calcularPrecio($cliente);
+
+                // Formatear precio con ícono y estilo
+                $precioFormateado = number_format($precio, 2);
+
+                return  $precioFormateado;
+            })
             ->editColumn('red_origen', function ($cliente) use ($links) {
                 $posicion = array_search($cliente->red_origen, array_column($links, 'sis_linksid'));
                 return $links[$posicion]['codigo'];
@@ -428,7 +510,13 @@ class clientesController extends Controller
             ->editColumn('provinciasid', function ($cliente) use ($provinces) {
                 return $provinces[$cliente->provinciasid] ?? '';
             })
-            ->editColumn('periodo', function ($cliente) use ($billingPeriods) {
+            ->editColumn('periodo', function ($cliente) use ($billingPeriods, $facturitoPeriods) {
+                // Si es Facturito (producto 12) y es licencia Web (tipo 1)
+                if ($cliente->tipo_licencia == 1 && $cliente->producto == 12) {
+                    return $facturitoPeriods[$cliente->periodo] ?? '';
+                }
+
+                // Para todos los demás productos usar períodos normales
                 return $billingPeriods[$cliente->periodo] ?? '';
             })
             ->rawColumns(['identificacion', 'validado', 'numerocontrato', 'tipo_licencia']);

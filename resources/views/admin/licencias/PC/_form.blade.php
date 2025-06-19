@@ -197,9 +197,16 @@
                 @endif
             </div>
             <div class="col-lg-4">
-                <label>Precio:</label>
-                <input type="text" class="form-control" placeholder="Ingrese Precio" id="precio" name="precio" autocomplete="off"
-                    disabled />
+                <label> Precio </label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text text-white">
+                            <i class="la la-dollar"></i>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control text-success font-weight-bold" id="precio" name="precio" autocomplete="off"
+                        disabled />
+                </div>
             </div>
         </div>
 
@@ -611,15 +618,10 @@
             $("#renovaractualizacion").click(() => confirmarAccion('actualizacion', "¿Está seguro de Renovar la Licencia?"));
             $("#periodo").change(cambiarComboPC);
 
-            $("#tipo_nube").change(function() {
-                const tipoNube = $(this).val();
-                const usuarios = configuracionPC.configuracion_nube.usuarios_por_tipo[tipoNube] || 4;
-                $("#usuarios_nube").val(usuarios);
-                //Actualizar precio cuando cambia el tipo de nube
-                if ($("#nube").prop("checked")) {
-                    actualizarPrecioNube();
-                }
-            });
+            // Eventos que afectan el precio
+            $("#periodo").change(actualizarPrecio);
+            $("#tipo_nube").change(actualizarPrecio);
+            $("#nivel_nube").change(actualizarPrecio);
 
             // Cuando se hace clic en el botón "ver adicionales"
             $("#ver_adicionales").click(function() {
@@ -730,7 +732,7 @@
                 fechaActualizaciones.setMonth(fechaActualizaciones.getMonth() + configuracionPeriodo.meses_actualizaciones);
                 $("#fechaactulizaciones").val(formatearFecha(fechaActualizaciones));
             }
-            inicializarPrecioDesdeConfiguracion();
+            actualizarPrecio();
         }
 
         function inicializarEventosCheckboxes() {
@@ -768,15 +770,6 @@
                     $("#numeromoviles").val(config.moviles);
                     $("#numerosucursales").val(config.sucursales);
 
-                    // Manejar precio especial para nube
-                    if (modulo === "nube") {
-                        // Para nube, el precio depende del tipo seleccionado
-                        actualizarPrecioNube();
-                    } else {
-                        // Para otros módulos, usar precio directo
-                        $("#precio").val(config.precio);
-                    }
-
                     // Activar módulos incluidos
                     if (config.incluye_nomina) {
                         $("#nomina").prop("checked", true);
@@ -793,30 +786,16 @@
 
                 // Mostrar/ocultar configuración de nube
                 mostrarDivNube(modulo === "nube");
+
+                // Actualizar precio según el módulo seleccionado
+                actualizarPrecio();
             } else {
                 mostrarDivNube(false);
                 $("#precio").val('0');
             }
         }
 
-        // Función mejorada para actualizar precio de nube
-        function actualizarPrecioNube() {
-            const tipoNube = $("#tipo_nube").val() || '1'; // Por defecto Prime
-            const config = configuracionPC.modulos_principales.nube;
-
-            if (config && config.precio) {
-                let precio = 0;
-                if (tipoNube === '1') {
-                    precio = config.precio.prime;
-                } else if (tipoNube === '2') {
-                    precio = config.precio.contaplus;
-                }
-                $("#precio").val(precio);
-            }
-        }
-
-        // Función para inicializar el precio al cargar la página
-        function inicializarPrecioDesdeConfiguracion() {
+        function actualizarPrecio() {
             // Detectar qué módulo principal está activo
             const modulosPrincipales = ["practico", "control", "contable", "nube"];
             let moduloActivo = null;
@@ -827,18 +806,60 @@
                 }
             });
 
-            if (moduloActivo) {
-                const config = configuracionPC.modulos_principales[moduloActivo];
-                if (config) {
-                    if (moduloActivo === "nube") {
-                        actualizarPrecioNube();
-                    } else {
-                        $("#precio").val(config.precio);
-                    }
+            if (!moduloActivo) {
+                $("#precio").val('0');
+                return;
+            }
+
+            const config = configuracionPC.modulos_principales[moduloActivo];
+            if (!config) {
+                $("#precio").val('0');
+                return;
+            }
+
+            let precio = 0;
+
+            if (moduloActivo === "nube") {
+                // Para nube, el precio depende del tipo y nivel
+                const tipoNube = $("#tipo_nube").val() || '1';
+                const nivelNube = $("#nivel_nube").val() || '1';
+
+                const tipoNubeNombre = tipoNube === '1' ? 'prime' : 'contaplus';
+                const nivelNubeNombre = 'nivel' + nivelNube;
+
+                if (config.precios && config.precios[tipoNubeNombre] && config.precios[tipoNubeNombre][nivelNubeNombre]) {
+                    precio = config.precios[tipoNubeNombre][nivelNubeNombre];
                 }
             } else {
-                $("#precio").val('0');
+                // Para módulos normales, el precio depende del período
+                const periodo = $("#periodo").val() || '2'; // Por defecto anual
+                let periodoNombre;
+
+                switch (periodo) {
+                    case '1':
+                        periodoNombre = 'mensual';
+                        break;
+                    case '2':
+                        periodoNombre = 'anual';
+                        break;
+                    case '3':
+                        periodoNombre = 'venta';
+                        break;
+                    default:
+                        periodoNombre = 'anual';
+                }
+
+                if (config.precios && config.precios[periodoNombre]) {
+                    precio = config.precios[periodoNombre];
+                }
             }
+
+            $("#precio").val(precio);
+        }
+
+        // Función para inicializar el precio al cargar la página
+        function inicializarPrecioDesdeConfiguracion() {
+            actualizarPrecio();
         }
 
         function activarModuloConDependencias(modulo) {
@@ -879,7 +900,7 @@
                 const usuarios = configuracionPC.configuracion_nube.usuarios_por_tipo[tipoNube] || 4;
                 $("#usuarios_nube").val(usuarios);
                 // Actualizar precio al mostrar la configuración de nube
-                actualizarPrecioNube();
+                actualizarPrecio();
             }
         }
 
