@@ -665,14 +665,35 @@ class IdentificacionesController extends Controller
     public function licencia_actualiza(Request $request)
     {
         $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first();
-        $licencia->tokenrespaldo = $request->token;
-        $licencia->usuarios_activos = $request->usuarios_activos;
-        $cantidadempresas = [];
-        $cantidadempresas = [
-            'empresas_activas' => $request->empresas_activas,
-            'empresas_inactivas' => $request->empresas_inactivas,
-        ];
-        $licencia->cantidadempresas = json_encode($cantidadempresas);
+
+        // Solo actualizar si el campo fue enviado y tiene valor
+        if ($request->filled('token')) {
+            $licencia->tokenrespaldo = $request->token;
+        }
+
+        if ($request->filled('usuarios_activos')) {
+            $licencia->usuarios_activos = $request->usuarios_activos;
+        }
+
+        // Para cantidadempresas, verificar si al menos uno de los campos fue enviado
+        if ($request->filled('empresas_activas') || $request->filled('empresas_inactivas')) {
+            $cantidadempresas = [];
+
+            if ($request->filled('empresas_activas')) {
+                $cantidadempresas['empresas_activas'] = $request->empresas_activas;
+            }
+
+            if ($request->filled('empresas_inactivas')) {
+                $cantidadempresas['empresas_inactivas'] = $request->empresas_inactivas;
+            }
+
+            // Si ya existe cantidadempresas, hacer merge con los nuevos datos
+            $cantidadempresasExistente = json_decode($licencia->cantidadempresas, true) ?? [];
+            $cantidadempresas = array_merge($cantidadempresasExistente, $cantidadempresas);
+
+            $licencia->cantidadempresas = json_encode($cantidadempresas);
+        }
+
         $licencia->save();
         return json_encode(["licencia" => [$licencia]]);
     }

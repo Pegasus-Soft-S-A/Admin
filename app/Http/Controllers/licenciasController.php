@@ -185,30 +185,63 @@ class licenciasController extends Controller
         $agrupados = Agrupados::select('sis_agrupados.sis_agrupadosid', 'sis_clientes.nombres', 'sis_agrupados.codigo')
             ->join('sis_clientes', 'sis_clientes.sis_clientesid', 'sis_agrupados.sis_clientesid')
             ->get();
+
         $servidor = Servidores::where('sis_servidoresid', $servidorid)->first();
         $url = $servidor->dominio . '/registros/consulta_licencia';
-        $licenciaConsulta = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-            ->withOptions(["verify" => false])
-            ->post($url, ['sis_licenciasid' => $licenciaid])
-            ->json();
 
-        $licenciaEnviar = $licenciaConsulta['licencias'][0];
-        $licenciaEnviar['fechainicia'] = date("d-m-Y", strtotime($licenciaEnviar['fechainicia']));
-        $licenciaEnviar['fechacaduca'] = date("d-m-Y", strtotime($licenciaEnviar['fechacaduca']));
-        $licenciaEnviar['fechacreacion'] = date("Y-m-d H:i:s", strtotime($licenciaEnviar['fechacreacion']));
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json; charset=UTF-8',
+                'verify' => false,
+            ])
+                ->withOptions([
+                    "verify" => false,
+                    "timeout" => 10,
+                    "connect_timeout" => 5
+                ])
+                ->post($url, ['sis_licenciasid' => $licenciaid]);
 
-        if ($licenciaEnviar['fechamodificacion'] != "0000-00-00T00:00:00.000") {
-            $licenciaEnviar['fechamodificacion'] = date("Y-m-d H:i:s", strtotime($licenciaEnviar['fechamodificacion']));
-        } else {
-            $licenciaEnviar['fechamodificacion'] = "";
+            // Verificar si la respuesta fue exitosa
+            if (!$response->successful()) {
+                flash('El servidor respondió con un error. Código: ' . $response->status())->error();
+                return back();
+            }
+
+            $licenciaConsulta = $response->json();
+
+            // Verificar que la respuesta tenga la estructura esperada
+            if (!isset($licenciaConsulta['licencias'][0])) {
+                flash('No se encontró la licencia en el servidor.')->error();
+                return back();
+            }
+
+            $licenciaEnviar = $licenciaConsulta['licencias'][0];
+            $licenciaEnviar['fechainicia'] = date("d-m-Y", strtotime($licenciaEnviar['fechainicia']));
+            $licenciaEnviar['fechacaduca'] = date("d-m-Y", strtotime($licenciaEnviar['fechacaduca']));
+            $licenciaEnviar['fechacreacion'] = date("Y-m-d H:i:s", strtotime($licenciaEnviar['fechacreacion']));
+
+            if ($licenciaEnviar['fechamodificacion'] != "0000-00-00T00:00:00.000") {
+                $licenciaEnviar['fechamodificacion'] = date("Y-m-d H:i:s", strtotime($licenciaEnviar['fechamodificacion']));
+            } else {
+                $licenciaEnviar['fechamodificacion'] = "";
+            }
+
+            $modulos = simplexml_load_string($licenciaEnviar['modulos']);
+            $licenciaArray = json_encode($licenciaEnviar);
+            $licencia = json_decode($licenciaArray);
+            $servidores = Servidores::all();
+
+            return view('admin.licencias.Web.editar', compact('cliente', 'licencia', 'modulos', 'servidores', 'agrupados'));
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            flash('No se pudo conectar al servidor. El servidor puede estar caído o inaccesible.')->error();
+            return back();
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            flash('Error en la solicitud al servidor: ' . $e->getMessage())->error();
+            return back();
+        } catch (\Exception $e) {
+            flash('Error inesperado al consultar la licencia: ' . $e->getMessage());
+            return back();
         }
-
-        $modulos = simplexml_load_string($licenciaEnviar['modulos']);
-        $licenciaArray = json_encode($licenciaEnviar);
-        $licencia = json_decode($licenciaArray);
-        $servidores = Servidores::all();
-
-        return view('admin.licencias.Web.editar', compact('cliente', 'licencia', 'modulos', 'servidores', 'agrupados'));
     }
 
     public function guardarWeb(Request $request)

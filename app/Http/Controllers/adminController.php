@@ -529,6 +529,16 @@ class adminController extends Controller
         DB::beginTransaction();
         try {
             $servidores = Servidores::all();
+
+            //VERIFICAR DISPONIBILIDAD DE TODOS LOS SERVIDORES
+            $servidoresNoDisponibles = $this->verificarDisponibilidadServidores($servidores);
+
+            if (!empty($servidoresNoDisponibles)) {
+                flash('Ocurrio un error, el servidor no está disponible')->warning();
+                return back()->withInput();
+            }
+
+
             $cliente =   Clientes::create($request->all());
 
             $clientes_creados = []; // variable para almacenar los clientes creados en los servidores remotos
@@ -637,7 +647,10 @@ class adminController extends Controller
                 $array['tipo'] = '6';
 
                 try {
-                    Mail::to($cliente->correos)->queue(new enviarlicencia($array));
+                    // Enviar email solo en producción
+                    if (config('app.env') !== 'local') {
+                        Mail::to($cliente->correos)->queue(new enviarlicencia($array));
+                    }
                 } catch (\Exception $e) {
                     flash('Error enviando email')->error();
                     return back();
@@ -654,6 +667,36 @@ class adminController extends Controller
             DB::rollBack();
             flash('Ocurrió un error vuelva a intentarlo')->warning();
             return back();
+        }
+    }
+
+    // Verifica la disponibilidad de todos los servidores y devuelve una lista de los que no están disponibles
+    private function verificarDisponibilidadServidores($servidores)
+    {
+        $servidoresNoDisponibles = [];
+
+        foreach ($servidores as $servidor) {
+            if (!$this->verificarDisponibilidadServidor($servidor)) {
+                $servidoresNoDisponibles[] = $servidor->descripcion;
+            }
+        }
+
+        return $servidoresNoDisponibles;
+    }
+
+    // Verifica si un servidor está disponible (responde a HEAD)
+    private function verificarDisponibilidadServidor($servidor)
+    {
+        try {
+            $response = Http::timeout(6)
+                ->withOptions(['verify' => false])
+                ->head($servidor->dominio);
+
+            // 200, 301, 302, 403, 404 son respuestas válidas (servidor responde)
+            // 500+ significa servidor con problemas
+            return $response->status() < 500;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 
