@@ -18,7 +18,6 @@ use App\Models\Usuarios;
 use App\Rules\UniqueSimilar;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
-use App\Services\LogService;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -581,7 +580,7 @@ class adminController extends Controller
             }
 
             $log = new Log();
-            LogService::crear('Licencia Web', $request->all());
+
             $log->usuario = "Perseo Lite";
             $log->pantalla = "Clientes";
             $log->tipooperacion = "Crear";
