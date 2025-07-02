@@ -127,13 +127,13 @@ class IdentificacionesController extends Controller
         $buscar = Identificaciones::whereIn('identificacion', [$identificacionIngresada, $request->identificacion, $request->identificacion . '001'])->first();
         if ($buscar) {
 
-            $buscar->direccion =  $request->direccion == null ? "" : $request->direccion;
+            $buscar->direccion = $request->direccion == null ? "" : $request->direccion;
             $buscar->correo = $request->correo == null ? "" : $request->correo;
             $buscar->provinciasid = $request->provinciasid == null ? "" : $request->provinciasid;
-            $buscar->ciudadesid =  $request->ciudadesid == null ? "" : $request->ciudadesid;
-            $buscar->parroquiasid =  $request->parroquiasid == null ? "" : $request->parroquiasid;
+            $buscar->ciudadesid = $request->ciudadesid == null ? "" : $request->ciudadesid;
+            $buscar->parroquiasid = $request->parroquiasid == null ? "" : $request->parroquiasid;
             $buscar->telefono1 = $request->telefono1 == null ? "" : $request->telefono1;
-            $buscar->telefono2 =  $request->telefono2 == null ? "" : $request->telefono2;
+            $buscar->telefono2 = $request->telefono2 == null ? "" : $request->telefono2;
             $buscar->telefono3 = $request->telefono3 == null ? "" : $request->telefono3;
             $buscar->save();
             $buscar->parametros_json = json_decode($buscar->parametros_json);
@@ -148,21 +148,21 @@ class IdentificacionesController extends Controller
     {
         $buscar = new Identificaciones();
         if (strlen($request->identificacion) == 10) {
-            $buscar->tipo_identificacion  = 'C';
+            $buscar->tipo_identificacion = 'C';
         } elseif (strlen($request->identificacion) == 13) {
             $buscar->tipo_identificacion = 'R';
         }
 
-        $buscar->identificacion =  $request->identificacion == null ? "" : $request->identificacion;
-        $buscar->razon_social =  $request->razon_social == null ? "" : $request->razon_social;
-        $buscar->nombre_comercial =  $request->nombre_comercial == null ? "" : $request->nombre_comercial;
-        $buscar->direccion =  $request->direccion == null ? "" : $request->direccion;
+        $buscar->identificacion = $request->identificacion == null ? "" : $request->identificacion;
+        $buscar->razon_social = $request->razon_social == null ? "" : $request->razon_social;
+        $buscar->nombre_comercial = $request->nombre_comercial == null ? "" : $request->nombre_comercial;
+        $buscar->direccion = $request->direccion == null ? "" : $request->direccion;
         $buscar->correo = $request->correo == null ? "" : $request->correo;
         $buscar->provinciasid = $request->provinciasid == null ? "" : $request->provinciasid;
-        $buscar->ciudadesid =  $request->ciudadesid == null ? "" : $request->ciudadesid;
-        $buscar->parroquiasid =  $request->parroquiasid == null ? "" : $request->parroquiasid;
+        $buscar->ciudadesid = $request->ciudadesid == null ? "" : $request->ciudadesid;
+        $buscar->parroquiasid = $request->parroquiasid == null ? "" : $request->parroquiasid;
         $buscar->telefono1 = $request->telefono1 == null ? "" : $request->telefono1;
-        $buscar->telefono2 =  $request->telefono2 == null ? "" : $request->telefono2;
+        $buscar->telefono2 = $request->telefono2 == null ? "" : $request->telefono2;
         $buscar->telefono3 = $request->telefono3 == null ? "" : $request->telefono3;
         $buscar->tipo_contribuyente = $request->tipo_contribuyente == null ? "" : $request->tipo_contribuyente;
         $buscar->obligado = $request->obligado == null ? "" : $request->obligado;
@@ -186,7 +186,7 @@ class IdentificacionesController extends Controller
         $array = [];
 
         foreach ($cliente as $usuario) {
-            foreach ($servidores as  $servidor) {
+            foreach ($servidores as $servidor) {
                 $url = $servidor->dominio . '/registros/consulta_licencia';
                 $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                     ->withOptions(["verify" => false])
@@ -385,7 +385,7 @@ class IdentificacionesController extends Controller
 
             if (count($web) == 1) {
                 return json_encode([
-                    "liberar" =>   true,
+                    "liberar" => true,
                     "accion" => ($web[0]['producto'] == 9 || $web[0]['producto'] == 6) ? "nuevo" : "renovar",
                     "facturito" => $web[0]['producto'] == 12 ? true : false,
                     "id_licencia" => $web[0]['sis_licenciasid'],
@@ -427,7 +427,7 @@ class IdentificacionesController extends Controller
         if ($licencia) {
             if ($licencia->producto == 12) {
                 return json_encode([
-                    "liberar" =>   true,
+                    "liberar" => true,
                     "accion" => "renovar",
                     "facturito" => true,
                     "id_licencia" => $licencia->sis_licenciasid,
@@ -437,7 +437,7 @@ class IdentificacionesController extends Controller
                 ]);
             } else {
                 return json_encode([
-                    "liberar" =>   true,
+                    "liberar" => true,
                     "accion" => "renovar",
                     "facturito" => false,
                     "id_licencia" => $licencia->sis_licenciasid,
@@ -499,7 +499,7 @@ class IdentificacionesController extends Controller
             return json_encode(["licencia" => ['El vendedor no corresponde al registrado en la licencia']]);
         }
 
-        //En caso de renovar mensual, anual o actualizar 
+        //En caso de renovar mensual, anual o actualizar
         switch ($request->renovar) {
             case '1':
                 $datos['fechacaduca'] = date("Ymd", strtotime($licencia->fechacaduca . "+ 1 month"));
@@ -616,7 +616,7 @@ class IdentificacionesController extends Controller
                 $array['periodo'] = $datos['periodo'] == 1 ? 'Mensual' : 'Anual';
             }
             $array['fechainicia'] = date("d-m-Y", strtotime($datos['fechainicia']));
-            $array['fechacaduca'] =  date("d-m-Y", strtotime($datos['fechacaduca']));
+            $array['fechacaduca'] = date("d-m-Y", strtotime($datos['fechacaduca']));
             $array['empresas'] = $datos['empresas'];
             $array['numeromoviles'] = $datos['numeromoviles'];
             $array['usuarios'] = $datos['usuarios'];
@@ -625,7 +625,7 @@ class IdentificacionesController extends Controller
             $json = json_encode($transformar);
             $array['modulos'] = json_decode($json);
             $array['usuario'] = $vendedor->razonsocial;
-            $array['fecha'] =  date("Y-m-d H:i:s", strtotime($datos['fechamodificacion']));
+            $array['fecha'] = date("Y-m-d H:i:s", strtotime($datos['fechamodificacion']));
 
             if ($datos['producto'] == 12) {
                 $array['tipo'] = 8;
@@ -635,7 +635,7 @@ class IdentificacionesController extends Controller
 
             $emails = explode(", ", $correos->distribuidor);
 
-            $emails = array_merge($emails,  [
+            $emails = array_merge($emails, [
                 "facturacion@perseo.ec",
                 $correos->vendedor,
                 $correos->revendedor,
@@ -871,183 +871,183 @@ class IdentificacionesController extends Controller
                 //Facturacion Mensual
                 case '61':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  9.50;
-                    $nuevo->periodo =  1;
+                    $nuevo->precio = 9.50;
+                    $nuevo->periodo = 1;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 month"));
-                    $nuevo->producto =  2;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  1;
+                    $nuevo->producto = 2;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 1;
                     $nuevo->modulos = $this->modulos(0, 0, 1, 1, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Facturacion Anual
                 case '60':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  72;
-                    $nuevo->periodo =  2;
+                    $nuevo->precio = 72;
+                    $nuevo->periodo = 2;
                     $nuevo->fechacaduca = $fecha;
-                    $nuevo->producto =  2;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  1;
+                    $nuevo->producto = 2;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 1;
                     $nuevo->modulos = $this->modulos(0, 0, 1, 1, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Servicios Mensual
                 case '59':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  17;
-                    $nuevo->periodo =  1;
+                    $nuevo->precio = 17;
+                    $nuevo->periodo = 1;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 month"));
-                    $nuevo->producto =  3;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  2;
+                    $nuevo->producto = 3;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 2;
                     $nuevo->modulos = $this->modulos(1, 1, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Servicios Anual
                 case '58':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  150;
-                    $nuevo->periodo =  2;
+                    $nuevo->precio = 150;
+                    $nuevo->periodo = 2;
                     $nuevo->fechacaduca = $fecha;
-                    $nuevo->producto =  3;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  2;
+                    $nuevo->producto = 3;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 2;
                     $nuevo->modulos = $this->modulos(1, 1, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Comercial Mensual
                 case '57':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  24;
-                    $nuevo->periodo =  1;
+                    $nuevo->precio = 24;
+                    $nuevo->periodo = 1;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 month"));
-                    $nuevo->producto =  4;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  2;
+                    $nuevo->producto = 4;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 2;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 0, 1, 1, 1);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Comercial Anual
                 case '56':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  190;
-                    $nuevo->periodo =  2;
+                    $nuevo->precio = 190;
+                    $nuevo->periodo = 2;
                     $nuevo->fechacaduca = $fecha;
-                    $nuevo->producto =  4;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  2;
+                    $nuevo->producto = 4;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 2;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 0, 1, 1, 1);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Soy Contador Comercial Mensual
                 case '63':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  13;
-                    $nuevo->periodo =  1;
+                    $nuevo->precio = 13;
+                    $nuevo->periodo = 1;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 month"));
-                    $nuevo->producto =  5;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  0;
+                    $nuevo->producto = 5;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 0;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 1, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Soy Contador Comercial Anual
                 case '62':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  108;
-                    $nuevo->periodo =  2;
+                    $nuevo->precio = 108;
+                    $nuevo->periodo = 2;
                     $nuevo->fechacaduca = $fecha;
-                    $nuevo->producto =  5;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  0;
+                    $nuevo->producto = 5;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 0;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 1, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Soy Contador Servicios Mensual
                 case '65':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  9.80;
-                    $nuevo->periodo =  1;
+                    $nuevo->precio = 9.80;
+                    $nuevo->periodo = 1;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 month"));
-                    $nuevo->producto =  8;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  0;
+                    $nuevo->producto = 8;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 0;
                     $nuevo->modulos = $this->modulos(0, 0, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Soy Contador Servicios Anual
                 case '64':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  90;
-                    $nuevo->periodo =  2;
+                    $nuevo->precio = 90;
+                    $nuevo->periodo = 2;
                     $nuevo->fechacaduca = $fecha;
-                    $nuevo->producto =  8;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  0;
+                    $nuevo->producto = 8;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 0;
                     $nuevo->modulos = $this->modulos(0, 0, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Socio Perseo Mensual
                 case '67':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  7;
-                    $nuevo->periodo =  1;
+                    $nuevo->precio = 7;
+                    $nuevo->periodo = 1;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 month"));
-                    $nuevo->producto =  11;
-                    $nuevo->usuarios =  1;
-                    $nuevo->numeromoviles =  1;
+                    $nuevo->producto = 11;
+                    $nuevo->usuarios = 1;
+                    $nuevo->numeromoviles = 1;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 1, 1, 1, 1);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Socio Perseo Anual
                 case '66':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  87.50;
-                    $nuevo->periodo =  2;
+                    $nuevo->precio = 87.50;
+                    $nuevo->periodo = 2;
                     $nuevo->fechacaduca = $fecha;
-                    $nuevo->producto =  11;
-                    $nuevo->usuarios =  1;
-                    $nuevo->numeromoviles =  1;
+                    $nuevo->producto = 11;
+                    $nuevo->usuarios = 1;
+                    $nuevo->numeromoviles = 1;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 1, 1, 1, 1);
-                    $nuevo->sis_servidoresid =  4;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 4;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     break;
                 //Facturito Inicial
                 case '1':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  5.40;
-                    $nuevo->periodo =  1;
+                    $nuevo->precio = 5.40;
+                    $nuevo->periodo = 1;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
-                    $nuevo->producto =  12;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  1;
+                    $nuevo->producto = 12;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 1;
                     $nuevo->modulos = $this->modulos(0, 0, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  2;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 2;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     $parametros_json = [];
                     $parametros_json = [
@@ -1065,15 +1065,15 @@ class IdentificacionesController extends Controller
                 //Facturito Basico
                 case '2':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  8.99;
-                    $nuevo->periodo =  2;
+                    $nuevo->precio = 8.99;
+                    $nuevo->periodo = 2;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
-                    $nuevo->producto =  12;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  1;
+                    $nuevo->producto = 12;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 1;
                     $nuevo->modulos = $this->modulos(0, 0, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  2;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 2;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     $parametros_json = [];
                     $parametros_json = [
@@ -1091,15 +1091,15 @@ class IdentificacionesController extends Controller
                 //Facturito Pro
                 case '3':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  17.99;
-                    $nuevo->periodo =  3;
+                    $nuevo->precio = 17.99;
+                    $nuevo->periodo = 3;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
-                    $nuevo->producto =  12;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  1;
+                    $nuevo->producto = 12;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 1;
                     $nuevo->modulos = $this->modulos(0, 0, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  2;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 2;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     $parametros_json = [];
                     $parametros_json = [
@@ -1117,15 +1117,15 @@ class IdentificacionesController extends Controller
                 //Facturito Gratis
                 case '81':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  4;
-                    $nuevo->periodo =  4;
+                    $nuevo->precio = 4;
+                    $nuevo->periodo = 4;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 year"));
-                    $nuevo->producto =  12;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  1;
+                    $nuevo->producto = 12;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 1;
                     $nuevo->modulos = $this->modulos(0, 0, 0, 0, 0, 0, 0);
-                    $nuevo->sis_servidoresid =  2;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 2;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     $parametros_json = [];
                     $parametros_json = [
@@ -1143,15 +1143,15 @@ class IdentificacionesController extends Controller
                 //Perseo Lite
                 case '1000':
                     $nuevo->Identificador = $contrato;
-                    $nuevo->precio =  0;
-                    $nuevo->periodo =  1;
+                    $nuevo->precio = 0;
+                    $nuevo->periodo = 1;
                     $nuevo->fechacaduca = date("Ymd", strtotime($nuevo->fechainicia . "+ 1 month"));
-                    $nuevo->producto =  9;
-                    $nuevo->usuarios =  6;
-                    $nuevo->numeromoviles =  1;
+                    $nuevo->producto = 9;
+                    $nuevo->usuarios = 6;
+                    $nuevo->numeromoviles = 1;
                     $nuevo->modulos = $this->modulos(1, 1, 1, 1, 1, 1, 1);
-                    $nuevo->sis_servidoresid =  3;
-                    $nuevo->tipo_licencia =  1;
+                    $nuevo->sis_servidoresid = 3;
+                    $nuevo->tipo_licencia = 1;
                     $nuevo->empresas = 1;
                     $parametros_json = [];
                     $parametros_json = [
@@ -1226,7 +1226,7 @@ class IdentificacionesController extends Controller
                 }
 
                 $array['fechainicia'] = date("d-m-Y", strtotime($nuevo['fechainicia']));
-                $array['fechacaduca'] =  date("d-m-Y", strtotime($nuevo['fechacaduca']));
+                $array['fechacaduca'] = date("d-m-Y", strtotime($nuevo['fechacaduca']));
                 $array['empresas'] = $nuevo['empresas'];
                 $array['numeromoviles'] = $nuevo['numeromoviles'];
                 $array['usuarios'] = $nuevo['usuarios'];
@@ -1244,7 +1244,7 @@ class IdentificacionesController extends Controller
 
                 $emails = explode(", ", $cliente->distribuidor);
 
-                $emails = array_merge($emails,  [
+                $emails = array_merge($emails, [
                     "facturacion@perseo.ec",
                     $cliente->vendedor,
                     $cliente->revendedor,
@@ -1340,13 +1340,13 @@ class IdentificacionesController extends Controller
             $licencia->sis_vendedoresid = $vendedores[array_search($licencia->sis_vendedoresid, array_column($vendedores, 'sis_revendedoresid'))]['razonsocial'];
             $licencia->sis_revendedoresid = $vendedores[array_search($licencia->sis_revendedoresid, array_column($vendedores, 'sis_revendedoresid'))]['razonsocial'];
             $licencia->grupo = array_search($licencia->grupo, array_column($grupos, 'gruposid')) ? $grupos[array_search($licencia->grupo, array_column($grupos, 'gruposid'))]['descripcion'] : 'Ninguno';
-            $licencia->fechainicia = $licencia->fechainicia == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $licencia->fechainicia);
-            $licencia->fechacaduca = $licencia->fechacaduca == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $licencia->fechacaduca);
-            $licencia->fechaultimopago = $licencia->fechaultimopago == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $licencia->fechaultimopago);
-            $licencia->fechaactulizaciones = $licencia->fechaactulizaciones == null ? date('d-m-Y', strtotime(now()))  : date('d-m-Y', $licencia->fechaactulizaciones);
-            $licencia->periodo = $licencia->periodo == 1 ? "Mensual"  : "Anual";
+            $licencia->fechainicia = $licencia->fechainicia == null ? date('d-m-Y', strtotime(now())) : date('d-m-Y', $licencia->fechainicia);
+            $licencia->fechacaduca = $licencia->fechacaduca == null ? date('d-m-Y', strtotime(now())) : date('d-m-Y', $licencia->fechacaduca);
+            $licencia->fechaultimopago = $licencia->fechaultimopago == null ? date('d-m-Y', strtotime(now())) : date('d-m-Y', $licencia->fechaultimopago);
+            $licencia->fechaactulizaciones = $licencia->fechaactulizaciones == null ? date('d-m-Y', strtotime(now())) : date('d-m-Y', $licencia->fechaactulizaciones);
+            $licencia->periodo = $licencia->periodo == 1 ? "Mensual" : "Anual";
             $licencia->producto = $this->producto($licencia);
-            $licencia->tipo_licencia = $licencia->tipo_licencia == 1 ? "Web"  : "PC";
+            $licencia->tipo_licencia = $licencia->tipo_licencia == 1 ? "Web" : "PC";
             $licencia->red_origen = $this->origen($licencia);
             $licencia->provinciasid = $this->provincias($licencia);
             $licencia->precio = number_format(floatval($licencia->precio), 2, ',', '.');
@@ -1644,7 +1644,7 @@ class IdentificacionesController extends Controller
             ->first();
 
         if ($pc) {
-            $pc->tipo_licencia =  "PC";
+            $pc->tipo_licencia = "PC";
             return response()->json($pc);
         }
 
@@ -1956,7 +1956,7 @@ class IdentificacionesController extends Controller
     public function consulta_clientes(Request $request)
     {
         $clientes = Clientes::where('sis_clientesid', $request->sis_clientesid)
-            ->select('sis_clientes.sis_clientesid', 'sis_clientes.identificacion', 'sis_clientes.nombres',  'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_distribuidores.razonsocial as distribuidor', 'sis_clientes.direccion')
+            ->select('sis_clientes.sis_clientesid', 'sis_clientes.identificacion', 'sis_clientes.nombres', 'sis_clientes.telefono2', 'sis_clientes.correos', 'sis_distribuidores.razonsocial as distribuidor', 'sis_clientes.direccion')
             ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
             ->first();
 

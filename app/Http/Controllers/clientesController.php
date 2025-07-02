@@ -27,7 +27,7 @@ class clientesController extends Controller
     {
         $servidores = Servidores::where('estado', 1)->get();
 
-        if (Auth::user()->tipo == 1 || Auth::user()->tipo == 6) {
+        if (Auth::user()->tipo == 1 || Auth::user()->tipo == 6 || Auth::user()->tipo == 9) {
             $vendedores = Revendedores::where('sis_revendedores.tipo', 2)->orderBy('sis_revendedores.razonsocial')->get();
             $revendedores = Revendedores::where('sis_revendedores.tipo', 1)->orderBy('sis_revendedores.razonsocial')->get();
             $distribuidores = Distribuidores::all();
@@ -401,7 +401,7 @@ class clientesController extends Controller
                     }
 
                     return '<a class="text-success" href="' . $ruta . '" data-toggle="tooltip" title="Editar Licencia">
-                    <i class="la la-cog mr-1"></i>' . $cliente->numerocontrato . ' 
+                    <i class="la la-cog mr-1"></i>' . $cliente->numerocontrato . '
                 </a>';
                 }
                 return $cliente->numerocontrato;
@@ -410,7 +410,7 @@ class clientesController extends Controller
                 $user = Auth::user();
                 if ($canEditClient($user->tipo, $user->sis_distribuidoresid, $cliente->sis_distribuidoresid, $cliente->tipo_licencia)) {
                     return '<a class="text-primary" href="' . route('clientes.editar', $cliente->sis_clientesid) . '" data-toggle="tooltip" title="Editar Cliente">
-                    <i class="la la-user mr-1"></i>' . $cliente->identificacion . ' 
+                    <i class="la la-user mr-1"></i>' . $cliente->identificacion . '
                 </a>';
                 }
                 return $cliente->identificacion;
@@ -435,16 +435,16 @@ class clientesController extends Controller
                 return '';
             })
             ->editColumn('fechainicia', function ($cliente) {
-                return $cliente->fechainicia == null ? ''  : date('d-m-Y', $cliente->fechainicia);
+                return $cliente->fechainicia == null ? '' : date('d-m-Y', $cliente->fechainicia);
             })
             ->editColumn('fechacaduca', function ($cliente) {
-                return $cliente->fechacaduca == null ? ''  : date('d-m-Y', $cliente->fechacaduca);
+                return $cliente->fechacaduca == null ? '' : date('d-m-Y', $cliente->fechacaduca);
             })
             ->editColumn('fechaultimopago', function ($cliente) {
-                return $cliente->fechaultimopago == null ? ''  : date('d-m-Y', $cliente->fechaultimopago);
+                return $cliente->fechaultimopago == null ? '' : date('d-m-Y', $cliente->fechaultimopago);
             })
             ->editColumn('fechaactulizaciones', function ($cliente) {
-                return $cliente->fechaactulizaciones == null ? ''  : date('d-m-Y', $cliente->fechaactulizaciones);
+                return $cliente->fechaactulizaciones == null ? '' : date('d-m-Y', $cliente->fechaactulizaciones);
             })
             ->editColumn('tipo_licencia', function ($cliente) use ($licenseTypes) {
                 $texto = $licenseTypes[$cliente->tipo_licencia] ?? '';
@@ -501,7 +501,7 @@ class clientesController extends Controller
                 // Formatear precio con ícono y estilo
                 $precioFormateado = number_format($precio, 2);
 
-                return  $precioFormateado;
+                return $precioFormateado;
             })
             ->editColumn('red_origen', function ($cliente) use ($links) {
                 $posicion = array_search($cliente->red_origen, array_column($links, 'sis_linksid'));
@@ -863,7 +863,7 @@ class clientesController extends Controller
 
             $request['sis_clientesid'] = $cliente->sis_clientesid;
 
-            // 2. Crear en servidores remotos 
+            // 2. Crear en servidores remotos
             foreach ($servidores as $servidor) {
                 $resultado = $this->crearClienteRemoto($servidor, $request->all());
 
@@ -1206,7 +1206,7 @@ class clientesController extends Controller
         $servidores = Servidores::all();
         $web = [];
 
-        foreach ($servidores as  $servidor) {
+        foreach ($servidores as $servidor) {
             $url = $servidor->dominio . '/registros/consulta_licencia';
             $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
                 ->withOptions(["verify" => false])
@@ -1224,7 +1224,7 @@ class clientesController extends Controller
         if ($web) {
             $unir = array_merge($web, $data->toArray());
         } else {
-            $unir =  $data->toArray();
+            $unir = $data->toArray();
         }
         if (count($unir) > 0) {
             flash('Existen licencias creadas para este cliente')->error();
