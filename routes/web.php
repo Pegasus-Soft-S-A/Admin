@@ -5,6 +5,7 @@ use App\Http\Controllers\agrupadosController;
 use App\Http\Controllers\clientesController;
 use App\Http\Controllers\distribuidoresController;
 use App\Http\Controllers\licenciasController;
+use App\Http\Controllers\AdicionalController;
 use App\Http\Controllers\LinksController;
 use App\Http\Controllers\revendedoresController;
 use App\Http\Controllers\servidoresController;
@@ -77,11 +78,22 @@ Route::group(['prefix' => 'admin'], function () {
         Route::put('/licenciaspc/{licencia}', [licenciasController::class, 'actualizarPC'])->name('licencias.Pc.actualizar');
         Route::put('/licenciasvps/{licencia}', [licenciasController::class, 'actualizarVPS'])->name('licencias.Vps.actualizar');
         Route::put('/licenciasweb/{servidor}/{licencia}', [licenciasController::class, 'actualizarWeb'])->name('licencias.Web.actualizar');
-        Route::delete('/licencias/eliminarpc/{licencia}', [licenciasController::class, 'eliminarPC'])->name('licencias.Pc.eliminar');
-        Route::delete('/licencias/eliminarvps/{licencia}', [licenciasController::class, 'eliminarVps'])->name('licencias.Vps.eliminar');
-        Route::delete('/licencias/eliminarweb/{servidor}/{licencia}', [licenciasController::class, 'eliminarWeb'])->name('licencias.Web.eliminar');
+        Route::delete('/licencias/web/{servidorid}/{licenciaid}', [LicenciasController::class, 'eliminarWeb'])
+            ->name('licencias.Web.eliminar');
+        Route::delete('/licencias/pc/{licencia}', [LicenciasController::class, 'eliminarPc'])
+            ->name('licencias.Pc.eliminar');
+        Route::delete('/licencias/vps/{licencia}', [LicenciasController::class, 'eliminarVps'])
+            ->name('licencias.Vps.eliminar');
         Route::get('/email/{cliente}/{producto}', [licenciasController::class, 'enviarEmail'])->name('licencias.Web.enviaremail');
         Route::get('/licencias/editarclave/{cliente}/{servidor}/{licencia}', [licenciasController::class, 'editarClave'])->name('editar_clave');
+
+        // Obtener adicionales existentes de una licencia
+        Route::get('/obtener-adicionales', [AdicionalController::class, 'obtenerAdicionales'])
+            ->name('licencias.obtener-adicionales');
+
+        // Agregar cualquier tipo de adicional (usuarios, sucursales, equipos, móviles)
+        Route::post('/agregar-adicional', [AdicionalController::class, 'agregarAdicional'])
+            ->name('licencias.agregar-adicional');
 
         /* Distribuidores */
         Route::get('/distribuidores', [distribuidoresController::class, 'index'])->name('distribuidores.index');

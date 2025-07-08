@@ -18,7 +18,7 @@
                                             <div class="btn-group" role="group" aria-label="First group">
 
                                                 <a href="{{ route('clientes.editar', $cliente->sis_clientesid) }}" class="btn btn-secondary btn-icon"
-                                                    data-toggle="tooltip" title="Volver"><i class="la la-long-arrow-left"></i></a>
+                                                   data-toggle="tooltip" title="Volver"><i class="la la-long-arrow-left"></i></a>
 
                                                 @if (puede('pc', 'guardar_pc'))
                                                     <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip" title="Guardar"><i
@@ -26,16 +26,11 @@
                                                 @endif
 
                                                 @if (puede('pc', 'crear_pc'))
-                                                    <a href="{{ route('licencias.Pc.crear', $cliente->sis_clientesid) }}" class="btn btn-warning btn-icon"
-                                                        data-toggle="tooltip" title="Nuevo"><i class="la la-user-plus"></i></a>
+                                                    <a href="{{ route('licencias.Pc.crear', $cliente->sis_clientesid) }}"
+                                                       class="btn btn-warning btn-icon"
+                                                       data-toggle="tooltip" title="Nuevo"><i class="la la-user-plus"></i></a>
                                                 @endif
 
-                                                {{-- @if (puede('pc', 'ver_adicionales'))
-                                                    <a href="#" class="btn btn-primary btn-icon" data-toggle="tooltip" title="Adicionales"
-                                                        id="ver_adicionales" data-numerocontrato="{{ $licencia->numerocontrato }}">
-                                                        <i class="la la-list-alt"></i>
-                                                    </a>
-                                                @endif --}}
                                             </div>
                                         </div>
                                     </div>
@@ -71,40 +66,3 @@
         </div>
     </div>
 @endsection
-
-<div id="modal_adicionales" class="modal fade">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title h6">Adicionales</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-            </div>
-            <div class="modal-body text-center">
-                <table class="table table-sm table-bordered">
-                    <thead>
-                        <tr class="text-center">
-                            <td>Inicia</td>
-                            <td>Caduca</td>
-                            <td>Tipo Licencia</td>
-                            <td>Tipo Adicional</td>
-                            <td>Cantidad</td>
-                            <td>Precio</td>
-                        </tr>
-                    </thead>
-                    <tbody class="text-center">
-                        @foreach ($adicionales as $adicional)
-                            <tr>
-                                <td>{{ $adicional->fechainicia }}</td>
-                                <td>{{ $adicional->fechacaduca }}</td>
-                                <td>{{ $adicional->tipo_licencia }}</td>
-                                <td>{{ $adicional->tipo_adicional }}</td>
-                                <td>{{ $adicional->cantidad }}</td>
-                                <td>{{ $adicional->precio }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>

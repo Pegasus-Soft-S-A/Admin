@@ -1,9 +1,26 @@
 @extends('admin.layouts.app')
 @section('contenido')
     <style>
-        #kt_datatable td {
-            padding: 3px;
+
+        /* ✅ Mejorar separación visual */
+        .filter-section {
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
         }
+
+        /*Eliminar :  en responsive */
+        .dtr-title:after,
+        .dtr-title::after {
+            content: "" !important;
+            display: none !important;
+        }
+
+        /* Filas más compactas y texto en una línea */
+        #kt_datatable tbody td {
+            padding: 6px 8px !important;
+            font-size: 12px !important;
+        }
+
     </style>
 
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -12,295 +29,356 @@
                 <div class="row">
                     <div class="col-md-12">
                         <!--begin::Card-->
-
                         <div class="card card-custom card-sticky" id="kt_page_sticky_card">
-                            <div class="card-header ">
+                            <div class="card-header py-4">
                                 <div class="card-title">
-                                    <h3 class="card-label">Clientes</h3>
-
+                                    <h3 class="card-label font-weight-bold text-dark">
+                                        <i class="fas fa-users text-primary mr-3"></i>Gestión de Clientes
+                                    </h3>
                                 </div>
+
                                 <div class="card-toolbar">
+                                    <div class="btn-group mr-2">
+                                        <button type="button" class="btn btn-light-primary font-weight-bold" id="filtrar">
+                                            <i class="fas fa-filter mr-2"></i>Filtros
+                                        </button>
+                                    </div>
 
-                                    <a href="#" class="btn btn-primary font-weight-bolder" id="filtrar">
-                                        <span class="svg-icon svg-icon-md">
-                                            <i class="la la-filter"></i>
-                                        </span>Filtrar
-                                    </a>
+                                    <div class="btn-group mr-2">
+                                        <button type="button" class="btn btn-light-success font-weight-bold dropdown-toggle"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-download mr-2"></i>Exportar
+                                        </button>
 
-                                    <div class="dropdown dropdown-inline mr-2 ml-2">
-                                        <button type="button" class="btn btn-md btn-light-primary font-weight-bolder dropdown-toggle"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span class="svg-icon svg-icon-md">
-                                                <!--begin::Svg Icon | path:assets/media/svg/icons/Design/PenAndRuller.svg-->
-                                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
-                                                    height="24px" viewBox="0 0 24 24" version="1.1">
-                                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                        <rect x="0" y="0" width="24" height="24" />
-                                                        <path
-                                                            d="M3,16 L5,16 C5.55228475,16 6,15.5522847 6,15 C6,14.4477153 5.55228475,14 5,14 L3,14 L3,12 L5,12 C5.55228475,12 6,11.5522847 6,11 C6,10.4477153 5.55228475,10 5,10 L3,10 L3,8 L5,8 C5.55228475,8 6,7.55228475 6,7 C6,6.44771525 5.55228475,6 5,6 L3,6 L3,4 C3,3.44771525 3.44771525,3 4,3 L10,3 C10.5522847,3 11,3.44771525 11,4 L11,19 C11,19.5522847 10.5522847,20 10,20 L4,20 C3.44771525,20 3,19.5522847 3,19 L3,16 Z"
-                                                            fill="#000000" opacity="0.3" />
-                                                        <path
-                                                            d="M16,3 L19,3 C20.1045695,3 21,3.8954305 21,5 L21,15.2485298 C21,15.7329761 20.8241635,16.200956 20.5051534,16.565539 L17.8762883,19.5699562 C17.6944473,19.7777745 17.378566,19.7988332 17.1707477,19.6169922 C17.1540423,19.602375 17.1383289,19.5866616 17.1237117,19.5699562 L14.4948466,16.565539 C14.1758365,16.200956 14,15.7329761 14,15.2485298 L14,5 C14,3.8954305 14.8954305,3 16,3 Z"
-                                                            fill="#000000" />
-                                                    </g>
-                                                </svg>
-                                                <!--end::Svg Icon-->
-                                            </span>Exportar</button>
-                                        <!--begin::Dropdown Menu-->
-                                        <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                            <!--begin::Navigation-->
-                                            <ul class="navi flex-column navi-hover py-2">
-                                                <li class="navi-header font-weight-bolder text-uppercase font-size-sm text-primary pb-2">
-                                                    Elija una opcion:</li>
-                                                <li class="navi-item">
-                                                    <a href="#" class="navi-link" id="export_print">
-                                                        <span class="navi-icon">
-                                                            <i class="la la-print"></i>
-                                                        </span>
-                                                        <span class="navi-text">Imprimir</span>
-                                                    </a>
-                                                </li>
-                                                <li class="navi-item">
-                                                    <a href="#" class="navi-link" id="export_copy">
-                                                        <span class="navi-icon">
-                                                            <i class="la la-copy"></i>
-                                                        </span>
-                                                        <span class="navi-text">Copiar</span>
-                                                    </a>
-                                                </li>
-                                                <li class="navi-item">
-                                                    <a href="#" class="navi-link" id="export_excel">
-                                                        <span class="navi-icon">
-                                                            <i class="la la-file-excel-o"></i>
-                                                        </span>
-                                                        <span class="navi-text">Excel</span>
-                                                    </a>
-                                                </li>
-                                                <li class="navi-item">
-                                                    <a href="#" class="navi-link" id="export_pdf">
-                                                        <span class="navi-icon">
-                                                            <i class="la la-file-pdf-o"></i>
-                                                        </span>
-                                                        <span class="navi-text">PDF</span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                            <!--end::Navigation-->
+                                        <div class="dropdown-menu dropdown-menu-right shadow-sm">
+                                            <h6 class="dropdown-header font-weight-bold text-primary d-flex align-items-center">
+                                                <i class="fas fa-file-export mr-2"></i>Formato de exportación
+                                            </h6>
+                                            <div class="dropdown-divider"></div>
+
+                                            <a href="#" class="dropdown-item d-flex align-items-center" id="export_print">
+                                                <i class="fas fa-print text-info mr-3"></i>Imprimir
+                                            </a>
+                                            <a href="#" class="dropdown-item d-flex align-items-center" id="export_copy">
+                                                <i class="fas fa-copy text-secondary mr-3"></i>Copiar
+                                            </a>
+                                            <a href="#" class="dropdown-item d-flex align-items-center" id="export_excel">
+                                                <i class="fas fa-file-excel text-success mr-3"></i>Excel
+                                            </a>
+                                            <a href="#" class="dropdown-item d-flex align-items-center" id="export_pdf">
+                                                <i class="fas fa-file-pdf text-danger mr-3"></i>PDF
+                                            </a>
                                         </div>
-                                        <!--end::Dropdown Menu-->
                                     </div>
 
                                     @if (puede('clientes', 'crear_clientes'))
-                                        <a href="{{ route('clientes.crear') }}" class="btn btn-primary font-weight-bolder">
-                                            <span class="svg-icon svg-icon-md">
-                                                <i class="flaticon2-plus-1"></i>
-                                            </span>Nuevo
+                                        <a href="{{ route('clientes.crear') }}" class="btn btn-primary font-weight-bold">
+                                            <i class="fas fa-plus mr-2"></i>Nuevo Cliente
                                         </a>
                                     @endif
                                 </div>
-
                             </div>
+
                             <div class="card-body">
-                                <!--begin: Search Form-->
-                                <div class="mb-15" id="filtro" style="display: none;">
-                                    <div class="row mb-5">
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
-                                            <label>Tipo Fecha:</label>
-                                            <select class="form-control datatable-input" id="tipofecha">
-                                                <option value="1">Fecha Inicio</option>
-                                                <option value="2">Fecha Caduca</option>
-                                                <option value="3">Fecha Actualizacion</option>
-                                                <option value="4">Fecha Modificacion</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
-                                            <label>Tipo Licencia:</label>
-                                            <select class="form-control datatable-input" id="tipolicencia">
-                                                <option value="1">Todos</option>
-                                                <option value="2">Web</option>
-                                                <option value="3">PC</option>
-                                                <option value="4">VPS</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
-                                            <label>Fecha:</label>
-                                            <div class="input-group" id='kt_fecha'>
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="la la-calendar-check-o"></i>
-                                                    </span>
+                                <!-- ✅ Sección de filtros mejorada -->
+                                <div class="filter-section p-4 mb-6" id="filtro" style="display: none;">
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <h5 class="font-weight-bold text-dark mb-0">
+                                            <i class="fas fa-search text-primary mr-2"></i>Filtros de Búsqueda
+                                        </h5>
+                                        <button type="button" class="btn btn-sm btn-light-danger pr-2" onclick="$('#filtro').hide();">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- ✅ Filtros agrupados por categorías -->
+                                    <div class="row">
+                                        <!-- Grupo: Configuración de Fecha -->
+                                        <div class="col-12">
+                                            <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-calendar-alt"></i> Configuración de Fechas
+                                            </p>
+                                            <div class="separator separator-dashed mb-2"></div>
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-6 mb-3">
+                                                    <label class="font-weight-bold text-dark">
+                                                        Tipo de Fecha:
+                                                    </label>
+                                                    <select class="form-control form-control datatable-input" id="tipofecha">
+                                                        <option value="1">📅 Fecha Inicio</option>
+                                                        <option value="2">⏰ Fecha Caduca</option>
+                                                        <option value="3">🔄 Fecha Actualización</option>
+                                                        <option value="4">✏️ Fecha Modificación</option>
+                                                    </select>
                                                 </div>
-                                                <input type="text" class="form-control" autocomplete="off" placeholder="Rango de Fechas"
-                                                    id="fecha">
+                                                <div class="col-lg-8 col-md-6 mb-3">
+                                                    <label class="font-weight-bold text-dark">
+                                                        Rango de Fechas:
+                                                    </label>
+                                                    <div class="input-group" id='kt_fecha'>
+                                                        <div class="input-group-prepend">
+                                                                <span class="input-group-text">
+                                                                    <i class="fas fa-calendar-check"></i>
+                                                                </span>
+                                                        </div>
+                                                        <input type="text" class="form-control form-control"
+                                                               autocomplete="off" placeholder="Seleccione rango de fechas" id="fecha">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
-                                            <label>Periodo:</label>
-                                            <select class="form-control datatable-input" id="periodo" name="periodo">
-                                                <option id="" value="">Todos</option>
-                                                <option id="periodo1" value="1">Mensual</option>
-                                                <option id="periodo2" value="2">Anual</option>
-                                                <option class="d-none" id="periodo3" value="3">Premium</option>
-                                            </select>
+
+                                        <!-- Grupo: Configuración de Productos -->
+                                        <div class="col-12">
+                                            <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-box"></i> Productos y Licencias
+                                            </p>
+                                            <div class="separator separator-dashed mb-2"></div>
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-6 mb-3">
+                                                    <label class="font-weight-bold text-dark">
+                                                        Tipo Licencia:
+                                                    </label>
+                                                    <select class="form-control form-control datatable-input" id="tipolicencia">
+                                                        <option value="1">🌐 Todos</option>
+                                                        <option value="2">💻 Web</option>
+                                                        <option value="3">🖥️ PC</option>
+                                                        <option value="4">☁️ VPS</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-3 col-md-6 mb-3">
+                                                    <label class="font-weight-bold text-dark">
+                                                        Producto:
+                                                    </label>
+                                                    <select class="form-control form-control datatable-input" id="producto" name="producto">
+                                                        <option value="">Todos los productos</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-3 col-md-6 mb-3">
+                                                    <label class="font-weight-bold text-dark">
+                                                        Período:
+                                                    </label>
+                                                    <select class="form-control form-control datatable-input" id="periodo" name="periodo">
+                                                        <option value="">Todos</option>
+                                                        <option id="periodo1" value="1">📅 Mensual</option>
+                                                        <option id="periodo2" value="2">📆 Anual</option>
+                                                        <option class="d-none" id="periodo3" value="3">⭐ Premium</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row mb-5">
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
-                                            <label>Producto:</label>
-                                            <select class="form-control datatable-input" id="producto" name="producto">
-                                                <option value="">Todos</option>
-                                            </select>
+
+                                        <!-- Grupo: Configuración Comercial -->
+                                        <div class="col-12">
+                                            <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-handshake"></i> Información Comercial
+                                            </p>
+                                            <div class="separator separator-dashed mb-2"></div>
+                                            <div class="row">
+                                                <div class="col-lg-4 col-md-6 mb-3">
+                                                    <label class="font-weight-bold text-dark">
+                                                        Distribuidor:
+                                                    </label>
+                                                    <select class="form-control form-control-solid datatable-input select2" id="distribuidor"
+                                                            name="distribuidor">
+                                                        @if (Auth::user()->tipo == 1)
+                                                            <option value="">Todos los distribuidores</option>
+                                                        @else
+                                                            <option value="">Seleccione distribuidor</option>
+                                                        @endif
+                                                        @foreach ($distribuidores as $distribuidor)
+                                                            <option value="{{ $distribuidor->sis_distribuidoresid }}">
+                                                                {{ $distribuidor->razonsocial }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6 mb-3">
+                                                    <label class="font-weight-bold text-dark">
+                                                        Vendedor:
+                                                    </label>
+                                                    <select class="form-control form-control-solid datatable-input select2" id="vendedor"
+                                                            name="vendedor">
+                                                        <option value="">Todos los vendedores</option>
+                                                        @foreach ($vendedores as $vendedor)
+                                                            <option value="{{ $vendedor->sis_revendedoresid }}">
+                                                                {{ $vendedor->razonsocial }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-lg-4 col-md-6 mb-3">
+                                                    <label class="font-weight-bold text-dark">
+                                                        Revendedor:
+                                                    </label>
+                                                    <select class="form-control form-control-solid datatable-input select2" id="revendedor"
+                                                            name="revendedor">
+                                                        <option value="">Todos los revendedores</option>
+                                                        @foreach ($revendedores as $vendedor)
+                                                            <option value="{{ $vendedor->sis_revendedoresid }}">
+                                                                {{ $vendedor->razonsocial }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
-                                            <label>Distribuidor:</label>
-                                            <select class="form-control datatable-input select2" id="distribuidor" name="distribuidor">
+
+                                        <!-- Grupo: Ubicación y Origen -->
+                                        <div class="col-12">
+                                            <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-map-marker-alt"></i> Ubicación y Origen
+                                            </p>
+                                            <div class="separator separator-dashed mb-2"></div>
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-12 mb-3">
+                                                    <label class="font-weight-bold text-dark">
+                                                        Provincia:
+                                                    </label>
+                                                    <select class="form-control form-control-solid datatable-input select2" id="provinciasid"
+                                                            name="provinciasid">
+                                                        <option value="">🗺️ Todas las provincias</option>
+                                                        @php
+                                                            $provincias = [
+                                                                ['id' => '01', 'nombre' => 'Azuay'],
+                                                                ['id' => '02', 'nombre' => 'Bolivar'],
+                                                                ['id' => '03', 'nombre' => 'Cañar'],
+                                                                ['id' => '04', 'nombre' => 'Carchi'],
+                                                                ['id' => '05', 'nombre' => 'Chimborazo'],
+                                                                ['id' => '06', 'nombre' => 'Cotopaxi'],
+                                                                ['id' => '07', 'nombre' => 'El Oro'],
+                                                                ['id' => '08', 'nombre' => 'Esmeraldas'],
+                                                                ['id' => '09', 'nombre' => 'Guayas'],
+                                                                ['id' => '20', 'nombre' => 'Galapagos'],
+                                                                ['id' => '10', 'nombre' => 'Imbabura'],
+                                                                ['id' => '11', 'nombre' => 'Loja'],
+                                                                ['id' => '12', 'nombre' => 'Los Rios'],
+                                                                ['id' => '13', 'nombre' => 'Manabi'],
+                                                                ['id' => '14', 'nombre' => 'Morona Santiago'],
+                                                                ['id' => '15', 'nombre' => 'Napo'],
+                                                                ['id' => '22', 'nombre' => 'Orellana'],
+                                                                ['id' => '16', 'nombre' => 'Pastaza'],
+                                                                ['id' => '17', 'nombre' => 'Pichincha'],
+                                                                ['id' => '24', 'nombre' => 'Santa Elena'],
+                                                                ['id' => '23', 'nombre' => 'Santo Domingo De Los Tsachilas'],
+                                                                ['id' => '21', 'nombre' => 'Sucumbios'],
+                                                                ['id' => '18', 'nombre' => 'Tungurahua'],
+                                                                ['id' => '19', 'nombre' => 'Zamora Chinchipe'],
+                                                            ];
+                                                        @endphp
+                                                        @foreach ($provincias as $provincia)
+                                                            <option value="{{ $provincia['id'] }}">{{ $provincia['nombre'] }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
                                                 @if (Auth::user()->tipo == 1)
-                                                    <option value="">Todos</option>
-                                                @else
-                                                    <option value="">Seleccione</option>
+                                                    <div class="col-lg-6 col-md-12 mb-3">
+                                                        <label class="font-weight-bold text-dark">
+                                                            Origen:
+                                                        </label>
+                                                        <select class="form-control form-control-solid datatable-input select2" id="origen"
+                                                                name="origen">
+                                                            @php
+                                                                $origenes = [
+                                                                    ['id' => '', 'nombre' => 'Todos'],
+                                                                    ['id' => '1', 'nombre' => 'Perseo'],
+                                                                    ['id' => '2', 'nombre' => 'Contafácil'],
+                                                                    ['id' => '3', 'nombre' => 'UIO-01'],
+                                                                    ['id' => '8', 'nombre' => 'UIO-02'],
+                                                                    ['id' => '5', 'nombre' => 'GYE-02'],
+                                                                    ['id' => '6', 'nombre' => 'CUE-01'],
+                                                                    ['id' => '7', 'nombre' => 'STO-01'],
+                                                                    ['id' => '10', 'nombre' => 'CNV-01'],
+                                                                    ['id' => '11', 'nombre' => 'MATRIZ'],
+                                                                    ['id' => '12', 'nombre' => 'CUE-02'],
+                                                                    ['id' => '13', 'nombre' => 'CUE-03'],
+                                                                    ['id' => '14', 'nombre' => 'UIO-03'],
+                                                                    ['id' => '15', 'nombre' => 'UIO-04'],
+                                                                    ['id' => '16', 'nombre' => 'UIO-05'],
+                                                                    ['id' => '18', 'nombre' => 'SP-01'],
+                                                                    ['id' => '19', 'nombre' => 'SP-02'],
+                                                                    ['id' => '20', 'nombre' => 'SP-03'],
+                                                                    ['id' => '21', 'nombre' => 'SP-04'],
+                                                                    ['id' => '22', 'nombre' => 'SP-05'],
+                                                                    ['id' => '17', 'nombre' => 'Tienda'],
+                                                                ];
+                                                            @endphp
+                                                            @foreach ($origenes as $origen)
+                                                                <option value="{{ $origen['id'] }}">
+                                                                    @if($origen['id'] == '')
+                                                                        🌐
+                                                                    @endif{{ $origen['nombre'] }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
                                                 @endif
-                                                @foreach ($distribuidores as $distribuidor)
-                                                    <option value="{{ $distribuidor->sis_distribuidoresid }}">
-                                                        {{ $distribuidor->razonsocial }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
-                                            <label>Vendedor:</label>
-                                            <select class="form-control datatable-input select2" id="vendedor" name="vendedor">
-                                                <option value="">Todos</option>
-                                                @foreach ($vendedores as $vendedor)
-                                                    <option value="{{ $vendedor->sis_revendedoresid }}">
-                                                        {{ $vendedor->razonsocial }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
-                                            <label>Revendedor:</label>
-                                            <select class="form-control datatable-input select2" id="revendedor" name="revendedor">
-                                                <option value="">Todos</option>
-                                                @foreach ($revendedores as $vendedor)
-                                                    <option value="{{ $vendedor->sis_revendedoresid }}">
-                                                        {{ $vendedor->razonsocial }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-5">
-                                        <div class="col-lg-3 mb-lg-0 mb-6">
-                                            <label>Provincias:</label>
-
-                                            @php
-                                                $provincias = [
-                                                    ['id' => '01', 'nombre' => 'Azuay'],
-                                                    ['id' => '02', 'nombre' => 'Bolivar'],
-                                                    ['id' => '03', 'nombre' => 'Cañar'],
-                                                    ['id' => '04', 'nombre' => 'Carchi'],
-                                                    ['id' => '05', 'nombre' => 'Chimborazo'],
-                                                    ['id' => '06', 'nombre' => 'Cotopaxi'],
-                                                    ['id' => '07', 'nombre' => 'El Oro'],
-                                                    ['id' => '08', 'nombre' => 'Esmeraldas'],
-                                                    ['id' => '09', 'nombre' => 'Guayas'],
-                                                    ['id' => '20', 'nombre' => 'Galapagos'],
-                                                    ['id' => '10', 'nombre' => 'Imbabura'],
-                                                    ['id' => '11', 'nombre' => 'Loja'],
-                                                    ['id' => '12', 'nombre' => 'Los Rios'],
-                                                    ['id' => '13', 'nombre' => 'Manabi'],
-                                                    ['id' => '14', 'nombre' => 'Morona Santiago'],
-                                                    ['id' => '15', 'nombre' => 'Napo'],
-                                                    ['id' => '22', 'nombre' => 'Orellana'],
-                                                    ['id' => '16', 'nombre' => 'Pastaza'],
-                                                    ['id' => '17', 'nombre' => 'Pichincha'],
-                                                    ['id' => '24', 'nombre' => 'Santa Elena'],
-                                                    ['id' => '23', 'nombre' => 'Santo Domingo De Los Tsachilas'],
-                                                    ['id' => '21', 'nombre' => 'Sucumbios'],
-                                                    ['id' => '18', 'nombre' => 'Tungurahua'],
-                                                    ['id' => '19', 'nombre' => 'Zamora Chinchipe'],
-                                                ];
-                                            @endphp
-
-                                            <select class="form-control datatable-input select2" id="provinciasid" name="provinciasid">
-                                                <option value="">Seleccione una provincia</option>
-                                                @foreach ($provincias as $provincia)
-                                                    <option value="{{ $provincia['id'] }}">{{ $provincia['nombre'] }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        @if (Auth::user()->tipo == 1)
-                                            <div class="col-lg-3 mb-lg-0 mb-6">
-                                                <label>Origen:</label>
-
-                                                @php
-                                                    $origenes = [
-                                                        ['id' => '', 'nombre' => 'Todos'],
-                                                        ['id' => '1', 'nombre' => 'Perseo'],
-                                                        ['id' => '2', 'nombre' => 'Contafácil'],
-                                                        ['id' => '3', 'nombre' => 'UIO-01'],
-                                                        ['id' => '8', 'nombre' => 'UIO-02'],
-                                                        ['id' => '5', 'nombre' => 'GYE-02'],
-                                                        ['id' => '6', 'nombre' => 'CUE-01'],
-                                                        ['id' => '7', 'nombre' => 'STO-01'],
-                                                        ['id' => '10', 'nombre' => 'CNV-01'],
-                                                        ['id' => '11', 'nombre' => 'MATRIZ'],
-                                                        ['id' => '12', 'nombre' => 'CUE-02'],
-                                                        ['id' => '13', 'nombre' => 'CUE-03'],
-                                                        ['id' => '14', 'nombre' => 'UIO-03'],
-                                                        ['id' => '15', 'nombre' => 'UIO-04'],
-                                                        ['id' => '16', 'nombre' => 'UIO-05'],
-                                                        ['id' => '18', 'nombre' => 'SP-01'],
-                                                        ['id' => '19', 'nombre' => 'SP-02'],
-                                                        ['id' => '20', 'nombre' => 'SP-03'],
-                                                        ['id' => '21', 'nombre' => 'SP-04'],
-                                                        ['id' => '22', 'nombre' => 'SP-05'],
-                                                        ['id' => '17', 'nombre' => 'Tienda'],
-                                                    ];
-                                                @endphp
-
-                                                <select class="form-control datatable-input select2" id="origen" name="origen">
-                                                    @foreach ($origenes as $origen)
-                                                        <option value="{{ $origen['id'] }}">{{ $origen['nombre'] }}</option>
-                                                    @endforeach
-                                                </select>
                                             </div>
-                                        @endif
+                                        </div>
                                     </div>
 
-                                    <div class="row ">
-                                        <div class="col-lg-12">
-                                            <button class="btn btn-primary btn-primary--icon" id="kt_search">
-                                                <span>
-                                                    <i class="la la-search"></i>
-                                                    <span>Buscar</span>
-                                                    <input type="hidden" name="buscar_filtro" id="buscar_filtro">
-                                                </span>
-                                            </button>&#160;&#160;
-                                            <button class="btn btn-secondary btn-secondary--icon" id="kt_reset">
-                                                <span>
-                                                    <i class="la la-close"></i>
-                                                    <span>Reiniciar</span>
-                                                </span>
-                                            </button>
+                                    <!-- ✅ Botones de acción mejorados -->
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="btn-group">
+                                                    <button class="btn btn-primary font-weight-bold" id="kt_search">
+                                                        <i class="fas fa-search mr-2"></i>Buscar Clientes
+                                                        <input type="hidden" name="buscar_filtro" id="buscar_filtro">
+                                                    </button>
+                                                    <button class="btn btn-secondary font-weight-bold ml-2" id="kt_reset">
+                                                        <i class="fas fa-undo mr-2"></i>Limpiar Filtros
+                                                    </button>
+                                                </div>
+
+                                                <!-- ✅ Indicador de filtros activos -->
+                                                <div id="filtros-activos" class="badge badge-light-primary" style="display: none;">
+                                                    <i class="fas fa-filter mr-1"></i>
+                                                    <span id="count-filtros">0</span> filtros activos
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <!--begin: Datatable-->
-                                <table class="table table-sm table-bordered table-head-custom table-hover" id="kt_datatable">
-                                    <thead>
+
+                                <!-- ✅ Tabla con header mejorado -->
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered table-head-custom" id="kt_datatable">
+                                        <thead class="thead-light">
                                         <tr>
-                                            <th class="no-exportar"></th>
+                                            <th class="no-exportar text-center">
+                                                <i class="fas fa-check-circle text-success" title="Estado"></i>
+                                            </th>
                                             <th class="no-exportar">#</th>
-                                            <th data-priority="1">Contrato</th>
-                                            <th class="no-exportar">Identificador</th>
-                                            <th data-priority="2">Identificacion</th>
-                                            <th data-priority="3">Nombres</th>
-                                            <th data-priority="4">Distribuidor</th>
-                                            <th>Celular</th>
+                                            <th data-priority="1">
+                                                <span>Contrato</span>
+                                            </th>
+                                            <th class="no-exportar">
+                                                Identificador
+                                            </th>
+                                            <th data-priority="2">
+                                                <span>Identificación</span>
+                                            </th>
+                                            <th data-priority="3">
+                                                <span>Cliente</span>
+                                            </th>
+                                            <th data-priority="4">
+                                                <span>Distribuidor</span>
+                                            </th>
+                                            <th>
+                                                <span>Celular</span>
+                                            </th>
                                             <th style="display:none">Correos</th>
-                                            <th data-priority="5">Tipo</th>
-                                            <th data-priority="6">Producto</th>
-                                            <th data-priority="7">Inicia</th>
-                                            <th data-priority="8">Caduca</th>
+                                            <th data-priority="5">
+                                                <span>Tipo</span>
+                                            </th>
+                                            <th data-priority="6">
+                                                <span>Producto</span>
+                                            </th>
+                                            <th data-priority="7">
+                                                <span>Inicio</span>
+                                            </th>
+                                            <th data-priority="8">
+                                                <span>Vence</span>
+                                            </th>
+                                            <!-- Columnas ocultas permanecen igual -->
                                             <th style="display:none">Grupo</th>
                                             <th style="display:none">Dias Hasta Vencer</th>
                                             <th style="display:none">Precio</th>
@@ -317,15 +395,12 @@
                                             <th style="display:none">Moviles</th>
                                             <th style="display:none">Cantidad Empresas</th>
                                             <th style="display:none">Usuarios Activos</th>
-
                                         </tr>
-                                    </thead>
-                                </table>
-                                <!--end: Datatable-->
-
+                                        </thead>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                        <!--end::Card-->
                     </div>
                 </div>
             </div>
@@ -339,39 +414,158 @@
 
 @section('script')
     <script>
-        $('#tipolicencia').on('change', function(e) {
-            var distribuidor = e.target.value;
-            var tipo = $('#tipolicencia').val();
-            $('#producto').empty();
-            $.ajax({
-                type: "GET",
-                url: '/admin/productos/' + tipo,
-                success: function(data) {
-                    $.each(data, function(fetch, producto) {
-                        for (i = 0; i < producto.length; i++) {
-                            $('#producto').append('<option value="' + producto[i].id + '">' + producto[i].nombre +
-                                '</option>');
-                        }
-                    })
+        // ====================================
+        // CONFIGURACIÓN DINÁMICA
+        // ====================================
+
+        const ConfigClientes = {
+            configuracion: @json(config('sistema')),
+
+            // ✅ Mapeos dinámicos para productos
+            actualizarProductos(tipoLicencia) {
+                $('#producto').empty();
+                $('#producto').append('<option value="">Todos los productos</option>');
+
+                if (!tipoLicencia || tipoLicencia === '1') {
+                    return; // "Todos" seleccionado
                 }
-            });
-        });
 
-        $('#producto').on('change', function(e) {
-            if ($('#producto').val() == 12) {
-                $('#periodo1').html("Inicial");
-                $('#periodo2').html("Basico");
-                $('#periodo3').html("Premium");
-                $('#periodo3').removeClass("d-none");
-            } else {
-                $('#periodo1').html("Mensual");
-                $('#periodo2').html("Anual");
-                $('#periodo3').addClass("d-none");
+                // Usar configuración dinámica según tipo
+                let productos = [];
+                switch (tipoLicencia) {
+                    case '2': // Web
+                        productos = this.obtenerProductosWeb();
+                        break;
+                    case '3': // PC
+                        productos = this.obtenerProductosPC();
+                        break;
+                    case '4': // VPS
+                        productos = [{id: 'vps', nombre: 'Perseo VPS'}];
+                        break;
+                }
+
+                productos.forEach(producto => {
+                    $('#producto').append(`<option value="${producto.id}">${producto.nombre}</option>`);
+                });
+            },
+
+            // ✅ Obtener productos Web desde configuración
+            obtenerProductosWeb() {
+                const productosWeb = this.configuracion.productos.web;
+                const productos = [];
+
+                Object.keys(productosWeb).forEach(id => {
+                    let nombre = this.obtenerNombreProducto(id);
+                    productos.push({id: id, nombre: nombre});
+                });
+
+                return productos;
+            },
+
+            // ✅ Obtener productos PC desde configuración
+            obtenerProductosPC() {
+                const modulosPC = this.configuracion.productos.pc.modulos_principales;
+                const productos = [];
+
+                Object.keys(modulosPC).forEach(modulo => {
+                    productos.push({
+                        id: modulo,
+                        nombre: modulo.charAt(0).toUpperCase() + modulo.slice(1)
+                    });
+                });
+
+                return productos;
+            },
+
+            // ✅ Mapeo de nombres de productos
+            obtenerNombreProducto(id) {
+                const nombres = {
+                    '2': 'Facturación',
+                    '3': 'Servicios',
+                    '4': 'Comercial',
+                    '5': 'Soy Contador Comercial',
+                    '6': 'Perseo Lite Anterior',
+                    '8': 'Soy Contador Servicios',
+                    '9': 'Perseo Lite',
+                    '10': 'Emprendedor',
+                    '11': 'Socio Perseo',
+                    '12': 'Facturito'
+                };
+                return nombres[id] || `Producto ${id}`;
+            },
+
+            // ✅ Actualizar períodos según producto
+            actualizarPeriodos(producto) {
+                if (producto == '12') {
+                    $('#periodo1').html("📋 Inicial");
+                    $('#periodo2').html("💼 Básico");
+                    $('#periodo3').html("⭐ Premium").removeClass("d-none");
+                } else {
+                    $('#periodo1').html("📅 Mensual");
+                    $('#periodo2').html("📆 Anual");
+                    $('#periodo3').addClass("d-none");
+                }
+            },
+
+            // ✅ Contar filtros activos
+            contarFiltrosActivos() {
+                let count = 0;
+                const filtros = ['#tipofecha', '#tipolicencia', '#fecha', '#periodo', '#producto',
+                    '#distribuidor', '#vendedor', '#revendedor', '#provinciasid', '#origen'];
+
+                filtros.forEach(filtro => {
+                    const valor = $(filtro).val();
+                    if (valor && valor !== '' && valor !== '1') { // '1' es "Todos" en tipolicencia
+                        count++;
+                    }
+                });
+
+                const elemento = $('#filtros-activos');
+                if (count > 0) {
+                    elemento.show();
+                    $('#count-filtros').text(count);
+                } else {
+                    elemento.hide();
+                }
             }
-        });
-        $(document).ready(function() {
+        };
 
-            //Inicializar rango de fechas
+        // ====================================
+        // EVENT HANDLERS PRINCIPALES
+        // ====================================
+
+        // ✅ Cambio de tipo de licencia
+        $('#tipolicencia').on('change', function (e) {
+            const tipoLicencia = e.target.value;
+            ConfigClientes.actualizarProductos(tipoLicencia);
+            ConfigClientes.contarFiltrosActivos();
+        });
+
+        // ✅ Cambio de producto
+        $('#producto').on('change', function (e) {
+            const producto = e.target.value;
+            ConfigClientes.actualizarPeriodos(producto);
+            ConfigClientes.contarFiltrosActivos();
+        });
+
+        // ✅ Contar filtros en todos los cambios
+        $('.datatable-input').on('change', function () {
+            ConfigClientes.contarFiltrosActivos();
+        });
+
+        // ====================================
+        // INICIALIZACIÓN PRINCIPAL
+        // ====================================
+
+        $(document).ready(function () {
+
+            // ✅ Inicializar contador de filtros
+            ConfigClientes.contarFiltrosActivos();
+
+            // ====================================
+            // CONFIGURACIÓN DE DATERANGEPICKER
+            // ====================================
+
             $('#kt_fecha').daterangepicker({
                 autoUpdateInput: false,
                 format: "DD-MM-YYYY",
@@ -383,34 +577,18 @@
                     "toLabel": "HASTA",
                     "customRangeLabel": "Personalizado",
                     "daysOfWeek": [
-                        "Dom",
-                        "Lun",
-                        "Mar",
-                        "Mie",
-                        "Jue",
-                        "Vie",
-                        "Sáb"
+                        "Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sáb"
                     ],
                     "monthNames": [
-                        "Enero",
-                        "Febrero",
-                        "Marzo",
-                        "Abril",
-                        "Mayo",
-                        "Junio",
-                        "Julio",
-                        "Agosto",
-                        "Septiembre",
-                        "Octubre",
-                        "Noviembre",
-                        "Diciembre"
+                        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
                     ],
                     "firstDay": 1
                 },
                 ranges: {
                     'Hoy': [moment(), moment()],
-                    'Ultimos 7 días': [moment().subtract(6, 'days'), moment()],
-                    'Ultimos 30 días ': [moment().subtract(29, 'days'), moment()],
+                    'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+                    'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
                     'Mes Actual': [moment().startOf('month'), moment().endOf('month')],
                     'Mes Anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
                     'Año Actual': [moment().startOf('year'), moment().endOf('year')],
@@ -421,9 +599,14 @@
                 cancelClass: 'btn-secondary',
                 alwaysShowCalendars: true,
                 showDropdowns: true,
-            }, function(start, end, label) {
+            }, function (start, end, label) {
                 $('#kt_fecha .form-control').val(start.format('DD-MM-YYYY') + ' / ' + end.format('DD-MM-YYYY'));
+                ConfigClientes.contarFiltrosActivos();
             });
+
+            // ====================================
+            // CONFIGURACIÓN AJAX
+            // ====================================
 
             $.ajaxSetup({
                 headers: {
@@ -431,38 +614,43 @@
                 }
             });
 
-            //inicializar datatable
+            // ====================================
+            // CONFIGURACIÓN DE DATATABLE
+            // ====================================
+
             var table = $('#kt_datatable').DataTable({
-                //Posicion de los elementos de la datatable f:filtering l:length t:table r:processing i:info p:pagination
+                // Posición de los elementos de la datatable
                 dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+
                 responsive: true,
                 processing: true,
                 search: {
                     return: true,
                 },
-                //Combo cantidad de registros a mostrar por pantalla
+
+                // Combo cantidad de registros a mostrar por pantalla
                 lengthMenu: [
                     [15, 25, 50, -1],
                     [15, 25, 50, 'Todos']
                 ],
-                //Registros por pagina
+
+                // Registros por página
                 pageLength: 15,
-                //Orden inicial
-                order: [
-                    [1, 'desc']
-                ],
-                //Guardar pagina, busqueda, etc
-                //stateSave: true,
-                //Trabajar del lado del server
+
+                // Orden inicial
+                order: [[1, 'desc']],
+
+                // Trabajar del lado del server
                 serverSide: true,
-                //Peticion ajax que devuelve los registros
+
+                // Petición ajax que devuelve los registros
                 ajax: {
                     url: "{{ route('clientes.tabla') }}",
                     type: 'POST',
-                    data: function(d) {
-                        //Valores de filtro a enviar a la ruta clientes.index
+                    data: function (d) {
+                        // Valores de filtro a enviar
                         d.tipofecha = $("#tipofecha").val();
                         d.tipolicencia = $("#tipolicencia").val();
                         d.fecha = $("#fecha").val();
@@ -477,8 +665,10 @@
                         d.buscar_filtro = $("#buscar_filtro").val();
                     }
                 },
-                //Columnas de la tabla (Debe contener misma cantidad que thead)
-                columns: [{
+
+                // Columnas de la tabla
+                columns: [
+                    {
                         data: 'validado',
                         name: 'validado',
                         orderable: false,
@@ -611,7 +801,6 @@
                         visible: false,
                         searchable: false
                     },
-
                     {
                         data: 'usuarios',
                         name: 'usuarios',
@@ -642,10 +831,11 @@
                         visible: false,
                         searchable: false
                     },
-
                 ],
-                //botones para exportar
-                buttons: [{
+
+                // Botones para exportar
+                buttons: [
+                    {
                         extend: 'copyHtml5',
                         title: 'Clientes',
                         exportOptions: {
@@ -659,86 +849,236 @@
                             columns: ':not(.no-exportar)'
                         }
                     },
+                    {
+                        extend: 'print',
+                        title: 'Clientes',
+                        exportOptions: {
+                            columns: ':not(.no-exportar)'
+                        }
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        title: 'Clientes',
+                        exportOptions: {
+                            columns: ':not(.no-exportar)'
+                        }
+                    }
                 ],
 
-                initComplete: function() {
+                // ====================================
+                // INICIALIZACIÓN COMPLETA
+                // ====================================
 
-                    self = this.api();
-                    //Si esta en movil agregar boton buscar
+                initComplete: function () {
+                    const self = this.api();
+
+                    // Si está en móvil agregar botón buscar
                     if ($(window).width() < 768) {
-                        var input = $('.dataTables_filter input').unbind(),
-                            $searchButton = $('<button>')
+                        const input = $('.dataTables_filter input').unbind();
+                        const $searchButton = $('<button>')
                             .text('Buscar')
                             .addClass('btn btn-sm btn-primary ml-1')
-                            .click(function() {
+                            .click(function () {
                                 self.search(input.val()).draw();
-                            })
+                            });
 
                         $('.dataTables_filter').append($searchButton);
                     } else {
-                        // //Buscar con enter
+                        // Buscar con enter en desktop
                         $('.dataTables_filter input').unbind();
-                        $('.dataTables_filter input').bind('keyup', function(e) {
-                            var code = e.keyCode || e.which;
+                        $('.dataTables_filter input').bind('keyup', function (e) {
+                            const code = e.keyCode || e.which;
                             if (code == 13) {
                                 table.search(this.value).draw();
                             }
                         });
                     }
 
-                    //Buscar al borrar y no hay caracteres
-                    $('.dataTables_filter input').off('.DT').on('keyup.DT', function(e) {
+                    // Buscar al borrar y no hay caracteres
+                    $('.dataTables_filter input').off('.DT').on('keyup.DT', function (e) {
                         if (e.keyCode == 8 && this.value.length == 0) {
                             self.search('').draw();
                         }
                     });
 
-                    // //Buscar al hacer clic en limpiar
-                    $('input[type="search"]').on('search', function() {
+                    // Buscar al hacer clic en limpiar
+                    $('input[type="search"]').on('search', function () {
                         self.search('').draw();
                     });
-
                 },
             });
 
-            //Al hacer clic en los botones para exportar
-            $('#export_copy').on('click', function(e) {
+            // ====================================
+            // EVENT HANDLERS DE EXPORTACIÓN
+            // ====================================
+
+            // Botón copiar
+            $('#export_copy').on('click', function (e) {
                 e.preventDefault();
                 table.button(0).trigger();
             });
 
-            $('#export_excel').on('click', function(e) {
+            // Botón Excel
+            $('#export_excel').on('click', function (e) {
                 e.preventDefault();
                 table.button(1).trigger();
             });
 
-            //Clic en boton buscar
-            $('#kt_search').on('click', function(e) {
+            // Botón Imprimir
+            $('#export_print').on('click', function (e) {
+                e.preventDefault();
+                table.button(2).trigger();
+            });
+
+            // Botón PDF
+            $('#export_pdf').on('click', function (e) {
+                e.preventDefault();
+                table.button(3).trigger();
+            });
+
+            // ====================================
+            // EVENT HANDLERS DE FILTROS
+            // ====================================
+
+            // Botón buscar
+            $('#kt_search').on('click', function (e) {
                 e.preventDefault();
                 $("#buscar_filtro").val('1');
                 table.draw();
+                ConfigClientes.contarFiltrosActivos();
             });
 
-            //Clic en boton resetear
-            $('#kt_reset').on('click', function(e) {
-                $("#tipofecha").val('');
-                $("#tipolicencia").val('');
+            // ✅ Botón resetear mejorado
+            $('#kt_reset').on('click', function (e) {
+                e.preventDefault();
+
+                // Limpiar todos los campos
+                $("#tipofecha").val('1');
+                $("#tipolicencia").val('1');
                 $("#fecha").val('');
                 $("#periodo").val('');
                 $("#producto").val('');
-                $("#distribuidor").val('');
-                $("#vendedor").val('');
+                $("#distribuidor").val('').trigger('change');
+                $("#vendedor").val('').trigger('change');
+                $("#revendedor").val('').trigger('change');
                 $("#origen").val('');
-                $("#provinciasid").val('');
+                $("#provinciasid").val('').trigger('change');
                 $("#buscar_filtro").val('');
+
+                // Actualizar contador y tabla
+                ConfigClientes.contarFiltrosActivos();
                 table.draw();
+
+                // Limpiar daterangepicker
+                $('#kt_fecha').data('daterangepicker').setStartDate(moment());
+                $('#kt_fecha').data('daterangepicker').setEndDate(moment());
+                $('#kt_fecha .form-control').val('');
             });
 
-            //Mostrar div de busqueda
-            $('#filtrar').on('click', function(e) {
+            // Mostrar/ocultar div de búsqueda
+            $('#filtrar').on('click', function (e) {
+                e.preventDefault();
                 $("#filtro").toggle(500);
             });
 
+            // ====================================
+            // EVENT HANDLERS ADICIONALES DE FILTROS
+            // ====================================
+
+            // Actualizar contador cuando cambian los select2
+            $('#distribuidor, #vendedor, #revendedor, #provinciasid').on('change', function () {
+                ConfigClientes.contarFiltrosActivos();
+            });
+
+            // ====================================
+            // FUNCIONES AUXILIARES
+            // ====================================
+
+            // ✅ Función para limpiar filtro individual
+            window.limpiarFiltro = function (filtroId) {
+                $(filtroId).val('').trigger('change');
+                ConfigClientes.contarFiltrosActivos();
+            };
+
+            // ✅ Función para aplicar filtro rápido
+            window.aplicarFiltroRapido = function (campo, valor) {
+                $(campo).val(valor).trigger('change');
+                $("#buscar_filtro").val('1');
+                table.draw();
+                ConfigClientes.contarFiltrosActivos();
+            };
+
+            // ====================================
+            // INICIALIZACIÓN FINAL
+            // ====================================
+
+            // Cargar productos inicial si hay tipo seleccionado
+            const tipoInicial = $('#tipolicencia').val();
+            if (tipoInicial && tipoInicial !== '1') {
+                ConfigClientes.actualizarProductos(tipoInicial);
+            }
+
+            // Actualizar períodos inicial si hay producto seleccionado
+            const productoInicial = $('#producto').val();
+            if (productoInicial) {
+                ConfigClientes.actualizarPeriodos(productoInicial);
+            }
+
+            // Mensaje de inicialización
+            console.log('🎯 Sistema de clientes inicializado correctamente');
+            console.log('📊 Configuración dinámica cargada:', ConfigClientes.configuracion ? '✅' : '❌');
         });
+
+        // ====================================
+        // FUNCIONES GLOBALES ADICIONALES
+        // ====================================
+
+        // ✅ Función para exportar con filtros personalizados
+        window.exportarConFiltros = function (tipo) {
+            const filtrosActivos = ConfigClientes.contarFiltrosActivos();
+            const nombreArchivo = `Clientes_${moment().format('YYYY-MM-DD')}${filtrosActivos > 0 ? '_Filtrado' : ''}`;
+
+            switch (tipo) {
+                case 'excel':
+                    $('#export_excel').click();
+                    break;
+                case 'pdf':
+                    $('#export_pdf').click();
+                    break;
+                case 'print':
+                    $('#export_print').click();
+                    break;
+                default:
+                    $('#export_copy').click();
+            }
+        };
+
+        // ✅ Función para obtener resumen de filtros
+        window.obtenerResumenFiltros = function () {
+            const filtros = [];
+
+            const campos = [
+                {id: '#tipofecha', nombre: 'Tipo Fecha'},
+                {id: '#tipolicencia', nombre: 'Tipo Licencia'},
+                {id: '#fecha', nombre: 'Rango Fechas'},
+                {id: '#periodo', nombre: 'Período'},
+                {id: '#producto', nombre: 'Producto'},
+                {id: '#distribuidor', nombre: 'Distribuidor'},
+                {id: '#vendedor', nombre: 'Vendedor'},
+                {id: '#revendedor', nombre: 'Revendedor'},
+                {id: '#provinciasid', nombre: 'Provincia'},
+                {id: '#origen', nombre: 'Origen'}
+            ];
+
+            campos.forEach(campo => {
+                const valor = $(campo.id).val();
+                if (valor && valor !== '' && valor !== '1') {
+                    const texto = $(campo.id + ' option:selected').text() || valor;
+                    filtros.push(`${campo.nombre}: ${texto}`);
+                }
+            });
+
+            return filtros;
+        };
     </script>
 @endsection

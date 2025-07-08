@@ -6,6 +6,7 @@ use App\Models\Clientes;
 use App\Models\Distribuidores;
 use App\Models\Grupos;
 use App\Models\Licencias;
+use App\Models\Licenciasvps;
 use App\Models\Licenciasweb;
 use App\Models\Links;
 use App\Models\Revendedores;
@@ -695,103 +696,6 @@ class clientesController extends Controller
         return view('admin.clientes.crear', compact('cliente', 'distribuidores', 'links'));
     }
 
-    // public function guardar(Request $request)
-    // {
-    //     //Validaciones
-    //     $request->validate(
-    //         [
-    //             'identificacion' => ['required', new UniqueSimilar],
-    //             'nombres' => 'required',
-    //             'direccion' => 'required',
-    //             'correos' => ['required', 'email', new ValidarCorreo],
-    //             'provinciasid' => 'required',
-    //             'telefono2' => ['required', 'size:10', new ValidarCelular],
-    //             'sis_distribuidoresid' => 'required',
-    //             'sis_vendedoresid' => 'required',
-    //             'sis_revendedoresid' => 'required',
-    //             'red_origen' => 'required',
-    //             'ciudadesid' => 'required',
-    //             'grupo' => 'required'
-    //         ],
-    //         [
-    //             'identificacion.required' => 'Ingrese su cédula o RUC ',
-    //             'nombres.required' => 'Ingrese los Nombres',
-    //             'direccion.required' => 'Ingrese una Dirección',
-    //             'correos.required' => 'Ingrese un Correo',
-    //             'correos.email' => 'Ingrese un Correo válido',
-    //             'provinciasid.required' => 'Seleccione una Provincia',
-    //             'telefono1.required' => 'Ingrese un Número Convencional',
-    //             'telefono2.required' => 'Ingrese un Número Celular',
-    //             'telefono2.size' => 'Ingrese 10 dígitos',
-    //             'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',
-    //             'sis_vendedoresid.required' => 'Seleccione un Vendedor',
-    //             'sis_revendedoresid.required' => 'Seleccione un Revendedor',
-    //             'red_origen.required' => 'Seleccione un Origen',
-    //             'grupo.required' => 'Seleccione un Tipo de Negocio',
-    //             'ciudadesid.required' => 'Seleccione una Ciudad'
-    //         ],
-    //     );
-
-    //     $request['fechacreacion'] = now();
-    //     $request['usuariocreacion'] = Auth::user()->nombres;
-    //     $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
-    //     $request['telefono1'] = $request['telefono1'] <> "" ? $request['telefono1'] : "";
-
-    //     DB::beginTransaction();
-
-    //     $servidores = Servidores::all();
-    //     $cliente = Clientes::create($request->all());
-
-    //     $clientes_creados = []; // variable para almacenar los clientes creados en los servidores remotos
-
-    //     // Verificar si se creó el cliente en el servidor local
-    //     if (!$cliente) {
-    //         flash('Ocurrió un error al crear el cliente')->warning();
-    //         DB::rollBack();
-    //         return back();
-    //     }
-
-    //     $request['sis_clientesid'] = $cliente->sis_clientesid;
-
-    //     // Insertar el cliente en cada uno de los servidores remotos
-    //     foreach ($servidores as $servidor) {
-    //         $url = $servidor->dominio . '/registros/crear_clientes';
-    //         $crearCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-    //             ->withOptions(["verify" => false])
-    //             ->post($url, $request->all())
-    //             ->json();
-
-    //         if (isset($crearCliente['sis_clientes'])) {
-    //             $clientes_creados[] = [
-    //                 'dominio' => $servidor->dominio,
-    //                 'sis_clientesid' => $crearCliente["sis_clientes"][0]['sis_clientesid']
-    //             ];
-    //         } else {
-    //             foreach ($clientes_creados as $registro) {
-    //                 $url = $registro['dominio'] . '/registros/eliminar_cliente';
-    //                 $eliminarCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-    //                     ->withOptions(["verify" => false])
-    //                     ->post($url, ["sis_clientesid" => $registro['sis_clientesid']])
-    //                     ->json();
-    //             }
-
-    //             flash('Ocurrió un error al crear el cliente, intentelo nuevamente')->warning();
-    //             DB::rollBack();
-    //             return back();
-    //         }
-    //     }
-
-    //     //Registro de log
-    //     LogService::crear('Clientes', $cliente);
-
-    //     $request['sis_clientesid'] = $cliente->sis_clientesid;
-
-    //     DB::commit();
-
-    //     flash('Guardado Correctamente')->success();
-    //     return redirect()->route('clientes.editar', $cliente->sis_clientesid);
-    // }
-
     public function guardar(Request $request)
     {
         // Validaciones
@@ -991,84 +895,6 @@ class clientesController extends Controller
         return view('admin.clientes.editar', compact('cliente', 'distribuidores', 'links'));
     }
 
-    // public function actualizar(Request $request, Clientes $cliente)
-    // {
-    //     //Validaciones
-    //     $request->validate(
-    //         [
-    //             'identificacion' => ['required', new UniqueSimilar($cliente->sis_clientesid)],
-    //             'nombres' => 'required',
-    //             'direccion' => 'required',
-    //             'correos' => ['required', 'email', new ValidarCorreo],
-    //             'provinciasid' => 'required',
-    //             'telefono2' => ['required', 'size:10', new ValidarCelular],
-    //             'sis_distribuidoresid' => 'required',
-    //             'sis_vendedoresid' => 'required',
-    //             'sis_revendedoresid' => 'required',
-    //             'red_origen' => 'required',
-    //             'ciudadesid' => 'required',
-    //             'grupo' => 'required'
-    //         ],
-    //         [
-    //             'identificacion.required' => 'Ingrese su cédula o RUC ',
-    //             'nombres.required' => 'Ingrese los Nombres',
-    //             'direccion.required' => 'Ingrese una Dirección',
-    //             'correos.required' => 'Ingrese un Correo',
-    //             'correos.email' => 'Ingrese un Correo válido',
-    //             'provinciasid.required' => 'Seleccione una Provincia',
-    //             'telefono1.required' => 'Ingrese un Número Convencional',
-    //             'telefono2.required' => 'Ingrese un Número Celular',
-    //             'telefono2.size' => 'Ingrese 10 dígitos',
-    //             'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',
-    //             'sis_vendedoresid.required' => 'Seleccione un Vendedor',
-    //             'sis_revendedoresid.required' => 'Seleccione un Revendedor',
-    //             'red_origen.required' => 'Seleccione un Origen',
-    //             'grupo.required' => 'Seleccione un Tipo de Negocio',
-    //             'ciudadesid.required' => 'Seleccione una Ciudad'
-    //         ],
-    //     );
-
-
-    //     DB::beginTransaction();
-    //     try {
-    //         $servidores = Servidores::where('estado', 1)->get();
-    //         $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
-    //         $request['fechamodificacion'] =  now();
-    //         $request['usuariomodificacion'] = Auth::user()->nombres;
-    //         $request['telefono1'] = $request['telefono1'] <> "" ? $request['telefono1'] : "";
-
-    //         $cliente->update($request->all());
-
-    //         //Registro de log
-    //         LogService::modificar('Clientes', $cliente);
-
-    //         $request['sis_clientesid'] = $cliente->sis_clientesid;
-    //         $request['fechamodificacion'] =   date('YmdHis', strtotime($request['fechamodificacion']));
-
-    //         foreach ($servidores as $servidor) {
-
-    //             $urlEditar = $servidor->dominio . '/registros/editar_clientes';
-    //             $clienteEditar = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-    //                 ->withOptions(["verify" => false])
-    //                 ->post($urlEditar, $request->all())
-    //                 ->json();
-
-    //             if (!isset($clienteEditar['sis_clientes'])) {
-    //                 DB::rollBack();
-    //                 flash('Ocurrió un error vuelva a intentarlo')->warning();
-    //                 return back();
-    //             }
-    //         }
-    //         flash('Guardado Correctamente')->success();
-    //         DB::commit();
-    //     } catch (\Exception $e) {
-
-    //         DB::rollBack();
-    //         flash('Ocurrió un error vuelva a intentarlo')->warning();
-    //     };
-    //     return back();
-    // }
-
     public function actualizar(Request $request, Clientes $cliente)
     {
         // Validaciones
@@ -1202,69 +1028,123 @@ class clientesController extends Controller
 
     public function eliminar(Clientes $cliente)
     {
+        // Verificar si es una petición AJAX
+        $isAjax = request()->ajax() || request()->wantsJson();
 
-        $servidores = Servidores::all();
-        $web = [];
-
-        foreach ($servidores as $servidor) {
-            $url = $servidor->dominio . '/registros/consulta_licencia';
-            $resultado = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-                ->withOptions(["verify" => false])
-                ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
-                ->json();
-            if (isset($resultado['licencias'])) {
-                $web = array_merge($web, $resultado['licencias']);
-            }
-        }
-
-        $data = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
-            ->where('sis_clientesid', $cliente->sis_clientesid)
-            ->get();
-
-        if ($web) {
-            $unir = array_merge($web, $data->toArray());
-        } else {
-            $unir = $data->toArray();
-        }
-        if (count($unir) > 0) {
-            flash('Existen licencias creadas para este cliente')->error();
-            return back();
-        }
-
-
-        DB::beginTransaction();
         try {
-            $servidores = Servidores::where('estado', 1)->get();
+            $servidores = Servidores::all();
+            $web = [];
 
+            // Verificar licencias en servidores externos
             foreach ($servidores as $servidor) {
-                $url = $servidor->dominio . '/registros/eliminar_cliente';
-                $eliminarCliente = Http::withHeaders(['Content-Type' => 'application/json; ', 'verify' => false])
-                    ->withOptions(["verify" => false])
-                    ->post($url, ["sis_clientesid" => $cliente->sis_clientesid])
-                    ->json();
+                try {
+                    $url = $servidor->dominio . '/registros/consulta_licencia';
+                    $resultado = Http::withHeaders([
+                        'Content-Type' => 'application/json; charset=UTF-8',
+                        'verify' => false
+                    ])
+                        ->withOptions(["verify" => false])
+                        ->timeout(10) // Agregar timeout
+                        ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
+                        ->json();
 
-                if (!isset($eliminarCliente['respuesta'])) {
-                    DB::rollBack();
-                    flash('Ocurrió un error vuelva a intentarlo')->warning();
-                    return back();
+                    if (isset($resultado['licencias'])) {
+                        $web = array_merge($web, $resultado['licencias']);
+                    }
+                } catch (\Exception $e) {
+                    // Log del error pero continuar con otros servidores
+                    \Log::warning("Error consultando servidor {$servidor->sis_servidoresid}: " . $e->getMessage());
                 }
             }
 
+            // Verificar licencias locales
+            $data = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
+                ->where('sis_clientesid', $cliente->sis_clientesid)
+                ->get();
+
+            $licenciasVps = Licenciasvps::where('sis_clientesid', $cliente->sis_clientesid)->get();
+
+            // Combinar todas las licencias
+            $todasLasLicencias = collect();
+            if ($web) {
+                $todasLasLicencias = $todasLasLicencias->merge($web);
+            }
+            $todasLasLicencias = $todasLasLicencias->merge($data->toArray());
+            $todasLasLicencias = $todasLasLicencias->merge($licenciasVps->toArray());
+
+            // Verificar si tiene licencias
+            if ($todasLasLicencias->count() > 0) {
+                $mensaje = 'No se puede eliminar el cliente porque tiene ' . $todasLasLicencias->count() . ' licencia(s) asociada(s).';
+                if ($isAjax) {
+                    return response()->json(['success' => false, 'message' => $mensaje], 422);
+                }
+                flash($mensaje)->error();
+                return back();
+            }
+
+            DB::beginTransaction();
+
+            // Eliminar cliente de servidores externos
+            $servidoresActivos = Servidores::where('estado', 1)->get();
+            foreach ($servidoresActivos as $servidor) {
+                try {
+                    $url = $servidor->dominio . '/registros/eliminar_cliente';
+                    $eliminarCliente = Http::withHeaders([
+                        'Content-Type' => 'application/json; charset=UTF-8',
+                        'verify' => false
+                    ])
+                        ->withOptions(["verify" => false])
+                        ->timeout(15) // Timeout para eliminación
+                        ->post($url, ["sis_clientesid" => $cliente->sis_clientesid])
+                        ->json();
+
+                    if (!isset($eliminarCliente['respuesta'])) {
+                        \Log::warning("Error eliminando cliente del servidor {$servidor->sis_servidoresid}");
+                        // Nota: Podrías decidir si continuar o hacer rollback aquí
+                    }
+                } catch (\Exception $e) {
+                    \Log::error("Error eliminando cliente del servidor {$servidor->sis_servidoresid}: " . $e->getMessage());
+                    // Decidir si continuar o hacer rollback
+                }
+            }
+
+            // Eliminar licencias locales (por si acaso)
             Licencias::where('sis_clientesid', $cliente->sis_clientesid)->delete();
             Licenciasweb::where('sis_clientesid', $cliente->sis_clientesid)->delete();
+            Licenciasvps::where('sis_clientesid', $cliente->sis_clientesid)->delete();
 
+            // Eliminar el cliente
+            $clienteData = $cliente->toArray(); // Guardar para el log
             $cliente->delete();
 
-            //Registro de log
-            LogService::eliminar('Clientes', $cliente);
+            // Registro de log
+            LogService::eliminar('Clientes', $clienteData);
 
-            flash('Eliminado Correctamente')->success();
             DB::commit();
+
+            // Respuesta exitosa
+            if ($isAjax) {
+                return response()->json(['success' => true]);
+            }
+
+            flash('Cliente eliminado correctamente')->success();
+            return redirect()->route('clientes.index');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            flash('Ocurrió un error vuelva a intentarlo')->warning();
-            return back();
-        };
-        return redirect()->route('clientes.index');
+
+            $mensajeError = 'Ocurrió un error al eliminar el cliente: ' . $e->getMessage();
+            \Log::error('Error eliminando cliente: ' . $e->getMessage());
+
+            if ($isAjax) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $mensajeError
+                ], 500);
+            } else {
+                flash('Ocurrió un error, vuelva a intentarlo')->error();
+                return back();
+            }
+        }
     }
 }

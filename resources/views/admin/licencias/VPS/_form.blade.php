@@ -2,86 +2,207 @@
     $rol = Auth::user()->tipo;
 @endphp
 @csrf
-<input type="hidden" value="{{ $cliente->sis_clientesid }}" name="sis_clientesid">
-<div class="form-group row">
-    <div class="col-lg-6">
-        <label>Numero Contrato:</label>
-        <input type="text" class="form-control {{ $errors->has('numerocontrato') ? 'is-invalid' : '' }}" placeholder="Contrato" name="numerocontrato"
-            autocomplete="off" id="numerocontrato" value="{{ old('numerocontrato', $licencia->numerocontrato) }}" readonly />
-        @if ($errors->has('numerocontrato'))
-            <span class="text-danger">{{ $errors->first('numerocontrato') }}</span>
-        @endif
-    </div>
-    <div class="col-lg-6">
-        <label>IP:</label>
-        <input type="text" class="form-control {{ $errors->has('ip') ? 'is-invalid' : '' }}" placeholder="IP" name="ip" autocomplete="off"
-            id="ip" value="{{ old('ip', $licencia->ip) }}" />
-        @if ($errors->has('ip'))
-            <span class="text-danger">{{ $errors->first('ip') }}</span>
-        @endif
-    </div>
-</div>
-<div class="form-group row">
-    <div class="col-lg-6">
-        <label>Usuario:</label>
-        <input type="text" class="form-control {{ $errors->has('usuario') ? 'is-invalid' : '' }}" placeholder="Usuario" name="usuario"
-            autocomplete="off" id="usuario" value="{{ old('usuario', $licencia->usuario) }}" />
-        @if ($errors->has('usuario'))
-            <span class="text-danger">{{ $errors->first('usuario') }}</span>
-        @endif
-    </div>
-    <div class="col-lg-6">
-        <label>Clave:</label>
-        <input type="text" class="form-control {{ $errors->has('clave') ? 'is-invalid' : '' }}" placeholder="Clave" name="clave"
-            autocomplete="off" id="clave" value="{{ old('clave', $licencia->clave) }}" />
-        @if ($errors->has('clave'))
-            <span class="text-danger">{{ $errors->first('clave') }}</span>
-        @endif
-    </div>
-</div>
+<style>
+    .disabled {
+        pointer-events: none;
+        opacity: 1;
+        background-color: #F3F6F9;
+    }
 
-<div class="form-group row">
-    <div class="col-lg-6">
-        <label>Fecha Corte Proveedor:</label>
-        <input type="text" class="form-control {{ $errors->has('fecha_corte_proveedor') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Fecha Corte Proveedor" name="fecha_corte_proveedor" id="fecha_corte_proveedor" autocomplete="off"
-            value="{{ old('fecha_corte_proveedor', $licencia->fecha_corte_proveedor) }}" />
-        @if ($errors->has('fecha_corte_proveedor'))
-            <span class="text-danger">{{ $errors->first('fecha_corte_proveedor') }}</span>
-        @endif
-    </div>
-    <div class="col-lg-6">
-        <label>Fecha Corte Cliente:</label>
-        <input type="text" class="form-control {{ $errors->has('fecha_corte_cliente') ? 'is-invalid' : '' }}"
-            placeholder="Ingrese Fecha Corte Cliente" name="fecha_corte_cliente" id="fecha_corte_cliente" autocomplete="off"
-            value="{{ old('fecha_corte_cliente', $licencia->fecha_corte_cliente) }}" />
-        @if ($errors->has('fecha_corte_cliente'))
-            <span class="text-danger">{{ $errors->first('fecha_corte_cliente') }}</span>
-        @endif
-    </div>
-</div>
-<div class="form-group row">
-    <div class="col-lg-6">
-        <label>Costo Proveedor:</label>
-        <input type="text" class="form-control precio {{ $errors->has('costo_proveedor') ? 'is-invalid' : '' }}" placeholder="Ingrese Costo"
-            id="costo_proveedor" name="costo_proveedor" autocomplete="off" value="{{ old('costo_proveedor', $licencia->costo_proveedor) }}" />
-        @if ($errors->has('costo_proveedor'))
-            <span class="text-danger">{{ $errors->first('costo_proveedor') }}</span>
-        @endif
-    </div>
-    <div class="col-lg-6">
-        <label>Precio cliente:</label>
-        <input type="text" class="form-control precio {{ $errors->has('precio_cliente') ? 'is-invalid' : '' }}" placeholder="Ingrese Precio"
-            id="precio_cliente" name="precio_cliente" autocomplete="off" value="{{ old('precio_cliente', $licencia->precio_cliente) }}" />
-        @if ($errors->has('precio_cliente'))
-            <span class="text-danger">{{ $errors->first('precio_cliente') }}</span>
-        @endif
+    /* Prevenir scroll horizontal */
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .tab-content {
+        overflow-x: hidden;
+    }
+</style>
+
+{{-- Campos ocultos --}}
+<input type="hidden" value="{{ $cliente->sis_clientesid }}" name="sis_clientesid">
+
+{{-- Navegación principal --}}
+<ul class="nav nav-tabs nav-tabs-line mb-5">
+    <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#datos_licencia">
+            <span class="nav-icon"><i class="fas fa-server"></i></span>
+            <span class="nav-text">Datos Licencia</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    {{-- TAB: Datos Licencia --}}
+    <div class="tab-pane fade show active" id="datos_licencia" role="tabpanel" aria-labelledby="datos_licencia">
+
+        {{-- Información básica --}}
+        <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-file-contract"></i> Información Básica</p>
+        <div class="separator separator-dashed mb-2"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Número Contrato</label>
+                    <input type="text" class="form-control @error('numerocontrato') is-invalid @enderror"
+                           name="numerocontrato" id="numerocontrato"
+                           value="{{ old('numerocontrato', $licencia->numerocontrato) }}" readonly>
+                    @error('numerocontrato')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Dirección IP</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-globe"></i>
+                            </span>
+                        </div>
+                        <input type="text" class="form-control @error('ip') is-invalid @enderror"
+                               name="ip" id="ip" placeholder="Ej: 192.168.1.1"
+                               value="{{ old('ip', $licencia->ip) }}">
+                    </div>
+                    @error('ip')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+        </div>
+
+        {{-- Credenciales de acceso --}}
+        <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-key"></i> Credenciales de Acceso</p>
+        <div class="separator separator-dashed mb-2"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </div>
+                        <input type="text" class="form-control @error('usuario') is-invalid @enderror"
+                               name="usuario" id="usuario" placeholder="Nombre de usuario"
+                               value="{{ old('usuario', $licencia->usuario) }}">
+                    </div>
+                    @error('usuario')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Clave</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+                        <input type="text" class="form-control @error('clave') is-invalid @enderror"
+                               name="clave" id="clave" placeholder="Contraseña"
+                               value="{{ old('clave', $licencia->clave) }}">
+                    </div>
+                    @error('clave')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+        </div>
+
+        {{-- Fechas de corte --}}
+        <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-calendar-alt"></i> Fechas de Corte</p>
+        <div class="separator separator-dashed mb-2"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Fecha Corte Proveedor</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-calendar"></i>
+                            </span>
+                        </div>
+                        <input type="text" class="form-control @error('fecha_corte_proveedor') is-invalid @enderror"
+                               name="fecha_corte_proveedor" id="fecha_corte_proveedor"
+                               value="{{ old('fecha_corte_proveedor', $licencia->fecha_corte_proveedor) }}">
+                    </div>
+                    @error('fecha_corte_proveedor')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Fecha Corte Cliente</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-calendar"></i>
+                            </span>
+                        </div>
+                        <input type="text" class="form-control @error('fecha_corte_cliente') is-invalid @enderror"
+                               name="fecha_corte_cliente" id="fecha_corte_cliente"
+                               value="{{ old('fecha_corte_cliente', $licencia->fecha_corte_cliente) }}">
+                    </div>
+                    @error('fecha_corte_cliente')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+        </div>
+
+        {{-- Información financiera --}}
+        <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-dollar-sign"></i> Información Financiera</p>
+        <div class="separator separator-dashed mb-2"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Costo Proveedor</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-warning text-white">
+                                <i class="fas fa-dollar-sign text-white"></i>
+                            </span>
+                        </div>
+                        <input type="text" class="form-control precio text-warning font-weight-bold @error('costo_proveedor') is-invalid @enderror"
+                               id="costo_proveedor" name="costo_proveedor"
+                               value="{{ old('costo_proveedor', $licencia->costo_proveedor) }}">
+                    </div>
+                    @error('costo_proveedor')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Precio Cliente</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-success text-white">
+                                <i class="fas fa-dollar-sign text-white"></i>
+                            </span>
+                        </div>
+                        <input type="text" class="form-control precio text-success font-weight-bold @error('precio_cliente') is-invalid @enderror"
+                               id="precio_cliente" name="precio_cliente"
+                               value="{{ old('precio_cliente', $licencia->precio_cliente) }}">
+                    </div>
+                    @error('precio_cliente')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @section('script')
     <script>
-        $(document).ready(function() {
-            $('.deshabilitar').click(function() {
+        $(document).ready(function () {
+            $('.deshabilitar').click(function () {
                 return false;
             });
 
@@ -110,19 +231,6 @@
             if (estado != 1) {
                 estado = 'disabled';
             }
-
-            //Iniciar input numerico
-            $('.precio').TouchSpin({
-                buttondown_class: 'btn btn-secondary ' + estado,
-                buttonup_class: 'btn btn-secondary ' + estado,
-                min: 0,
-                max: 10000000,
-                step: 1,
-                decimals: 2,
-                boostat: 5,
-                maxboostedstep: 10,
-                forcestepdivisibility: 'none'
-            });
 
             if ("{{ isset($licencia->sis_licenciasid) }}" == false) {
                 var fecha = new Date();

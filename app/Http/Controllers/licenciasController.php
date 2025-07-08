@@ -12,6 +12,7 @@ use App\Models\Licenciasweb;
 use App\Models\Servidores;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
@@ -88,34 +89,139 @@ class licenciasController extends Controller
                     }
                 })
                 ->editColumn('action', function ($data) {
+                    // Determinar el tipo de licencia con nombre legible
+                    $tipoLicencia = '';
                     switch ($data['tipo_licencia']) {
                         case '1':
-                            if (Auth::user()->tipo == 1) {
-                                return '<a class="btn btn-icon btn-light btn-hover-primary btn-sm mr-2 actividad" href="javascript:void(0)" data-href="' . route('licencias.actividad', [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Actividad"> <i class="la la-eye"></i> </a>' .
-                                    '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
-                                    '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.Web.eliminar',  [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
-                            } else {
-                                return '<a class="btn btn-icon btn-light btn-hover-primary btn-sm mr-2 actividad" href="javascript:void(0)" data-href="' . route('licencias.actividad', [$data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Actividad"> <i class="la la-eye"></i> </a>' .
-                                    '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>';
-                            }
+                            $tipoLicencia = isset($data['producto']) && $data['producto'] == 12 ? 'Facturito' : 'Perseo Web';
                             break;
                         case '2':
-                            if (Auth::user()->tipo == 1) {
-                                return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
-                                    '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.Pc.eliminar', $data['sis_licenciasid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
-                            } else {
-                                return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>';
-                            }
+                            $tipoLicencia = 'Perseo PC';
                             break;
                         case '3':
-                            if (Auth::user()->tipo == 1) {
-                                return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Vps.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>' .
-                                    '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('licencias.Vps.eliminar', $data['sis_licenciasid']) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
-                            } else {
-                                return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('licencias.Vps.editar', [$data['sis_clientesid'], $data['sis_licenciasid']]) . '" title="Editar"> <i class="la la-edit"></i> </a>';
+                            $tipoLicencia = 'Perseo VPS';
+                            break;
+                        default:
+                            $tipoLicencia = 'Tipo Desconocido';
+                    }
+
+                    // Verificar permisos del usuario
+                    $esAdmin = Auth::user()->tipo == 1;
+                    $botones = [];
+
+                    // Generar botones según tipo de licencia
+                    switch ($data['tipo_licencia']) {
+                        case '1': // Web/Facturito
+                            // Botón Actividad
+                            $botones[] = sprintf(
+                                '<a class="btn btn-icon btn-light btn-hover-primary btn-sm mr-1 actividad"
+                                       href="javascript:void(0)"
+                                       data-href="%s"
+                                       title="Ver Actividad"
+                                       data-toggle="tooltip">
+                                       <i class="fas fa-eye"></i>
+                                    </a>',
+                                route('licencias.actividad', [$data['sis_servidoresid'], $data['sis_licenciasid']])
+                            );
+
+                            // Botón Editar
+                            $botones[] = sprintf(
+                                '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-1"
+                                           href="%s"
+                                           title="Editar Licencia"
+                                           data-toggle="tooltip">
+                                           <i class="fas fa-edit"></i>
+                                        </a>',
+                                route('licencias.Web.editar', [$data['sis_clientesid'], $data['sis_servidoresid'], $data['sis_licenciasid']])
+                            );
+
+                            // Botón Eliminar (solo administradores)
+                            if ($esAdmin) {
+                                $botones[] = sprintf(
+                                    '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-1 btn-eliminar-licencia"
+                                               href="javascript:void(0)"
+                                               data-href="%s"
+                                               data-licencia-contrato="%s"
+                                               data-licencia-tipo="%s"
+                                               title="Eliminar Licencia"
+                                               data-toggle="tooltip">
+                                               <i class="fas fa-trash"></i>
+                                            </a>',
+                                    route('licencias.Web.eliminar', [$data['sis_servidoresid'], $data['sis_licenciasid']]),
+                                    htmlspecialchars($data['numerocontrato']),
+                                    htmlspecialchars($tipoLicencia)
+                                );
                             }
                             break;
+
+                        case '2': // PC
+                            // Botón Editar
+                            $botones[] = sprintf(
+                                '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-1"
+                                           href="%s"
+                                           title="Editar Licencia"
+                                           data-toggle="tooltip">
+                                           <i class="fas fa-edit"></i>
+                                        </a>',
+                                route('licencias.Pc.editar', [$data['sis_clientesid'], $data['sis_licenciasid']])
+                            );
+
+                            // Botón Eliminar (solo administradores)
+                            if ($esAdmin) {
+                                $botones[] = sprintf(
+                                    '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-1 btn-eliminar-licencia"
+                                               href="javascript:void(0)"
+                                               data-href="%s"
+                                               data-licencia-contrato="%s"
+                                               data-licencia-tipo="%s"
+                                               title="Eliminar Licencia"
+                                               data-toggle="tooltip">
+                                               <i class="fas fa-trash"></i>
+                                            </a>',
+                                    route('licencias.Pc.eliminar', $data['sis_licenciasid']),
+                                    htmlspecialchars($data['numerocontrato']),
+                                    htmlspecialchars($tipoLicencia)
+                                );
+                            }
+                            break;
+
+                        case '3': // VPS
+                            // Botón Editar
+                            $botones[] = sprintf(
+                                '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-1"
+                                           href="%s"
+                                           title="Editar Licencia"
+                                           data-toggle="tooltip">
+                                           <i class="fas fa-edit"></i>
+                                        </a>',
+                                route('licencias.Vps.editar', [$data['sis_clientesid'], $data['sis_licenciasid']])
+                            );
+
+                            // Botón Eliminar (solo administradores)
+                            if ($esAdmin) {
+                                $botones[] = sprintf(
+                                    '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-1 btn-eliminar-licencia"
+                                               href="javascript:void(0)"
+                                               data-href="%s"
+                                               data-licencia-contrato="%s"
+                                               data-licencia-tipo="%s"
+                                               title="Eliminar Licencia"
+                                               data-toggle="tooltip">
+                                               <i class="fas fa-trash"></i>
+                                            </a>',
+                                    route('licencias.Vps.eliminar', $data['sis_licenciasid']),
+                                    htmlspecialchars($data['numerocontrato']),
+                                    htmlspecialchars($tipoLicencia)
+                                );
+                            }
+                            break;
+
+                        default:
+                            return '<span class="text-muted font-size-sm">Sin acciones</span>';
                     }
+
+                    // Retornar botones agrupados
+                    return '<div class="btn-group" role="group" aria-label="Acciones de licencia">' . implode('', $botones) . '</div>';
                 })
                 ->editColumn('tipo_licencia', function ($data) {
                     switch ($data['tipo_licencia']) {
@@ -141,7 +247,7 @@ class licenciasController extends Controller
     public function generarContrato()
     {
         do {
-            $numeroContrato = (string) random_int(1000000000, 9999999999);
+            $numeroContrato = (string)random_int(1000000000, 9999999999);
 
             $existe = Licencias::where('numerocontrato', $numeroContrato)->exists() ||
                 Licenciasweb::where('numerocontrato', $numeroContrato)->exists() ||
@@ -666,36 +772,105 @@ class licenciasController extends Controller
 
     public function eliminarWeb($servidorid, $licenciaid)
     {
-        $servidor = Servidores::where('sis_servidoresid', $servidorid)->first();
-        $url = $servidor->dominio . '/registros/eliminar_licencia';
-        $urlConsulta = $servidor->dominio . '/registros/consulta_licencia';
-        $licenciaConsulta = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-            ->withOptions(["verify" => false])
-            ->post($urlConsulta, ['sis_licenciasid' => $licenciaid])
-            ->json();
-        $eliminarLicencia = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-            ->withOptions(["verify" => false])
-            ->post($url, ['sis_licenciasid' => $licenciaid])
-            ->json();
+        $isAjax = request()->ajax() || request()->wantsJson();
 
-        if (isset($eliminarLicencia['respuesta'])) {
+        try {
+            DB::beginTransaction();
 
+            // Obtener servidor
+            $servidor = Servidores::where('sis_servidoresid', $servidorid)->first();
+            if (!$servidor) {
+                if ($isAjax) {
+                    return response()->json(['success' => false, 'message' => 'Servidor no encontrado.'], 404);
+                }
+                flash('Servidor no encontrado.')->error();
+                return back();
+            }
+
+            // Consultar licencia en servidor externo
+            $urlConsulta = $servidor->dominio . '/registros/consulta_licencia';
+            $licenciaConsulta = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false])
+                ->withOptions(["verify" => false])
+                ->timeout(10)
+                ->post($urlConsulta, ['sis_licenciasid' => $licenciaid])
+                ->json();
+
+            if (!isset($licenciaConsulta['licencias'][0])) {
+                if ($isAjax) {
+                    return response()->json(['success' => false, 'message' => 'Licencia no encontrada.'], 404);
+                }
+                flash('Licencia no encontrada.')->error();
+                return back();
+            }
+
+            $licenciaData = $licenciaConsulta['licencias'][0];
+
+            // Verificar dependencias
+            $adicionales = Adicionales::where('numerocontrato', $licenciaData['numerocontrato'])->count();
+            if ($adicionales > 0) {
+                $mensaje = "No se puede eliminar la licencia porque tiene {$adicionales} recurso(s) adicional(es) asociado(s).";
+                if ($isAjax) {
+                    return response()->json(['success' => false, 'message' => $mensaje], 422);
+                }
+                flash($mensaje)->error();
+                return back();
+            }
+
+            // Eliminar del servidor externo
+            $urlEliminar = $servidor->dominio . '/registros/eliminar_licencia';
+            $eliminarLicencia = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false])
+                ->withOptions(["verify" => false])
+                ->timeout(15)
+                ->post($urlEliminar, ['sis_licenciasid' => $licenciaid])
+                ->json();
+
+            if (!isset($eliminarLicencia['respuesta'])) {
+                throw new \Exception('Error al eliminar la licencia del servidor externo.');
+            }
+
+            // Eliminar de base de datos local
             $licenciaweb = Licenciasweb::where('sis_licenciasid', $licenciaid)
-                ->where('sis_servidoresid', $licenciaConsulta['licencias'][0]['sis_servidoresid'])
-                ->where('sis_clientesid', $licenciaConsulta['licencias'][0]['sis_clientesid'])
+                ->where('sis_servidoresid', $servidorid)
+                ->where('sis_clientesid', $licenciaData['sis_clientesid'])
                 ->first();
 
-            $licenciaweb->delete();
+            if ($licenciaweb) {
+                $licenciaweb->delete();
+            }
 
-            //Registro de log
-            LogService::eliminar('Licencia Web', $licenciaConsulta['licencias'][0]);
+            // Eliminar recursos adicionales
+            Adicionales::where('numerocontrato', $licenciaData['numerocontrato'])->delete();
 
-            flash("Eliminado Correctamente")->success();
-        } else {
-            flash('Ocurrió un error vuelva a intentarlo')->warning();
+            // Registro de log
+            LogService::eliminar('Licencia Web', $licenciaData);
+
+            DB::commit();
+
+            // Respuesta exitosa
+            if ($isAjax) {
+                return response()->json([
+                    'success' => true,
+                    'respuesta' => true // Mantener compatibilidad con código existente
+                ]);
+            }
+
+            flash('Licencia eliminada correctamente')->success();
+            return back();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error eliminando licencia Web: ' . $e->getMessage());
+
+            if ($isAjax) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al eliminar la licencia: ' . $e->getMessage()
+                ], 500);
+            }
+
+            flash('Ocurrió un error, vuelva a intentarlo')->error();
+            return back();
         }
-
-        return back();
     }
 
     public function crearPC(Clientes $cliente)
@@ -717,6 +892,7 @@ class licenciasController extends Controller
         $licencia->fechaactulizaciones = date("d-m-Y", strtotime(date("d-m-Y") . "+ 1 month"));
         $licencia->sis_distribuidoresid = $cliente->sis_distribuidoresid;
         $licencia->numerocontrato = $this->generarContrato();
+        $licencia->periodo = 3;
         $modulos = [];
         $modulos = [
             'nomina' => false,
@@ -800,6 +976,16 @@ class licenciasController extends Controller
                 'correocontador.email' => 'Ingrese un Correo de Contador válido',
             ]
         );
+
+        // Verificar si el módulo nube está activo
+        $moduloNubeActivo = $request->modulonube === 'on' || $request->modulonube == 1;
+
+        if (!$moduloNubeActivo) {
+            // Si no es nube, establecer valores por defecto
+            $request->merge([
+                'usuarios' => 0,              // Valor por defecto para usuarios
+            ]);
+        }
 
         // === PREPARACIÓN DE DATOS BÁSICOS ===
         $fechaActual = now();
@@ -905,6 +1091,7 @@ class licenciasController extends Controller
         try {
             $licencia = Licencias::create($request->all());
         } catch (\Exception $e) {
+            dd($e->getMessage());
             flash('Error al guardar la licencia en base de datos')->error();
             return redirect()->back()->withInput();
         }
@@ -1175,13 +1362,56 @@ class licenciasController extends Controller
 
     public function eliminarPc(Licencias $licencia)
     {
-        $licencia->delete();
+        $isAjax = request()->ajax() || request()->wantsJson();
 
-        //Registro de log
-        LogService::eliminar('Licencia PC', $licencia);
+        try {
+            DB::beginTransaction();
 
-        flash("Eliminado Correctamente")->success();
-        return back();
+            // Verificar dependencias
+            $adicionales = Adicionales::where('numerocontrato', $licencia->numerocontrato)->count();
+            if ($adicionales > 0) {
+                $mensaje = "No se puede eliminar la licencia porque tiene {$adicionales} recurso(s) adicional(es) asociado(s).";
+                if ($isAjax) {
+                    return response()->json(['success' => false, 'message' => $mensaje], 422);
+                }
+                flash($mensaje)->error();
+                return back();
+            }
+
+            // Guardar datos para el log
+            $licenciaData = $licencia->toArray();
+
+            // Eliminar recursos adicionales y licencia
+            Adicionales::where('numerocontrato', $licencia->numerocontrato)->delete();
+            $licencia->delete();
+
+            // Registro de log
+            LogService::eliminar('Licencia PC', $licenciaData);
+
+            DB::commit();
+
+            // Respuesta exitosa
+            if ($isAjax) {
+                return response()->json(['success' => true]);
+            }
+
+            flash('Licencia eliminada correctamente')->success();
+            return back();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error eliminando licencia PC: ' . $e->getMessage());
+
+            if ($isAjax) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al eliminar la licencia: ' . $e->getMessage()
+                ], 500);
+            }
+
+            flash('Ocurrió un error, vuelva a intentarlo')->error();
+            return back();
+        }
     }
 
     public function crearVps(Clientes $cliente)
@@ -1211,9 +1441,9 @@ class licenciasController extends Controller
         $request['usuariocreacion'] = Auth::user()->nombres;
         $request['fecha_corte_proveedor'] = date('Ymd', strtotime($request->fecha_corte_proveedor));
         $request['fecha_corte_cliente'] = date('Ymd', strtotime($request->fecha_corte_cliente));
-        $request['tipo_licencia'] =  3;
+        $request['tipo_licencia'] = 3;
 
-        $licencia =   Licenciasvps::create($request->all());
+        $licencia = Licenciasvps::create($request->all());
 
         LogService::crear('Licencia Vps', $licencia);
 
@@ -1226,7 +1456,7 @@ class licenciasController extends Controller
 
         $array['from'] = env('MAIL_FROM_ADDRESS');
         $array['subject'] = 'Crear Licencia VPS';
-        $array['cliente'] =  $cliente->nombres;
+        $array['cliente'] = $cliente->nombres;
         $array['identificacion'] = $cliente->identificacion;
         $array['correo'] = $cliente->correos;
         $array['numerocontrato'] = $licencia->numerocontrato;
@@ -1239,7 +1469,7 @@ class licenciasController extends Controller
 
         $emails = explode(", ", $cliente->distribuidor);
 
-        $emails = array_merge($emails,  [
+        $emails = array_merge($emails, [
             "facturacion@perseo.ec",
             $cliente->vendedor,
             $cliente->revendedor,
@@ -1302,7 +1532,7 @@ class licenciasController extends Controller
 
         $array['from'] = env('MAIL_FROM_ADDRESS');
         $array['subject'] = 'Modificar Licencia VPS';
-        $array['cliente'] =  $cliente->nombres;
+        $array['cliente'] = $cliente->nombres;
         $array['identificacion'] = $cliente->identificacion;
         $array['correo'] = $cliente->correos;
         $array['numerocontrato'] = $licencia->numerocontrato;
@@ -1315,7 +1545,7 @@ class licenciasController extends Controller
 
         $emails = explode(", ", $cliente->distribuidor);
 
-        $emails = array_merge($emails,  [
+        $emails = array_merge($emails, [
             "facturacion@perseo.ec",
             $cliente->vendedor,
             Auth::user()->correo,
@@ -1338,13 +1568,56 @@ class licenciasController extends Controller
 
     public function eliminarVps(Licenciasvps $licencia)
     {
-        $licencia->delete();
+        $isAjax = request()->ajax() || request()->wantsJson();
 
-        //Registro de log
-        LogService::eliminar('Licencia Vps', $licencia);
+        try {
+            DB::beginTransaction();
 
-        flash("Eliminado Correctamente")->success();
-        return back();
+            // Verificar dependencias (aunque VPS normalmente no las tiene)
+            $adicionales = Adicionales::where('numerocontrato', $licencia->numerocontrato)->count();
+            if ($adicionales > 0) {
+                $mensaje = "No se puede eliminar la licencia porque tiene {$adicionales} recurso(s) adicional(es) asociado(s).";
+                if ($isAjax) {
+                    return response()->json(['success' => false, 'message' => $mensaje], 422);
+                }
+                flash($mensaje)->error();
+                return back();
+            }
+
+            // Guardar datos para el log
+            $licenciaData = $licencia->toArray();
+
+            // Eliminar recursos adicionales y licencia
+            Adicionales::where('numerocontrato', $licencia->numerocontrato)->delete();
+            $licencia->delete();
+
+            // Registro de log
+            LogService::eliminar('Licencia VPS', $licenciaData);
+
+            DB::commit();
+
+            // Respuesta exitosa
+            if ($isAjax) {
+                return response()->json(['success' => true]);
+            }
+
+            flash('Licencia eliminada correctamente')->success();
+            return back();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error eliminando licencia VPS: ' . $e->getMessage());
+
+            if ($isAjax) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al eliminar la licencia: ' . $e->getMessage()
+                ], 500);
+            }
+
+            flash('Ocurrió un error, vuelva a intentarlo')->error();
+            return back();
+        }
     }
 
     public function enviarEmail($clienteId, $productoId)
