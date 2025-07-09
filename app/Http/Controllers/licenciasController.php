@@ -977,6 +977,11 @@ class licenciasController extends Controller
             ]
         );
 
+        if (!$request->modulopractico && !$request->modulocontrol && !$request->modulocontable && !$request->modulonube) {
+            flash("Debe seleccionar al menos un sistema principal (Práctico, Control, Contable o Nube)")->error();
+            return redirect()->back()->withInput();
+        }
+
         // Verificar si el módulo nube está activo
         $moduloNubeActivo = $request->modulonube === 'on' || $request->modulonube == 1;
 
@@ -1091,7 +1096,6 @@ class licenciasController extends Controller
         try {
             $licencia = Licencias::create($request->all());
         } catch (\Exception $e) {
-            dd($e->getMessage());
             flash('Error al guardar la licencia en base de datos')->error();
             return redirect()->back()->withInput();
         }
@@ -1127,6 +1131,11 @@ class licenciasController extends Controller
                 'correocontador.email' => 'Ingrese un Correo de Contador válido',
             ]
         );
+
+        if (!$request->modulopractico && !$request->modulocontrol && !$request->modulocontable && !$request->modulonube) {
+            flash("Debe seleccionar al menos un sistema principal (Práctico, Control, Contable o Nube)")->error();
+            return redirect()->back()->withInput();
+        }
 
         // === PROCESAMIENTO DE FECHAS Y ASUNTO SEGÚN TIPO DE ACTUALIZACIÓN ===
         $fechaActual = now();
@@ -1651,7 +1660,6 @@ class licenciasController extends Controller
                     Mail::to($emails)->queue(new enviarlicencia($array));
                 }
             } catch (\Exception $e) {
-                dd($e->getMessage());
                 flash('Error enviando email')->error();
                 return back();
             }

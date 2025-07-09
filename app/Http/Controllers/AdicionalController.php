@@ -312,10 +312,13 @@ class AdicionalController extends Controller
             $adicionalExistente->fechacaduca = date('Ymd', strtotime($request->fechacaduca));
             $adicionalExistente->save();
 
+            //Registro de log
+            LogService::modificar('Adicional', $request->all());
+
             return $adicionalExistente;
         } else {
             // CREATE: Crear nuevo registro
-            return Adicionales::create([
+            $adicional = Adicionales::create([
                 'numerocontrato' => $request->numerocontrato,
                 'fechainicia' => $request->fechainicia,
                 'fechacaduca' => date('Ymd', strtotime($request->fechacaduca)),
@@ -325,6 +328,11 @@ class AdicionalController extends Controller
                 'cantidad' => $request->cantidad,
                 'precio' => $precioTotal,
             ]);
+
+            //Registro de log
+            LogService::crear('Adicional', $request->all());
+
+            return $adicional;
         }
     }
 

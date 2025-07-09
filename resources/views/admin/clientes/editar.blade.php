@@ -105,9 +105,8 @@
                                                         </a>
                                                     @endif
 
-                                                    <div class="dropdown-divider"></div>
-
                                                     @if (puede('clientes', 'eliminar_clientes'))
+                                                        <div class="dropdown-divider"></div>
                                                         <div class="dropdown-divider"></div>
 
                                                         <!-- Sección: Zona Peligrosa -->
@@ -133,20 +132,40 @@
 
                                 </div>
 
-                                <div class="card-footer pt-2 pb-2">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <span class="font-size-sm font-weight-bolder text-dark ml-2">Auditoría</span>
+                                <!-- Footer con información de auditoría -->
+                                <div class="card-footer bg-light py-2">
+                                    <div class="row align-items-center mb-0">
+                                        <div class="col-md-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-history text-primary mr-2"></i>
+                                                <small class="font-weight-bold text-dark mb-0">Auditoría</small>
+                                            </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <span class="font-size-sm font-weight-bolder text-dark ml-2">Creación</span>
-                                            <span class="font-size-sm text-primary ml-2">{{ $cliente->usuariocreacion }}</span>
-                                            <span class="font-size-sm text-primary ml-2">{{ $cliente->fechacreacion }}</span>
+                                        <div class="col-md-5">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-plus text-success mr-2"></i>
+                                                <div>
+                                                    <small class="font-weight-bold text-dark mb-0">Creado:</small>
+                                                    <small class="text-muted ml-1">
+                                                        {{ $cliente->usuariocreacion }}
+                                                        - {{ date('d/m/Y H:i', strtotime($cliente->fechacreacion)) }}
+                                                    </small>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <span class="font-size-sm font-weight-bolder text-dark ml-2">Modificación</span>
-                                            <span class="font-size-sm text-primary ml-2">{{ $cliente->usuariomodificacion }}</span>
-                                            <span class="font-size-sm text-primary ml-2">{{ $cliente->fechamodificacion }}</span>
+                                        <div class="col-md-5">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-edit text-warning mr-2"></i>
+                                                <div>
+                                                    <small class="font-weight-bold text-dark mb-0">Modificado:</small>
+                                                    <small class="text-muted ml-1">
+                                                        {{ $cliente->usuariomodificacion ?: 'Sin modificaciones' }}
+                                                        @if($cliente->fechamodificacion)
+                                                            - {{ date('d/m/Y H:i', strtotime($cliente->fechamodificacion)) }}
+                                                        @endif
+                                                    </small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -249,6 +268,7 @@
                                     </p>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -479,11 +499,11 @@
                 responsive: true,
                 processing: true,
                 searching: false,
-                orderable: false,
                 paging: false,
                 info: false,
                 lengthChange: false,
-                order: [[3, 'asc']], // Ordenar por fecha de vencimiento
+                orderable: false,
+                // order: [[3, 'asc']], // Ordenar por fecha de vencimiento
                 serverSide: true,
                 ajax: {
                     url: "{{ route('licencias.index', $cliente->sis_clientesid) }}",
@@ -560,7 +580,6 @@
                         data: 'fechacaduca',
                         name: 'fechacaduca',
                         orderable: false,
-                        sorting: false,
                         render: function (data, type, row) {
                             if (!data) return '<span class="text-muted">Sin fecha</span>';
 
@@ -603,7 +622,6 @@
                         data: 'fechacaduca',
                         name: 'fechacaduca',
                         orderable: false,
-                        sorting: false,
                         render: function (data, type, row) {
                             if (!data) return '<span class="text-muted">Sin fecha</span>';
 
@@ -618,7 +636,6 @@
                     {
                         data: 'action',
                         name: 'action',
-                        sorting: false,
                         orderable: false,
                         searchable: false,
                         className: "text-right pr-7",

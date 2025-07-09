@@ -612,7 +612,7 @@ class clientesController extends Controller
     // Aplica filtros de licencia y productos según el tipo de licencia
     private function applyLicenseAndProductFilter($query, $tipolicencia, $producto, $periodo)
     {
-        if ($tipolicencia == 1) {
+        if ($tipolicencia == "") {
             return $query; // Sin filtros adicionales
         }
 

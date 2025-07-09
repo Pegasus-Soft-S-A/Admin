@@ -1,26 +1,72 @@
 @extends('admin.layouts.app')
 @section('contenido')
     <style>
-
-        /* ✅ Mejorar separación visual */
+        /* Mantener solo estos estilos existentes */
         .filter-section {
             border-radius: 8px;
             border: 1px solid #e9ecef;
         }
 
-        /*Eliminar :  en responsive */
         .dtr-title:after,
         .dtr-title::after {
             content: "" !important;
             display: none !important;
         }
 
-        /* Filas más compactas y texto en una línea */
         #kt_datatable tbody td {
             padding: 6px 8px !important;
             font-size: 12px !important;
         }
 
+        /* Solo estos 3 estilos personalizados para mejorar DataTables */
+        .dataTables_filter input {
+            @apply form-control form-control-lg border-primary;
+            border-radius: 25px !important;
+            padding-left: 20px !important;
+        }
+
+        .dataTables_length select {
+            @apply form-control border-success;
+            border-radius: 8px !important;
+        }
+
+        .dataTables_info {
+            @apply alert alert-info d-flex align-items-center;
+            border-radius: 8px !important;
+            font-weight: 500 !important;
+        }
+
+        .dataTables_info::before {
+            content: "";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            content: "\f05a"; /* fas fa-info-circle */
+            margin-right: 8px;
+            color: #1BC5BD;
+        }
+
+        .dataTables_filter label::before {
+            content: "";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            content: "\f002"; /* fas fa-search */
+            margin-right: 8px;
+            color: #3699FF;
+        }
+
+        .dataTables_length label::before {
+            content: "";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            content: "\f0ca"; /* fas fa-list-ul */
+            margin-right: 8px;
+            color: #1BC5BD;
+        }
+
+        .dataTables_filter label,
+        .dataTables_length label {
+            @apply font-weight-bold text-dark;
+        }
     </style>
 
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -104,6 +150,7 @@
                                                         Tipo de Fecha:
                                                     </label>
                                                     <select class="form-control form-control datatable-input" id="tipofecha">
+                                                        <option value="">🗓️ Todos los tipos de fecha</option>
                                                         <option value="1">📅 Fecha Inicio</option>
                                                         <option value="2">⏰ Fecha Caduca</option>
                                                         <option value="3">🔄 Fecha Actualización</option>
@@ -138,7 +185,7 @@
                                                         Tipo Licencia:
                                                     </label>
                                                     <select class="form-control form-control datatable-input" id="tipolicencia">
-                                                        <option value="1">🌐 Todos</option>
+                                                        <option value="">🌐 Todos</option>
                                                         <option value="2">💻 Web</option>
                                                         <option value="3">🖥️ PC</option>
                                                         <option value="4">☁️ VPS</option>
@@ -426,7 +473,7 @@
                 $('#producto').empty();
                 $('#producto').append('<option value="">Todos los productos</option>');
 
-                if (!tipoLicencia || tipoLicencia === '1') {
+                if (!tipoLicencia || tipoLicencia === '') {
                     return; // "Todos" seleccionado
                 }
 
@@ -515,7 +562,7 @@
 
                 filtros.forEach(filtro => {
                     const valor = $(filtro).val();
-                    if (valor && valor !== '' && valor !== '1') { // '1' es "Todos" en tipolicencia
+                    if (valor && valor !== '') {
                         count++;
                     }
                 });
@@ -599,8 +646,17 @@
                 cancelClass: 'btn-secondary',
                 alwaysShowCalendars: true,
                 showDropdowns: true,
-            }, function (start, end, label) {
-                $('#kt_fecha .form-control').val(start.format('DD-MM-YYYY') + ' / ' + end.format('DD-MM-YYYY'));
+            });
+
+            $('#kt_fecha').on('apply.daterangepicker', function (ev, picker) {
+                $(this).find('.form-control').val(
+                    picker.startDate.format('DD-MM-YYYY') + ' / ' + picker.endDate.format('DD-MM-YYYY')
+                );
+                ConfigClientes.contarFiltrosActivos();
+            });
+
+            $('#kt_fecha').on('cancel.daterangepicker', function (ev, picker) {
+                $(this).find('.form-control').val('');
                 ConfigClientes.contarFiltrosActivos();
             });
 
@@ -953,8 +1009,8 @@
                 e.preventDefault();
 
                 // Limpiar todos los campos
-                $("#tipofecha").val('1');
-                $("#tipolicencia").val('1');
+                $("#tipofecha").val('');
+                $("#tipolicencia").val('');
                 $("#fecha").val('');
                 $("#periodo").val('');
                 $("#producto").val('');
@@ -1023,10 +1079,7 @@
             if (productoInicial) {
                 ConfigClientes.actualizarPeriodos(productoInicial);
             }
-
-            // Mensaje de inicialización
-            console.log('🎯 Sistema de clientes inicializado correctamente');
-            console.log('📊 Configuración dinámica cargada:', ConfigClientes.configuracion ? '✅' : '❌');
+            
         });
 
         // ====================================
