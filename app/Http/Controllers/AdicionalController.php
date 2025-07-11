@@ -6,16 +6,41 @@ use App\Models\Adicionales;
 use App\Models\Licencias;
 use App\Models\Licenciasweb;
 use App\Models\Servidores;
+use App\Services\ExternalServerService;
 use App\Services\LogService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AdicionalController extends Controller
 {
+    private ExternalServerService $externalServerService;
+
+    public function __construct(ExternalServerService $externalServerService)
+    {
+        $this->externalServerService = $externalServerService;
+    }
+
     public function agregarAdicional(Request $request)
     {
+        //  PRE-VERIFICACIÓN: Verificar disponibilidad del servidor ANTES de empezar la transacción
+        $licencia = $this->obtenerLicencia($request->numerocontrato);
+        if (!$licencia) {
+            return response()->json(['success' => false, 'message' => 'No se encontró licencia'], 404);
+        }
+
+        //  VERIFICAR SERVIDOR EXTERNO (solo para licencias Web)
+        if (!$this->esLicenciaPC($licencia)) {
+            $servidor = Servidores::where('sis_servidoresid', $licencia->sis_servidoresid)->first();
+
+            if ($servidor && !$this->externalServerService->checkServerAvailability($servidor)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El servidor no está disponible en este momento. Intente más tarde.'
+                ], 503);
+            }
+        }
+
         DB::beginTransaction();
 
         try {
@@ -28,13 +53,6 @@ class AdicionalController extends Controller
                 'periodo' => 'required|integer|in:1,2,3',
                 'cantidad' => 'required|integer|min:1|max:100'
             ]);
-
-            // Verificar que la licencia existe
-            $licencia = $this->obtenerLicencia($request->numerocontrato);
-            if (!$licencia) {
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'No se encontró licencia']);
-            }
 
             // Validación dinámica usando configuración
             $validacion = $this->validarAdicionalDinamico($request, $licencia);
@@ -65,7 +83,7 @@ class AdicionalController extends Controller
         }
     }
 
-    // ✅ Validación dinámica usando configuración
+    //  Validación dinámica usando configuración
     private function validarAdicionalDinamico($request, $licencia)
     {
         $tiposConfig = config('sistema.tipos_adicionales', []);
@@ -83,7 +101,7 @@ class AdicionalController extends Controller
         }
     }
 
-    // ✅ Validación específica para PC
+    //  Validación específica para PC
     private function validarAdicionalPC($request, $licencia, $tipoConfig)
     {
         $moduloActual = $this->detectarModuloPC($licencia);
@@ -100,7 +118,7 @@ class AdicionalController extends Controller
         return ['valido' => true, 'mensaje' => ''];
     }
 
-    // ✅ Validación específica para Web
+    //  Validación específica para Web
     private function validarAdicionalWeb($request, $licencia, $tipoConfig)
     {
         $productoConfig = config("sistema.productos.web.{$licencia->producto}", []);
@@ -116,14 +134,14 @@ class AdicionalController extends Controller
         return ['valido' => true, 'mensaje' => ''];
     }
 
-    // ✅ Detectar si es licencia PC
+    //  Detectar si es licencia PC
     private function esLicenciaPC($licencia)
     {
         return $licencia instanceof Licencias ||
             (isset($licencia->tipo_licencia) && $licencia->tipo_licencia == 2);
     }
 
-    // ✅ Detectar módulo PC dinámicamente
+    //  Detectar módulo PC dinámicamente
     private function detectarModuloPC($licencia)
     {
         $mapaModulos = [
@@ -142,7 +160,7 @@ class AdicionalController extends Controller
         return 'practico'; // Por defecto
     }
 
-    // ✅ Calcular precio usando configuración dinámica
+    //  Calcular precio usando configuración dinámica
     private function calcularPrecioDinamico($request, $licencia)
     {
         $tiposConfig = config('sistema.tipos_adicionales', []);
@@ -161,7 +179,7 @@ class AdicionalController extends Controller
         }
     }
 
-    // ✅ Calcular precio para PC
+    //  Calcular precio para PC
     private function calcularPrecioPC($precios, $request, $licencia)
     {
         if ($request->tipo_adicional == 4) { // Usuarios nube
@@ -178,14 +196,14 @@ class AdicionalController extends Controller
         return $precios['pc'][$periodo] ?? 0;
     }
 
-    // ✅ Calcular precio para Web
+    //  Calcular precio para Web
     private function calcularPrecioWeb($precios, $request, $licencia)
     {
         $periodo = $request->periodo == 1 ? 'mensual' : 'anual';
         return $precios['web'][$periodo] ?? 0;
     }
 
-    // ✅ Actualizar campo con lógica diferenciada PC/Web
+    //  Actualizar campo con lógica diferenciada PC/Web
     private function actualizarCampoLicenciaDinamico($licencia, $tipoAdicional, $cantidadAgregar)
     {
         // Obtener mapeo dinámicamente de configuración
@@ -211,7 +229,7 @@ class AdicionalController extends Controller
             'nuevo_valor' => $nuevoValor
         ]);
 
-        // ✅ SOLO actualizar servidor externo si es licencia WEB
+        //  SOLO actualizar servidor externo si es licencia WEB
         if (!$this->esLicenciaPC($licencia)) {
             $this->actualizarServidorExterno($licencia);
         }
@@ -223,7 +241,7 @@ class AdicionalController extends Controller
         );
     }
 
-    // ✅ Actualizar servidor externo (SOLO PARA WEB)
+    //  Actualizar servidor externo (SOLO PARA WEB)
     private function actualizarServidorExterno($licencia)
     {
         try {
@@ -233,29 +251,14 @@ class AdicionalController extends Controller
                 throw new \Exception("No se encontró el servidor para la licencia web");
             }
 
-            $urlActualizar = $servidor->dominio . '/registros/editar_licencia';
+            //  USAR EL SERVICIO en lugar de HTTP directo
+            $resultado = $this->externalServerService->updateLicense($servidor, $licencia->toArray());
 
-            $respuesta = Http::withHeaders([
-                'Content-Type' => 'application/json; charset=UTF-8',
-                'User-Agent' => 'Sistema-Licencias/1.0'
-            ])
-                ->withOptions([
-                    'verify' => false,
-                    'timeout' => 30,
-                    'connect_timeout' => 10
-                ])
-                ->post($urlActualizar, $licencia->toArray());
-
-            if (!$respuesta->successful()) {
-                throw new \Exception("Error HTTP {$respuesta->status()}: {$respuesta->body()}");
+            if (!$resultado['success']) {
+                throw new \Exception($resultado['error']);
             }
 
-            $datosRespuesta = $respuesta->json();
-            if (!isset($datosRespuesta['licencias'])) {
-                throw new \Exception("Respuesta inválida del servidor externo: " . $respuesta->body());
-            }
-
-            Log::info("Servidor externo actualizado correctamente", [
+            Log::info("Servidor externo actualizado correctamente usando servicio", [
                 'licencia' => $licencia->numerocontrato,
                 'servidor' => $servidor->descripcion
             ]);
@@ -266,7 +269,7 @@ class AdicionalController extends Controller
         }
     }
 
-    // ✅ Obtener campos actualizados dinámicamente
+    //  Obtener campos actualizados dinámicamente
     private function obtenerCamposActualizados($licencia)
     {
         $tiposConfig = config('sistema.tipos_adicionales', []);
@@ -282,7 +285,7 @@ class AdicionalController extends Controller
         return $campos;
     }
 
-    // ✅ Métodos auxiliares...
+    //  Métodos auxiliares...
     private function obtenerLicencia($numerocontrato)
     {
         // Buscar primero en PC, luego en Web
@@ -336,7 +339,7 @@ class AdicionalController extends Controller
         }
     }
 
-    // ✅ Resto de métodos (obtenerAdicionales) permanecen igual...
+    //  Resto de métodos (obtenerAdicionales) permanecen igual...
     public function obtenerAdicionales(Request $request)
     {
         try {

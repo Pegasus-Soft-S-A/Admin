@@ -4,7 +4,12 @@ use App\Http\Controllers\adminController;
 use App\Http\Controllers\agrupadosController;
 use App\Http\Controllers\clientesController;
 use App\Http\Controllers\distribuidoresController;
-use App\Http\Controllers\licenciasController;
+
+use App\Http\Controllers\Licencias\LicenciasController;
+use App\Http\Controllers\Licencias\LicenciasVpsController;
+use App\Http\Controllers\Licencias\LicenciasWebController;
+use App\Http\Controllers\Licencias\LicenciasPcController;
+
 use App\Http\Controllers\AdicionalController;
 use App\Http\Controllers\LinksController;
 use App\Http\Controllers\revendedoresController;
@@ -62,38 +67,64 @@ Route::group(['prefix' => 'admin'], function () {
         Route::put('/clientes/{cliente}', [clientesController::class, 'actualizar'])->name('clientes.actualizar');
         Route::delete('/clientes/{cliente}', [clientesController::class, 'eliminar'])->name('clientes.eliminar');
 
-        /* Licencias */
-        Route::get('/licencias/actividad/{servidor}/{licencia}', [licenciasController::class, 'actividad'])->name('licencias.actividad');
-        Route::get('licencias/adicionales/{numerocontrato}', [licenciasController::class, 'adicionales'])->name('licencias.adicionales');
-        Route::get('/licencias/{cliente}', [licenciasController::class, 'index'])->name('licencias.index');
-        Route::get('/licencias/{cliente}/crearweb', [licenciasController::class, 'crearWeb'])->name('licencias.Web.crear');
-        Route::get('/licencias/{cliente}/crearpc', [licenciasController::class, 'crearPC'])->name('licencias.Pc.crear');
-        Route::get('/licencias/{cliente}/crearvps', [licenciasController::class, 'crearVPS'])->name('licencias.Vps.crear');
-        Route::post('/licenciaspc', [licenciasController::class, 'guardarPC'])->name('licencias.Pc.guardar');
-        Route::post('/licenciasweb', [licenciasController::class, 'guardarWeb'])->name('licencias.Web.guardar');
-        Route::post('/licenciasvps', [licenciasController::class, 'guardarVps'])->name('licencias.Vps.guardar');
-        Route::get('/licencias/editarweb/{cliente}/{servidor}/{licencia}', [licenciasController::class, 'editarWeb'])->name('licencias.Web.editar');
-        Route::get('/licencias/editarpc/{cliente}/{licencia}', [licenciasController::class, 'editarPC'])->name('licencias.Pc.editar');
-        Route::get('/licencias/editarvps/{cliente}/{licencia}', [licenciasController::class, 'editarVPS'])->name('licencias.Vps.editar');
-        Route::put('/licenciaspc/{licencia}', [licenciasController::class, 'actualizarPC'])->name('licencias.Pc.actualizar');
-        Route::put('/licenciasvps/{licencia}', [licenciasController::class, 'actualizarVPS'])->name('licencias.Vps.actualizar');
-        Route::put('/licenciasweb/{servidor}/{licencia}', [licenciasController::class, 'actualizarWeb'])->name('licencias.Web.actualizar');
-        Route::delete('/licencias/web/{servidorid}/{licenciaid}', [LicenciasController::class, 'eliminarWeb'])
-            ->name('licencias.Web.eliminar');
-        Route::delete('/licencias/pc/{licencia}', [LicenciasController::class, 'eliminarPc'])
-            ->name('licencias.Pc.eliminar');
-        Route::delete('/licencias/vps/{licencia}', [LicenciasController::class, 'eliminarVps'])
-            ->name('licencias.Vps.eliminar');
-        Route::get('/email/{cliente}/{producto}', [licenciasController::class, 'enviarEmail'])->name('licencias.Web.enviaremail');
-        Route::get('/licencias/editarclave/{cliente}/{servidor}/{licencia}', [licenciasController::class, 'editarClave'])->name('editar_clave');
+        // ==========================================
+        // RUTAS DE LICENCIAS ORGANIZADAS
+        // ==========================================
 
-        // Obtener adicionales existentes de una licencia
-        Route::get('/obtener-adicionales', [AdicionalController::class, 'obtenerAdicionales'])
-            ->name('licencias.obtener-adicionales');
+        Route::prefix('licencias')->name('licencias.')->group(function () {
 
-        // Agregar cualquier tipo de adicional (usuarios, sucursales, equipos, móviles)
-        Route::post('/agregar-adicional', [AdicionalController::class, 'agregarAdicional'])
-            ->name('licencias.agregar-adicional');
+            // ==========================================
+            // VPS
+            // ==========================================
+            Route::prefix('vps')->name('Vps.')->group(function () {
+                Route::get('/crear/{cliente}', [LicenciasVpsController::class, 'crear'])->name('crear');
+                Route::post('/guardar', [LicenciasVpsController::class, 'guardar'])->name('guardar');
+                Route::get('/editar/{cliente}/{licencia}', [LicenciasVpsController::class, 'editar'])->name('editar');
+                Route::put('/actualizar/{licencia}', [LicenciasVpsController::class, 'actualizar'])->name('actualizar');
+                Route::delete('/eliminar/{licencia}', [LicenciasVpsController::class, 'eliminar'])->name('eliminar');
+            });
+
+            // ==========================================
+            // WEB
+            // ==========================================
+            Route::prefix('web')->name('Web.')->group(function () {
+                Route::get('/{cliente}', [LicenciasWebController::class, 'index'])->name('index');
+                Route::get('/crear/{cliente}', [LicenciasWebController::class, 'crearWeb'])->name('crear');
+                Route::post('/guardar', [LicenciasWebController::class, 'guardarWeb'])->name('guardar');
+                Route::get('/editar/{cliente}/{servidor}/{licencia}', [LicenciasWebController::class, 'editar'])->name('editar');
+                Route::put('/actualizar/{servidor}/{licencia}', [LicenciasWebController::class, 'actualizar'])->name('actualizar');
+                Route::delete('/eliminar/{servidorid}/{licenciaid}', [LicenciasWebController::class, 'eliminar'])->name('eliminar');
+                Route::get('/email/{cliente}/{producto}', [LicenciasWebController::class, 'enviarEmail'])->name('enviarEmail');
+                Route::get('/editarclave/{cliente}/{servidor}/{licencia}', [LicenciasWebController::class, 'editarClave'])->name('editarClave');
+                Route::get('/actividad/{servidor}/{licencia}', [LicenciasWebController::class, 'actividad'])->name('actividad');
+            });
+
+            // ==========================================
+            // PC
+            // ==========================================
+            Route::prefix('pc')->name('Pc.')->group(function () {
+                Route::get('/crear/{cliente}', [LicenciasPcController::class, 'crear'])->name('crear');
+                Route::post('/guardar', [LicenciasPcController::class, 'guardar'])->name('guardar');
+                Route::get('/editar/{cliente}/{licencia}', [LicenciasPcController::class, 'editar'])->name('editar');
+                Route::put('/actualizar/{licencia}', [LicenciasPcController::class, 'actualizar'])->name('actualizar');
+                Route::delete('/eliminar/{licencia}', [LicenciasPcController::class, 'eliminar'])->name('eliminar');
+            });
+
+            // ==========================================
+            // RUTAS COMPARTIDAS
+            // ==========================================
+            Route::get('/licencias/{cliente}', [LicenciasController::class, 'index'])->name('index');
+        });
+
+        // ==========================================
+        // RUTAS PARA ADICIONALES (INDEPENDIENTES)
+        // ==========================================
+        Route::prefix('adicionales')->name('licencias.')->middleware('auth')->group(function () {
+            Route::get('/obtener-adicionales', [AdicionalController::class, 'obtenerAdicionales'])
+                ->name('obtener-adicionales');
+            Route::post('/agregar-adicional', [AdicionalController::class, 'agregarAdicional'])
+                ->name('agregar-adicional');
+        });
 
         /* Distribuidores */
         Route::get('/distribuidores', [distribuidoresController::class, 'index'])->name('distribuidores.index');

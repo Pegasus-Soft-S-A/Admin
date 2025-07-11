@@ -877,7 +877,7 @@
         // ====================================
 
         const AppConfigPC = {
-            // ✅ Toda la configuración en una sola variable
+            //  Toda la configuración en una sola variable
             configuracion: @json(config('sistema')),
 
             // Configuración de formulario
@@ -950,14 +950,14 @@
                     RecursosAdicionalesPC.actualizarDisplay();
                 });
 
-                // ✅ Configurar módulos dinámicamente
+                //  Configurar módulos dinámicamente
                 this.configurarEventosModulos();
 
                 // Eventos de navegación entre tabs
                 this.configurarEventosNavegacion();
             },
 
-            // ✅ Configurar eventos de módulos usando configuración
+            //  Configurar eventos de módulos usando configuración
             configurarEventosModulos() {
                 const modulosPrincipales = Object.keys(AppConfigPC.configuracion.productos.pc.modulos_principales);
                 const modulosAdicionales = Object.keys(AppConfigPC.configuracion.productos.pc.modulos_adicionales);
@@ -977,7 +977,7 @@
                 });
             },
 
-            // ✅ Mantener lógica original de módulos principales
+            //  Mantener lógica original de módulos principales
             toggleModuloPrincipal(modulo) {
                 const estado = $("#" + modulo).prop("checked");
 
@@ -1001,7 +1001,7 @@
                 }, 100);
             },
 
-            // ✅ Aplicar configuración específica del módulo usando config dinámico
+            //  Aplicar configuración específica del módulo usando config dinámico
             aplicarConfiguracionModulo(modulo) {
                 const config = AppConfigPC.configuracion.productos.pc.modulos_principales[modulo];
                 if (!config) return;
@@ -1029,14 +1029,14 @@
                 GestorPrecios.actualizar();
             },
 
-            // ✅ Configurar recursos según el módulo usando config
+            //  Configurar recursos según el módulo usando config
             configurarRecursos(config) {
                 if (config.equipos) $("#numeroequipos").val(config.equipos);
                 if (config.moviles) $("#numeromoviles").val(config.moviles);
                 if (config.sucursales) $("#numerosucursales").val(config.sucursales);
             },
 
-            // ✅ Activar módulos incluidos usando config
+            //  Activar módulos incluidos usando config
             activarModulosIncluidos(config) {
                 if (config.incluye_nomina) {
                     $("#nomina").prop("checked", true);
@@ -1048,12 +1048,12 @@
                 }
             },
 
-            // ✅ Activar aplicativos del módulo usando config
+            //  Activar aplicativos del módulo usando config
             activarAplicativos(modulo) {
                 this.activarModuloConDependencias(modulo);
             },
 
-            // ✅ Activar módulo con sus dependencias usando config
+            //  Activar módulo con sus dependencias usando config
             activarModuloConDependencias(modulo) {
                 const config = AppConfigPC.configuracion.productos.pc.modulos_principales[modulo];
                 if (!config) return;
@@ -1071,13 +1071,13 @@
                 }
             },
 
-            // ✅ Alternar módulo adicional usando config
+            //  Alternar módulo adicional usando config
             toggleModuloAdicional(modulo) {
                 const estado = $("#" + modulo).prop("checked");
                 this.actualizarCheckboxesPorModulo(modulo, estado);
             },
 
-            // ✅ Actualizar checkboxes por módulo usando config
+            //  Actualizar checkboxes por módulo usando config
             actualizarCheckboxesPorModulo(modulo, estado) {
                 const config = AppConfigPC.configuracion.productos.pc.modulos_adicionales[modulo];
                 if (config && config.ids_aplicativos) {
@@ -1087,14 +1087,14 @@
                 }
             },
 
-            // ✅ Limpiar configuración
+            //  Limpiar configuración
             limpiarConfiguracion() {
                 ConfiguracionNube.mostrar(false);
                 GestorPrecios.limpiar();
                 this.limpiarModulosAdicionales();
             },
 
-            // ✅ Obtener módulo actualmente seleccionado
+            //  Obtener módulo actualmente seleccionado
             obtenerModuloActivo() {
                 const modulosPrincipales = Object.keys(AppConfigPC.configuracion.productos.pc.modulos_principales);
                 return modulosPrincipales.find(modulo =>
@@ -1102,7 +1102,7 @@
                 ) || null;
             },
 
-            // ✅ Limpiar todos los módulos adicionales
+            //  Limpiar todos los módulos adicionales
             limpiarModulosAdicionales() {
                 const modulosAdicionales = Object.keys(AppConfigPC.configuracion.productos.pc.modulos_adicionales);
                 modulosAdicionales.forEach(modulo => {
@@ -1290,7 +1290,7 @@
                 this.configurarDataTable();
             },
 
-            // ✅ CORREGIDO: Problema con .api()
+            //  CORREGIDO: Problema con .api()
             configurarDataTable() {
                 this.dataTable = $('#aplicativos').DataTable({
                     responsive: true,
@@ -1332,7 +1332,7 @@
                 });
             },
 
-            // ✅ CORREGIDO: Usar directamente this.dataTable sin .api()
+            //  CORREGIDO: Usar directamente this.dataTable sin .api()
             procesarFilasAgrupadas() {
                 const rows = this.dataTable.rows({page: 'current'}).nodes();
                 let last = null;

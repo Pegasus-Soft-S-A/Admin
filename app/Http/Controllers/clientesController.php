@@ -15,6 +15,7 @@ use App\Rules\UniqueSimilar;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
 use App\Services\LogService;
+use App\Services\ExternalServerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,13 @@ use Illuminate\Support\Facades\Session;
 
 class clientesController extends Controller
 {
+    private ExternalServerService $externalServerService;
+
+    public function __construct(ExternalServerService $externalServerService)
+    {
+        $this->externalServerService = $externalServerService;
+    }
+
     public function index(Request $request)
     {
         $servidores = Servidores::where('estado', 1)->get();
@@ -698,193 +706,37 @@ class clientesController extends Controller
 
     public function guardar(Request $request)
     {
-        // Validaciones
-        $request->validate(
-            [
-                'identificacion' => ['required', new UniqueSimilar],
-                'nombres' => 'required',
-                'direccion' => 'required',
-                'correos' => ['required', 'email', new ValidarCorreo],
-                'provinciasid' => 'required',
-                'telefono2' => ['required', 'size:10', new ValidarCelular],
-                'sis_distribuidoresid' => 'required',
-                'sis_vendedoresid' => 'required',
-                'sis_revendedoresid' => 'required',
-                'red_origen' => 'required',
-                'ciudadesid' => 'required',
-                'grupo' => 'required'
-            ],
-            [
-                'identificacion.required' => 'Ingrese su cédula o RUC',
-                'nombres.required' => 'Ingrese los Nombres',
-                'direccion.required' => 'Ingrese una Dirección',
-                'correos.required' => 'Ingrese un Correo',
-                'correos.email' => 'Ingrese un Correo válido',
-                'provinciasid.required' => 'Seleccione una Provincia',
-                'telefono2.required' => 'Ingrese un Número Celular',
-                'telefono2.size' => 'Ingrese 10 dígitos',
-                'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',
-                'sis_vendedoresid.required' => 'Seleccione un Vendedor',
-                'sis_revendedoresid.required' => 'Seleccione un Revendedor',
-                'red_origen.required' => 'Seleccione un Origen',
-                'grupo.required' => 'Seleccione un Tipo de Negocio',
-                'ciudadesid.required' => 'Seleccione una Ciudad'
-            ]
-        );
+        $this->validarDatosCliente($request);
+        $this->prepararDatos($request);
 
-        // Preparar datos
-        $request['fechacreacion'] = now();
-        $request['usuariocreacion'] = Auth::user()->nombres;
-        $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
-        $request['telefono1'] = $request['telefono1'] ?: "";
+        $servidores = Servidores::where('estado', 1)->get();
 
-        $servidores = Servidores::all();
-
-        // ===== PRE-VALIDACIÓN: VERIFICAR DISPONIBILIDAD DE TODOS LOS SERVIDORES =====
-        $servidoresNoDisponibles = $this->verificarDisponibilidadServidores($servidores);
-
-        if (!empty($servidoresNoDisponibles)) {
-            $mensajeError = 'Los siguientes servidores no están disponibles: ' .
-                implode(', ', $servidoresNoDisponibles) .
-                '. Intente nuevamente más tarde.';
-
-            flash($mensajeError)->warning();
+        // ✅ Pre-verificar disponibilidad - UNA LÍNEA
+        if ($error = $this->verificarDisponibilidadServidores($servidores)) {
+            flash($error)->warning();
             return back()->withInput();
         }
-
-        // Si llegamos aquí, todos los servidores están disponibles
-        $clientesCreados = [];
 
         DB::beginTransaction();
 
         try {
-            // 1. Crear cliente en servidor local
+            // 1. Crear cliente local
             $cliente = Clientes::create($request->all());
-
-            if (!$cliente) {
-                throw new \Exception('Error al crear cliente en servidor local');
-            }
-
             $request['sis_clientesid'] = $cliente->sis_clientesid;
 
-            // 2. Crear en servidores remotos
-            foreach ($servidores as $servidor) {
-                $resultado = $this->crearClienteRemoto($servidor, $request->all());
+            // ✅ 2. Sincronizar con servidores externos - UNA LÍNEA
+            $this->externalServerService->batchOperation($servidores, 'create_client', $request->all());
 
-                if ($resultado['success']) {
-                    $clientesCreados[] = [
-                        'servidor' => $servidor,
-                        'sis_clientesid' => $resultado['sis_clientesid']
-                    ];
-                } else {
-                    // Esto es ahora muy improbable, pero mantenemos el rollback por seguridad
-                    $this->ejecutarRollbackSimple($clientesCreados);
-                    DB::rollBack();
-
-                    flash('Error inesperado al sincronizar con ' . $servidor->dominio . ': ' . $resultado['error'])->error();
-                    return back()->withInput();
-                }
-            }
-
-            // 3. Todo exitoso
             LogService::crear('Clientes', $cliente);
             DB::commit();
 
             flash('Cliente guardado correctamente')->success();
             return redirect()->route('clientes.editar', $cliente->sis_clientesid);
+
         } catch (\Exception $e) {
-            $this->ejecutarRollbackSimple($clientesCreados);
             DB::rollBack();
-
-            flash('Ocurrió un error al crear el cliente: ' . $e->getMessage())->error();
+            flash('Error al crear cliente: ' . $e->getMessage())->error();
             return back()->withInput();
-        }
-    }
-
-    // Verifica la disponibilidad de todos los servidores y devuelve una lista de los que no están disponibles
-    private function verificarDisponibilidadServidores($servidores)
-    {
-        $servidoresNoDisponibles = [];
-
-        foreach ($servidores as $servidor) {
-            if (!$this->verificarDisponibilidadServidor($servidor)) {
-                $servidoresNoDisponibles[] = $servidor->descripcion;
-            }
-        }
-
-        return $servidoresNoDisponibles;
-    }
-
-    // Verifica si un servidor está disponible (responde a HEAD)
-    private function verificarDisponibilidadServidor($servidor)
-    {
-        try {
-            $response = Http::timeout(6)
-                ->withOptions(['verify' => false])
-                ->head($servidor->dominio);
-
-            // 200, 301, 302, 403, 404 son respuestas válidas (servidor responde)
-            // 500+ significa servidor con problemas
-            return $response->status() < 500;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    // Crea un cliente en un servidor remoto y maneja errores
-    private function crearClienteRemoto($servidor, $data)
-    {
-        try {
-            $url = $servidor->dominio . '/registros/crear_clientes';
-
-            $response = Http::timeout(30)
-                ->withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json'
-                ])
-                ->withOptions(['verify' => false])
-                ->post($url, $data);
-
-            if ($response->successful()) {
-                $responseData = $response->json();
-
-                if (isset($responseData['sis_clientes']) && !empty($responseData['sis_clientes'])) {
-                    return [
-                        'success' => true,
-                        'sis_clientesid' => $responseData['sis_clientes'][0]['sis_clientesid']
-                    ];
-                }
-            }
-
-            return [
-                'success' => false,
-                'error' => 'HTTP ' . $response->status() . ': ' . $response->body()
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => 'Excepción: ' . $e->getMessage()
-            ];
-        }
-    }
-
-    // Rollback simple para eliminar clientes creados en servidores remotos
-    private function ejecutarRollbackSimple($clientesCreados)
-    {
-        if (empty($clientesCreados)) {
-            return;
-        }
-
-        foreach ($clientesCreados as $clienteCreado) {
-            try {
-                $url = $clienteCreado['servidor']->dominio . '/registros/eliminar_cliente';
-
-                Http::timeout(15)
-                    ->withOptions(['verify' => false])
-                    ->post($url, ['sis_clientesid' => $clienteCreado['sis_clientesid']]);
-            } catch (\Exception $e) {
-                continue;
-            }
         }
     }
 
@@ -897,254 +749,202 @@ class clientesController extends Controller
 
     public function actualizar(Request $request, Clientes $cliente)
     {
-        // Validaciones
-        $request->validate(
-            [
-                'identificacion' => ['required', new UniqueSimilar($cliente->sis_clientesid)],
-                'nombres' => 'required',
-                'direccion' => 'required',
-                'correos' => ['required', 'email', new ValidarCorreo],
-                'provinciasid' => 'required',
-                'telefono2' => ['required', 'size:10', new ValidarCelular],
-                'sis_distribuidoresid' => 'required',
-                'sis_vendedoresid' => 'required',
-                'sis_revendedoresid' => 'required',
-                'red_origen' => 'required',
-                'ciudadesid' => 'required',
-                'grupo' => 'required'
-            ],
-            [
-                'identificacion.required' => 'Ingrese su cédula o RUC',
-                'nombres.required' => 'Ingrese los Nombres',
-                'direccion.required' => 'Ingrese una Dirección',
-                'correos.required' => 'Ingrese un Correo',
-                'correos.email' => 'Ingrese un Correo válido',
-                'provinciasid.required' => 'Seleccione una Provincia',
-                'telefono2.required' => 'Ingrese un Número Celular',
-                'telefono2.size' => 'Ingrese 10 dígitos',
-                'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',
-                'sis_vendedoresid.required' => 'Seleccione un Vendedor',
-                'sis_revendedoresid.required' => 'Seleccione un Revendedor',
-                'red_origen.required' => 'Seleccione un Origen',
-                'grupo.required' => 'Seleccione un Tipo de Negocio',
-                'ciudadesid.required' => 'Seleccione una Ciudad'
-            ]
-        );
+        $this->validarDatosCliente($request, $cliente->sis_clientesid);
+        $this->prepararDatos($request, $cliente);
 
-        // Preparar datos
-        $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
-        $request['fechamodificacion'] = now();
-        $request['usuariomodificacion'] = Auth::user()->nombres;
-        $request['telefono1'] = $request['telefono1'] ?: "";
-        $request['sis_clientesid'] = $cliente->sis_clientesid;
+        $servidores = Servidores::where('estado', 1)->get();
+
+        // ✅ Pre-verificar disponibilidad - UNA LÍNEA
+        if ($error = $this->verificarDisponibilidadServidores($servidores)) {
+            flash($error)->warning();
+            return back()->withInput();
+        }
 
         DB::beginTransaction();
 
         try {
-            // 1. ACTUALIZAR SERVIDOR LOCAL PRIMERO (fuente de verdad)
+            // 1. Actualizar local (fuente de verdad)
             $cliente->update($request->all());
             LogService::modificar('Clientes', $cliente);
-
             DB::commit();
 
-            // 2. SINCRONIZAR A SERVIDORES REMOTOS (sin afectar local si fallan)
-            $servidores = Servidores::where('estado', 1)->get();
-            $erroresSincronizacion = [];
+            // ✅ 2. Sincronizar externos (no bloqueante) - UNA LÍNEA
+            $this->sincronizarServidoresExternos('update_client', $request->all());
 
-            // Formatear fecha para envío
-            $dataFormatted = $request->all();
-            if (isset($dataFormatted['fechamodificacion'])) {
-                $dataFormatted['fechamodificacion'] = date('YmdHis', strtotime($dataFormatted['fechamodificacion']));
-            }
-
-            foreach ($servidores as $servidor) {
-                try {
-                    // Verificar disponibilidad (opcional)
-                    if (!$this->verificarDisponibilidadServidor($servidor)) {
-                        $erroresSincronizacion[] = "{$servidor->descripcion}: No disponible";
-                        continue;
-                    }
-
-                    $resultado = $this->actualizarClienteRemoto($servidor, $dataFormatted);
-
-                    if (!$resultado['success']) {
-                        $erroresSincronizacion[] = "{$servidor->descripcion}: {$resultado['error']}";
-                    }
-                } catch (\Exception $e) {
-                    $erroresSincronizacion[] = "{$servidor->descripcion}: {$e->getMessage()}";
-                }
-            }
-
-            // 3. MOSTRAR RESULTADO
-            if (empty($erroresSincronizacion)) {
-                flash('Cliente actualizado correctamente')->success();
-            } else {
-                $mensajeWarning = 'Cliente actualizado correctamente. Errores de sincronización: ' .
-                    implode(', ', $erroresSincronizacion);
-                flash($mensajeWarning)->warning();
-            }
-
+            flash('Cliente actualizado correctamente')->success();
             return back();
+
         } catch (\Exception $e) {
             DB::rollBack();
-            flash('Error al actualizar el cliente: ' . $e->getMessage())->error();
+            flash('Error al actualizar cliente: ' . $e->getMessage())->error();
             return back()->withInput();
         }
     }
 
-    //Actualizar cliente en servidor remoto
-    private function actualizarClienteRemoto($servidor, $data)
-    {
-        try {
-            $url = $servidor->dominio . '/registros/editar_clientes';
-
-            $response = Http::timeout(20)
-                ->withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json'
-                ])
-                ->withOptions(['verify' => false])
-                ->post($url, $data);
-
-            if ($response->successful()) {
-                $responseData = $response->json();
-
-                if (isset($responseData['sis_clientes'])) {
-                    return ['success' => true];
-                }
-            }
-
-            return [
-                'success' => false,
-                'error' => 'HTTP ' . $response->status()
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage()
-            ];
-        }
-    }
 
     public function eliminar(Clientes $cliente)
     {
-        // Verificar si es una petición AJAX
         $isAjax = request()->ajax() || request()->wantsJson();
 
         try {
-            $servidores = Servidores::all();
-            $web = [];
-
-            // Verificar licencias en servidores externos
-            foreach ($servidores as $servidor) {
-                try {
-                    $url = $servidor->dominio . '/registros/consulta_licencia';
-                    $resultado = Http::withHeaders([
-                        'Content-Type' => 'application/json; charset=UTF-8',
-                        'verify' => false
-                    ])
-                        ->withOptions(["verify" => false])
-                        ->timeout(10) // Agregar timeout
-                        ->post($url, ['sis_clientesid' => $cliente->sis_clientesid])
-                        ->json();
-
-                    if (isset($resultado['licencias'])) {
-                        $web = array_merge($web, $resultado['licencias']);
-                    }
-                } catch (\Exception $e) {
-                    // Log del error pero continuar con otros servidores
-                    \Log::warning("Error consultando servidor {$servidor->sis_servidoresid}: " . $e->getMessage());
-                }
-            }
-
-            // Verificar licencias locales
-            $data = Licencias::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
-                ->where('sis_clientesid', $cliente->sis_clientesid)
-                ->get();
-
-            $licenciasVps = Licenciasvps::where('sis_clientesid', $cliente->sis_clientesid)->get();
-
-            // Combinar todas las licencias
-            $todasLasLicencias = collect();
-            if ($web) {
-                $todasLasLicencias = $todasLasLicencias->merge($web);
-            }
-            $todasLasLicencias = $todasLasLicencias->merge($data->toArray());
-            $todasLasLicencias = $todasLasLicencias->merge($licenciasVps->toArray());
-
-            // Verificar si tiene licencias
-            if ($todasLasLicencias->count() > 0) {
-                $mensaje = 'No se puede eliminar el cliente porque tiene ' . $todasLasLicencias->count() . ' licencia(s) asociada(s).';
-                if ($isAjax) {
-                    return response()->json(['success' => false, 'message' => $mensaje], 422);
-                }
-                flash($mensaje)->error();
-                return back();
+            // ✅ Verificar licencias - UNA LÍNEA
+            if ($licenciasCount = $this->contarLicenciasAsociadas($cliente)) {
+                $mensaje = "No se puede eliminar. Tiene {$licenciasCount} licencia(s) asociada(s).";
+                return $isAjax ? response()->json(['success' => false, 'message' => $mensaje], 422) : back()->with('error', $mensaje);
             }
 
             DB::beginTransaction();
 
-            // Eliminar cliente de servidores externos
-            $servidoresActivos = Servidores::where('estado', 1)->get();
-            foreach ($servidoresActivos as $servidor) {
-                try {
-                    $url = $servidor->dominio . '/registros/eliminar_cliente';
-                    $eliminarCliente = Http::withHeaders([
-                        'Content-Type' => 'application/json; charset=UTF-8',
-                        'verify' => false
-                    ])
-                        ->withOptions(["verify" => false])
-                        ->timeout(15) // Timeout para eliminación
-                        ->post($url, ["sis_clientesid" => $cliente->sis_clientesid])
-                        ->json();
+            // Limpiar licencias locales
+            $this->limpiarLicenciasLocales($cliente);
 
-                    if (!isset($eliminarCliente['respuesta'])) {
-                        \Log::warning("Error eliminando cliente del servidor {$servidor->sis_servidoresid}");
-                        // Nota: Podrías decidir si continuar o hacer rollback aquí
-                    }
-                } catch (\Exception $e) {
-                    \Log::error("Error eliminando cliente del servidor {$servidor->sis_servidoresid}: " . $e->getMessage());
-                    // Decidir si continuar o hacer rollback
-                }
-            }
-
-            // Eliminar licencias locales (por si acaso)
-            Licencias::where('sis_clientesid', $cliente->sis_clientesid)->delete();
-            Licenciasweb::where('sis_clientesid', $cliente->sis_clientesid)->delete();
-            Licenciasvps::where('sis_clientesid', $cliente->sis_clientesid)->delete();
-
-            // Eliminar el cliente
-            $clienteData = $cliente->toArray(); // Guardar para el log
+            // Eliminar cliente
+            $clienteData = $cliente->toArray();
             $cliente->delete();
-
-            // Registro de log
             LogService::eliminar('Clientes', $clienteData);
 
             DB::commit();
 
-            // Respuesta exitosa
-            if ($isAjax) {
-                return response()->json(['success' => true]);
-            }
+            // ✅ Sincronizar externos (no bloqueante) - UNA LÍNEA
+            $errores = $this->sincronizarServidoresExternos('delete_client', ['sis_clientesid' => $cliente->sis_clientesid]);
 
-            flash('Cliente eliminado correctamente')->success();
-            return redirect()->route('clientes.index');
+            $mensaje = empty($errores) ? 'Cliente eliminado correctamente' : 'Cliente eliminado. Algunos servidores no sincronizaron.';
+
+            return $isAjax ?
+                response()->json(['success' => true, 'message' => $mensaje]) :
+                redirect()->route('clientes.index')->with('success', $mensaje);
 
         } catch (\Exception $e) {
             DB::rollBack();
+            $mensaje = 'Error al eliminar cliente: ' . $e->getMessage();
 
-            $mensajeError = 'Ocurrió un error al eliminar el cliente: ' . $e->getMessage();
-            \Log::error('Error eliminando cliente: ' . $e->getMessage());
+            return $isAjax ?
+                response()->json(['success' => false, 'message' => $mensaje], 500) :
+                back()->with('error', $mensaje);
+        }
+    }
 
-            if ($isAjax) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $mensajeError
-                ], 500);
-            } else {
-                flash('Ocurrió un error, vuelva a intentarlo')->error();
-                return back();
+    // ✅ MÉTODOS AUXILIARES COMPACTOS - SOLO 6 MÉTODOS CORTOS
+
+    private function validarDatosCliente(Request $request, $clienteId = null)
+    {
+        $request->validate([
+            'identificacion' => ['required', new UniqueSimilar($clienteId)],
+            'nombres' => 'required',
+            'direccion' => 'required',
+            'correos' => ['required', 'email', new ValidarCorreo],
+            'provinciasid' => 'required',
+            'telefono2' => ['required', 'size:10', new ValidarCelular],
+            'sis_distribuidoresid' => 'required',
+            'sis_vendedoresid' => 'required',
+            'sis_revendedoresid' => 'required',
+            'red_origen' => 'required',
+            'ciudadesid' => 'required',
+            'grupo' => 'required'
+        ], [
+            'identificacion.required' => 'Ingrese su cédula o RUC',
+            'nombres.required' => 'Ingrese los Nombres',
+            'direccion.required' => 'Ingrese una Dirección',
+            'correos.required' => 'Ingrese un Correo',
+            'correos.email' => 'Ingrese un Correo válido',
+            'provinciasid.required' => 'Seleccione una Provincia',
+            'telefono2.required' => 'Ingrese un Número Celular',
+            'telefono2.size' => 'Ingrese 10 dígitos',
+            'sis_distribuidoresid.required' => 'Seleccione un Distribuidor',
+            'sis_vendedoresid.required' => 'Seleccione un Vendedor',
+            'sis_revendedoresid.required' => 'Seleccione un Revendedor',
+            'red_origen.required' => 'Seleccione un Origen',
+            'grupo.required' => 'Seleccione un Tipo de Negocio',
+            'ciudadesid.required' => 'Seleccione una Ciudad'
+        ]);
+    }
+
+    private function prepararDatos(Request $request, $cliente = null)
+    {
+        $request['ciudadesid'] = str_pad($request->ciudadesid, '4', "0", STR_PAD_LEFT);
+        $request['telefono1'] = $request['telefono1'] ?: "";
+
+        if ($cliente) {
+            // Actualización
+            $request['fechamodificacion'] = now();
+            $request['usuariomodificacion'] = Auth::user()->nombres;
+            $request['sis_clientesid'] = $cliente->sis_clientesid;
+        } else {
+            // Creación
+            $request['fechacreacion'] = now();
+            $request['usuariocreacion'] = Auth::user()->nombres;
+        }
+    }
+
+    private function verificarDisponibilidadServidores($servidores): ?string
+    {
+        $noDisponibles = $this->externalServerService->checkMultipleServersAvailability($servidores);
+
+        return empty($noDisponibles) ? null :
+            'Servidores no disponibles: ' . implode(', ', $noDisponibles) . '. Intente más tarde.';
+    }
+
+    private function sincronizarServidoresExternos(string $operacion, array $datos): array
+    {
+        $servidores = Servidores::where('estado', 1)->get();
+        $errores = [];
+
+        // Formatear fechas si es necesario
+        if (isset($datos['fechamodificacion'])) {
+            $datos['fechamodificacion'] = date('YmdHis', strtotime($datos['fechamodificacion']));
+        }
+
+        foreach ($servidores as $servidor) {
+            try {
+                $resultado = match ($operacion) {
+                    'update_client' => $this->externalServerService->updateClient($servidor, $datos),
+                    'delete_client' => $this->externalServerService->deleteClient($servidor, $datos['sis_clientesid']),
+                    default => ['success' => false, 'error' => 'Operación no válida']
+                };
+
+                if (!$resultado['success']) {
+                    $errores[] = $servidor->descripcion;
+                }
+            } catch (\Exception $e) {
+                $errores[] = $servidor->descripcion;
+                \Log::warning("Error sincronizando con {$servidor->descripcion}: " . $e->getMessage());
             }
         }
+
+        return $errores;
+    }
+
+    private function contarLicenciasAsociadas(Clientes $cliente): int
+    {
+        $servidores = Servidores::where('estado', 1)->get();
+        $licenciasWeb = 0;
+
+        // Contar licencias web en servidores externos
+        foreach ($servidores as $servidor) {
+            try {
+                $resultado = $this->externalServerService->queryLicense($servidor, [
+                    'sis_clientesid' => $cliente->sis_clientesid
+                ]);
+
+                if ($resultado['success']) {
+                    $licenciasWeb += count($resultado['licenses']);
+                }
+            } catch (\Exception $e) {
+                \Log::warning("Error consultando licencias en {$servidor->descripcion}: " . $e->getMessage());
+            }
+        }
+
+        // Contar licencias locales
+        $licenciasPC = Licencias::where('sis_clientesid', $cliente->sis_clientesid)->count();
+        $licenciasVPS = Licenciasvps::where('sis_clientesid', $cliente->sis_clientesid)->count();
+
+        return $licenciasWeb + $licenciasPC + $licenciasVPS;
+    }
+
+    private function limpiarLicenciasLocales(Clientes $cliente): void
+    {
+        Licencias::where('sis_clientesid', $cliente->sis_clientesid)->delete();
+        Licenciasweb::where('sis_clientesid', $cliente->sis_clientesid)->delete();
+        Licenciasvps::where('sis_clientesid', $cliente->sis_clientesid)->delete();
     }
 }

@@ -48,7 +48,7 @@
                                                 </button>
 
                                                 <!-- Botón Nueva Licencia -->
-                                                <a href="{{ route('licencias.Pc.crear', $cliente->sis_clientesid) }}"
+                                                <a href="{{ route('licencias.Vps.crear', $cliente->sis_clientesid) }}"
                                                    class="btn btn-primary font-weight-bold"
                                                    data-toggle="tooltip"
                                                    data-placement="bottom"

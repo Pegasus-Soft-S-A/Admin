@@ -503,7 +503,6 @@
                 info: false,
                 lengthChange: false,
                 orderable: false,
-                // order: [[3, 'asc']], // Ordenar por fecha de vencimiento
                 serverSide: true,
                 ajax: {
                     url: "{{ route('licencias.index', $cliente->sis_clientesid) }}",

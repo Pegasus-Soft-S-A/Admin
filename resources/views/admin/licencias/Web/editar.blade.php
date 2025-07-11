@@ -90,7 +90,7 @@
 
                                                         @if ($tienePermisosResetear)
                                                             <a class="dropdown-item d-flex align-items-center"
-                                                               href="{{ route('licencias.Web.enviaremail', [$cliente->sis_clientesid, $licencia->producto]) }}">
+                                                               href="{{ route('licencias.Web.enviarEmail', [$cliente->sis_clientesid, $licencia->producto]) }}">
                                                                 <i class="fas fa-paper-plane text-info mr-3"></i>Enviar Credenciales por Email
                                                             </a>
 

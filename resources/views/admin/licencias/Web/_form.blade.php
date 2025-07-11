@@ -255,62 +255,46 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>Agrupados</label>
-                    <select class="form-control select2" name="sis_agrupadosid" id="sis_agrupadosid"
-                        {{ !puede('web', 'editar_agrupados') ? 'disabled' : '' }}>
-                        <option value="0">Sin grupo</option>
-                        @foreach ($agrupados as $agrupado)
-                            <option value="{{ $agrupado->sis_agrupadosid }}"
-                                {{ $agrupado->sis_agrupadosid == $licencia->sis_agrupadosid ? 'selected' : '' }}>
-                                {{ $agrupado->codigo }}-{{ $agrupado->nombres }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('sis_agrupadosid')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
         </div>
 
         {{-- Módulos disponibles --}}
-        <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-puzzle-piece"></i> Módulos Disponibles</p>
-        <div class="separator separator-dashed mb-2"></div>
+        <div id="seccion_modulos" style="{{ (isset($licencia->producto) && $licencia->producto == 12) ? 'display: none;' : '' }}">
+            <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-puzzle-piece"></i> Módulos Disponibles</p>
+            <div class="separator separator-dashed mb-2"></div>
 
-        @php
-            $modulos = [
-                ['name' => 'nomina', 'label' => 'Nómina', 'icon' => 'fas fa-users', 'value' => $modulos->nomina],
-                ['name' => 'activos', 'label' => 'Activos Fijos', 'icon' => 'fas fa-boxes', 'value' => $modulos->activos],
-                ['name' => 'produccion', 'label' => 'Producción', 'icon' => 'fas fa-industry', 'value' => $modulos->produccion],
-                ['name' => 'restaurantes', 'label' => 'Restaurantes', 'icon' => 'fas fa-utensils', 'value' => $modulos->restaurantes],
-                ['name' => 'talleres', 'label' => 'Talleres', 'icon' => 'fas fa-car', 'value' => $modulos->talleres],
-                ['name' => 'garantias', 'label' => 'Garantías', 'icon' => 'fas fa-tools', 'value' => $modulos->garantias],
-                ['name' => 'ecommerce', 'label' => 'Ecommerce', 'icon' => 'fas fa-store', 'value' => $modulos->ecommerce],
-            ];
-        @endphp
+            @php
+                $modulos = [
+                    ['name' => 'nomina', 'label' => 'Nómina', 'icon' => 'fas fa-users', 'value' => $modulos->nomina],
+                    ['name' => 'activos', 'label' => 'Activos Fijos', 'icon' => 'fas fa-boxes', 'value' => $modulos->activos],
+                    ['name' => 'produccion', 'label' => 'Producción', 'icon' => 'fas fa-industry', 'value' => $modulos->produccion],
+                    ['name' => 'restaurantes', 'label' => 'Restaurantes', 'icon' => 'fas fa-utensils', 'value' => $modulos->restaurantes],
+                    ['name' => 'talleres', 'label' => 'Talleres', 'icon' => 'fas fa-car', 'value' => $modulos->talleres],
+                    ['name' => 'garantias', 'label' => 'Garantías', 'icon' => 'fas fa-tools', 'value' => $modulos->garantias],
+                    ['name' => 'ecommerce', 'label' => 'Ecommerce', 'icon' => 'fas fa-store', 'value' => $modulos->ecommerce],
+                ];
+            @endphp
 
-        <div class="row">
-            @foreach ($modulos as $modulo)
-                <div class="col-lg-3 mb-3">
-                    <div class="card h-100">
-                        <div class="card-body d-flex align-items-center">
-                            <i class="{{ $modulo['icon'] }} fa-2x text-muted mr-3"></i>
-                            <div class="flex-grow-1">
-                                <h6 class="card-title mb-1">{{ $modulo['label'] }}</h6>
-                                <div class="custom-control custom-switch custom-switch-datos">
-                                    <input type="checkbox" class="custom-control-input"
-                                           id="{{ $modulo['name'] }}" name="{{ $modulo['name'] }}"
-                                        {{ $modulo['value'] == 1 ? 'checked' : '' }}
-                                        {{ !puede('web', 'editar_modulos') ? 'disabled' : '' }}>
-                                    <label class="custom-control-label" for="{{ $modulo['name'] }}"></label>
+            <div class="row">
+                @foreach ($modulos as $modulo)
+                    <div class="col-lg-3 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="{{ $modulo['icon'] }} fa-2x text-muted mr-3"></i>
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title mb-1">{{ $modulo['label'] }}</h6>
+                                    <div class="custom-control custom-switch custom-switch-datos">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="{{ $modulo['name'] }}" name="{{ $modulo['name'] }}"
+                                            {{ $modulo['value'] == 1 ? 'checked' : '' }}
+                                            {{ !puede('web', 'editar_modulos') ? 'disabled' : '' }}>
+                                        <label class="custom-control-label" for="{{ $modulo['name'] }}"></label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
     </div>
 
@@ -359,11 +343,11 @@
         // ====================================
 
         const AppConfigWeb = {
-            // ✅ Toda la configuración en una sola variable
+            //  Toda la configuración en una sola variable
             configuracion: @json(config('sistema')),
             accion: "{{ $accion }}",
 
-            // ✅ Solo el permiso específico que usa JavaScript
+            //  Solo el permiso específico que usa JavaScript
             permisos: {
                 editarAdicionales: @json(puede('web', 'editar_adicionales_' . strtolower($accion)))
             },
@@ -372,7 +356,7 @@
             rutas: {
                 obtenerAdicionales: "{{ route('licencias.obtener-adicionales') }}",
                 agregarAdicional: "{{ route('licencias.agregar-adicional') }}",
-                editarClave: "{{ route('editar_clave', [$cliente->sis_clientesid, $servidoresid, $licenciasid]) }}"
+                editarClave: "{{ route('licencias.Web.editarClave', [$cliente->sis_clientesid, $servidoresid, $licenciasid]) }}"
             }
         };
 
@@ -381,6 +365,7 @@
         // ====================================
 
         const FormularioLicenciaWeb = {
+            productoInicial: null, //  Guardar producto inicial para detectar cambios
             init() {
                 this.inicializarFormulario();
                 this.configurarEventos();
@@ -388,10 +373,7 @@
             },
 
             inicializarFormulario() {
-                if (!AppConfigWeb.configuracion.productos.web) {
-                    console.error('Configuración de productos web no encontrada');
-                    return;
-                }
+                this.productoInicial = $('#producto').val();
 
                 if (AppConfigWeb.accion === 'Crear') {
                     this.configurarFormularioNuevo();
@@ -400,12 +382,12 @@
                 }
             },
 
-            // ✅ Configuración dinámica para licencia nueva
+            //  Configuración dinámica para licencia nueva
             configurarFormularioNuevo() {
                 const fecha = new Date();
                 const fechaInicia = this.formatearFecha(fecha);
 
-                // ✅ Valores por defecto desde configuración
+                //  Valores por defecto desde configuración
                 const productoPorDefecto = '2'; // Facturación
                 const configProducto = AppConfigWeb.configuracion.productos.web[productoPorDefecto];
 
@@ -428,7 +410,11 @@
             },
 
             configurarFormularioExistente() {
-                this.actualizarConfiguraciones();
+                this.actualizarConfiguraciones(false); //  No aplicar módulos en carga inicial
+                const producto = $('#producto').val();
+                if (producto) {
+                    this.manejarVisibilidadModulos(producto);
+                }
             },
 
             aplicarValoresDefecto(valores) {
@@ -437,7 +423,7 @@
                 });
             },
 
-            // ✅ Aplicar módulos dinámicamente desde configuración
+            //  Aplicar módulos dinámicamente desde configuración
             aplicarModulosProducto(producto, periodo) {
                 const configProducto = AppConfigWeb.configuracion.productos.web[producto];
                 if (!configProducto) return;
@@ -457,8 +443,18 @@
 
             configurarEventos() {
                 // Eventos principales
-                $('#periodo, #producto').on('change', () => {
-                    this.actualizarConfiguraciones();
+                $('#periodo').on('change', () => {
+                    this.actualizarConfiguraciones(false); //  Solo precio, no módulos
+                });
+
+                $('#producto').on('change', () => {
+                    const productoActual = $('#producto').val();
+                    const cambioDeProducto = productoActual !== this.productoInicial; //  Detectar cambio real
+                    this.actualizarConfiguraciones(cambioDeProducto); //  Solo aplicar módulos si cambió
+
+                    if (cambioDeProducto) {
+                        this.productoInicial = productoActual; //  Actualizar referencia
+                    }
                 });
 
                 // Eventos de botones de acción
@@ -479,7 +475,7 @@
                 $('.deshabilitar').on('click', () => false);
             },
 
-            // ✅ Mensajes dinámicos según acción
+            //  Mensajes dinámicos según acción
             obtenerMensajeConfirmacion(tipo) {
                 const mensajes = {
                     'mes': "¿Está seguro de Renovar la Licencia?",
@@ -490,8 +486,8 @@
                 return mensajes[tipo] || "¿Está seguro de continuar?";
             },
 
-            // ✅ Actualizar configuraciones usando datos dinámicos
-            actualizarConfiguraciones() {
+            //  Actualizar configuraciones usando datos dinámicos
+            actualizarConfiguraciones(aplicarModulos = true) {
                 const producto = $('#producto').val();
                 const periodo = $('#periodo').val();
 
@@ -500,7 +496,8 @@
                 }
 
                 this.configurarPeriodoSegunProducto(producto);
-                this.aplicarConfiguracionesProducto(producto, periodo);
+                this.aplicarConfiguracionesProducto(producto, periodo, aplicarModulos);
+                this.manejarVisibilidadModulos(producto);
 
                 // Actualizar recursos adicionales
                 setTimeout(() => {
@@ -508,12 +505,12 @@
                 }, 100);
             },
 
-            // ✅ Configurar período dinámicamente desde configuración
+            //  Configurar período dinámicamente desde configuración
             configurarPeriodoSegunProducto(producto) {
                 const configProducto = AppConfigWeb.configuracion.productos.web[producto];
 
                 if (producto == 12) {
-                    // ✅ Facturito - períodos desde configuración
+                    //  Facturito - períodos desde configuración
                     const periodos = Object.keys(configProducto);
                     const etiquetas = {
                         'inicial': 'Inicial',
@@ -528,7 +525,7 @@
                     $('#periodo4').html(etiquetas['gratis'] || 'Gratis');
                     $('#periodo3, #periodo4').removeClass("d-none");
                 } else {
-                    // ✅ Productos normales
+                    //  Productos normales
                     $('#periodo1').html("Mensual");
                     $('#periodo2').html("Anual");
                     $('#periodo3, #periodo4').addClass("d-none");
@@ -553,8 +550,8 @@
                 }
             },
 
-            // ✅ Aplicar configuraciones usando datos dinámicos
-            aplicarConfiguracionesProducto(producto, periodo) {
+            //  Aplicar configuraciones usando datos dinámicos
+            aplicarConfiguracionesProducto(producto, periodo, aplicarModulos = false) {
                 const config = this.obtenerConfiguracionProducto(producto, periodo);
 
                 if (config) {
@@ -562,13 +559,17 @@
 
                     if (AppConfigWeb.accion === 'Crear') {
                         this.aplicarConfiguracionesNuevaLicencia(config, producto, periodo);
+                        aplicarModulos = true; //  Siempre aplicar en creación
                     }
 
-                    this.aplicarModulosProducto(producto, this.obtenerTipoPeriodo(producto, periodo));
+                    //  Solo aplicar módulos cuando se solicite explícitamente
+                    if (aplicarModulos) {
+                        this.aplicarModulosProducto(producto, this.obtenerTipoPeriodo(producto, periodo));
+                    }
                 }
             },
 
-            // ✅ Obtener configuración usando estructura dinámica
+            //  Obtener configuración usando estructura dinámica
             obtenerConfiguracionProducto(producto, periodo) {
                 const configProducto = AppConfigWeb.configuracion.productos.web[producto];
                 if (!configProducto) return null;
@@ -590,7 +591,7 @@
                 };
             },
 
-            // ✅ Mapear períodos dinámicamente
+            //  Mapear períodos dinámicamente
             obtenerTipoPeriodo(producto, periodo) {
                 if (producto == 12) {
                     const mapaPeriodos = {
@@ -688,6 +689,16 @@
                         type: data.tipo,
                     });
                 });
+            },
+
+            manejarVisibilidadModulos(producto) {
+                const $seccionModulos = $('#seccion_modulos');
+
+                if (producto == 12) { // Facturito
+                    $seccionModulos.hide();
+                } else {
+                    $seccionModulos.show();
+                }
             },
 
             formatearFecha(fecha) {
@@ -795,7 +806,7 @@
                 this.productoSeleccionado = $("#producto").val();
             },
 
-            // ✅ Generar formularios usando configuración dinámica
+            //  Generar formularios usando configuración dinámica
             generarFormularios() {
                 const container = $("#formularios_adicionales_container");
                 const row = $("#formularios_adicionales_row");
@@ -811,7 +822,7 @@
                 container.show();
                 row.empty();
 
-                // ✅ Usar configuración directa
+                //  Usar configuración directa
                 const productoConfig = this.productosConfig[this.productoSeleccionado];
                 const adicionalesPermitidos = productoConfig.adicionales || [];
 
@@ -912,7 +923,7 @@
                 };
             },
 
-            // ✅ Calcular precio usando configuración directa
+            //  Calcular precio usando configuración directa
             obtenerPrecioUnitario(tipoId, tipoConfig) {
                 const periodo = $("#periodo").val() || '2';
                 const periodoTexto = periodo == '1' ? 'mensual' : 'anual';
