@@ -25,8 +25,10 @@ class LogService
 
     public static function registrar(string $pantalla, string $operacion, mixed $detalle = null, ?User $usuario = null): void
     {
+        $nombreUsuario = $usuario ? $usuario->nombres : (Auth::user()?->nombres ?? 'API_SYSTEM');
+
         Log::create([
-            'usuario' => ($usuario ?? Auth::user())->nombres,
+            'usuario' => $nombreUsuario,
             'pantalla' => $pantalla,
             'tipooperacion' => $operacion,
             'fecha' => now(),

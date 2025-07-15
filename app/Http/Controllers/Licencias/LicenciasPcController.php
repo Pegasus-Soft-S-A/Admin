@@ -121,12 +121,11 @@ class LicenciasPcController extends LicenciasBaseController
             flash("Debe seleccionar al menos un sistema principal (Práctico, Control, Contable o Nube)")->error();
             return redirect()->back()->withInput();
         }
-        
+
         $asunto = $this->prepararDatosActualizar($request);
 
         try {
             $servidor = Servidores::where('sis_servidoresid', 4)->firstOrFail();
-
             $resultado = $this->externalServerService->generateLicense($servidor, $request->all());
             if (!$resultado['success']) {
                 throw new \Exception($resultado['error']);

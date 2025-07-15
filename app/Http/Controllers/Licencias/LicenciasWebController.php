@@ -21,7 +21,7 @@ class LicenciasWebController extends LicenciasBaseController
         $licencia->empresas = 1;
         $licencia->sis_distribuidoresid = Auth::user()->sis_distribuidoresid;
 
-        $modulos = [
+        $modulos = (object)[
             'nomina' => false, 'activos' => false, 'produccion' => false,
             'restaurantes' => false, 'talleres' => false, 'garantias' => false, 'ecommerce' => false,
         ];

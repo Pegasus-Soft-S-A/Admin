@@ -624,7 +624,14 @@
             calcularFechaCaducidad(meses) {
                 const fechaInicia = new Date();
                 const fechaCaducidad = new Date(fechaInicia);
-                fechaCaducidad.setMonth(fechaCaducidad.getMonth() + meses);
+                // Si meses es decimal, convertir a días
+                if (meses % 1 !== 0) { // Es decimal
+                    const dias = Math.round(meses * 30); // 0.5 meses = 15 días
+                    fechaCaducidad.setDate(fechaCaducidad.getDate() + dias);
+                } else {
+                    // Es entero, usar meses normalmente
+                    fechaCaducidad.setMonth(fechaCaducidad.getMonth() + meses);
+                }
                 $('#fechacaduca').val(this.formatearFecha(fechaCaducidad));
             },
 

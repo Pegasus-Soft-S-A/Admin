@@ -1279,20 +1279,15 @@ class IdentificacionesController extends Controller
 
     public function generarContrato()
     {
-        $randomString = "";
-        while (strlen($randomString) < 10) {
-            $numero = rand(1, 9);
-            $randomString = $randomString . $numero;
-        }
+        do {
+            $numeroContrato = (string)random_int(1000000000, 9999999999);
 
-        $pc = Licencias::where('numerocontrato', $randomString)->first();
-        $web = Licenciasweb::where('numerocontrato', $randomString)->first();
+            $existe = \App\Models\Licencias::where('numerocontrato', $numeroContrato)->exists() ||
+                \App\Models\Licenciasweb::where('numerocontrato', $numeroContrato)->exists() ||
+                \App\Models\Licenciasvps::where('numerocontrato', $numeroContrato)->exists();
+        } while ($existe);
 
-        if ($pc || $web) {
-            $randomString = $this->generarContrato();
-        }
-
-        return $randomString;
+        return $numeroContrato;
     }
 
     public function modulos($nomina, $activos, $produccion, $restaurantes, $talleres, $garantias, $ecommerce)

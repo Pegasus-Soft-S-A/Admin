@@ -31,6 +31,12 @@ class ExternalServerService
             'generate' => '/registros/generador_licencia',
             'activity' => '/registros/consulta_actividades',
             'reset_password' => '/registros/restaurar_clave_usuario'
+        ],
+        'usuarios' => [
+            'query' => '/registros/consulta_usuario'
+        ],
+        'externos' => [
+            'bitrix' => 'https://perseo-soft.bitrix24.es/rest/5507/9mgnss30ssjdu1ay/crm.deal.add.json'
         ]
     ];
 
@@ -80,13 +86,6 @@ class ExternalServerService
             $url = $servidor->dominio . $endpoint;
             $timeout = self::TIMEOUTS[$operationType];
 
-            Log::info("Realizando petición a servidor externo", [
-                'servidor' => $servidor->descripcion,
-                'url' => $url,
-                'method' => $method,
-                'operation_type' => $operationType
-            ]);
-
             $request = Http::timeout($timeout)
                 ->withHeaders([
                     'Content-Type' => 'application/json',
@@ -104,11 +103,6 @@ class ExternalServerService
 
             if ($response->successful()) {
                 $responseData = $response->json();
-
-                Log::info("Petición exitosa a servidor externo", [
-                    'servidor' => $servidor->descripcion,
-                    'status' => $response->status()
-                ]);
 
                 return [
                     'success' => true,
@@ -343,6 +337,142 @@ class ExternalServerService
             'success' => false,
             'error' => $result['data']['fault']['detail'] ?? $result['error'] ?? 'Error al resetear clave'
         ];
+    }
+
+    /**
+     * Operaciones específicas para USUARIOS
+     */
+    public function queryUser(Servidores $servidor, array $params): array
+    {
+        $result = $this->makeRequest(
+            $servidor,
+            self::ENDPOINTS['usuarios']['query'],
+            $params,
+            'POST',
+            'read'
+        );
+
+        if ($result['success'] && isset($result['data']['usuario']) && !empty($result['data']['usuario'])) {
+            return [
+                'success' => true,
+                'user' => $result['data']['usuario'][0]
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => $result['error'] ?? 'Usuario no encontrado'
+        ];
+    }
+
+    /**
+     * Buscar cliente en múltiples servidores disponibles
+     */
+    public function findClientInServers(string $identificacion): array
+    {
+        $servidores = Servidores::where('estado', 1)->get();
+        $resultados = [];
+
+        foreach ($servidores as $servidor) {
+            try {
+                // Verificar disponibilidad antes de consultar
+                if (!$this->checkServerAvailability($servidor)) {
+                    Log::info("Servidor no disponible, saltando: {$servidor->descripcion}");
+                    continue;
+                }
+
+                // Consultar usuario
+                $usuario = $this->queryUser($servidor, ['identificacion' => $identificacion]);
+
+                if (!$usuario['success']) {
+                    continue;
+                }
+
+                // Consultar licencias del usuario
+                $licencias = $this->queryLicense($servidor, [
+                    'sis_clientesid' => $usuario['user']['sis_clientesid']
+                ]);
+
+                if ($licencias['success'] && !empty($licencias['licenses'])) {
+                    $resultados[] = [
+                        'servidor' => $servidor,
+                        'usuario' => $usuario['user'],
+                        'licencias_count' => count($licencias['licenses'])
+                    ];
+
+                    Log::info("Cliente encontrado en servidor: {$servidor->descripcion}", [
+                        'identificacion' => $identificacion,
+                        'licencias' => count($licencias['licenses'])
+                    ]);
+                }
+
+            } catch (\Exception $e) {
+                Log::warning("Error buscando cliente en servidor {$servidor->descripcion}", [
+                    'error' => $e->getMessage(),
+                    'identificacion' => $identificacion
+                ]);
+                continue;
+            }
+        }
+
+        return $resultados;
+    }
+
+    /**
+     * Registrar lead en Bitrix CRM
+     */
+    public function registrarEnBitrix(array $leadData): array
+    {
+        try {
+            $response = Http::timeout(self::TIMEOUTS['write'])
+                ->withOptions(['verify' => false])
+                ->get(self::ENDPOINTS['externos']['bitrix'], $leadData);
+
+            if ($response->successful()) {
+                $resultado = $response->json();
+
+                if (isset($resultado['error'])) {
+                    Log::warning('Error en respuesta de Bitrix', [
+                        'error' => $resultado['error'],
+                        'error_description' => $resultado['error_description'] ?? 'Sin descripción'
+                    ]);
+
+                    return [
+                        'success' => false,
+                        'error' => $resultado['error_description'] ?? 'Error en Bitrix'
+                    ];
+                }
+
+                Log::info('Lead registrado exitosamente en Bitrix', [
+                    'deal_id' => $resultado['result'] ?? null
+                ]);
+
+                return [
+                    'success' => true,
+                    'deal_id' => $resultado['result'] ?? null
+                ];
+            }
+
+            Log::warning('Error en petición a Bitrix', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+
+            return [
+                'success' => false,
+                'error' => "HTTP {$response->status()}: Error en Bitrix"
+            ];
+
+        } catch (\Exception $e) {
+            Log::warning('Error conectando con Bitrix', [
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
     }
 
     /**

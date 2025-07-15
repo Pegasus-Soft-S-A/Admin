@@ -169,7 +169,7 @@ return [
                     'precio' => '173.99',
                     'meses' => 12,
                 ],
-                'usuarios' => 6,
+                'usuarios' => 50,
                 'moviles' => 1,
                 'sucursales' => 0,
                 'empresas' => 1,
@@ -194,7 +194,7 @@ return [
                     'precio' => '311.99',
                     'meses' => 12,
                 ],
-                'usuarios' => 6,
+                'usuarios' => 50,
                 'moviles' => 0,
                 'sucursales' => 0,
                 'empresas' => 1,
@@ -238,7 +238,7 @@ return [
                     ]
                 ],
                 'adicionales' => [1, 2, 3],
-                'usuarios' => 6,
+                'usuarios' => 50,
                 'moviles' => 2,
                 'sucursales' => 0,
                 'empresas' => 1,
@@ -253,7 +253,7 @@ return [
                     'precio' => '215.99',
                     'meses' => 12,
                 ],
-                'usuarios' => 6,
+                'usuarios' => 50,
                 'moviles' => 0,
                 'sucursales' => 0,
                 'empresas' => 1,
@@ -299,7 +299,7 @@ return [
                     'precio' => '179.99',
                     'meses' => 12,
                 ],
-                'usuarios' => 6,
+                'usuarios' => 50,
                 'moviles' => 0,
                 'sucursales' => 0,
                 'empresas' => 1,
@@ -318,9 +318,9 @@ return [
             9 => [ // Perseo Lite
                 'mensual' => [
                     'precio' => '0',
-                    'meses' => 1,
+                    'meses' => 0.5,
                 ],
-                'usuarios' => 6,
+                'usuarios' => 50,
                 'moviles' => 1,
                 'sucursales' => 0,
                 'empresas' => 1,
@@ -334,14 +334,28 @@ return [
                     'talleres' => true,
                     'garantias' => true,
                 ],
-                'adicionales' => [1, 2, 3]
+                'adicionales' => [1, 2, 3],
+                // Configuración específica para demo
+                'demo' => [
+                    'dias_vigencia' => 15,
+                    'parametros' => [
+                        'Documentos' => "100000",
+                        'Productos' => "100000",
+                        'Almacenes' => "1",
+                        'Nomina' => "3",
+                        'Produccion' => "3",
+                        'Activos' => "3",
+                        'Talleres' => "3",
+                        'Garantias' => "3",
+                    ]
+                ]
             ],
             10 => [ // Emprendedor
                 'anual' => [
                     'precio' => '24.50',
                     'meses' => 12,
                 ],
-                'usuarios' => 6,
+                'usuarios' => 50,
                 'moviles' => 0,
                 'sucursales' => 0,
                 'empresas' => 1,
@@ -366,7 +380,7 @@ return [
                     'precio' => '119.90',
                     'meses' => 12,
                 ],
-                'usuarios' => 1,
+                'usuarios' => 50,
                 'moviles' => 1,
                 'sucursales' => 0,
                 'empresas' => 1,

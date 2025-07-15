@@ -89,8 +89,8 @@ Route::group(['prefix' => 'admin'], function () {
             // ==========================================
             Route::prefix('web')->name('Web.')->group(function () {
                 Route::get('/{cliente}', [LicenciasWebController::class, 'index'])->name('index');
-                Route::get('/crear/{cliente}', [LicenciasWebController::class, 'crearWeb'])->name('crear');
-                Route::post('/guardar', [LicenciasWebController::class, 'guardarWeb'])->name('guardar');
+                Route::get('/crear/{cliente}', [LicenciasWebController::class, 'crear'])->name('crear');
+                Route::post('/guardar', [LicenciasWebController::class, 'guardar'])->name('guardar');
                 Route::get('/editar/{cliente}/{servidor}/{licencia}', [LicenciasWebController::class, 'editar'])->name('editar');
                 Route::put('/actualizar/{servidor}/{licencia}', [LicenciasWebController::class, 'actualizar'])->name('actualizar');
                 Route::delete('/eliminar/{servidorid}/{licenciaid}', [LicenciasWebController::class, 'eliminar'])->name('eliminar');
@@ -184,14 +184,6 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/linkseditar/{links}', [LinksController::class, 'editar'])->name('links.editar');
         Route::put('/linksactualizar/{links}', [LinksController::class, 'actualizar'])->name('links.actualizar');
         Route::delete('/linkseliminar/{links}', [LinksController::class, 'eliminar'])->name('links.eliminar');
-
-        /* Publicidad */
-        Route::get('/publicidades', [publicidadesController::class, 'index'])->name('publicidades.index');
-        Route::get('/publicidadescrear', [publicidadesController::class, 'crear'])->name('publicidades.crear');
-        Route::post('/publicidadesguardar', [publicidadesController::class, 'guardar'])->name('publicidades.guardar');
-        Route::get('/publicidadeseditar/{publicidades}', [publicidadesController::class, 'editar'])->name('publicidades.editar');
-        Route::put('/publicidadesactualizar/{publicidades}', [publicidadesController::class, 'actualizar'])->name('publicidades.actualizar');
-        Route::delete('/publicidadeseliminar/{publicidades}', [publicidadesController::class, 'eliminar'])->name('publicidades.eliminar');
 
         /* Reportes */
         Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
