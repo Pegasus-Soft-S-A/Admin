@@ -781,7 +781,6 @@ class clientesController extends Controller
         }
     }
 
-
     public function eliminar(Clientes $cliente)
     {
         $isAjax = request()->ajax() || request()->wantsJson();
@@ -919,18 +918,26 @@ class clientesController extends Controller
         $servidores = Servidores::where('estado', 1)->get();
         $licenciasWeb = 0;
 
-        // Contar licencias web en servidores externos
-        foreach ($servidores as $servidor) {
-            try {
-                $resultado = $this->externalServerService->queryLicense($servidor, [
-                    'sis_clientesid' => $cliente->sis_clientesid
-                ]);
+        // ✅ OPTIMIZACIÓN PARA MODO LOCAL
+        if (config('sistema.local_mode', false)) {
+            // En modo local, consultar directamente el modelo
+            $licenciasWeb = \App\Models\Licenciasweb::where('sis_clientesid', $cliente->sis_clientesid)->count();
+        } else {
+            // En modo producción, consultar cada servidor (lógica original)
+            $servidores = Servidores::where('estado', 1)->get();
 
-                if ($resultado['success']) {
-                    $licenciasWeb += count($resultado['licenses']);
+            foreach ($servidores as $servidor) {
+                try {
+                    $resultado = $this->externalServerService->queryLicense($servidor, [
+                        'sis_clientesid' => $cliente->sis_clientesid
+                    ]);
+
+                    if ($resultado['success']) {
+                        $licenciasWeb += count($resultado['licenses']);
+                    }
+                } catch (\Exception $e) {
+                    \Log::warning("Error consultando licencias en {$servidor->descripcion}: " . $e->getMessage());
                 }
-            } catch (\Exception $e) {
-                \Log::warning("Error consultando licencias en {$servidor->descripcion}: " . $e->getMessage());
             }
         }
 

@@ -1,5 +1,6 @@
 <?php // config/sistema.php
 return [
+    'local_mode' => env('APP_ENV') === 'local',
     'tipos_roles' => [
         1 => 'Admin',
         2 => 'Distribuidor',
@@ -94,6 +95,7 @@ return [
             'nombre' => 'Móviles',
             'descripcion' => 'Licencias móviles',
             'icono' => 'fa-mobile',
+            'precio_strategy' => 'simple',
             'campo_licencia' => 'numeromoviles',
             'precios' => [
                 'pc' => [
@@ -110,6 +112,7 @@ return [
             'nombre' => 'Sucursales',
             'descripcion' => 'Sucursales del sistema',
             'icono' => 'fa-building',
+            'precio_strategy' => 'simple',
             'campo_licencia' => 'numerosucursales',
             'precios' => [
                 'pc' => [
@@ -126,6 +129,7 @@ return [
             'nombre' => 'Equipos',
             'descripcion' => 'Equipos para instalación',
             'icono' => 'fa-desktop',
+            'precio_strategy' => 'simple',
             'campo_licencia' => 'numeroequipos',
             'precios' => [
                 'pc' => [
@@ -142,7 +146,27 @@ return [
             'nombre' => 'Usuarios Nube',
             'descripcion' => 'Usuarios para licencias de nube',
             'icono' => 'fa-user',
+            'precio_strategy' => 'nube',
             'campo_licencia' => 'usuarios_nube',
+            'precios' => [
+                'prime' => [
+                    'nivel1' => ['mensual' => 15, 'anual' => 150],
+                    'nivel2' => ['mensual' => 18, 'anual' => 180],
+                    'nivel3' => ['mensual' => 20, 'anual' => 200]
+                ],
+                'contaplus' => [
+                    'nivel1' => ['mensual' => 12, 'anual' => 120],
+                    'nivel2' => ['mensual' => 15, 'anual' => 150],
+                    'nivel3' => ['mensual' => 18, 'anual' => 180]
+                ]
+            ]
+        ],
+        5 => [
+            'nombre' => 'Empresas Nube',
+            'descripcion' => 'Empresas para licencias de nube',
+            'icono' => 'fa-user',
+            'precio_strategy' => 'nube',
+            'campo_licencia' => 'empresas',
             'precios' => [
                 'prime' => [
                     'nivel1' => ['mensual' => 15, 'anual' => 150],
@@ -499,7 +523,7 @@ return [
                     'incluye_activos' => true,
                     'hereda_de' => 'contable', // Incluye lo de contable + control + práctico
                     'requiere_configuracion_nube' => true,
-                    'adicionales' => [1, 2, 3, 4]
+                    'adicionales' => [4, 5]
                 ]
             ],
 

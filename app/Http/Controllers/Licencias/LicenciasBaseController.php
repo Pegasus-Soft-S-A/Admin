@@ -98,27 +98,6 @@ abstract class LicenciasBaseController extends Controller
         return puede($categoria, $permiso);
     }
 
-    // Ejecutar operación con transacción y log
-    protected function ejecutarConTransaccion(callable $operacion, string $tipoLog, array $datos = [])
-    {
-        DB::beginTransaction();
-
-        try {
-            $resultado = $operacion();
-
-            if ($tipoLog && $datos) {
-                LogService::crear($tipoLog, $datos);
-            }
-
-            DB::commit();
-            return $resultado;
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-    }
-
     // Ejecutar creación con transacción y log específico
     protected function ejecutarCreacionConTransaccion(callable $operacion, string $tipoLog, array $datos): mixed
     {

@@ -356,53 +356,69 @@ class adminController extends LicenciasBaseController
     // =======================================
     public function licencia($servidorid, $clienteid)
     {
-        $servidor = Servidores::where('sis_servidoresid', $servidorid)->first();
-        $url = $servidor->dominio . '/registros/consulta_licencia';
-        $licencias = Http::withHeaders(['Content-Type' => 'application/json; charset=UTF-8', 'verify' => false,])
-            ->withOptions(["verify" => false])
-            ->post($url, ['sis_clientesid' => $clienteid])
-            ->json();
+        try {
+            $servidor = Servidores::where('sis_servidoresid', $servidorid)->firstOrFail();
 
-        if (isset($licencias["licencias"])) {
-            foreach ($licencias["licencias"] as $key => $licencia) {
-                switch ($licencia['producto']) {
-                    case '2':
-                        $producto = "Facturación";
-                        break;
-                    case '3':
-                        $producto = "Servicios";
-                        break;
-                    case '4':
-                        $producto = "Comercial";
-                        break;
-                    case '5':
-                        $producto = "Soy Contador Comercial";
-                        break;
-                    case '6':
-                        $producto = "Perseo Lite Anterior";
-                        break;
-                    case '7':
-                        $producto = "Total";
-                        break;
-                    case '8':
-                        $producto = "Soy Contador Servicios";
-                        break;
-                    case '9':
-                        $producto = "Perseo Lite";
-                        break;
-                    case '10':
-                        $producto = "Emprendedor";
-                        break;
-                    case '11':
-                        $producto = "Socio Perseo";
-                        break;
+            // ✅ USAR ExternalServerService en lugar de HTTP directo
+            $resultado = $this->externalServerService->queryLicense($servidor, [
+                'sis_clientesid' => $clienteid
+            ]);
+
+            if ($resultado['success'] && isset($resultado['licenses'])) {
+                $licencias = $resultado['licenses'];
+
+                // Procesar productos (lógica original)
+                foreach ($licencias as $key => $licencia) {
+                    switch ($licencia['producto']) {
+                        case '2':
+                            $producto = "Facturación";
+                            break;
+                        case '3':
+                            $producto = "Servicios";
+                            break;
+                        case '4':
+                            $producto = "Comercial";
+                            break;
+                        case '5':
+                            $producto = "Soy Contador Comercial";
+                            break;
+                        case '6':
+                            $producto = "Perseo Lite Anterior";
+                            break;
+                        case '7':
+                            $producto = "Total";
+                            break;
+                        case '8':
+                            $producto = "Soy Contador Servicios";
+                            break;
+                        case '9':
+                            $producto = "Perseo Lite";
+                            break;
+                        case '10':
+                            $producto = "Emprendedor";
+                            break;
+                        case '11':
+                            $producto = "Socio Perseo";
+                            break;
+                        case '12':
+                            $producto = "Facturito";
+                            break;
+                        default:
+                            $producto = "Producto desconocido";
+                            break;
+                    }
+                    $licencias[$key]['producto'] = $producto;
                 }
-                $licencias["licencias"][$key]['producto'] = $producto;
+            } else {
+                $licencias = [['sis_licenciasid' => 0, 'numerocontrato' => 'Cliente sin Licencia', 'producto' => '']];
             }
-        } else {
-            $licencias = ['licencias' => [['sis_licenciasid' => 0, 'numerocontrato' => 'Cliente sin Licencia', 'producto' => '']]];
+
+            return with(["licencia" => $licencias]);
+
+        } catch (\Exception $e) {
+            Log::error("Error en AdminController.licencia(): " . $e->getMessage());
+            return with(["licencia" => [['sis_licenciasid' => 0, 'numerocontrato' => 'Error al consultar', 'producto' => '']]]);
         }
-        return with(["licencia" => $licencias["licencias"]]);
     }
 
     // =======================================

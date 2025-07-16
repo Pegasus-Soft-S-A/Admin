@@ -5,12 +5,6 @@
         background-color: #F3F6F9;
     }
 
-    /* Prevenir scroll horizontal */
-    .row {
-        margin-left: 0;
-        margin-right: 0;
-    }
-
     .form-control.is-invalid {
         border-color: #F64E60;
     }

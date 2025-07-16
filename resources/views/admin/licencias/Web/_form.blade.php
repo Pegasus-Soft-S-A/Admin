@@ -11,12 +11,6 @@
         transform-origin: left center;
     }
 
-    /* Prevenir scroll horizontal */
-    .row {
-        margin-left: 0;
-        margin-right: 0;
-    }
-
     .tab-content {
         overflow-x: hidden;
     }
@@ -1063,10 +1057,12 @@
 
                             // Actualizar campo del formulario si corresponde
                             const tipoConfig = this.tiposAdicionales[tipoId];
-                            if (tipoConfig.campo_licencia) {
-                                const campoId = `#${tipoConfig.campo_licencia}`;
-                                const valorActual = parseInt($(campoId).val()) || 0;
-                                $(campoId).val(valorActual + cantidad);
+
+                            if (response.licencia_actualizada) {
+                                const tipoConfig = this.tiposAdicionales[tipoId];
+                                if (tipoConfig.campo_licencia && response.licencia_actualizada[tipoConfig.campo_licencia] !== undefined) {
+                                    $(`#${tipoConfig.campo_licencia}`).val(response.licencia_actualizada[tipoConfig.campo_licencia]);
+                                }
                             }
 
                             $(`#cantidad_${tipoId}`).val(0);

@@ -20,12 +20,6 @@
         transform-origin: left center;
     }
 
-    /* Prevenir scroll horizontal */
-    .row {
-        margin-left: 0;
-        margin-right: 0;
-    }
-
     .tab-content {
         overflow-x: hidden;
     }
@@ -336,11 +330,11 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label>Usuarios</label>
-                        <input type="text" class="form-control @error('usuarios') is-invalid @enderror"
-                               name="usuarios" id="usuarios"
-                               value="{{ old('usuarios', $licencia->usuarios) }}"
+                        <input type="text" class="form-control @error('usuarios_nube') is-invalid @enderror"
+                               name="usuarios_nube" id="usuarios_nube"
+                               value="{{ old('usuarios_nube', $licencia->usuarios_nube) }}"
                             {{ !puede('pc', 'editar_nube_' . strtolower($accion)) ? 'disabled' : '' }}>
-                        @error('usuarios')
+                        @error('usuarios_nube')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -952,9 +946,6 @@
 
                 //  Configurar módulos dinámicamente
                 this.configurarEventosModulos();
-
-                // Eventos de navegación entre tabs
-                this.configurarEventosNavegacion();
             },
 
             //  Configurar eventos de módulos usando configuración
@@ -1108,17 +1099,6 @@
                 modulosAdicionales.forEach(modulo => {
                     $("#" + modulo).prop("checked", false);
                     this.actualizarCheckboxesPorModulo(modulo, false);
-                });
-            },
-
-            configurarEventosNavegacion() {
-                $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', (e) => {
-                    const targetTab = $(e.target).attr('href');
-                    const previousTab = $(e.relatedTarget).attr('href');
-
-                    if (targetTab === '#datos_licencia' && previousTab === '#recursos_adicionales') {
-                        window.location.reload();
-                    }
                 });
             },
 
@@ -1678,15 +1658,20 @@
                 const periodo = $("#periodo").val() || '2';
                 const periodoTexto = periodo == '1' ? 'mensual' : 'anual';
 
-                if (tipoId == 4) { // Usuarios nube
-                    const tipoNube = $("#tipo_nube").val() || '1';
-                    const nivelNube = $("#nivel_nube").val() || '1';
-                    const tipoNubeTexto = tipoNube == '1' ? 'prime' : 'contaplus';
-                    const nivelTexto = 'nivel' + nivelNube;
+                switch (tipoConfig.precio_strategy) {
+                    case 'simple':
+                        return tipoConfig.precios.pc[periodoTexto] || 0;
 
-                    return tipoConfig.precios[tipoNubeTexto]?.[nivelTexto]?.[periodoTexto] || 0;
-                } else {
-                    return tipoConfig.precios.pc[periodoTexto] || 0;
+                    case 'nube':
+                        const tipoNube = $("#tipo_nube").val() || '1';
+                        const nivelNube = $("#nivel_nube").val() || '1';
+                        const tipoNubeTexto = tipoNube == '1' ? 'prime' : 'contaplus';
+                        const nivelTexto = 'nivel' + nivelNube;
+
+                        return tipoConfig.precios[tipoNubeTexto]?.[nivelTexto]?.[periodoTexto] || 0;
+
+                    default:
+                        return 0;
                 }
             },
 

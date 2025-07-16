@@ -34,7 +34,6 @@ Route::group(['middleware' => 'authAPILicencia'], function () {
     Route::post('/jumilo', [IdentificacionesController::class, 'jumilo'])->name('licencia.jumilo');
     Route::post('/actualizar_identificador', [IdentificacionesController::class, 'actualizar_identificador'])->name('licencia.actualizar_identificador');
     Route::post('/consulta_clientes', [IdentificacionesController::class, 'consulta_clientes'])->name('licencia.consulta_clientes');
-    // routes/api.php
     Route::post('/adicionales/procesar', [AdicionalController::class, 'procesarAdicionalSimple']);
 });
 

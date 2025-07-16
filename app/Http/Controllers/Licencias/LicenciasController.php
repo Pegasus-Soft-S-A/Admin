@@ -19,18 +19,27 @@ class LicenciasController extends LicenciasBaseController
             $servidores = Servidores::where('estado', 1)->get();
             $web = [];
 
-            // Consultar licencias Web de servidores externos
-            foreach ($servidores as $servidor) {
-                try {
-                    $resultado = $this->externalServerService->queryLicense($servidor, [
-                        'sis_clientesid' => $cliente->sis_clientesid
-                    ]);
+            // ✅ OPTIMIZACIÓN PARA MODO LOCAL
+            if (config('sistema.local_mode', false)) {
+                // En modo local, consultar directamente el modelo (como PC y VPS)
+                $web = \App\Models\Licenciasweb::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
+                    ->where('sis_clientesid', $cliente->sis_clientesid)
+                    ->get()
+                    ->toArray();
+            } else {
+                // En modo producción, consultar cada servidor (lógica original)
+                foreach ($servidores as $servidor) {
+                    try {
+                        $resultado = $this->externalServerService->queryLicense($servidor, [
+                            'sis_clientesid' => $cliente->sis_clientesid
+                        ]);
 
-                    if ($resultado['success'] && isset($resultado['licenses'])) {
-                        $web = array_merge($web, $resultado['licenses']);
+                        if ($resultado['success'] && isset($resultado['licenses'])) {
+                            $web = array_merge($web, $resultado['licenses']);
+                        }
+                    } catch (\Exception $e) {
+                        continue; // Continúa con el siguiente servidor
                     }
-                } catch (\Exception $e) {
-                    continue; // Continúa con el siguiente servidor
                 }
             }
 

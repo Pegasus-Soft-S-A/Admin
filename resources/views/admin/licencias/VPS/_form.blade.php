@@ -8,13 +8,7 @@
         opacity: 1;
         background-color: #F3F6F9;
     }
-
-    /* Prevenir scroll horizontal */
-    .row {
-        margin-left: 0;
-        margin-right: 0;
-    }
-
+    
     .tab-content {
         overflow-x: hidden;
     }

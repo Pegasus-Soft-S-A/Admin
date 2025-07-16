@@ -163,44 +163,32 @@ class AdicionalController extends Controller
     //  Calcular precio usando configuración dinámica
     private function calcularPrecioDinamico($request, $licencia)
     {
-        $tiposConfig = config('sistema.tipos_adicionales', []);
-        $tipoConfig = $tiposConfig[$request->tipo_adicional] ?? null;
+        $tipoConfig = config("sistema.tipos_adicionales.{$request->tipo_adicional}");
+        $strategy = $tipoConfig['precio_strategy'] ?? 'simple';
 
-        if (!$tipoConfig || !isset($tipoConfig['precios'])) {
-            return 0;
-        }
-
-        $precios = $tipoConfig['precios'];
-
-        if ($this->esLicenciaPC($licencia)) {
-            return $this->calcularPrecioPC($precios, $request, $licencia);
-        } else {
-            return $this->calcularPrecioWeb($precios, $request, $licencia);
-        }
+        return match ($strategy) {
+            'simple' => $this->calcularPrecioSimple($tipoConfig['precios'], $licencia),
+            'nube' => $this->calcularPrecioNube($tipoConfig['precios'], $licencia),
+            default => 0
+        };
     }
 
-    //  Calcular precio para PC
-    private function calcularPrecioPC($precios, $request, $licencia)
+    private function calcularPrecioSimple($precios, $licencia)
     {
-        if ($request->tipo_adicional == 4) { // Usuarios nube
-            $configNube = config('sistema.productos.pc.modulos_principales.nube.precios', []);
-            $tipoNube = ($licencia->tipo_nube ?? 1) == 1 ? 'prime' : 'contaplus';
-            $nivelNube = 'nivel' . ($licencia->nivel_nube ?? 1);
-            $periodo = $request->periodo == 1 ? 'mensual' : 'anual';
+        $esPC = $licencia instanceof Licencias;
+        $periodo = ($licencia->periodo ?? 2) == 1 ? 'mensual' : 'anual';
+        $tipoLicencia = $esPC ? 'pc' : 'web';
 
-            return $configNube[$tipoNube][$nivelNube][$periodo] ?? 0;
-        }
-
-        // Otros tipos PC
-        $periodo = $request->periodo == 1 ? 'mensual' : 'anual';
-        return $precios['pc'][$periodo] ?? 0;
+        return $precios[$tipoLicencia][$periodo] ?? 0;
     }
 
-    //  Calcular precio para Web
-    private function calcularPrecioWeb($precios, $request, $licencia)
+    private function calcularPrecioNube($precios, $licencia)
     {
-        $periodo = $request->periodo == 1 ? 'mensual' : 'anual';
-        return $precios['web'][$periodo] ?? 0;
+        $tipoNube = ($licencia->tipo_nube ?? 1) == 1 ? 'prime' : 'contaplus';
+        $nivel = 'nivel' . ($licencia->nivel_nube ?? 1);
+        $periodo = ($licencia->periodo ?? 2) == 1 ? 'mensual' : 'anual';
+
+        return $precios[$tipoNube][$nivel][$periodo] ?? 0;
     }
 
     //  Actualizar campo con lógica diferenciada PC/Web
@@ -300,38 +288,43 @@ class AdicionalController extends Controller
 
     private function procesarAdicional($request, $licencia)
     {
+        $adicionalExistente = Adicionales::where('numerocontrato', $request->numerocontrato)
+            ->where('tipo_adicional', $request->tipo_adicional)
+            ->where('tipo_licencia', $request->tipo_licencia)
+            ->first();
+
         $precio = $this->calcularPrecioDinamico($request, $licencia);
         $precioTotal = $precio * $request->cantidad;
 
-        // Verificar si existe para determinar el tipo de log
-        $existe = Adicionales::where('numerocontrato', $request->numerocontrato)
-            ->where('tipo_adicional', $request->tipo_adicional)
-            ->where('tipo_licencia', $request->tipo_licencia)
-            ->exists();
+        if ($adicionalExistente) {
+            // UPDATE: Sumar la nueva cantidad a la existente
+            $adicionalExistente->cantidad += $request->cantidad;
+            $adicionalExistente->precio += $precioTotal;
+            $adicionalExistente->fechacaduca = date('Ymd', strtotime($request->fechacaduca));
+            $adicionalExistente->save();
 
-        $adicional = Adicionales::updateOrCreate(
-            [
+            //Registro de log
+            LogService::modificar('Adicional', $request->all());
+
+            return $adicionalExistente;
+        } else {
+            // CREATE: Crear nuevo registro
+            $adicional = Adicionales::create([
                 'numerocontrato' => $request->numerocontrato,
-                'tipo_adicional' => $request->tipo_adicional,
-                'tipo_licencia' => $request->tipo_licencia
-            ],
-            [
                 'fechainicia' => $request->fechainicia,
                 'fechacaduca' => date('Ymd', strtotime($request->fechacaduca)),
+                'tipo_adicional' => $request->tipo_adicional,
+                'tipo_licencia' => $request->tipo_licencia,
                 'periodo' => $request->periodo,
-                'cantidad' => $existe ? DB::raw("cantidad + {$request->cantidad}") : $request->cantidad,
-                'precio' => $existe ? DB::raw("precio + {$precioTotal}") : $precioTotal,
-            ]
-        );
+                'cantidad' => $request->cantidad,
+                'precio' => $precioTotal,
+            ]);
 
-        // Log diferenciado según si existía o no
-        if ($existe) {
-            LogService::modificar('Adicional', $request->all());
-        } else {
+            //Registro de log
             LogService::crear('Adicional', $request->all());
-        }
 
-        return $adicional;
+            return $adicional;
+        }
     }
 
     //  Resto de métodos (obtenerAdicionales) permanecen igual...
@@ -385,7 +378,7 @@ class AdicionalController extends Controller
     public function procesarAdicionalSimple(Request $request)
     {
         $request->validate([
-            'numerocontrato' => 'required|string',
+            'numerocontrato' => 'required',
             'tipo_adicional' => 'required|integer',
             'cantidad' => 'required|integer|min:1'
         ]);
@@ -393,7 +386,6 @@ class AdicionalController extends Controller
         DB::beginTransaction();
 
         try {
-            // Buscar licencia
             $licencia = Licencias::where('numerocontrato', $request->numerocontrato)->first()
                 ?? Licenciasweb::where('numerocontrato', $request->numerocontrato)->first();
 
@@ -401,37 +393,40 @@ class AdicionalController extends Controller
                 return response()->json(['success' => false, 'message' => 'Licencia no encontrada'], 404);
             }
 
-            // Obtener configuración del tipo de adicional
             $tipoConfig = config("sistema.tipos_adicionales.{$request->tipo_adicional}");
             $campo = $tipoConfig['campo_licencia'];
             $esPC = $licencia instanceof Licencias;
-
-            // Calcular precio desde configuración
             $periodo = $licencia->periodo ?? 2;
-            $tipoPeriodo = $periodo == 1 ? 'mensual' : 'anual';
-            $tipoLicencia = $esPC ? 'pc' : 'web';
-            $precio = $tipoConfig['precios'][$tipoLicencia][$tipoPeriodo] * $request->cantidad;
 
-            // Buscar o crear adicional
-            $adicional = Adicionales::updateOrCreate(
-                [
+            $precioUnitario = $this->calcularPrecioDinamico($request, $licencia);
+            $precioTotal = $precioUnitario * $request->cantidad;
+
+            // Buscar adicional existente
+            $adicional = Adicionales::where('numerocontrato', $request->numerocontrato)
+                ->where('tipo_adicional', $request->tipo_adicional)
+                ->where('tipo_licencia', $esPC ? 1 : 2)
+                ->first();
+
+            if ($adicional) {
+                $adicional->cantidad += $request->cantidad;
+                $adicional->precio += $precioTotal;
+                $adicional->fechacaduca = $licencia->fechacaduca;
+                $adicional->save();
+            } else {
+                $adicional = Adicionales::create([
                     'numerocontrato' => $request->numerocontrato,
                     'tipo_adicional' => $request->tipo_adicional,
-                    'tipo_licencia' => $esPC ? 1 : 2
-                ],
-                [
-                    'cantidad' => DB::raw("cantidad + {$request->cantidad}"),
-                    'precio' => DB::raw("precio + {$precio}"),
+                    'tipo_licencia' => $esPC ? 1 : 2,
+                    'cantidad' => $request->cantidad,
+                    'precio' => $precioTotal,
                     'fechainicia' => now()->format('Ymd'),
-                    'fechacaduca' => now()->addYear()->format('Ymd'),
+                    'fechacaduca' => $licencia->fechacaduca,
                     'periodo' => $periodo
-                ]
-            );
+                ]);
+            }
 
-            // Actualizar campo en licencia
             $licencia->increment($campo, $request->cantidad);
 
-            // Solo actualizar servidor externo si es Web
             if (!$esPC) {
                 $servidor = Servidores::find($licencia->sis_servidoresid);
                 if ($servidor) {
@@ -445,6 +440,8 @@ class AdicionalController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Adicional procesado correctamente',
+                'licencia' => $licencia->fresh(),
+                'adicional' => $adicional->fresh()
             ]);
 
         } catch (\Exception $e) {
