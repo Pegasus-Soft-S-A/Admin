@@ -1,42 +1,56 @@
 @extends('admin.layouts.app')
 @section('contenido')
-<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-    <div class="d-flex flex-column-fluid">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <!--begin::Card-->
-                    <form class="form" action="{{ route('notificaciones.guardar') }}" method="POST">
-                        <div class="card card-custom card-sticky" id="kt_page_sticky_card">
-                            <div class="card-header flex-wrap py-5">
-                                <div class="card-title">
-                                    <h3 class="card-label">Notificaciones </h3>
-                                </div>
-                                <div class="card-toolbar">
-                                    <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="">
-                                        <div class="btn-group" role="group" aria-label="">
+    <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <div class="d-flex flex-column-fluid">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!--begin::Card-->
+                        <form class="form" action="{{ route('notificaciones.guardar') }}" method="POST">
+                            <div class="card card-custom card-sticky" id="kt_page_sticky_card">
+                                <div class="card-header flex-wrap py-5">
+                                    <div class="card-title">
+                                        <h3 class="card-label font-weight-bold text-dark">
+                                            <i class="fas fa-bell text-primary mr-3"></i>Nueva notificación
+                                        </h3>
+                                    </div>
+                                    <div class="card-toolbar">
+                                        <div class="btn-group" role="group">
+                                            <!-- Botón Volver -->
                                             <a href="{{ route('notificaciones.index') }}"
-                                                class="btn btn-secondary btn-icon" data-toggle="tooltip"
-                                                title="Volver"><i class="la la-long-arrow-left"></i></a>
+                                               class="btn btn-secondary font-weight-bold"
+                                               data-toggle="tooltip"
+                                               data-placement="bottom"
+                                               title="Volver al listado de notificaciones">
+                                                <i class="fas fa-arrow-left mr-2"></i>
+                                                <span class="d-none d-sm-inline">Volver</span>
+                                            </a>
 
-                                            <button type="submit" class="btn btn-success btn-icon" data-toggle="tooltip"
-                                                title="Guardar"><i class="la la-save"></i></button>
+                                            <!-- Botón Guardar -->
+                                            <button type="submit"
+                                                    class="btn btn-success font-weight-bold"
+                                                    data-toggle="tooltip"
+                                                    data-placement="bottom"
+                                                    title="Guardar la información de la notificación"
+                                                    id="btn-guardar">
+                                                <i class="fas fa-save mr-2"></i>
+                                                <span class="d-none d-sm-inline">Guardar Notificación</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="card-body">
+
+                                    @include('admin.notificaciones._form')
+
+                                </div>
                             </div>
-
-                            <div class="card-body">
-
-                                @include('admin.notificaciones._form')
-
-                            </div>
-                        </div>
-                        <!--end::Card-->
-                    </form>
+                            <!--end::Card-->
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

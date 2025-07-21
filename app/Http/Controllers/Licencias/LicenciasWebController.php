@@ -7,6 +7,7 @@ use App\Models\Agrupados;
 use App\Models\Clientes;
 use App\Models\Licenciasweb;
 use App\Models\Servidores;
+use App\Services\EmailLicenciaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -55,7 +56,9 @@ class LicenciasWebController extends LicenciasBaseController
                 $request->all()
             );
 
-            $this->enviarEmailWeb($licencia, $request, 'Nuevo Registro Licencia Web');
+            $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
+
+            EmailLicenciaService::enviarLicencia('nuevo', $licencia, $cliente, $request);
 
             flash('Guardado Correctamente')->success();
             return redirect()->route('licencias.Web.editar', [$request['sis_clientesid'], $request->sis_servidoresid, $resultado['license_id']]);
@@ -123,8 +126,10 @@ class LicenciasWebController extends LicenciasBaseController
 
             $licenciaActual = json_decode(json_encode($consultaResult['licenses'][0]));
             $datosOperacion = $this->procesarTipoOperacion($request, $licenciaActual);
+            $tipoOperacion = $request->tipo;
+            $producto = ($request['producto'] == 12) ? 'facturito' : 'web';
 
-            $this->prepararDatosActualizar($request, $licenciaid, $datosOperacion['parametros']);
+            $this->prepararDatosActualizar($request, $licenciaid, $datosOperacion);
 
             $updateResult = $this->externalServerService->updateLicense($servidor, $request->all());
             if (!$updateResult['success']) {
@@ -140,7 +145,18 @@ class LicenciasWebController extends LicenciasBaseController
                 return $licencia->fresh();
             }, 'Licencia Web');
 
-            $this->enviarEmailWeb($licenciaweb, $request, $datosOperacion['asunto']);
+            $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
+
+            $accion = match ($tipoOperacion) {
+                'mes' => 'renovacion_mensual',
+                'anual' => 'renovacion_anual',
+                'recargar' => 'recarga_documentos',
+                'recargar240' => 'recarga_documentos',
+                default => 'modificado'
+            };
+
+            EmailLicenciaService::enviarLicencia($accion, $licenciaweb, $cliente, $request);
+
 
             flash('Actualizado Correctamente')->success();
 
@@ -249,7 +265,7 @@ class LicenciasWebController extends LicenciasBaseController
         }
     }
 
-    private function procesarTipoOperacion(Request $request, $licenciaActual): array
+    private function procesarTipoOperacion(Request $request, $licenciaActual)
     {
         $parametrosJson = json_decode($licenciaActual->parametros_json);
         $asunto = 'Modificar Licencia Web';
@@ -259,13 +275,11 @@ class LicenciasWebController extends LicenciasBaseController
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 month"));
                 $request['fecha_renovacion'] = date('YmdHis', strtotime(now()));
                 $request['periodo'] = 1;
-                $asunto = 'Renovacion Mensual Licencia Web';
                 break;
 
             case 'anual':
                 $request['fecha_renovacion'] = date('YmdHis', strtotime(now()));
                 $request['fechacaduca'] = date("Ymd", strtotime($request->fechacaduca . "+ 1 year"));
-                $asunto = 'Renovacion Anual Licencia Web';
                 if ($request->producto != 12) {
                     $request['periodo'] = 2;
                 } else {
@@ -276,13 +290,11 @@ class LicenciasWebController extends LicenciasBaseController
             case 'recargar':
                 $parametrosJson->Documentos = $parametrosJson->Documentos + 120;
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
-                $asunto = $licenciaActual->producto == 9 ? 'Recarga 120 Documentos Perseo Web Lite' : 'Recarga 120 Documentos Perseo Web Emprendedor';
                 break;
 
             case 'recargar240':
                 $parametrosJson->Documentos = $parametrosJson->Documentos + 240;
                 $request['fechacaduca'] = date('Ymd', strtotime($request->fechacaduca));
-                $asunto = 'Recarga 240 Documentos Perseo Web Emprendedor';
                 break;
 
             default:
@@ -295,7 +307,7 @@ class LicenciasWebController extends LicenciasBaseController
             $parametrosJson = $this->procesarDocumentosFacturito($parametrosJson, $request->periodo);
         }
 
-        return ['asunto' => $asunto, 'parametros' => $parametrosJson];
+        return $parametrosJson;
     }
 
     private function procesarDocumentosFacturito($parametrosJson, $periodo)
@@ -348,45 +360,6 @@ class LicenciasWebController extends LicenciasBaseController
         return xmlwriter_output_memory($xw);
     }
 
-    private function enviarEmailWeb($licencia, Request $request, string $asunto): void
-    {
-        try {
-            $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
-            if (!$cliente) return;
-
-            $datosEmail = [
-                'view' => 'emails.licenciaweb',
-                'from' => env('MAIL_FROM_ADDRESS'),
-                'subject' => $asunto,
-                'cliente' => $cliente->nombres,
-                'vendedor' => $cliente->razonsocial ?? '',
-                'identificacion' => $cliente->identificacion,
-                'correos' => $cliente->correos,
-                'numerocontrato' => $licencia['numerocontrato'],
-                'producto' => $licencia['producto'],
-                'distribuidor' => $cliente->nombredistribuidor ?? '',
-                'periodo' => $this->obtenerDescripcionPeriodo($request['producto'], $request['periodo'] ?? null),
-                'fechainicia' => date("d-m-Y", strtotime($licencia['fechainicia'])),
-                'fechacaduca' => date("d-m-Y", strtotime($licencia['fechacaduca'])),
-                'empresas' => $licencia['empresas'],
-                'numeromoviles' => $licencia['numeromoviles'],
-                'usuarios' => $licencia['usuarios'],
-                'modulos' => json_decode(json_encode(simplexml_load_string($licencia['modulos']))),
-                'usuario' => Auth::user()->nombres,
-                'fecha' => $licencia['fechacreacion'] ?? date("Y-m-d H:i:s", strtotime($request['fechamodificacion'] ?? now())),
-                'tipo' => $request['producto'] == 12 ? (str_contains($asunto, 'Nuevo') ? 7 : 8) : (str_contains($asunto, 'Nuevo') ? 1 : 3),
-            ];
-
-            $emails = $this->prepararEmailsDestinatarios($cliente);
-
-            if (config('app.env') !== 'local' && !empty($emails)) {
-                Mail::to($emails)->queue(new enviarlicencia($datosEmail));
-            }
-
-        } catch (\Exception $e) {
-            \Log::warning('Error enviando email Web: ' . $e->getMessage());
-        }
-    }
 
     private function obtenerDescripcionPeriodo($producto, $periodo): string
     {
@@ -402,41 +375,9 @@ class LicenciasWebController extends LicenciasBaseController
 
     public function enviarEmail($clienteId, $productoId)
     {
-        try {
-            $cliente = Clientes::select('sis_clientes.nombres', 'sis_clientes.identificacion', 'sis_clientes.correos', 'sis_distribuidores.correos as distribuidor')
-                ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
-                ->where('sis_clientesid', $clienteId)
-                ->first();
+        $result = EmailLicenciaService::enviarCredenciales($clienteId, $productoId);
 
-            if (!$cliente) {
-                flash('Cliente no encontrado')->error();
-                return back();
-            }
-
-            $datosEmail = [
-                'from' => env('MAIL_FROM_ADDRESS'),
-                'subject' => 'Envio Credenciales',
-                'nombre' => $cliente->nombres,
-                'usuario' => $cliente->identificacion,
-                'view' => $productoId == 12 ? 'emails.envio_credenciales_facturito' : 'emails.envio_credenciales',
-                'tipo' => $productoId == 12 ? 9 : 5,
-            ];
-
-            $emails = array_filter(array_merge(
-                explode(", ", $cliente->distribuidor ?? ''),
-                [$cliente->correos]
-            ), fn($email) => !empty(trim($email)));
-
-            if (config('app.env') !== 'local' && !empty($emails)) {
-                Mail::to($emails)->queue(new enviarlicencia($datosEmail));
-            }
-
-            flash('Correo Enviado Correctamente')->success();
-
-        } catch (\Exception $e) {
-            flash('Error enviando email: ' . $e->getMessage())->error();
-        }
-
+        flash($result['message'])->{$result['success'] ? 'success' : 'error'}();
         return back();
     }
 
@@ -449,9 +390,31 @@ class LicenciasWebController extends LicenciasBaseController
                 $cliente->identificacion
             );
 
-            return $resultado['success'] ?
-                ['mensaje' => 'Clave Reseteada Correctamente', 'tipo' => 'success'] :
-                ['mensaje' => $resultado['error'], 'tipo' => 'warning'];
+            if ($resultado['success']) {
+                $licencia = Licenciasweb::where('sis_licenciasid', $licenciaid)
+                    ->where('sis_servidoresid', $servidor->sis_servidoresid)
+                    ->where('sis_clientesid', $cliente->sis_clientesid)
+                    ->first();
+
+                $productoId = $licencia ? $licencia->producto : 0;
+
+                // ENVIAR EMAIL DE CREDENCIALES SIMPLES
+                $emailResult = EmailLicenciaService::enviarCredenciales(
+                    $cliente->sis_clientesid,
+                    $productoId,
+                    'simples'
+                );
+
+                return [
+                    'mensaje' => 'Clave reseteada correctamente. Se han enviado las nuevas credenciales por email.',
+                    'tipo' => 'success'
+                ];
+            }
+
+            return [
+                'mensaje' => $resultado['error'],
+                'tipo' => 'warning'
+            ];
 
         } catch (\Exception $e) {
             return ['mensaje' => 'Error al resetear clave: ' . $e->getMessage(), 'tipo' => 'error'];

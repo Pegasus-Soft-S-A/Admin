@@ -1,30 +1,40 @@
-<!doctype html>
-<html>
-
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-    <title>Licencia Web</title>
-
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Licencia Web - Perseo Software</title>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <style type="text/css">
-        #outlook a {
-            padding: 0;
-        }
-
-        body {
+    <style>
+        * {
             margin: 0;
             padding: 0;
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
+            box-sizing: border-box;
         }
 
-        table,
-        td {
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: 100% !important;
+            width: 100% !important;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        table {
             border-collapse: collapse;
             mso-table-lspace: 0pt;
             mso-table-rspace: 0pt;
+            border-spacing: 0;
+        }
+
+        td {
+            border-collapse: collapse;
+            mso-line-height-rule: exactly;
+            vertical-align: top;
         }
 
         img {
@@ -34,548 +44,388 @@
             outline: none;
             text-decoration: none;
             -ms-interpolation-mode: bicubic;
-        }
-
-        p {
+            max-width: 100%;
             display: block;
-            margin: 13px 0;
         }
-    </style>
 
-    <style type="text/css">
-        @media only screen and (min-width:480px) {
-            .mj-column-per-100 {
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            text-align: center;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .header img {
+            width: 140px;
+            height: auto;
+            margin: 0 auto;
+            transition: transform 0.3s ease;
+        }
+
+        .header img:hover {
+            transform: scale(1.05);
+        }
+
+        .content {
+            padding: 20px 15px;
+            background-color: #f9fafb;
+        }
+
+        .intro-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .license-type {
+            color: #1d6ea9;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .two-columns {
+            display: block !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .two-columns .column {
+            width: 100% !important;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .section-title {
+            color: #1d6ea9;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-row {
+            display: flex;
+            margin: 5px 0;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #2d3748;
+            width: 40%;
+            min-width: 40%;
+        }
+
+        .info-value {
+            color: #4a5568;
+            flex: 1;
+        }
+
+        .modules-list {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.6;
+            text-align: center;
+            margin: 10px 0 20px;
+            word-wrap: break-word;
+            font-weight: 700;
+        }
+
+        .modules-list span {
+            background-color: #edf2f7;
+            padding: 4px 6px;
+            border-radius: 4px;
+            margin: 0 2px;
+            display: inline-block;
+        }
+
+        .modules-list span:not(:last-child):after {
+            content: " -";
+            margin-left: 2px;
+        }
+
+        .creation-info {
+            background-color: #e2e8f0;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .creation-title {
+            color: #1d6ea9;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .creation-details {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            text-align: center;
+            padding: 15px;
+            color: #e2e8f0;
+        }
+
+        .social-links {
+            margin-bottom: 8px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: scale(1.1);
+        }
+
+        .social-links img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            line-height: 1.4;
+            margin: 5px 0;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .email-container {
                 width: 100% !important;
-                max-width: 100%;
+                border-radius: 0 !important;
+            }
+
+            .content {
+                padding: 15px 10px !important;
+            }
+
+            .header {
+                padding: 15px !important;
+            }
+
+            .header img {
+                width: 120px !important;
+            }
+
+            .info-label {
+                width: 50% !important;
+                min-width: 50% !important;
+            }
+
+            .license-type {
+                font-size: 16px !important;
             }
         }
-    </style>
-    <style media="screen and (min-width:480px)">
-        .moz-text-html .mj-column-per-100 {
-            width: 100% !important;
-            max-width: 100%;
-        }
-    </style>
-    <style type="text/css">
-        [owa] .mj-column-per-100 {
-            width: 100% !important;
-            max-width: 100%;
-        }
-    </style>
-    <style type="text/css">
-        @media only screen and (max-width:480px) {
-            table.mj-full-width-mobile {
-                width: 100% !important;
+
+        @media (prefers-color-scheme: dark) {
+            .email-container {
+                background-color: #1a202c !important;
             }
 
-            td.mj-full-width-mobile {
-                width: auto !important;
+            .content {
+                background-color: #2d3748 !important;
+                color: #e2e8f0 !important;
+            }
+
+            .column {
+                background-color: #2d3748 !important;
+            }
+
+            .info-label, .info-value, .creation-details {
+                color: #e2e8f0 !important;
+            }
+
+            .modules-list span {
+                background-color: #4a5568 !important;
+                color: #e2e8f0 !important;
+            }
+
+            .creation-info {
+                background-color: #4a5568 !important;
             }
         }
     </style>
 </head>
 
-<body style="word-spacing:normal;background-color:#F4F4F4;">
-    <div style="background-color:#F4F4F4;">
-        <div style="background:#FFFFFF;background-color:#FFFFFF;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#FFFFFF;background-color:#FFFFFF;width:100%;">
-                <tbody>
-                    <tr>
-                        <td style="direction:ltr;font-size:0px;padding:0 0 0px 0;padding-bottom:0px;text-align:center;">
-                            <div class="mj-column-per-100 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td style="vertical-align:top;padding:0 0 0 0;">
-                                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                                    width="100%">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#ffffff;font-size:0px;padding:0px 0px 0px 0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 4px #bcdefb;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#000000;font-size:0px;padding:25px 25px 24px 25px;padding-top:25px;padding-right:25px;padding-bottom:24px;padding-left:25px;word-break:break-word;">
-                                                                <table border="0" cellpadding="0" cellspacing="0"
-                                                                    role="presentation"
-                                                                    style="border-collapse:collapse;border-spacing:0px;">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td style="width:200px;"><img alt=""
-                                                                                    height="auto"
-                                                                                    src="{{ $message->embed(public_path() . '/assets/media/logo.png') }}"
-                                                                                    style="border:none;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;"
-                                                                                    width="200"></td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 2px #E6E6E6;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                            </td>
-                                                        </tr>
+<body
+    style="margin: 0; padding: 0; background-color: #edf2f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
 
-
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div style="background:#ffffff;background-color:#ffffff;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#ffffff;background-color:#ffffff;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:20px 0px 20px 0px;padding-left:0px;padding-right:0px;text-align:center;">
-                            <div class="mj-column-per-100 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:10px 25px;padding-top:0px;padding-bottom:0px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="JnKFIFS0T"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        @if ($array['tipo'] == 1)
-                                                        <span style="font-family:Arial; text-color:#000000">Se ha
-                                                            registrado una nueva
-                                                            licencia de
-                                                        </span>
-                                                        @endif
-                                                        @if ($array['tipo'] == 3)
-                                                        <span style="font-family:Arial; text-color:#000000">Se ha
-                                                            modificado una licencia de licencia de
-
-                                                        </span>
-                                                        @endif
-
-                                                        <span
-                                                            style="font-family:Arial;font-size:16px;text-color:#000000"><b>
-                                                                Perseo Software Web </b></span>
-
-                                                        <span
-                                                            style="font-family:Arial;font-size:14px; text-color:#000000">con
-                                                            los
-                                                            siguientes datos:
-                                                        </span>
-
-
-                                                        <span style="font-family:Arial;font-size:16px; ">
-
-                                                            <ul class="list-group">
-
-                                                                <table style="margin: auto">
-                                                                    <tr style="width: 100%">
-                                                                        <td>
-                                                                            Cliente:
-                                                                        </td>
-                                                                        <td style="width: 65%">
-                                                                            {{ $array['cliente'] }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-                                                                            Identificación:
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ $array['identificacion'] }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-                                                                            Correo:
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ $array['correos'] }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-                                                                            N° Contrato:
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ $array['numerocontrato'] }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-                                                                            Producto
-                                                                        </td>
-                                                                        <td>
-                                                                            @if ($array['producto'] == 2)
-                                                                            Facturación
-                                                                            @elseif($array['producto'] == 3)
-                                                                            Servicios
-                                                                            @elseif ($array['producto'] == 4)
-                                                                            Comercial
-                                                                            @elseif($array['producto'] == 5)
-                                                                            Soy Contador Comercial
-                                                                            @elseif($array['producto'] == 6)
-                                                                            Perseo Lite
-                                                                            @elseif($array['producto'] == 8)
-                                                                            Soy Contador Servicios
-                                                                            @elseif($array['producto'] == 9)
-                                                                            Perseo Lite
-                                                                            @elseif($array['producto'] == 10)
-                                                                            Emprendedor
-                                                                            @elseif($array['producto'] == 11)
-                                                                            Socio Perseo
-                                                                            @elseif($array['producto'] == 12)
-                                                                            Facturito
-                                                                            @endif
-
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-                                                                            Periodo:
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ $array['periodo'] }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-                                                                            Fecha Inicio:
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ $array['fechainicia'] }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-
-                                                                            Fecha Caducidad:
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ $array['fechacaduca'] }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-
-                                                                            N° Empresas:
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ $array['empresas'] }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-
-                                                                            N° Móviles:
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ $array['numeromoviles'] }}
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-
-                                                                            N° Usuarios:
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ $array['usuarios'] }}
-                                                                        </td>
-                                                                    </tr>
-
-                                                                    <tr>
-                                                                        <td style="padding-top: 8px">
-
-                                                                            Vendedor:
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ $array['vendedor'] }}
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-
-
-                                                            </ul>
-                                                        </span>
-
-                                                    <p
-                                                        style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center; margin-top:5%">
-                                                        <b>Módulos</b>
-                                                    </p>
-
-                                                    <ul>
-
-                                                        @if ($array['modulos']->nomina != 0)
-                                                        <li style="margin-top: 5px ">
-                                                            Nómina
-                                                        </li>
-                                                        @endif
-                                                        @if ($array['modulos']->activos != 0)
-                                                        <li style="margin-top: 5px ">
-                                                            Activos Fijos
-                                                        </li>
-                                                        @endif
-                                                        @if ($array['modulos']->produccion != 0)
-                                                        <li style="margin-top: 5px ">
-                                                            Producción
-                                                        </li>
-                                                        @endif
-                                                        @if ($array['modulos']->restaurantes != 0)
-                                                        <li style="margin-top: 5px ">
-                                                            Restaurantes
-                                                        </li>
-                                                        @endif
-                                                        @if ($array['modulos']->talleres != 0)
-                                                        <li style="margin-top: 5px ">
-                                                            Talleres
-                                                        </li>
-                                                        @endif
-                                                        @if ($array['modulos']->garantias != 0)
-                                                        <li style="margin-top: 5px ">
-                                                            Garantias
-                                                        </li>
-                                                        @endif
-                                                        @if ($array['modulos']->ecommerce != 0)
-                                                        <li style="margin-top: 5px ">
-                                                            Ecommerce
-                                                        </li>
-                                                        @endif
-                                                    </ul>
-                                                    @if ($array['tipo'] == 1)
-                                                    <p
-                                                        style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center">
-                                                        <b>Creación</b>
-                                                    </p>
-                                                    @endif
-
-                                                    @if ($array['tipo'] == 3)
-                                                    <p
-                                                        style="color:#1d6ea9;font-family:Arial;font-size:14px; text-align: center">
-                                                        <b>Modificación</b>
-                                                    </p>
-                                                    @endif
-
-                                                    <ul class="list-group">
-                                                        <table style="width: 60%;">
-                                                            <tr style="width: 100%">
-                                                                <th style="width: 25%">
-
-                                                                    Usuario:
-
-                                                                </th>
-                                                                <td>
-                                                                    {{ $array['usuario'] }}
-                                                                </td>
-                                                            </tr>
-
-                                                            <tr>
-                                                                <th>
-
-                                                                    Fecha:
-
-                                                                </th>
-                                                                <td>
-                                                                    {{ $array['fecha'] }}
-                                                                </td>
-
-                                                            </tr>
-                                                        </table>
-                                                    </ul>
-
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div style="background:#ffffff;background-color:#ffffff;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#ffffff;background-color:#ffffff;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <div class="mj-column-per-100 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td style="vertical-align:top;padding:0 0 0 0;">
-                                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                                    width="100%">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#ffffff;font-size:0px;padding:0px 1px 0px 1px;padding-top:0px;padding-right:1px;padding-bottom:0px;padding-left:1px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 3px #cbe7ff;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                                >
-                                                            </td>
-                                                        </tr>
-
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#ffffff;font-size:0px;padding:0px 1px 0px 1px;padding-top:0px;padding-right:1px;padding-bottom:0px;padding-left:1px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 3px #cbe7ff;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-
-                                                            </td>
-                                                        </tr>
-
-
-
-
-
-                                                        <td align="center"
-                                                            style="background:#000000;font-size:0px;padding:2px 25px 1px 25px;padding-top:5px;padding-right:25px;padding-bottom:1px;padding-left:25px;word-break:break-word;">
-                                                            <table align="center" border="0" cellpadding="0"
-                                                                cellspacing="0" role="presentation"
-                                                                style="float:none;display:inline-table;">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td style="padding:4px;vertical-align:middle;">
-                                                                            <table border="0" cellpadding="0"
-                                                                                cellspacing="0" role="presentation"
-                                                                                style="background:#3B5998;border-radius:50%;width:27;">
-                                                                                <tbody>
-                                                                                    <tr>
-                                                                                        <td
-                                                                                            style="padding:0px 0px 0px 0px;font-size:0;height:27;vertical-align:middle;width:27;">
-                                                                                            <a href="https://www.facebook.com/sistemacontableperseoec"
-                                                                                                target="_blank"><img
-                                                                                                    height="27"
-                                                                                                    src="{{ $message->embed(public_path() . '/assets/media/facebook.png') }}"
-                                                                                                    style="border-radius:50%;display:block;"
-                                                                                                    width="27"></a>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                            <table align="center" border="0" cellpadding="0"
-                                                                cellspacing="0" role="presentation"
-                                                                style="float:none;display:inline-table;">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td style="padding:4px;vertical-align:middle;">
-                                                                            <table border="0" cellpadding="0"
-                                                                                cellspacing="0" role="presentation"
-                                                                                style="background:#FF0000;border-radius:50%;width:27;">
-                                                                                <tbody>
-                                                                                    <tr>
-                                                                                        <td
-                                                                                            style="padding:0px 0px 0px 0px;font-size:0;height:27;vertical-align:middle;width:27;">
-                                                                                            <a href="https://www.youtube.com/channel/UC5vW4mwvCNbWpCxRr_aqI7g"
-                                                                                                target="_blank"><img
-                                                                                                    height="27"
-                                                                                                    src="{{ $message->embed(public_path() . '/assets/media/youtube.png') }}"
-                                                                                                    style="border-radius:50%;display:block;"
-                                                                                                    width="27"></a>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                            <table align="center" border="0" cellpadding="0"
-                                                                cellspacing="0" role="presentation"
-                                                                style="float:none;display:inline-table;">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td style="padding:4px;vertical-align:middle;">
-                                                                            <table border="0" cellpadding="0"
-                                                                                cellspacing="0" role="presentation"
-                                                                                style="background:#405DE6;border-radius:50%;width:27;">
-                                                                                <tbody>
-                                                                                    <tr>
-                                                                                        <td
-                                                                                            style="padding:0px 0px 0px 0px;font-size:0;height:27;vertical-align:middle;width:27;">
-                                                                                            <a href="https://www.instagram.com/sistemacontableperseoec/?hl=es"
-                                                                                                target="_blank"><img
-                                                                                                    height="27"
-                                                                                                    src="{{ $message->embed(public_path() . '/assets/media/instagram.png') }}"
-                                                                                                    style="border-radius:50%;display:block;"
-                                                                                                    width="27"></a>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </td>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td align="left"
-                                                style="background:#000000;font-size:0px;padding:0px 25px 0px 25px;padding-top:0px;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:9px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content"
-                                                        style="line-height: 12px; text-align: center; margin: 10px 0; margin-top: 10px;"
-                                                        data-testid="rT12D2vRv"><span
-                                                            style="color:#ffffff;font-family:Arial;font-size:9px;">©
-                                                            {{ date('Y') }} PERSEO. ALL RIGHTS RESERVED</span></p>
-                                                    <p class="text-build-content"
-                                                        style="line-height: 12px; text-align: center; margin: 10px 0; margin-bottom: 10px;"
-                                                        data-testid="rT12D2vRv"><span
-                                                            style="color:#ffffff;font-family:Arial;font-size:9px;">Quito-
-                                                            Ecuador</span></p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td align="center"
-                                                style="background:#ffffff;font-size:0px;padding:3px 0px 1px 0px;padding-top:3px;padding-right:0px;padding-bottom:1px;padding-left:0px;word-break:break-word;">
-                                                <p
-                                                    style="border-top:solid 4px #bcdefb;font-size:1px;margin:0px auto;width:100%;">
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-
+<div class="email-container">
+    <!-- Header -->
+    <div class="header">
+        @if($array['producto'] == 'facturito')
+            <img src="{{ $message->embed(public_path() . '/assets/media/logoFacturito.png') }}" alt="Facturito" width="140" height="auto">
+        @else
+            <img src="{{ $message->embed(public_path() . '/assets/media/logo.png') }}" alt="Perseo Software" width="140" height="auto">
+        @endif
     </div>
-</body>
 
+    <!-- Content -->
+    <div class="content">
+        <!-- Intro text -->
+        <div class="intro-text">
+            <strong>{{ $array['titulo'] }}</strong>
+            <br>
+            <span class="license-type">
+                @if($array['producto'] == 'facturito')
+                    Facturito
+                @else
+                    Perseo Software Web
+                @endif
+            </span>
+        </div>
+
+        <!-- Two-column info -->
+        <div class="two-columns">
+            <!-- Left column: Client info -->
+            <div class="column">
+                <div class="section-title">Información del Cliente</div>
+                <div class="info-row">
+                    <span class="info-label">Cliente:</span>
+                    <span class="info-value">{{ $array['cliente'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Identificación:</span>
+                    <span class="info-value">{{ $array['identificacion'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Correo:</span>
+                    <span class="info-value">{{ $array['correo'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">N° Contrato:</span>
+                    <span class="info-value"><strong>{{ $array['numerocontrato'] }}</strong></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Producto:</span>
+                    <span class="info-value">
+                        <strong style="color: #1d6ea9;">
+                          @php
+                              $productoNombre = collect([
+                                  2 => 'Facturación',
+                                  3 => 'Servicios',
+                                  4 => 'Comercial',
+                                  5 => 'Soy Contador Comercial',
+                                  6 => 'Perseo Lite',
+                                  8 => 'Soy Contador Servicios',
+                                  9 => 'Perseo Lite',
+                                  10 => 'Emprendedor',
+                                  11 => 'Socio Perseo',
+                                  12 => 'Facturito'
+                              ])->get($array['tipo_producto'], 'No definido');
+                          @endphp
+                            {{ $productoNombre }}
+                        </strong>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Right column: License config -->
+            <div class="column">
+                <div class="section-title">Configuración de Licencia</div>
+                <div class="info-row">
+                    <span class="info-label">Periodo:</span>
+                    <span class="info-value">{{ $array['periodo'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Fecha Inicio:</span>
+                    <span class="info-value">{{ $array['fechainicia'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Fecha Caducidad:</span>
+                    <span class="info-value">{{ $array['fechacaduca'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">N° Empresas:</span>
+                    <span class="info-value">{{ $array['empresas'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">N° Usuarios:</span>
+                    <span class="info-value">{{ $array['usuarios'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">N° Móviles:</span>
+                    <span class="info-value">{{ $array['numeromoviles'] }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modules section -->
+        @php
+            $hasModules = false;
+            $modulesList = [];
+
+            if ($array['modulos']->nomina != 0) { $modulesList[] = 'Nómina'; $hasModules = true; }
+            if ($array['modulos']->activos != 0) { $modulesList[] = 'Activos Fijos'; $hasModules = true; }
+            if ($array['modulos']->produccion != 0) { $modulesList[] = 'Producción'; $hasModules = true; }
+            if ($array['modulos']->restaurantes != 0) { $modulesList[] = 'Restaurantes'; $hasModules = true; }
+            if ($array['modulos']->talleres != 0) { $modulesList[] = 'Talleres'; $hasModules = true; }
+            if ($array['modulos']->garantias != 0) { $modulesList[] = 'Garantías'; $hasModules = true; }
+            if ($array['modulos']->ecommerce != 0) { $modulesList[] = 'Ecommerce'; $hasModules = true; }
+        @endphp
+
+        @if ($hasModules)
+            <div class="section-title">Módulos</div>
+            <div class="modules-list">
+                @foreach($modulesList as $module)
+                    <span>{{ $module }}</span>
+                @endforeach
+            </div>
+        @endif
+
+        <!-- Creation/Modification info -->
+        <div class="creation-info">
+            <div class="creation-title">
+                {{ $array['accion'] }}
+            </div>
+            <div class="creation-details">
+                <strong>Usuario:</strong> {{ $array['usuario'] }} |
+                <strong>Fecha:</strong> {{ $array['fecha'] }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="social-links">
+            <a href="https://www.facebook.com/sistemacontableperseoec" target="_blank">
+                <img src="{{ $message->embed(public_path() . '/assets/media/facebook.png') }}" alt="Facebook">
+            </a>
+            <a href="https://www.youtube.com/channel/UC5vW4mwvCNbWpCxRr_aqI7g" target="_blank">
+                <img src="{{ $message->embed(public_path() . '/assets/media/youtube.png') }}" alt="YouTube">
+            </a>
+            <a href="https://www.instagram.com/sistemacontableperseoec/?hl=es" target="_blank">
+                <img src="{{ $message->embed(public_path() . '/assets/media/instagram.png') }}" alt="Instagram">
+            </a>
+        </div>
+        <div class="footer-text">© {{ date('Y') }} PERSEO. Todos los derechos reservados | Quito - Ecuador</div>
+    </div>
+</div>
+
+</body>
 </html>

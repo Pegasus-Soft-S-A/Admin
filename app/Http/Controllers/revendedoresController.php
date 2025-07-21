@@ -147,4 +147,13 @@ class revendedoresController extends Controller
         flash("Eliminado Correctamente")->success();
         return back();
     }
+
+    //API
+    public function vendedores_consulta(Request $request)
+    {
+        $identificacionIngresada = substr($request->identificacion, 0, 10);
+        $vendedor = Revendedores::whereIn('identificacion', [$identificacionIngresada, $request->identificacion, $request->identificacion . '001'])->first();
+
+        return json_encode(["vendedor" => [$vendedor]]);
+    }
 }

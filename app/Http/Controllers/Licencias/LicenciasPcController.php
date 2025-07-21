@@ -7,6 +7,7 @@ use App\Models\Adicionales;
 use App\Models\Clientes;
 use App\Models\Licencias;
 use App\Models\Servidores;
+use App\Services\EmailLicenciaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -73,7 +74,9 @@ class LicenciasPcController extends LicenciasBaseController
                 $request->all()
             );
 
-            $this->enviarEmailPC($licencia, 'Nuevo Registro Licencia PC', '2');
+            $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
+
+            EmailLicenciaService::enviarLicencia('nuevo', $licencia, $cliente);
 
             flash('Guardado Correctamente')->success();
             return redirect()->route('licencias.Pc.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
@@ -122,7 +125,8 @@ class LicenciasPcController extends LicenciasBaseController
             return redirect()->back()->withInput();
         }
 
-        $asunto = $this->prepararDatosActualizar($request);
+        $tipoOperacion = $request->tipo;
+        $this->prepararDatosActualizar($request);
 
         try {
             $servidor = Servidores::where('sis_servidoresid', 4)->firstOrFail();
@@ -138,9 +142,17 @@ class LicenciasPcController extends LicenciasBaseController
                 return $licencia->fresh();
             }, 'Licencia PC');
 
-            $this->enviarEmailPC($licenciaActualizada, $asunto, '4');
+            $cliente = $this->obtenerDatosClienteEmail($licencia->sis_clientesid);
 
-            flash('Actualizada Correctamente')->success();
+            $accion = match ($tipoOperacion) {
+                'mes' => 'renovacion_mensual',
+                'anual' => 'renovacion_anual',
+                'actualizacion' => 'renovacion_anual',
+                default => 'modificado'
+            };
+
+            EmailLicenciaService::enviarLicencia($accion, $licenciaActualizada, $cliente);
+            flash('Actualizado Correctamente')->success();
 
         } catch (\Exception $e) {
             flash('Error al actualizar la licencia: ' . $e->getMessage())->error();
@@ -234,15 +246,16 @@ class LicenciasPcController extends LicenciasBaseController
         $this->procesarModulos($request);
     }
 
-    private function prepararDatosActualizar(Request $request): string
+    private function prepararDatosActualizar(Request $request): void
     {
         $fechaActual = now();
         $usuarioActual = Auth::user();
 
+        // Configuración de fechas según tipo de operación
         $tiposActualizacion = [
-            'mes' => ['fechacaduca' => '+ 1 month', 'actualizaciones' => '+ 1 month', 'asunto' => 'Renovación Mensual Perseo PC'],
-            'anual' => ['fechacaduca' => '+ 1 year', 'actualizaciones' => '+ 1 year', 'asunto' => 'Renovación Anual Perseo PC'],
-            'actualizacion' => ['fechacaduca' => null, 'actualizaciones' => '+ 1 year', 'asunto' => 'Actualización Anual Perseo PC']
+            'mes' => ['fechacaduca' => '+ 1 month', 'actualizaciones' => '+ 1 month'],
+            'anual' => ['fechacaduca' => '+ 1 year', 'actualizaciones' => '+ 1 year'],
+            'actualizacion' => ['fechacaduca' => null, 'actualizaciones' => '+ 1 year']
         ];
 
         $tipo = $request->tipo ?? 'default';
@@ -253,11 +266,9 @@ class LicenciasPcController extends LicenciasBaseController
                 ? date("Y-m-d", strtotime($request->fechacaduca . ' ' . $config['fechacaduca']))
                 : date('Y-m-d', strtotime($request->fechacaduca));
             $fechaActualizaciones = date('Y-m-d', strtotime($request->fechaactulizaciones . ' ' . $config['actualizaciones']));
-            $asunto = $config['asunto'];
         } else {
             $fechaCaduca = date('Y-m-d', strtotime($request->fechacaduca));
             $fechaActualizaciones = date('Y-m-d', strtotime($request->fechaactulizaciones));
-            $asunto = 'Modificación Registro Licencia PC';
         }
 
         $request->merge([
@@ -270,7 +281,6 @@ class LicenciasPcController extends LicenciasBaseController
         ]);
 
         $this->procesarModulos($request);
-        return $asunto;
     }
 
     private function procesarModulos(Request $request): void
@@ -316,54 +326,4 @@ class LicenciasPcController extends LicenciasBaseController
         }
     }
 
-    private function enviarEmailPC(Licencias $licencia, string $asunto, string $tipo): void
-    {
-        try {
-            $cliente = $this->obtenerDatosClienteEmail($licencia->sis_clientesid);
-            if (!$cliente) {
-                \Log::warning('Cliente no encontrado para envío de email PC', ['licencia_id' => $licencia->sis_licenciasid]);
-                return;
-            }
-
-            $datosEmail = [
-                'view' => 'emails.licenciapc',
-                'from' => env('MAIL_FROM_ADDRESS'),
-                'subject' => $asunto,
-                'cliente' => $cliente->nombres,
-                'identificacion' => $cliente->identificacion,
-                'correo' => $cliente->correos,
-                'numerocontrato' => $licencia->numerocontrato,
-                'identificador' => $licencia->Identificador,
-                'modulopractico' => $licencia->modulopractico,
-                'modulocontable' => $licencia->modulocontable,
-                'modulocontrol' => $licencia->modulocontrol,
-                'modulonube' => $licencia->modulonube,
-                'tipo_nube' => $licencia->tipo_nube,
-                'nivel_nube' => $licencia->nivel_nube,
-                'ipservidor' => $licencia->ipservidor,
-                'ipservidorremoto' => $licencia->ipservidorremoto,
-                'numeroequipos' => $licencia->numeroequipos,
-                'numeromoviles' => $licencia->numeromoviles,
-                'numerosucursales' => $licencia->numerosucursales,
-                'modulos' => json_decode($licencia->modulos),
-                'usuario' => Auth::user()->nombres,
-                'fecha' => $licencia->fechacreacion ?? $licencia->fechamodificacion,
-                'tipo' => $tipo,
-                'fechaactulizaciones' => $licencia->fechaactulizaciones,
-            ];
-
-            $emails = $this->prepararEmailsDestinatarios($cliente);
-
-            if (config('app.env') !== 'local' && !empty($emails)) {
-                Mail::to($emails)->queue(new enviarlicencia($datosEmail));
-            }
-
-        } catch (\Exception $e) {
-            \Log::warning('Error enviando email PC: ' . $e->getMessage(), [
-                'licencia_id' => $licencia->sis_licenciasid,
-                'asunto' => $asunto
-            ]);
-            // No interrumpir el proceso principal
-        }
-    }
 }

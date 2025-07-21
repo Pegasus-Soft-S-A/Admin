@@ -869,17 +869,21 @@
         manejarEnvioFormulario(e) {
             e.preventDefault();
 
-            const $btn = $(e.target);
             const $form = $('#formulario');
-
-            // Cambiar estado del botón
-            $btn.html(`
-            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            Procesando...
-        `).prop('disabled', true);
-
+            this.mostrarSpinnerGuardar();
             // Enviar formulario
             $form.submit();
+        },
+
+        mostrarSpinnerGuardar() {
+            const btnGuardar = $('button[type="submit"]');
+            const textoOriginal = btnGuardar.html() || btnGuardar.val();
+
+            // Guardar texto original y mostrar spinner
+            btnGuardar.data('texto-original', textoOriginal);
+            btnGuardar.prop('disabled', true);
+            btnGuardar.html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+
         },
 
         // ====================================

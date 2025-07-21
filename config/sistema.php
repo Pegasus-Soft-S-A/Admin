@@ -182,6 +182,89 @@ return [
         ]
     ],
 
+    'emails' => [
+        'acciones' => [
+            'nuevo' => [
+                'titulo' => 'Nueva licencia:',
+                'accion' => 'Creación'
+            ],
+            'modificado' => [
+                'titulo' => 'Licencia modificada:',
+                'accion' => 'Modificación'
+            ],
+            'renovacion_mensual' => [
+                'titulo' => 'Renovación mensual:',
+                'accion' => 'Renovación'
+            ],
+            'renovacion_anual' => [
+                'titulo' => 'Renovación anual:',
+                'accion' => 'Renovación'
+            ],
+            'recarga_documentos' => [
+                'titulo' => 'Recarga de documentos:',
+                'accion' => 'Recarga'
+            ],
+            'credenciales' => [
+                'titulo' => 'Credenciales de acceso:',
+                'accion' => 'Envío de credenciales'
+            ],
+            'credenciales_simples' => [
+                'titulo' => 'Recordatorio de credenciales:',
+                'accion' => 'Credenciales de acceso'
+            ],
+        ],
+
+        'productos' => [
+            'web' => [
+                'nombre' => 'Licencia Web',
+                'plantilla' => 'emails.licenciaweb'
+            ],
+            'facturito' => [
+                'nombre' => 'Licencia Facturito',
+                'plantilla' => 'emails.licenciaweb'
+            ],
+            'pc' => [
+                'nombre' => 'Licencia PC',
+                'plantilla' => 'emails.licenciapc'
+            ],
+            'credenciales_web' => [
+                'nombre' => 'Perseo Web',
+                'plantilla' => 'emails.credenciales'
+            ],
+            'credenciales_facturito' => [
+                'nombre' => 'Facturito',
+                'plantilla' => 'emails.credenciales'
+            ],
+            'credenciales_simples_web' => [
+                'nombre' => 'Perseo Web',
+                'plantilla' => 'emails.credenciales'
+            ],
+            'credenciales_simples_facturito' => [
+                'nombre' => 'Facturito',
+                'plantilla' => 'emails.credenciales'
+            ],
+        ],
+
+        'subjects' => [
+            'nuevo' => 'Nueva {producto}',
+            'modificado' => '{producto} Modificada',
+            'renovacion_mensual' => 'Renovación Mensual {producto}',
+            'renovacion_anual' => 'Renovación Anual {producto}',
+            'recarga_documentos' => 'Recarga de Documentos {producto}',
+            'credenciales' => 'Credenciales de Acceso {producto}',
+            'credenciales_simples' => 'Recordatorio Credenciales {producto}'
+
+        ],
+        // Configuración para attachments
+        'attachments' => [
+            'credenciales' => [
+                'public_path/assets/media/Procedimiento Ingreso.pdf',
+                'public_path/assets/media/Términos y Condiciones.pdf'
+            ]
+        ]
+    ],
+
+
     'productos' => [
         'web' => [
             2 => [ // Facturación

@@ -233,44 +233,73 @@ class ExternalServerService
     /**
      * Operación batch para múltiples servidores
      */
-    public function batchOperation($servidores, string $operation, array $data, callable $successCallback = null): array
+    public function batchOperation($servidores, string $operation, array $data, bool $rollbackOnFailure = true): array
     {
         if ($this->localMode) {
             return ['success' => true, 'successful_operations' => count($servidores)];
         }
 
         $successfulOperations = [];
-        $unavailableServers = $this->checkMultipleServersAvailability($servidores);
+        $failedOperations = [];
 
+        // Verificar disponibilidad
+        $unavailableServers = $this->checkMultipleServersAvailability($servidores);
         if (!empty($unavailableServers)) {
-            return ['success' => false, 'error' => 'Servidores no disponibles: ' . implode(', ', $unavailableServers), 'unavailable_servers' => $unavailableServers];
+            return [
+                'success' => false,
+                'error' => 'Servidores no disponibles: ' . implode(', ', $unavailableServers),
+                'unavailable_servers' => $unavailableServers
+            ];
         }
 
         try {
             foreach ($servidores as $servidor) {
-                $result = match ($operation) {
-                    'create_client' => $this->createClient($servidor, $data),
-                    'update_client' => $this->updateClient($servidor, $data),
-                    'delete_client' => $this->deleteClient($servidor, $data['sis_clientesid']),
-                    'create_license' => $this->createLicense($servidor, $data),
-                    'update_license' => $this->updateLicense($servidor, $data),
-                    'delete_license' => $this->deleteLicense($servidor, $data['sis_licenciasid']),
-                    default => throw new \InvalidArgumentException("Operación no soportada: {$operation}")
-                };
+                $result = $this->executeOperation($operation, $servidor, $data);
 
                 if ($result['success']) {
                     $successfulOperations[] = ['servidor' => $servidor, 'result' => $result];
-                    if ($successCallback) $successCallback($servidor, $result);
                 } else {
-                    $this->rollbackOperations($successfulOperations, $operation);
-                    return ['success' => false, 'error' => "Error en servidor {$servidor->descripcion}: {$result['error']}", 'failed_server' => $servidor->descripcion];
+                    $failedOperations[] = ['servidor' => $servidor, 'error' => $result['error']];
+
+                    // Si hay rollback y falla, deshacer operaciones exitosas
+                    if ($rollbackOnFailure) {
+                        $this->rollbackOperations($successfulOperations, $operation);
+                        return [
+                            'success' => false,
+                            'error' => "Error en servidor {$servidor->descripcion}: {$result['error']}",
+                            'failed_server' => $servidor->descripcion
+                        ];
+                    }
                 }
             }
-            return ['success' => true, 'successful_operations' => count($successfulOperations)];
+
+            return [
+                'success' => empty($failedOperations),
+                'successful_operations' => count($successfulOperations),
+                'failed_operations' => count($failedOperations),
+                'partial_success' => !empty($successfulOperations) && !empty($failedOperations)
+            ];
+
         } catch (\Exception $e) {
-            $this->rollbackOperations($successfulOperations, $operation);
+            if ($rollbackOnFailure) {
+                $this->rollbackOperations($successfulOperations, $operation);
+            }
             return ['success' => false, 'error' => $e->getMessage()];
         }
+    }
+
+    private function executeOperation(string $operation, Servidores $servidor, array $data): array
+    {
+        return match ($operation) {
+            'create_client' => $this->createClient($servidor, $data),
+            'update_client' => $this->updateClient($servidor, $data),
+            'delete_client' => $this->deleteClient($servidor, $data['sis_clientesid']),
+            'create_license' => $this->createLicense($servidor, $data),
+            'update_license' => $this->updateLicense($servidor, $data),
+            'delete_license' => $this->deleteLicense($servidor, $data['sis_licenciasid']),
+            'find_client_servers' => $this->queryLicense($servidor, ['sis_clientesid' => $data['sis_clientesid']]),
+            default => throw new \InvalidArgumentException("Operación no soportada: {$operation}")
+        };
     }
 
     /**
@@ -298,7 +327,7 @@ class ExternalServerService
             'error' => $result['error'] ?? 'Usuario no encontrado'
         ];
     }
-    
+
     /**
      * Buscar cliente en múltiples servidores disponibles
      */
@@ -352,22 +381,30 @@ class ExternalServerService
         return $resultados;
     }
 
-    public function registrarEnBitrix(array $queryParams): void
+    public function registrarEnBitrix(array $queryParams): array  // ← Cambiar void por array
     {
         if ($this->localMode) {
-            return; // No registrar en Bitrix en modo local
+            return ['success' => true, 'message' => 'Modo local'];
         }
 
         try {
             $response = Http::withOptions(["verify" => false])->timeout(10)
                 ->get('https://perseo-soft.bitrix24.es/rest/5507/9mgnss30ssjdu1ay/crm.deal.add.json', $queryParams);
 
-            $resultado = $response->json();
-            if (isset($resultado['error'])) {
-                \Log::warning('Error en Bitrix: ' . json_encode($resultado['error']));
+            if (!$response->successful()) {
+                return ['success' => false, 'error' => "HTTP {$response->status()}"];
             }
+
+            $resultado = $response->json();
+
+            if (isset($resultado['error'])) {
+                return ['success' => false, 'error' => 'Error de Bitrix: ' . json_encode($resultado['error'])];
+            }
+
+            return ['success' => true, 'deal_id' => $resultado['result'] ?? null];
+
         } catch (\Exception $e) {
-            \Log::warning('Error conectando con Bitrix: ' . $e->getMessage());
+            return ['success' => false, 'error' => 'Error conectando con Bitrix: ' . $e->getMessage()];
         }
     }
 

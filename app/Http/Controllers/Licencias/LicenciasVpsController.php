@@ -33,7 +33,9 @@ class LicenciasVpsController extends LicenciasBaseController
                 $request->all()
             );
 
-            $this->enviarEmailVps($licencia, 'Crear Licencia VPS', '10');
+            $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
+            
+            EmailLicenciaService::enviarLicencia('nuevo', $licencia, $cliente, $request);
 
             flash('Guardado Correctamente')->success();
             return redirect()->route('licencias.Vps.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
@@ -65,7 +67,10 @@ class LicenciasVpsController extends LicenciasBaseController
                 return $licencia->fresh();
             }, 'Licencia Vps');
 
-            $this->enviarEmailVps($licenciaActualizada, 'Modificar Licencia VPS', '11');
+            $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
+
+            EmailLicenciaService::enviarLicencia('modificado', $licencia, $cliente, $request);
+
 
             flash('Actualizado Correctamente')->success();
 
@@ -147,40 +152,4 @@ class LicenciasVpsController extends LicenciasBaseController
         ]);
     }
 
-    //Enviar email de notificación VPS
-    private function enviarEmailVps(Licenciasvps $licencia, string $asunto, string $tipo): void
-    {
-        try {
-            $cliente = $this->obtenerDatosClienteEmail($licencia->sis_clientesid);
-
-            if (!$cliente) {
-                throw new \Exception('Cliente no encontrado para envío de email');
-            }
-
-            $datosEmail = [
-                'from' => env('MAIL_FROM_ADDRESS'),
-                'subject' => $asunto,
-                'cliente' => $cliente->nombres,
-                'identificacion' => $cliente->identificacion,
-                'correo' => $cliente->correos,
-                'numerocontrato' => $licencia->numerocontrato,
-                'ip' => $licencia->ip,
-                'fecha_corte_proveedor' => date("d-m-Y", strtotime($licencia->fecha_corte_proveedor)),
-                'fecha_corte_cliente' => date("d-m-Y", strtotime($licencia->fecha_corte_cliente)),
-                'usuario' => Auth::user()->nombres,
-                'fecha' => $licencia->fechacreacion ?? $licencia->fechamodificacion,
-                'tipo' => $tipo,
-            ];
-
-            $emails = $this->prepararEmailsDestinatarios($cliente);
-
-            if (config('app.env') !== 'local' && !empty($emails)) {
-                Mail::to($emails)->queue(new enviarlicencia($datosEmail));
-            }
-
-        } catch (\Exception $e) {
-            \Log::warning('Error enviando email VPS: ' . $e->getMessage());
-            // No lanzar excepción para no interrumpir el proceso principal
-        }
-    }
 }

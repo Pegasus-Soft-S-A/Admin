@@ -1137,6 +1137,8 @@
                     GestorAplicativos.prepararParaEnvio();
                     $(e.target).find('input, select, textarea').removeAttr('disabled');
 
+                    this.mostrarSpinnerGuardar();
+
                     // Programar actualización de adicionales después del envío
                     setTimeout(() => {
                         RecursosAdicionalesPC.actualizarDespuesDeGuardar();
@@ -1144,6 +1146,17 @@
 
                     return true;
                 });
+            },
+
+            mostrarSpinnerGuardar() {
+                const btnGuardar = $('button[type="submit"]');
+                const textoOriginal = btnGuardar.html() || btnGuardar.val();
+
+                // Guardar texto original y mostrar spinner
+                btnGuardar.data('texto-original', textoOriginal);
+                btnGuardar.prop('disabled', true);
+                btnGuardar.html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+
             },
 
             confirmarAccion(tipo, mensaje) {

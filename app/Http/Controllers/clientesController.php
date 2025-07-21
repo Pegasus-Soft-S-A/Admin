@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Licencias\LicenciasBaseController;
 use App\Models\Clientes;
 use App\Models\Distribuidores;
 use App\Models\Grupos;
@@ -23,15 +24,8 @@ use Illuminate\Support\Facades\Http;
 use Yajra\DataTables\DataTables as DataTables;
 use Illuminate\Support\Facades\Session;
 
-class clientesController extends Controller
+class clientesController extends LicenciasBaseController
 {
-    private ExternalServerService $externalServerService;
-
-    public function __construct(ExternalServerService $externalServerService)
-    {
-        $this->externalServerService = $externalServerService;
-    }
-
     public function index(Request $request)
     {
         $servidores = Servidores::where('estado', 1)->get();
@@ -709,33 +703,32 @@ class clientesController extends Controller
         $this->validarDatosCliente($request);
         $this->prepararDatos($request);
 
-        $servidores = Servidores::where('estado', 1)->get();
-
-        // ✅ Pre-verificar disponibilidad - UNA LÍNEA
-        if ($error = $this->verificarDisponibilidadServidores($servidores)) {
-            flash($error)->warning();
-            return back()->withInput();
-        }
-
-        DB::beginTransaction();
-
         try {
-            // 1. Crear cliente local
-            $cliente = Clientes::create($request->all());
-            $request['sis_clientesid'] = $cliente->sis_clientesid;
+            // Sincronizar con servidores
+            $servidores = Servidores::where('estado', 1)->get();
+            $resultado = $this->externalServerService->batchOperation(
+                $servidores,
+                'create_client',
+                $request->all(),
+                true
+            );
 
-            // ✅ 2. Sincronizar con servidores externos - UNA LÍNEA
-            $this->externalServerService->batchOperation($servidores, 'create_client', $request->all());
+            if (!$resultado['success']) {
+                throw new \Exception($resultado['error']);
+            }
 
-            LogService::crear('Clientes', $cliente);
-            DB::commit();
+            // Guardar localmente y hacer log
+            $clienteGuardado = $this->ejecutarCreacionConTransaccion(
+                fn() => Clientes::create($request->all()),
+                'Cliente',
+                $request->all()
+            );
 
-            flash('Cliente guardado correctamente')->success();
-            return redirect()->route('clientes.editar', $cliente->sis_clientesid);
+            flash('Cliente creado correctamente')->success();
+            return redirect()->route('clientes.editar', $clienteGuardado->sis_clientesid);
 
         } catch (\Exception $e) {
-            DB::rollBack();
-            flash('Error al crear cliente: ' . $e->getMessage())->error();
+            flash('Error: ' . $e->getMessage())->error();
             return back()->withInput();
         }
     }
@@ -752,32 +745,35 @@ class clientesController extends Controller
         $this->validarDatosCliente($request, $cliente->sis_clientesid);
         $this->prepararDatos($request, $cliente);
 
-        $servidores = Servidores::where('estado', 1)->get();
-
-        // ✅ Pre-verificar disponibilidad - UNA LÍNEA
-        if ($error = $this->verificarDisponibilidadServidores($servidores)) {
-            flash($error)->warning();
-            return back()->withInput();
-        }
-
-        DB::beginTransaction();
-
         try {
-            // 1. Actualizar local (fuente de verdad)
-            $cliente->update($request->all());
-            LogService::modificar('Clientes', $cliente);
-            DB::commit();
+            // Sincronizar con servidores
+            $servidores = Servidores::where('estado', 1)->get();
+            $resultado = $this->externalServerService->batchOperation(
+                $servidores,
+                'update_client',
+                $cliente->toArray(),
+                false
+            );
 
-            // ✅ 2. Sincronizar externos (no bloqueante) - UNA LÍNEA
-            $this->sincronizarServidoresExternos('update_client', $request->all());
+            if (!$resultado['success']) {
+                throw new \Exception($resultado['error']);
+            }
 
-            flash('Cliente actualizado correctamente')->success();
+            // Guardar localmente y hacer log
+            $clienteActualizado = $this->ejecutarActualizacionConTransaccion(
+                function () use ($cliente, $request) {
+                    $cliente->update($request->all());
+                    return $cliente;
+                },
+                'Cliente'
+            );
+
+            flash('Actualizado Correctamente')->success();
             return back();
 
         } catch (\Exception $e) {
-            DB::rollBack();
-            flash('Error al actualizar cliente: ' . $e->getMessage())->error();
-            return back()->withInput();
+            flash('Error: ' . $e->getMessage())->error();
+            return back();
         }
     }
 
@@ -786,28 +782,41 @@ class clientesController extends Controller
         $isAjax = request()->ajax() || request()->wantsJson();
 
         try {
+            $servidores = Servidores::where('estado', 1)->get();
+
             // ✅ Verificar licencias - UNA LÍNEA
             if ($licenciasCount = $this->contarLicenciasAsociadas($cliente)) {
                 $mensaje = "No se puede eliminar. Tiene {$licenciasCount} licencia(s) asociada(s).";
                 return $isAjax ? response()->json(['success' => false, 'message' => $mensaje], 422) : back()->with('error', $mensaje);
             }
 
-            DB::beginTransaction();
-
-            // Limpiar licencias locales
-            $this->limpiarLicenciasLocales($cliente);
-
-            // Eliminar cliente
+            // Eliminar cliente localmente con transacción
             $clienteData = $cliente->toArray();
-            $cliente->delete();
-            LogService::eliminar('Clientes', $clienteData);
+            $this->ejecutarEliminacionConTransaccion(
+                function () use ($cliente) {
+                    // Limpiar licencias locales
+                    Licencias::where('sis_clientesid', $cliente->sis_clientesid)->delete();
+                    Licenciasweb::where('sis_clientesid', $cliente->sis_clientesid)->delete();
+                    Licenciasvps::where('sis_clientesid', $cliente->sis_clientesid)->delete();
 
-            DB::commit();
+                    $cliente->delete();
+                    return true;
+                },
+                'Cliente',
+                $clienteData
+            );
 
-            // ✅ Sincronizar externos (no bloqueante) - UNA LÍNEA
-            $errores = $this->sincronizarServidoresExternos('delete_client', ['sis_clientesid' => $cliente->sis_clientesid]);
+            // Sincronizar con servidores externos usando batch
+            $deleteResult = $this->externalServerService->batchOperation(
+                $servidores,
+                'delete_client',
+                ['sis_clientesid' => $cliente->sis_clientesid],
+                false
+            );
 
-            $mensaje = empty($errores) ? 'Cliente eliminado correctamente' : 'Cliente eliminado. Algunos servidores no sincronizaron.';
+            $mensaje = $deleteResult['success'] ?
+                'Cliente eliminado correctamente' :
+                'Cliente eliminado localmente. Algunos servidores no sincronizaron.';
 
             return $isAjax ?
                 response()->json(['success' => true, 'message' => $mensaje]) :
@@ -875,44 +884,6 @@ class clientesController extends Controller
         }
     }
 
-    private function verificarDisponibilidadServidores($servidores): ?string
-    {
-        $noDisponibles = $this->externalServerService->checkMultipleServersAvailability($servidores);
-
-        return empty($noDisponibles) ? null :
-            'Servidores no disponibles: ' . implode(', ', $noDisponibles) . '. Intente más tarde.';
-    }
-
-    private function sincronizarServidoresExternos(string $operacion, array $datos): array
-    {
-        $servidores = Servidores::where('estado', 1)->get();
-        $errores = [];
-
-        // Formatear fechas si es necesario
-        if (isset($datos['fechamodificacion'])) {
-            $datos['fechamodificacion'] = date('YmdHis', strtotime($datos['fechamodificacion']));
-        }
-
-        foreach ($servidores as $servidor) {
-            try {
-                $resultado = match ($operacion) {
-                    'update_client' => $this->externalServerService->updateClient($servidor, $datos),
-                    'delete_client' => $this->externalServerService->deleteClient($servidor, $datos['sis_clientesid']),
-                    default => ['success' => false, 'error' => 'Operación no válida']
-                };
-
-                if (!$resultado['success']) {
-                    $errores[] = $servidor->descripcion;
-                }
-            } catch (\Exception $e) {
-                $errores[] = $servidor->descripcion;
-                \Log::warning("Error sincronizando con {$servidor->descripcion}: " . $e->getMessage());
-            }
-        }
-
-        return $errores;
-    }
-
     private function contarLicenciasAsociadas(Clientes $cliente): int
     {
         $servidores = Servidores::where('estado', 1)->get();
@@ -948,10 +919,25 @@ class clientesController extends Controller
         return $licenciasWeb + $licenciasPC + $licenciasVPS;
     }
 
-    private function limpiarLicenciasLocales(Clientes $cliente): void
+    //API
+    public function consulta_clientes(Request $request)
     {
-        Licencias::where('sis_clientesid', $cliente->sis_clientesid)->delete();
-        Licenciasweb::where('sis_clientesid', $cliente->sis_clientesid)->delete();
-        Licenciasvps::where('sis_clientesid', $cliente->sis_clientesid)->delete();
+        $clientes = Clientes::where('sis_clientesid', $request->sis_clientesid)
+            ->select(
+                'sis_clientes.sis_clientesid',
+                'sis_clientes.identificacion',
+                'sis_clientes.nombres',
+                'sis_clientes.telefono2',
+                'sis_clientes.correos',
+                'sis_distribuidores.razonsocial as distribuidor',
+                'sis_clientes.direccion')
+            ->join('sis_distribuidores', 'sis_distribuidores.sis_distribuidoresid', 'sis_clientes.sis_distribuidoresid')
+            ->first();
+
+        if (!$clientes) {
+            return response()->json(['error' => 'Cliente no encontrado'], 404);
+        }
+
+        return response()->json($clientes);
     }
 }

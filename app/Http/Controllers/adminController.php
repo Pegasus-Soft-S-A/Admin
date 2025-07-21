@@ -16,6 +16,7 @@ use App\Models\Usuarios;
 use App\Rules\UniqueSimilar;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
+use App\Services\EmailLicenciaService;
 use App\Services\ExternalServerService;
 use App\Services\LogService;
 use Illuminate\Http\Request;
@@ -184,51 +185,53 @@ class adminController extends LicenciasBaseController
 
     public function post_registro(Request $request)
     {
-        // 1. Validar datos
+        // Validar datos
         $this->validarDatosRegistro($request);
 
-        // 2. Procesar link y preparar datos específicos
+        // Procesar link y preparar datos específicos
         $linkData = $this->procesarLink($request);
 
-        // 3. Preparar datos como ClientesController::guardar()
+        // Preparar datos
         $this->prepararDatos($request, $linkData);;
 
-        // 4. Usar EXACTAMENTE la misma lógica que ClientesController::guardar()
-        $servidores = Servidores::where('estado', 1)->get();
-
-        // ✅ Pre-verificar disponibilidad - IGUAL que ClientesController
-        if ($error = $this->verificarDisponibilidadServidores($servidores)) {
-            flash($error)->warning();
-            return back()->withInput();
-        }
-
-        DB::beginTransaction();
-
         try {
-            // 1. Crear cliente local - IGUAL que ClientesController
-            $cliente = Clientes::create($request->all());
+            $servidores = Servidores::where('estado', 1)->get();
+
+            // Transaccion local
+            $cliente = $this->ejecutarCreacionConTransaccion(
+                fn() => Clientes::create($request->all()),
+                'Cliente',
+                $request->all()
+            );
             $request['sis_clientesid'] = $cliente->sis_clientesid;
 
-            // 2. Sincronizar con servidores externos - IGUAL que ClientesController
-            $this->externalServerService->batchOperation($servidores, 'create_client', $request->all());
+            // Crear remotamente
+            $resultado = $this->externalServerService->batchOperation(
+                $servidores,
+                'create_client',
+                $request->all(),
+                true
+            );
 
-            // 3. Log - IGUAL que ClientesController
-            LogService::crear('Clientes', $cliente);
+            if (!$resultado['success']) {
+                throw new \Exception($resultado['error']);
+            }
 
-            DB::commit();
-
-            // 4. Crear licencia demo (específico del registro)
+            // Crear licencia demo
             $this->crearLicenciaDemo($cliente);
-
-            // 5. SOLO SI TODO SALIÓ BIEN: Registrar en Bitrix
-            if ($linkData['registra_bitrix'] && config('app.env') !== 'local') {
+            if ($linkData['registra_bitrix']) {
                 $this->registrarEnBitrix($request, $linkData);
             }
 
-            return $this->retornarExitoRegistro($cliente);
+            $links = Links::where('estado', 1)->get();
+            flash('Registrado Correctamente')->success();
+
+            return view('admin.auth.registro')->with([
+                'identificacion' => substr($cliente->identificacion, 0, 10),
+                'links' => $links
+            ]);
 
         } catch (\Exception $e) {
-            DB::rollBack();
             flash('Error al crear cliente: ' . $e->getMessage())->error();
             return back()->withInput();
         }
@@ -453,6 +456,10 @@ class adminController extends LicenciasBaseController
     {
         $link = Links::where('sis_linksid', $request['red_origen'])->first();
 
+        if (!$link) {
+            throw new \Exception("Link no encontrado para red_origen: {$request['red_origen']}");
+        }
+
         return [
             'distribuidor' => $link->sis_distribuidoresid,
             'assigned_id' => $link->usuarioid,
@@ -482,54 +489,57 @@ class adminController extends LicenciasBaseController
 
     private function registrarEnBitrix(Request $request, array $linkData): void
     {
-        $gruposBitrix = [
-            '1' => '599', '2' => '601', '3' => '603', '4' => '605', '5' => '607',
-            '6' => '609', '7' => '611', '8' => '613', '9' => '615', '10' => '617',
-            '11' => '621', '12' => '623'
-        ];
+        try {
+            $gruposBitrix = [
+                '1' => '599', '2' => '601', '3' => '603', '4' => '605', '5' => '607',
+                '6' => '609', '7' => '611', '8' => '613', '9' => '615', '10' => '617',
+                '11' => '621', '12' => '623'
+            ];
 
-        $grupo = $gruposBitrix[$request['grupo']] ?? '599';
-        $telefono = "+593" . substr($request['telefono2'], 1, 9);
+            $grupo = $gruposBitrix[$request['grupo']] ?? '599';
+            $telefono = "+593" . substr($request['telefono2'], 1, 9);
 
-        $queryParams = [
-            'FIELDS[ASSIGNED_BY_ID]' => $linkData['assigned_id'],
-            'FIELDS[TITLE]' => $request['nombres'],
-            'FIELDS[COMPANY_TITLE]' => $request['nombres'],
-            'FIELDS[SOURCE_ID]' => $linkData['source_id'],
-            'FIELDS[SOURCE_DESCRIPTION]' => $linkData['descripcion'],
-            'FIELDS[NAME]' => $request['nombres'],
-            'FIELDS[ADDRESS]' => $request['direccion'],
-            'FIELDS[PHONE][0][VALUE]' => $telefono,
-            'FIELDS[PHONE][0][VALUE_TYPE]' => 'WORK',
-            'FIELDS[EMAIL][0][VALUE]' => $request['correos'],
-            'FIELDS[EMAIL][0][VALUE_TYPE]' => 'WORK',
-            'FIELDS[UF_CRM_1656951427626]' => $request['texto_ciudad'],
-            'FIELDS[UF_CRM_1668442025742]' => $grupo,
-        ];
+            $queryParams = [
+                'FIELDS[ASSIGNED_BY_ID]' => $linkData['assigned_id'],
+                'FIELDS[TITLE]' => $request['nombres'],
+                'FIELDS[COMPANY_TITLE]' => $request['nombres'],
+                'FIELDS[SOURCE_ID]' => $linkData['source_id'],
+                'FIELDS[SOURCE_DESCRIPTION]' => $linkData['descripcion'],
+                'FIELDS[NAME]' => $request['nombres'],
+                'FIELDS[ADDRESS]' => $request['direccion'],
+                'FIELDS[PHONE][0][VALUE]' => $telefono,
+                'FIELDS[PHONE][0][VALUE_TYPE]' => 'WORK',
+                'FIELDS[EMAIL][0][VALUE]' => $request['correos'],
+                'FIELDS[EMAIL][0][VALUE_TYPE]' => 'WORK',
+                'FIELDS[UF_CRM_1656951427626]' => $request['texto_ciudad'] ?? '',
+                'FIELDS[UF_CRM_1668442025742]' => $grupo,
+            ];
 
-        $resultado = $this->externalServerService->registrarEnBitrix($leadData);
+            // ✅ Llamar al método que ahora retorna array
+            $resultado = $this->externalServerService->registrarEnBitrix($queryParams);
 
-        if (!$resultado['success']) {
-            \Log::warning('Fallo al registrar en Bitrix', [
+            // ✅ Validar que existe la clave antes de acceder
+            if (isset($resultado['success']) && $resultado['success']) {
+                \Log::info('Cliente registrado en Bitrix exitosamente', [
+                    'cliente' => $request['nombres'],
+                    'deal_id' => $resultado['deal_id'] ?? 'ID no disponible',
+                    'message' => $resultado['message'] ?? 'Registro exitoso'
+                ]);
+            } else {
+                \Log::warning('Fallo al registrar en Bitrix', [
+                    'cliente' => $request['nombres'],
+                    'error' => $resultado['error'] ?? 'Error desconocido',
+                    'resultado_completo' => $resultado
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Error en registrarEnBitrix', [
                 'cliente' => $request['nombres'],
-                'error' => $resultado['error']
-            ]);
-            // No lanzar excepción para no interrumpir el registro del cliente
-        } else {
-            \Log::info('Cliente registrado en Bitrix exitosamente', [
-                'cliente' => $request['nombres'],
-                'deal_id' => $resultado['deal_id']
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
         }
-    }
-
-    // ✅ COPIADO EXACTO de ClientesController::verificarDisponibilidadServidores()
-    private function verificarDisponibilidadServidores($servidores): ?string
-    {
-        $noDisponibles = $this->externalServerService->checkMultipleServersAvailability($servidores);
-
-        return empty($noDisponibles) ? null :
-            'Servidores no disponibles: ' . implode(', ', $noDisponibles) . '. Intente más tarde.';
     }
 
     private function crearLicenciaDemo(Clientes $cliente): void
@@ -575,15 +585,15 @@ class adminController extends LicenciasBaseController
             $datosDemo['sis_licenciasid'] = $resultado['license_id'];
 
             // Crear licencia local usando transacción
-            $this->ejecutarCreacionConTransaccion(
+            $licencia = $this->ejecutarCreacionConTransaccion(
                 fn() => \App\Models\Licenciasweb::create($datosDemo),
                 'Licencia Web Demo',
                 $datosDemo
             );
 
             // Enviar email de demo
-            $this->enviarEmailDemo($cliente, $datosDemo, $configDemo);
-
+            $result = EmailLicenciaService::enviarCredenciales($cliente->sis_clientesid, $licencia->producto);
+            
         } catch (\Exception $e) {
             // Log el error pero no interrumpir el proceso principal
             \Log::error('Error creando licencia demo: ' . $e->getMessage(), [
@@ -633,51 +643,6 @@ class adminController extends LicenciasBaseController
         xmlwriter_end_element($xw);
         xmlwriter_end_document($xw);
         return xmlwriter_output_memory($xw);
-    }
-
-    private function enviarEmailDemo(Clientes $cliente, array $datosDemo, array $configDemo): void
-    {
-        try {
-            $clienteCompleto = $this->obtenerDatosClienteEmail($cliente->sis_clientesid);
-            if (!$clienteCompleto) {
-                \Log::warning('Cliente no encontrado para email demo', ['cliente_id' => $cliente->sis_clientesid]);
-                return;
-            }
-
-            $configEmail = $configDemo['email'];
-
-            $datosEmail = [
-                'view' => 'emails.registro_demos',
-                'from' => env('MAIL_FROM_ADDRESS'),
-                'subject' => 'Registro Demo',
-                'nombre' => $clienteCompleto->nombres,
-                'usuario' => substr($clienteCompleto->identificacion, 0, 10),
-                'clave' => '123',
-                'tipo' => '6',
-            ];
-
-            $emails = [$clienteCompleto->correos];
-
-            if (config('app.env') !== 'local' && !empty($emails)) {
-                Mail::to($emails)->queue(new enviarlicencia($datosEmail));
-            }
-
-        } catch (\Exception $e) {
-            \Log::warning('Error enviando email demo: ' . $e->getMessage(), [
-                'cliente_id' => $cliente->sis_clientesid
-            ]);
-        }
-    }
-
-    private function retornarExitoRegistro(Clientes $cliente)
-    {
-        $links = Links::where('estado', 1)->get();
-        flash('Registrado Correctamente')->success();
-
-        return view('admin.auth.registro')->with([
-            'identificacion' => substr($cliente->identificacion, 0, 10),
-            'links' => $links
-        ]);
     }
 
     // =======================================

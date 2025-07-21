@@ -19,11 +19,9 @@ class notificacionesController extends Controller
             $data = Auth::user()->tipo == 1 ? Notificaciones::all() : Notificaciones::where("sis_distribuidores_usuariosid", Auth::user()->sis_distribuidores_usuariosid);
 
             return DataTables::of($data)
-
                 ->editColumn('asunto', function ($notificacion) {
                     return '<a class="text-primary" href="' . route('notificaciones.editar', $notificacion->sis_notificacionesid) . '">' . $notificacion->asunto . ' </a>';
                 })
-
                 ->editColumn('action', function ($notificacion) {
                     return '<a class="btn btn-icon btn-light btn-hover-success btn-sm mr-2" href="' . route('notificaciones.editar', $notificacion->sis_notificacionesid) . '"  title="Editar"> <i class="la la-edit"></i> </a>' .
                         '<a class="btn btn-icon btn-light btn-hover-danger btn-sm mr-2 confirm-delete" href="javascript:void(0)" data-href="' . route('notificaciones.eliminar', $notificacion->sis_notificacionesid) . '" title="Eliminar"> <i class="la la-trash"></i> </a>';
@@ -73,7 +71,7 @@ class notificacionesController extends Controller
             $request['files'],
         );
 
-        $notificaciones =   Notificaciones::create($request->all());
+        $notificaciones = Notificaciones::create($request->all());
 
         LogService::crear('Notificaciones', $notificaciones);
 
@@ -90,6 +88,7 @@ class notificacionesController extends Controller
 
         return view('admin.notificaciones.editar', compact('notificaciones', 'distribuidores'));
     }
+
     public function actualizar(Notificaciones $notificaciones, Request $request)
     {
         $request->validate(
@@ -130,5 +129,19 @@ class notificacionesController extends Controller
 
         flash("Eliminado Correctamente")->success();
         return back();
+    }
+
+    // API
+    public function consulta_notificaciones(Request $request)
+    {
+        $notificaciones = Notificaciones::where(function ($query) use ($request) {
+            $query->where('fecha_publicacion_desde', '<=', $request->inicio)
+                ->where('fecha_publicacion_hasta', '>=', $request->inicio);
+        })
+            ->whereIn('tipo', [0, $request->tipo])
+            ->whereIn('sis_distribuidoresid', [0, $request->distribuidor])
+            ->get();
+
+        return json_encode($notificaciones);
     }
 }

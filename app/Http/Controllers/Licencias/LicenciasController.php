@@ -22,7 +22,7 @@ class LicenciasController extends LicenciasBaseController
             // ✅ OPTIMIZACIÓN PARA MODO LOCAL
             if (config('sistema.local_mode', false)) {
                 // En modo local, consultar directamente el modelo (como PC y VPS)
-                $web = \App\Models\Licenciasweb::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid')
+                $web = \App\Models\Licenciasweb::select('sis_licenciasid', 'numerocontrato', 'tipo_licencia', 'fechacaduca', 'sis_clientesid', 'sis_servidoresid', 'producto')
                     ->where('sis_clientesid', $cliente->sis_clientesid)
                     ->get()
                     ->toArray();

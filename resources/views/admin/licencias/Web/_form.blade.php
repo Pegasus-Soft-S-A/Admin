@@ -467,6 +467,29 @@
 
                 // Prevenir clicks en elementos deshabilitados
                 $('.deshabilitar').on('click', () => false);
+
+                this.configurarEnvioFormulario();
+            },
+
+            configurarEnvioFormulario() {
+                $('#formulario').on('submit', (e) => {
+                    // Mostrar spinner y deshabilitar botón
+                    this.mostrarSpinnerGuardar();
+
+                    // Permitir que el formulario se envíe normalmente
+                    return true;
+                });
+            },
+
+            mostrarSpinnerGuardar() {
+                const btnGuardar = $('button[type="submit"]');
+                const textoOriginal = btnGuardar.html() || btnGuardar.val();
+
+                // Guardar texto original y mostrar spinner
+                btnGuardar.data('texto-original', textoOriginal);
+                btnGuardar.prop('disabled', true);
+                btnGuardar.html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+
             },
 
             //  Mensajes dinámicos según acción
