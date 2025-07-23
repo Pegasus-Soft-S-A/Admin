@@ -23,6 +23,14 @@
     .tab-content {
         overflow-x: hidden;
     }
+
+    .input-mobile {
+        border-left: 4px solid #28a745 !important;
+    }
+
+    .input-sales {
+        border-left: 4px solid #fd7e14 !important;
+    }
 </style>
 
 @php
@@ -200,7 +208,7 @@
         <p class="font-size-lg font-weight-bold mb-1"><i class="fas fa-cogs"></i> Configuración de Recursos</p>
         <div class="separator separator-dashed mb-2"></div>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="form-group">
                     <label>N° Equipos</label>
                     <input type="text" class="form-control @error('numeroequipos') is-invalid @enderror"
@@ -212,10 +220,10 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="form-group">
-                    <label>N° Móviles</label>
-                    <input type="text" class="form-control @error('numeromoviles') is-invalid @enderror"
+                    <label>App Móvil</label>
+                    <input type="text" class="form-control input-mobile @error('numeromoviles') is-invalid @enderror"
                            name="numeromoviles" id="numeromoviles"
                            value="{{ old('numeromoviles', $licencia->numeromoviles) }}"
                         {{ !puede('pc', 'editar_numeros_configuracion_' . strtolower($accion)) ? 'disabled' : '' }}>
@@ -224,7 +232,19 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>App Ventas</label>
+                    <input type="text" class="form-control input-sales @error('numeromoviles2') is-invalid @enderror"
+                           name="numeromoviles2" id="numeromoviles2"
+                           value="{{ old('numeromoviles2', $licencia->numeromoviles2) }}"
+                        {{ !puede('pc', 'editar_numeros_configuracion_' . strtolower($accion)) ? 'disabled' : '' }}>
+                    @error('numeromoviles2')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="col-md-3">
                 <div class="form-group">
                     <label>N° Sucursales</label>
                     <input type="text" class="form-control @error('numerosucursales') is-invalid @enderror"
@@ -1848,12 +1868,17 @@
             },
 
             procesarExitoAgregar(tipoId, cantidad, tipoNombre, response) {
+                // Actualizar cantidad en memoria
                 this.cantidadesAdicionales[tipoId] += cantidad;
 
-                const mapasCampos = this.obtenerMapaCampos();
-                const campo = mapasCampos[tipoId];
-                if (campo && response.licencia_actualizada && response.licencia_actualizada[campo] !== undefined) {
-                    $(`#${campo}`).val(response.licencia_actualizada[campo]);
+                // Actualizar TODOS los campos que fueron modificados
+                if (response.licencia_actualizada) {
+                    Object.keys(response.licencia_actualizada).forEach(campo => {
+                        const elemento = $(`#${campo}`);
+                        if (elemento.length) {
+                            elemento.val(response.licencia_actualizada[campo]);
+                        }
+                    });
                 }
 
                 $(`#cantidad_${tipoId}`).val(0);
@@ -1893,7 +1918,6 @@
                 }, 1000);
             }
         };
-
         // ====================================
         // FUNCIÓN GLOBAL
         // ====================================

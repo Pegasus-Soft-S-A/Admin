@@ -8,7 +8,7 @@
         opacity: 1;
         background-color: #F3F6F9;
     }
-    
+
     .tab-content {
         overflow-x: hidden;
     }
@@ -199,6 +199,25 @@
             $('.deshabilitar').click(function () {
                 return false;
             });
+
+            $('#formulario').on('submit', (e) => {
+                // Mostrar spinner y deshabilitar botón
+                mostrarSpinnerGuardar();
+
+                // Permitir que el formulario se envíe normalmente
+                return true;
+            });
+
+            function mostrarSpinnerGuardar() {
+                const btnGuardar = $('button[type="submit"]');
+                const textoOriginal = btnGuardar.html() || btnGuardar.val();
+
+                // Guardar texto original y mostrar spinner
+                btnGuardar.data('texto-original', textoOriginal);
+                btnGuardar.prop('disabled', true);
+                btnGuardar.html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+
+            }
 
             //Iniciar fecha
             $('#fecha_corte_proveedor').datepicker({

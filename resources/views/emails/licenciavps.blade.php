@@ -1,31 +1,40 @@
-<!doctype html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
-    xmlns:o="urn:schemas-microsoft-com:office:office">
-
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-    <title>confirm</title>
-    <!--[if !mso]><!-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!--<![endif]-->
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <style type="text/css">
-        #outlook a {
-            padding: 0;
-        }
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Licencia VPS - Perseo Software</title>
 
-        body {
+    <style>
+        * {
             margin: 0;
             padding: 0;
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
+            box-sizing: border-box;
         }
 
-        table,
-        td {
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: 100% !important;
+            width: 100% !important;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        table {
             border-collapse: collapse;
             mso-table-lspace: 0pt;
             mso-table-rspace: 0pt;
+            border-spacing: 0;
+        }
+
+        td {
+            border-collapse: collapse;
+            mso-line-height-rule: exactly;
+            vertical-align: top;
         }
 
         img {
@@ -35,986 +44,372 @@
             outline: none;
             text-decoration: none;
             -ms-interpolation-mode: bicubic;
-        }
-
-        p {
+            max-width: 100%;
             display: block;
-            margin: 13px 0;
         }
-    </style>
-    <!--[if mso]>
-    <noscript>
-    <xml>
-    <o:OfficeDocumentSettings>
-      <o:AllowPNG/>
-      <o:PixelsPerInch>96</o:PixelsPerInch>
-    </o:OfficeDocumentSettings>
-    </xml>
-    </noscript>
-    <![endif]-->
-    <!--[if lte mso 11]>
-    <style type="text/css">
-      .mj-outlook-group-fix { width:100% !important; }
-    </style>
-    <![endif]-->
-    <!--[if !mso]><!-->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
-    <style type="text/css">
-        @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700);
-        @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
-    </style>
-    <!--<![endif]-->
-    <style type="text/css">
-        @media only screen and (min-width:480px) {
-            .mj-column-per-100 {
-                width: 100% !important;
-                max-width: 100%;
-            }
 
-            .mj-column-per-33 {
-                width: 33% !important;
-                max-width: 33%;
-            }
-
-            .mj-column-per-67 {
-                width: 67% !important;
-                max-width: 67%;
-            }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
         }
-    </style>
-    <style media="screen and (min-width:480px)">
-        .moz-text-html .mj-column-per-100 {
+
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            text-align: center;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .header img {
+            width: 140px;
+            height: auto;
+            margin: 0 auto;
+            transition: transform 0.3s ease;
+        }
+
+        .header img:hover {
+            transform: scale(1.05);
+        }
+
+        .content {
+            padding: 20px 15px;
+            background-color: #f9fafb;
+        }
+
+        .intro-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .license-type {
+            color: #1d6ea9;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .two-columns {
+            display: block !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .two-columns .column {
             width: 100% !important;
-            max-width: 100%;
+            margin-bottom: 15px;
+            box-sizing: border-box;
         }
 
-        .moz-text-html .mj-column-per-33 {
-            width: 33% !important;
-            max-width: 33%;
+        .section-title {
+            color: #1d6ea9;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        .moz-text-html .mj-column-per-67 {
-            width: 67% !important;
-            max-width: 67%;
-        }
-    </style>
-    <style type="text/css">
-        [owa] .mj-column-per-100 {
-            width: 100% !important;
-            max-width: 100%;
+        .info-row {
+            display: flex;
+            margin: 5px 0;
+            font-size: 13px;
+            color: #4a5568;
         }
 
-        [owa] .mj-column-per-33 {
-            width: 33% !important;
-            max-width: 33%;
+        .info-label {
+            font-weight: 600;
+            color: #2d3748;
+            width: 40%;
+            min-width: 40%;
         }
 
-        [owa] .mj-column-per-67 {
-            width: 67% !important;
-            max-width: 67%;
+        .info-value {
+            color: #4a5568;
+            flex: 1;
         }
-    </style>
-    <style type="text/css">
-        @media only screen and (max-width:479px) {
-            table.mj-full-width-mobile {
+
+        .server-info {
+            background: linear-gradient(135deg, #e6fffa 0%, #d4edda 100%);
+            border: 2px solid #38a169;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .server-title {
+            color: #22543d;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .server-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .server-item {
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 10px 15px;
+            border: 1px solid #38a169;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .server-item-label {
+            font-size: 11px;
+            color: #22543d;
+            font-weight: 600;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+
+        .server-item-value {
+            font-size: 14px;
+            color: #1a202c;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .dates-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border: 2px solid #f56565;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .dates-title {
+            color: #c53030;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .dates-grid {
+            display: flex;
+            gap: 15px;
+        }
+
+        .date-item {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid #f56565;
+            text-align: center;
+        }
+
+        .date-item-label {
+            font-size: 12px;
+            color: #c53030;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .date-item-value {
+            font-size: 14px;
+            color: #2d3748;
+            font-weight: bold;
+        }
+
+        .creation-info {
+            background-color: #e2e8f0;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .creation-title {
+            color: #1d6ea9;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .creation-details {
+            font-size: 12px;
+            color: #4a5568;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            text-align: center;
+            padding: 15px;
+            color: #e2e8f0;
+        }
+
+        .social-links {
+            margin-bottom: 8px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: scale(1.1);
+        }
+
+        .social-links img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            line-height: 1.4;
+            margin: 5px 0;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .email-container {
                 width: 100% !important;
+                border-radius: 0 !important;
             }
 
-            td.mj-full-width-mobile {
-                width: auto !important;
+            .content {
+                padding: 15px 10px !important;
+            }
+
+            .header {
+                padding: 15px !important;
+            }
+
+            .header img {
+                width: 120px !important;
+            }
+
+            .info-label {
+                width: 50% !important;
+                min-width: 50% !important;
+            }
+
+            .license-type {
+                font-size: 16px !important;
+            }
+
+            .server-details {
+                flex-direction: column !important;
+            }
+
+            .server-item {
+                min-width: 100% !important;
+            }
+
+            .dates-grid {
+                flex-direction: column !important;
             }
         }
     </style>
-    <style type="text/css"></style>
 </head>
 
-<body style="word-spacing:normal;background-color:#F4F4F4;">
-    <div style="background-color:#F4F4F4;">
-        <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#FFFFFF" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-        <div style="background:#FFFFFF;background-color:#FFFFFF;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#FFFFFF;background-color:#FFFFFF;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-bottom:0px;padding-left:0px;padding-right:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:600px;" ><![endif]-->
-                            <div class="mj-column-per-100 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td style="vertical-align:top;padding:0 0 0 0;">
-                                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                                    width="100%">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#ffffff;font-size:0px;padding:0px 0px 0px 0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 4px #bcdefb;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                                <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 4px #bcdefb;font-size:1px;margin:0px auto;width:600px;" role="presentation" width="600px" ><tr><td style="height:0;line-height:0;"> &nbsp;
-</td></tr></table><![endif]-->
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#ffffff;font-size:0px;padding:2px 0px 0px 0px;padding-top:2px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 4px #bcdefb;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                                <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 4px #bcdefb;font-size:1px;margin:0px auto;width:600px;" role="presentation" width="600px" ><tr><td style="height:0;line-height:0;"> &nbsp;
-</td></tr></table><![endif]-->
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#000000;font-size:0px;padding:20px 25px 20px 25px;padding-top:20px;padding-right:25px;padding-bottom:20px;padding-left:25px;word-break:break-word;">
-                                                                <table border="0" cellpadding="0" cellspacing="0"
-                                                                    role="presentation"
-                                                                    style="border-collapse:collapse;border-spacing:0px;">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td style="width:200px;"><a
-                                                                                    href="https://009mz.mjt.lu/tplimg/009mz/b/s8zn8/3qn.png"
-                                                                                    target="_blank"><img alt=""
-                                                                                        src="https://009mz.mjt.lu/tplimg/009mz/b/s8zn8/3qn.png"
-                                                                                        style="border:none;border-radius:2px;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;"
-                                                                                        width="200" height="auto"></a>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="font-size:0px;padding:0px 25px 0px 25px;padding-top:0px;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 2px #E6E6E6;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                                <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 2px #E6E6E6;font-size:1px;margin:0px auto;width:550px;" role="presentation" width="550px" ><tr><td style="height:0;line-height:0;"> &nbsp;
-</td></tr></table><![endif]-->
-                                                            </td>
-                                                        </tr>
+<body style="margin: 0; padding: 0; background-color: #edf2f7;">
 
-                                                        <tr>
-                                                            <td align="left"
-                                                                style="background:#ffffff;font-size:0px;padding:3px 15px 0px 15px;padding-top:3px;padding-right:15px;padding-bottom:0px;padding-left:15px;word-break:break-word;">
-                                                                <div
-                                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                                    @if ($array['tipo'] == 10)
-                                                                    <p class="text-build-content"
-                                                                        style="text-align: justify; margin: 10px 0; margin-top: 10px; margin-bottom: 10px;"
-                                                                        data-testid="rOEQ_uvAw2NA"><span
-                                                                            style="color:#575757;font-family:Arial;font-size:14px;line-height:22px;">Es
-                                                                            un placer saludarte, se ha registrado una
-                                                                            nueva licencia con los siguientes
-                                                                            datos:</span></p>
-                                                                    @endif
-                                                                    @if ($array['tipo'] == 11)
-                                                                    <p class="text-build-content"
-                                                                        style="text-align: justify; margin: 10px 0; margin-top: 10px; margin-bottom: 10px;"
-                                                                        data-testid="rOEQ_uvAw2NA"><span
-                                                                            style="color:#575757;font-family:Arial;font-size:14px;line-height:22px;">Es
-                                                                            un placer saludarte, se ha modificado una
-                                                                            nueva licencia con los siguientes
-                                                                            datos:</span></p>
-                                                                    @endif
-
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="font-size:0px;padding:10px 1px 0px 1px;padding-right:1px;padding-bottom:0px;padding-left:1px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 1px #d9d9d9;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                                <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 1px #d9d9d9;font-size:1px;margin:0px auto;width:598px;" role="presentation" width="598px" ><tr><td style="height:0;line-height:0;"> &nbsp;
-</td></tr></table><![endif]-->
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#eff5fa" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-        <div style="background:#eff5fa;background-color:#eff5fa;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#eff5fa;background-color:#eff5fa;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:198px;" ><![endif]-->
-                            <div class="mj-column-per-33 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 15px 0px 10px;padding-top:0px;padding-right:15px;padding-bottom:0px;padding-left:10px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="i1cwB9gTr2JVMXN_fCDt2"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span style="color:#1d6ea9;font-size:14px;"><b>N.º
-                                                                Contrato:</b></span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td><td class="" style="vertical-align:top;width:402px;" ><![endif]-->
-                            <div class="mj-column-per-67 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 13px 0px 13px;padding-top:0px;padding-right:13px;padding-bottom:0px;padding-left:13px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:13px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="3u9_eOZtruYzOFqXVc_Mu"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span
-                                                            style="font-family:Arial;">{{$array['numerocontrato']}}</span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div style="background:#eff5fa;background-color:#eff5fa;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#eff5fa;background-color:#eff5fa;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:198px;" ><![endif]-->
-                            <div class="mj-column-per-33 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 15px 0px 10px;padding-top:0px;padding-right:15px;padding-bottom:0px;padding-left:10px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="i1cwB9gTr2JVMXN_fCDt2"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span
-                                                            style="color:#1d6ea9;font-size:14px;"><b>Cliente:</b></span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td><td class="" style="vertical-align:top;width:402px;" ><![endif]-->
-                            <div class="mj-column-per-67 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 13px 0px 13px;padding-top:0px;padding-right:13px;padding-bottom:0px;padding-left:13px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:13px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="3u9_eOZtruYzOFqXVc_Mu"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span style="font-family:Arial;">{{$array['cliente']}}</span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div style="background:#eff5fa;background-color:#eff5fa;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#eff5fa;background-color:#eff5fa;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:198px;" ><![endif]-->
-                            <div class="mj-column-per-33 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 15px 0px 10px;padding-top:0px;padding-right:15px;padding-bottom:0px;padding-left:10px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="i1cwB9gTr2JVMXN_fCDt2"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span
-                                                            style="color:#1d6ea9;font-size:14px;"><b>Identificación:</b></span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td><td class="" style="vertical-align:top;width:402px;" ><![endif]-->
-                            <div class="mj-column-per-67 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 13px 0px 13px;padding-top:0px;padding-right:13px;padding-bottom:0px;padding-left:13px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:13px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="3u9_eOZtruYzOFqXVc_Mu"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span
-                                                            style="font-family:Arial;">{{$array['identificacion']}}</span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div style="background:#eff5fa;background-color:#eff5fa;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#eff5fa;background-color:#eff5fa;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:198px;" ><![endif]-->
-                            <div class="mj-column-per-33 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 15px 0px 10px;padding-top:0px;padding-right:15px;padding-bottom:0px;padding-left:10px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="i1cwB9gTr2JVMXN_fCDt2"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span
-                                                            style="color:#1d6ea9;font-size:14px;"><b>Correo:</b></span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td><td class="" style="vertical-align:top;width:402px;" ><![endif]-->
-                            <div class="mj-column-per-67 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 13px 0px 13px;padding-top:0px;padding-right:13px;padding-bottom:0px;padding-left:13px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:13px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="3u9_eOZtruYzOFqXVc_Mu"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span style="font-family:Arial;">{{$array['correo']}}</span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#eff5fa" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-        <div style="background:#eff5fa;background-color:#eff5fa;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#eff5fa;background-color:#eff5fa;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:198px;" ><![endif]-->
-                            <div class="mj-column-per-33 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 15px 0px 10px;padding-top:0px;padding-right:15px;padding-bottom:0px;padding-left:10px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="P2Y97Qaao6rp9XGnUcDdg"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span style="color:#1d6ea9;font-size:14px;"><b>IP
-                                                                servidor:</b></span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td><td class="" style="vertical-align:top;width:402px;" ><![endif]-->
-                            <div class="mj-column-per-67 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 13px 0px 13px;padding-top:0px;padding-right:13px;padding-bottom:0px;padding-left:13px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:13px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="KwyU805phTh7Auhzzp1zk"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span style="font-family:Arial;">{{$array['ip']}}</span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#eff5fa" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-        <div style="background:#eff5fa;background-color:#eff5fa;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#eff5fa;background-color:#eff5fa;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:198px;" ><![endif]-->
-                            <div class="mj-column-per-33 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 20px 0px 10px;padding-top:0px;padding-right:20px;padding-bottom:0px;padding-left:10px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="gF3HJSijOAhjHdUKYWAzm"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span style="color:#1d6ea9;font-size:14px;"><b>Fecha Corte
-                                                                Proveedor:</b></span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td><td class="" style="vertical-align:top;width:402px;" ><![endif]-->
-                            <div class="mj-column-per-67 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 13px 0px 13px;padding-top:0px;padding-right:13px;padding-bottom:0px;padding-left:13px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:13px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="ddRoIJxCHFf3ZxBhOyn4E"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        {{$array['fecha_corte_proveedor']}}</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#eff5fa" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-        <div style="background:#eff5fa;background-color:#eff5fa;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#eff5fa;background-color:#eff5fa;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:198px;" ><![endif]-->
-                            <div class="mj-column-per-33 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 0px 0px 10px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:10px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="WGnKedGpHD4JTprSeRZhm"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span style="color:#1d6ea9;font-size:14px;"><b>Fecha Corte
-                                                                Cliente:</b></span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td><td class="" style="vertical-align:top;width:402px;" ><![endif]-->
-                            <div class="mj-column-per-67 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 13px 0px 13px;padding-top:0px;padding-right:13px;padding-bottom:0px;padding-left:13px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:13px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="w19PMAl77PoCjSwO2WR8a"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        {{$array['fecha_corte_cliente']}}</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#ffffff" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-        <div style="background:#ffffff;background-color:#ffffff;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#ffffff;background-color:#ffffff;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:10px 0px 10px 0px;padding-bottom:10px;padding-left:0px;padding-right:0px;padding-top:10px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:600px;" ><![endif]-->
-                            <div class="mj-column-per-100 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:10px 25px;padding-top:0px;padding-bottom:0px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:15px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content"
-                                                        style="text-align: center; margin: 10px 0; margin-top: 10px; margin-bottom: 10px;"
-                                                        data-testid="t6rC5ana3XArxB-SG8eXD"><span
-                                                            style="color:#1d6ea9;font-family:Roboto, Helvetica, Arial, sans-serif;font-size:15px;">
-                                                            @if ($array['tipo'] == 10)
-                                                            <b>Creación</b>
-                                                            @else
-                                                            <b>Modificación</b>
-                                                            @endif
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#eff5fa" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-        <div style="background:#eff5fa;background-color:#eff5fa;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#eff5fa;background-color:#eff5fa;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:198px;" ><![endif]-->
-                            <div class="mj-column-per-33 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 15px 0px 10px;padding-top:0px;padding-right:15px;padding-bottom:0px;padding-left:10px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="jIaX5wWzRrazcwEk1ICca"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span
-                                                            style="color:#1d6ea9;font-size:14px;"><b>Usuario:</b></span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td><td class="" style="vertical-align:top;width:402px;" ><![endif]-->
-                            <div class="mj-column-per-67 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 13px 0px 13px;padding-top:0px;padding-right:13px;padding-bottom:0px;padding-left:13px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:13px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="Bgg4XPZ-mP_WVSzrHiBos"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        {{$array['usuario']}}</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#eff5fa" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-        <div style="background:#eff5fa;background-color:#eff5fa;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#eff5fa;background-color:#eff5fa;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-bottom:0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:198px;" ><![endif]-->
-                            <div class="mj-column-per-33 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 10px 0px 10px;padding-top:0px;padding-right:10px;padding-bottom:0px;padding-left:10px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:14px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="LU0BP4vyI8Mp68u5zU2wl"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        <span style="color:#1d6ea9;font-size:14px;"><b>Fecha:</b></span>
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td><td class="" style="vertical-align:top;width:402px;" ><![endif]-->
-                            <div class="mj-column-per-67 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                    style="vertical-align:top;" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td align="left"
-                                                style="font-size:0px;padding:0px 13px 0px 13px;padding-top:0px;padding-right:13px;padding-bottom:0px;padding-left:13px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Arial, sans-serif;font-size:13px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                    <p class="text-build-content" data-testid="k_DeW9q9roPh7ICHMACvg"
-                                                        style="margin: 10px 0; margin-top: 10px; margin-bottom: 10px;">
-                                                        {{$array['fecha']}}</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#000000" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-        <div style="background:#000000;background-color:#000000;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#000000;background-color:#000000;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:600px;" ><![endif]-->
-                            <div class="mj-column-per-100 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td style="vertical-align:top;padding:0 0 0 0;">
-                                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                                    width="100%">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#ffffff;font-size:0px;padding:0px 1px 0px 1px;padding-top:0px;padding-right:1px;padding-bottom:0px;padding-left:1px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 3px #cbe7ff;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                                <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 3px #cbe7ff;font-size:1px;margin:0px auto;width:598px;" role="presentation" width="598px" ><tr><td style="height:0;line-height:0;"> &nbsp;
-</td></tr></table><![endif]-->
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#bcdefb;font-size:0px;padding:0px 1px 0px 1px;padding-top:0px;padding-right:1px;padding-bottom:0px;padding-left:1px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 2px #bcdefb;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                                <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 2px #bcdefb;font-size:1px;margin:0px auto;width:598px;" role="presentation" width="598px" ><tr><td style="height:0;line-height:0;"> &nbsp;
-</td></tr></table><![endif]-->
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#ffffff;font-size:0px;padding:0px 0px 0px 0px;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 4px #bcdefb;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                                <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 4px #bcdefb;font-size:1px;margin:0px auto;width:600px;" role="presentation" width="600px" ><tr><td style="height:0;line-height:0;"> &nbsp;
-</td></tr></table><![endif]-->
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="font-size:0px;padding:10px 25px 1px 25px;padding-top:10px;padding-right:25px;padding-bottom:1px;padding-left:25px;word-break:break-word;">
-                                                                <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" ><tr><td><![endif]-->
-                                                                <table align="center" border="0" cellpadding="0"
-                                                                    cellspacing="0" role="presentation"
-                                                                    style="float:none;display:inline-table;">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td
-                                                                                style="padding:4px;vertical-align:middle;">
-                                                                                <table border="0" cellpadding="0"
-                                                                                    cellspacing="0" role="presentation"
-                                                                                    style="background:#3B5998;border-radius:50%;width:25;">
-                                                                                    <tbody>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding:0px 0px 0px 0px;font-size:0;height:25;vertical-align:middle;width:25;">
-                                                                                                <a href="https://www.facebook.com/sistemacontableperseoec"
-                                                                                                    target="_blank"><img
-                                                                                                        height="25"
-                                                                                                        src="https://www.mailjet.com/images/theme/v1/icons/ico-social/facebook.png"
-                                                                                                        style="border-radius:50%;display:block;"
-                                                                                                        width="25"></a>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                                <!--[if mso | IE]></td><td><![endif]-->
-                                                                <table align="center" border="0" cellpadding="0"
-                                                                    cellspacing="0" role="presentation"
-                                                                    style="float:none;display:inline-table;">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td
-                                                                                style="padding:4px;vertical-align:middle;">
-                                                                                <table border="0" cellpadding="0"
-                                                                                    cellspacing="0" role="presentation"
-                                                                                    style="background:#405DE6;border-radius:50%;width:25;">
-                                                                                    <tbody>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding:0px 0px 0px 0px;font-size:0;height:25;vertical-align:middle;width:25;">
-                                                                                                <a href="https://www.instagram.com/sistemacontableperseoec/"
-                                                                                                    target="_blank"><img
-                                                                                                        height="25"
-                                                                                                        src="https://www.mailjet.com/images/theme/v1/icons/ico-social/instagram.png"
-                                                                                                        style="border-radius:50%;display:block;"
-                                                                                                        width="25"></a>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                                <!--[if mso | IE]></td><td><![endif]-->
-                                                                <table align="center" border="0" cellpadding="0"
-                                                                    cellspacing="0" role="presentation"
-                                                                    style="float:none;display:inline-table;">
-                                                                    <tbody>
-                                                                        <tr>
-                                                                            <td
-                                                                                style="padding:4px;vertical-align:middle;">
-                                                                                <table border="0" cellpadding="0"
-                                                                                    cellspacing="0" role="presentation"
-                                                                                    style="background:#FF0000;border-radius:50%;width:25;">
-                                                                                    <tbody>
-                                                                                        <tr>
-                                                                                            <td
-                                                                                                style="padding:0px 0px 0px 0px;font-size:0;height:25;vertical-align:middle;width:25;">
-                                                                                                <a href="https://www.youtube.com/@SistemaContablePerseo"
-                                                                                                    target="_blank"><img
-                                                                                                        height="25"
-                                                                                                        src="https://www.mailjet.com/images/theme/v1/icons/ico-social/youtube.png"
-                                                                                                        style="border-radius:50%;display:block;"
-                                                                                                        width="25"></a>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                                <!--[if mso | IE]></td></tr></table><![endif]-->
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" bgcolor="#000000" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-        <div style="background:#000000;background-color:#000000;margin:0px auto;max-width:600px;">
-            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                style="background:#000000;background-color:#000000;width:100%;">
-                <tbody>
-                    <tr>
-                        <td
-                            style="direction:ltr;font-size:0px;padding:0px 0px 0px 0px;padding-left:0px;padding-right:0px;padding-top:0px;text-align:center;">
-                            <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:600px;" ><![endif]-->
-                            <div class="mj-column-per-100 mj-outlook-group-fix"
-                                style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                                <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
-                                    <tbody>
-                                        <tr>
-                                            <td style="vertical-align:top;padding:0 0 0 0;">
-                                                <table border="0" cellpadding="0" cellspacing="0" role="presentation"
-                                                    width="100%">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td align="left"
-                                                                style="background:#000000;font-size:0px;padding:0px 25px 0px 25px;padding-top:0px;padding-right:25px;padding-bottom:0px;padding-left:25px;word-break:break-word;">
-                                                                <div
-                                                                    style="font-family:Arial, sans-serif;font-size:10px;letter-spacing:normal;line-height:1;text-align:left;color:#000000;">
-                                                                    <p class="text-build-content"
-                                                                        style="line-height: 12px; text-align: center; margin: 10px 0; margin-top: 10px;"
-                                                                        data-testid="rT12D2vRv"><span
-                                                                            style="color:#ffffff;font-family:Arial;font-size:10px;">©
-                                                                            ${date} &nbsp;ALL RIGHTS RESERVED</span></p>
-                                                                    <p class="text-build-content"
-                                                                        style="line-height: 12px; text-align: center; margin: 10px 0; margin-bottom: 10px;"
-                                                                        data-testid="rT12D2vRv"><span
-                                                                            style="color:#ffffff;font-family:Arial;font-size:10px;">&nbsp;Quito-Ecuador</span>
-                                                                    </p>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td align="center"
-                                                                style="background:#ffffff;font-size:0px;padding:3px 0px 1px 0px;padding-top:3px;padding-right:0px;padding-bottom:1px;padding-left:0px;word-break:break-word;">
-                                                                <p
-                                                                    style="border-top:solid 4px #bcdefb;font-size:1px;margin:0px auto;width:100%;">
-                                                                </p>
-                                                                <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" style="border-top:solid 4px #bcdefb;font-size:1px;margin:0px auto;width:600px;" role="presentation" width="600px" ><tr><td style="height:0;line-height:0;"> &nbsp;
-</td></tr></table><![endif]-->
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!--[if mso | IE]></td></tr></table><![endif]-->
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--[if mso | IE]></td></tr></table><![endif]-->
+<div class="email-container">
+    <!-- Header -->
+    <div class="header">
+        <img src="{{ $message->embed(public_path() . '/assets/media/logo.png') }}" alt="Perseo Software">
     </div>
-</body>
 
+    <!-- Content -->
+    <div class="content">
+        <!-- Intro text -->
+        <div class="intro-text">
+            <strong>{{ $array['titulo'] }}</strong>
+            <br>
+            <span class="license-type">Licencia VPS</span>
+        </div>
+
+        <!-- Two-column info -->
+        <div class="two-columns">
+            <!-- Left column: Client info -->
+            <div class="column">
+                <div class="section-title">Información del Cliente</div>
+                <div class="info-row">
+                    <span class="info-label">Cliente:</span>
+                    <span class="info-value">{{ $array['cliente'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Identificación:</span>
+                    <span class="info-value">{{ $array['identificacion'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Correo:</span>
+                    <span class="info-value">{{ $array['correo'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">N° Contrato:</span>
+                    <span class="info-value"><strong>{{ $array['numerocontrato'] }}</strong></span>
+                </div>
+            </div>
+
+            <!-- Right column: VPS config -->
+            <div class="column">
+                <div class="section-title">Configuración de Licencia</div>
+                <div class="info-row">
+                    <span class="info-label">IP Servidor:</span>
+                    <span class="info-value">{{ $array['ip'] ?? 'N/A' }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Fecha de Corte Proveedor</span>
+                    <span class="info-value">{{ $array['fecha_corte_proveedor'] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Fecha de Corte Cliente</span>
+                    <span class="info-value">{{ $array['fecha_corte_cliente'] }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Creation/Modification info -->
+        <div class="creation-info">
+            <div class="creation-title">
+                {{ $array['accion'] }}
+            </div>
+            <div class="creation-details">
+                <strong>Usuario:</strong> {{ $array['usuario'] }} |
+                <strong>Fecha:</strong> {{ $array['fecha'] }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="social-links">
+            <a href="https://www.facebook.com/sistemacontableperseoec" target="_blank">
+                <img src="{{ $message->embed(public_path() . '/assets/media/facebook.png') }}" alt="Facebook">
+            </a>
+            <a href="https://www.youtube.com/channel/UC5vW4mwvCNbWpCxRr_aqI7g" target="_blank">
+                <img src="{{ $message->embed(public_path() . '/assets/media/youtube.png') }}" alt="YouTube">
+            </a>
+            <a href="https://www.instagram.com/sistemacontableperseoec/?hl=es" target="_blank">
+                <img src="{{ $message->embed(public_path() . '/assets/media/instagram.png') }}" alt="Instagram">
+            </a>
+        </div>
+        <div class="footer-text">© {{ date('Y') }} PERSEO. Todos los derechos reservados | Quito - Ecuador</div>
+    </div>
+</div>
+
+</body>
 </html>

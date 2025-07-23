@@ -14,7 +14,7 @@
                                     <div class="card-title">
                                         <h3 class="card-label font-weight-bold text-dark">
                                             <i class="fas fa-cloud text-primary mr-3"></i>Editar Licencia Web
-                                            <small class="text-muted d-block font-size-sm">
+                                            <small class="text-dark d-block font-size-sm">
                                                 Cliente: {{ $cliente->nombres }} ({{ $cliente->identificacion }})
                                             </small>
                                         </h3>

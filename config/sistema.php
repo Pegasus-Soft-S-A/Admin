@@ -1,6 +1,7 @@
 <?php // config/sistema.php
 return [
     'local_mode' => env('APP_ENV') === 'local',
+    
     'tipos_roles' => [
         1 => 'Admin',
         2 => 'Distribuidor',
@@ -59,7 +60,7 @@ return [
 
             // === PERMISOS PARA CREAR ===
             'editar_configuracion_tecnica_crear' => [1, 2, 3, 7], // Identificador, IPs
-            'editar_numeros_configuracion_crear' => [1, 2, 3, 7], // Equipos, móviles, sucursales
+            'editar_numeros_configuracion_crear' => [], // Equipos, móviles, sucursales
             'editar_bd_crear' => [1], // Puertos, Usuario BD, Clave BD
             'editar_puerto_bd_crear' => [1], // Puertos, Usuario BD, Clave BD
             'editar_puerto_movil_crear' => [1, 2, 3, 7], // Puertos, Usuario BD, Clave BD
@@ -72,7 +73,7 @@ return [
 
             // === PERMISOS PARA MODIFICAR ===
             'editar_configuracion_tecnica_modificar' => [1, 2, 3, 7], // Identificador, IPs - SOPORTE MATRIZ SÍ puede
-            'editar_numeros_configuracion_modificar' => [1, 2], // Equipos, móviles, sucursales - Soporte matriz NO
+            'editar_numeros_configuracion_modificar' => [], // Equipos, móviles, sucursales - Soporte matriz NO
             'editar_bd_modificar' => [1], // Puertos, Usuario BD, Clave BD - Solo admin y soporte matriz
             'editar_puerto_bd_modificar' => [1, 7], // Puertos, Usuario BD, Clave BD - Solo admin y soporte matriz
             'editar_puerto_movil_modificar' => [1, 3, 7], // Puertos, Usuario BD, Clave BD - Solo admin y soporte matriz
@@ -92,11 +93,11 @@ return [
 
     'tipos_adicionales' => [
         1 => [
-            'nombre' => 'Móviles',
+            'nombre' => 'App Ventas',
             'descripcion' => 'Licencias móviles',
             'icono' => 'fa-mobile',
             'precio_strategy' => 'simple',
-            'campo_licencia' => 'numeromoviles',
+            'campo_licencia' => 'numeromoviles2',
             'precios' => [
                 'pc' => [
                     'mensual' => 12,
@@ -131,6 +132,7 @@ return [
             'icono' => 'fa-desktop',
             'precio_strategy' => 'simple',
             'campo_licencia' => 'numeroequipos',
+            'campos_relacionados' => ['numeromoviles'],
             'precios' => [
                 'pc' => [
                     'mensual' => 15,
@@ -227,6 +229,10 @@ return [
                 'nombre' => 'Licencia PC',
                 'plantilla' => 'emails.licenciapc'
             ],
+            'vps' => [
+                'nombre' => 'Licencia VPS',
+                'plantilla' => 'emails.licenciavps'
+            ],
             'credenciales_web' => [
                 'nombre' => 'Perseo Web',
                 'plantilla' => 'emails.credenciales'
@@ -263,7 +269,6 @@ return [
             ]
         ]
     ],
-
 
     'productos' => [
         'web' => [

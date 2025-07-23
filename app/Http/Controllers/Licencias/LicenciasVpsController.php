@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Licencias;
 use App\Mail\enviarlicencia;
 use App\Models\Clientes;
 use App\Models\Licenciasvps;
+use App\Services\EmailLicenciaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -34,7 +35,7 @@ class LicenciasVpsController extends LicenciasBaseController
             );
 
             $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
-            
+
             EmailLicenciaService::enviarLicencia('nuevo', $licencia, $cliente, $request);
 
             flash('Guardado Correctamente')->success();

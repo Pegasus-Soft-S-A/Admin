@@ -114,9 +114,12 @@ class EmailLicenciaService
     private static function prepararOpcionesVPS($licencia, $cliente)
     {
         return [
-            'servidor_vps' => $licencia['servidor_vps'] ?? '',
-            'plan_vps' => $licencia['plan_vps'] ?? '',
+            'servidor_vps' => $licencia['servidor_vps'] ?? 'VPS-01',
+            'ip' => $licencia['ip'] ?? $licencia['ipservidor'] ?? 'N/A',
+            'fecha_corte_proveedor' => isset($licencia['fecha_corte_proveedor']) ? date("d-m-Y", strtotime($licencia['fecha_corte_proveedor'])) : date("d-m-Y"),
+            'fecha_corte_cliente' => isset($licencia['fecha_corte_cliente']) ? date("d-m-Y", strtotime($licencia['fecha_corte_cliente'])) : date("d-m-Y"),
             'correo' => $cliente->correos,
+            'usuario_vps' => $licencia['usuario'] ?? '',
         ];
     }
 
@@ -175,7 +178,7 @@ class EmailLicenciaService
                 }
             }
 
-            Mail::to($emails)->queue($mailable);
+            Mail::to("jhusep95@gmail.com")->queue($mailable);
         }
     }
 
@@ -187,10 +190,14 @@ class EmailLicenciaService
     {
         $emails = [
             $cliente->correos ?? '',
-            $cliente->distribuidor ?? '',
             $cliente->vendedor ?? '',
             'facturacion@perseo.ec'
         ];
+
+        if (!empty($cliente->distribuidor)) {
+            $emailsDistribuidor = array_map('trim', explode(',', $cliente->distribuidor));
+            $emails = array_merge($emails, $emailsDistribuidor);
+        }
 
         // Agregar email del usuario autenticado si existe
         try {

@@ -67,6 +67,25 @@
         .dataTables_length label {
             @apply font-weight-bold text-dark;
         }
+
+        /* Estilos simples para filtros activos - solo borde lateral verde */
+        .filtro-activo {
+            border-left: 4px solid #1BC5BD !important;
+            transition: border-left 0.3s ease !important;
+        }
+
+        /* Estilos específicos para select2 activos */
+        .select2-activo .select2-selection--single {
+            border-left: 4px solid #1BC5BD !important;
+            transition: border-left 0.3s ease !important;
+        }
+
+        /* Mejora visual para el badge de filtros activos */
+        .badge-light-primary {
+            /*background-color: rgba(27, 197, 189, 0.1) !important;*/
+            color: #1BC5BD !important;
+            border: 1px solid #1BC5BD !important;
+        }
     </style>
 
     <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -126,7 +145,7 @@
                             </div>
 
                             <div class="card-body">
-                                <!-- ✅ Sección de filtros mejorada -->
+                                <!-- Sección de filtros mejorada -->
                                 <div class="filter-section p-4 mb-6" id="filtro" style="display: none;">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
                                         <h5 class="font-weight-bold text-dark mb-0">
@@ -137,7 +156,7 @@
                                         </button>
                                     </div>
 
-                                    <!-- ✅ Filtros agrupados por categorías -->
+                                    <!-- Filtros agrupados por categorías -->
                                     <div class="row">
                                         <!-- Grupo: Configuración de Fecha -->
                                         <div class="col-12">
@@ -361,7 +380,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- ✅ Botones de acción mejorados -->
+                                    <!-- Botones de acción mejorados -->
                                     <div class="row mt-3">
                                         <div class="col-12">
                                             <div class="d-flex justify-content-between align-items-center">
@@ -375,9 +394,9 @@
                                                     </button>
                                                 </div>
 
-                                                <!-- ✅ Indicador de filtros activos -->
+                                                <!-- Indicador de filtros activos -->
                                                 <div id="filtros-activos" class="badge badge-light-primary" style="display: none;">
-                                                    <i class="fas fa-filter mr-1"></i>
+                                                    <i class="fas fa-filter mr-1 text-success"></i>
                                                     <span id="count-filtros">0</span> filtros activos
                                                 </div>
                                             </div>
@@ -385,7 +404,7 @@
                                     </div>
                                 </div>
 
-                                <!-- ✅ Tabla con header mejorado -->
+                                <!-- Tabla con header mejorado -->
                                 <div class="table-responsive">
                                     <table class="table table-hover table-bordered table-head-custom" id="kt_datatable">
                                         <thead class="thead-light">
@@ -468,79 +487,6 @@
         const ConfigClientes = {
             configuracion: @json(config('sistema')),
 
-            // ✅ Mapeos dinámicos para productos
-            actualizarProductos(tipoLicencia) {
-                $('#producto').empty();
-                $('#producto').append('<option value="">Todos los productos</option>');
-
-                if (!tipoLicencia || tipoLicencia === '') {
-                    return; // "Todos" seleccionado
-                }
-
-                // Usar configuración dinámica según tipo
-                let productos = [];
-                switch (tipoLicencia) {
-                    case '2': // Web
-                        productos = this.obtenerProductosWeb();
-                        break;
-                    case '3': // PC
-                        productos = this.obtenerProductosPC();
-                        break;
-                    case '4': // VPS
-                        productos = [{id: 'vps', nombre: 'Perseo VPS'}];
-                        break;
-                }
-
-                productos.forEach(producto => {
-                    $('#producto').append(`<option value="${producto.id}">${producto.nombre}</option>`);
-                });
-            },
-
-            // ✅ Obtener productos Web desde configuración
-            obtenerProductosWeb() {
-                const productosWeb = this.configuracion.productos.web;
-                const productos = [];
-
-                Object.keys(productosWeb).forEach(id => {
-                    let nombre = this.obtenerNombreProducto(id);
-                    productos.push({id: id, nombre: nombre});
-                });
-
-                return productos;
-            },
-
-            // ✅ Obtener productos PC desde configuración
-            obtenerProductosPC() {
-                const modulosPC = this.configuracion.productos.pc.modulos_principales;
-                const productos = [];
-
-                Object.keys(modulosPC).forEach(modulo => {
-                    productos.push({
-                        id: modulo,
-                        nombre: modulo.charAt(0).toUpperCase() + modulo.slice(1)
-                    });
-                });
-
-                return productos;
-            },
-
-            // ✅ Mapeo de nombres de productos
-            obtenerNombreProducto(id) {
-                const nombres = {
-                    '2': 'Facturación',
-                    '3': 'Servicios',
-                    '4': 'Comercial',
-                    '5': 'Soy Contador Comercial',
-                    '6': 'Perseo Lite Anterior',
-                    '8': 'Soy Contador Servicios',
-                    '9': 'Perseo Lite',
-                    '10': 'Emprendedor',
-                    '11': 'Socio Perseo',
-                    '12': 'Facturito'
-                };
-                return nombres[id] || `Producto ${id}`;
-            },
-
             // ✅ Actualizar períodos según producto
             actualizarPeriodos(producto) {
                 if (producto == '12') {
@@ -554,19 +500,46 @@
                 }
             },
 
-            // ✅ Contar filtros activos
+            // ✅ Contar y resaltar filtros activos (con soporte para select2)
             contarFiltrosActivos() {
                 let count = 0;
-                const filtros = ['#tipofecha', '#tipolicencia', '#fecha', '#periodo', '#producto',
+
+                const filtros = ['#tipofecha', '#fecha', '#tipolicencia', '#producto', '#periodo',
                     '#distribuidor', '#vendedor', '#revendedor', '#provinciasid', '#origen'];
 
-                filtros.forEach(filtro => {
-                    const valor = $(filtro).val();
-                    if (valor && valor !== '') {
-                        count++;
+                // Limpiar estilos anteriores
+                filtros.forEach(filtroId => {
+                    const campo = $(filtroId);
+
+                    // Limpiar clase normal
+                    campo.removeClass('filtro-activo');
+
+                    // Limpiar clase select2 si aplica
+                    if (campo.hasClass('select2-hidden-accessible')) {
+                        campo.next('.select2-container').removeClass('select2-activo');
                     }
                 });
 
+                // Evaluar cada filtro y aplicar borde verde si está activo
+                filtros.forEach(filtroId => {
+                    const campo = $(filtroId);
+                    const valor = campo.val();
+
+                    if (valor && valor !== '') {
+                        count++;
+
+                        // Aplicar clase según el tipo de campo
+                        if (campo.hasClass('select2-hidden-accessible')) {
+                            // Es un select2
+                            campo.next('.select2-container').addClass('select2-activo');
+                        } else {
+                            // Es un input normal
+                            campo.addClass('filtro-activo');
+                        }
+                    }
+                });
+
+                // Actualizar contador
                 const elemento = $('#filtros-activos');
                 if (count > 0) {
                     elemento.show();
@@ -576,29 +549,6 @@
                 }
             }
         };
-
-        // ====================================
-        // EVENT HANDLERS PRINCIPALES
-        // ====================================
-
-        // ✅ Cambio de tipo de licencia
-        $('#tipolicencia').on('change', function (e) {
-            const tipoLicencia = e.target.value;
-            ConfigClientes.actualizarProductos(tipoLicencia);
-            ConfigClientes.contarFiltrosActivos();
-        });
-
-        // ✅ Cambio de producto
-        $('#producto').on('change', function (e) {
-            const producto = e.target.value;
-            ConfigClientes.actualizarPeriodos(producto);
-            ConfigClientes.contarFiltrosActivos();
-        });
-
-        // ✅ Contar filtros en todos los cambios
-        $('.datatable-input').on('change', function () {
-            ConfigClientes.contarFiltrosActivos();
-        });
 
         // ====================================
         // INICIALIZACIÓN PRINCIPAL
@@ -648,6 +598,7 @@
                 showDropdowns: true,
             });
 
+            // ✅ Event handlers para daterangepicker simplificados
             $('#kt_fecha').on('apply.daterangepicker', function (ev, picker) {
                 $(this).find('.form-control').val(
                     picker.startDate.format('DD-MM-YYYY') + ' / ' + picker.endDate.format('DD-MM-YYYY')
@@ -965,6 +916,58 @@
             });
 
             // ====================================
+            // EVENT HANDLERS PRINCIPALES
+            // ====================================
+
+            // ✅ Cambio de tipo de licencia con AJAX original
+            $('#tipolicencia').on('change', function (e) {
+                var distribuidor = e.target.value;
+                var tipo = $('#tipolicencia').val();
+                $('#producto').empty();
+
+                if (!tipo || tipo === '') {
+                    $('#producto').append('<option value="">Todos los productos</option>');
+                    ConfigClientes.contarFiltrosActivos();
+                    return;
+                }
+
+                $.ajax({
+                    type: "GET",
+                    url: '/admin/productos/' + tipo,
+                    success: function (data) {
+                        $('#producto').append('<option value="">Todos los productos</option>');
+                        $.each(data, function (fetch, producto) {
+                            for (i = 0; i < producto.length; i++) {
+                                $('#producto').append('<option value="' + producto[i].id + '">' + producto[i].nombre + '</option>');
+                            }
+                        });
+                        ConfigClientes.contarFiltrosActivos();
+                    },
+                    error: function () {
+                        $('#producto').append('<option value="">Todos los productos</option>');
+                        ConfigClientes.contarFiltrosActivos();
+                    }
+                });
+            });
+
+            // ✅ Cambio de producto
+            $('#producto').on('change', function (e) {
+                const producto = e.target.value;
+                ConfigClientes.actualizarPeriodos(producto);
+                ConfigClientes.contarFiltrosActivos();
+            });
+
+            // ✅ Resaltar filtros al cambiar valores (con soporte para select2)
+            $('.datatable-input').on('input change', function () {
+                ConfigClientes.contarFiltrosActivos();
+            });
+
+            // Event handler específico para select2
+            $('.select2').on('select2:select select2:clear', function () {
+                ConfigClientes.contarFiltrosActivos();
+            });
+
+            // ====================================
             // EVENT HANDLERS DE EXPORTACIÓN
             // ====================================
 
@@ -1004,7 +1007,7 @@
                 ConfigClientes.contarFiltrosActivos();
             });
 
-            // ✅ Botón resetear mejorado
+            // ✅ Botón resetear simplificado
             $('#kt_reset').on('click', function (e) {
                 e.preventDefault();
 
@@ -1021,6 +1024,10 @@
                 $("#provinciasid").val('').trigger('change');
                 $("#buscar_filtro").val('');
 
+                // Limpiar clases de resaltado
+                $('.filtro-activo').removeClass('filtro-activo');
+                $('.select2-activo').removeClass('select2-activo');
+
                 // Actualizar contador y tabla
                 ConfigClientes.contarFiltrosActivos();
                 table.draw();
@@ -1029,6 +1036,12 @@
                 $('#kt_fecha').data('daterangepicker').setStartDate(moment());
                 $('#kt_fecha').data('daterangepicker').setEndDate(moment());
                 $('#kt_fecha .form-control').val('');
+
+                // Feedback visual simple
+                $(this).removeClass('btn-secondary').addClass('btn-success');
+                setTimeout(() => {
+                    $(this).removeClass('btn-success').addClass('btn-secondary');
+                }, 800);
             });
 
             // Mostrar/ocultar div de búsqueda
@@ -1042,49 +1055,39 @@
             // ====================================
 
             // Actualizar contador cuando cambian los select2
-            $('#distribuidor, #vendedor, #revendedor, #provinciasid').on('change', function () {
+            $('#distribuidor, #vendedor, #revendedor, #provinciasid').on('change select2:select select2:clear', function () {
                 ConfigClientes.contarFiltrosActivos();
             });
 
             // ====================================
-            // FUNCIONES AUXILIARES
-            // ====================================
-
-            // ✅ Función para limpiar filtro individual
-            window.limpiarFiltro = function (filtroId) {
-                $(filtroId).val('').trigger('change');
-                ConfigClientes.contarFiltrosActivos();
-            };
-
-            // ✅ Función para aplicar filtro rápido
-            window.aplicarFiltroRapido = function (campo, valor) {
-                $(campo).val(valor).trigger('change');
-                $("#buscar_filtro").val('1');
-                table.draw();
-                ConfigClientes.contarFiltrosActivos();
-            };
-
-            // ====================================
             // INICIALIZACIÓN FINAL
             // ====================================
-
-            // Cargar productos inicial si hay tipo seleccionado
-            const tipoInicial = $('#tipolicencia').val();
-            if (tipoInicial && tipoInicial !== '1') {
-                ConfigClientes.actualizarProductos(tipoInicial);
-            }
 
             // Actualizar períodos inicial si hay producto seleccionado
             const productoInicial = $('#producto').val();
             if (productoInicial) {
                 ConfigClientes.actualizarPeriodos(productoInicial);
             }
-            
+
         });
 
         // ====================================
         // FUNCIONES GLOBALES ADICIONALES
         // ====================================
+
+        // ✅ Función para limpiar filtro individual
+        window.limpiarFiltro = function (filtroId) {
+            $(filtroId).val('').trigger('change');
+            ConfigClientes.contarFiltrosActivos();
+        };
+
+        // ✅ Función para aplicar filtro rápido
+        window.aplicarFiltroRapido = function (campo, valor) {
+            $(campo).val(valor).trigger('change');
+            $("#buscar_filtro").val('1');
+            $('#kt_datatable').DataTable().draw();
+            ConfigClientes.contarFiltrosActivos();
+        };
 
         // ✅ Función para exportar con filtros personalizados
         window.exportarConFiltros = function (tipo) {

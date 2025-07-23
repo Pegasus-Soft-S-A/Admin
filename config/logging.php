@@ -54,6 +54,15 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'production' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/production.log'),
+            'level' => env('LOG_LEVEL', 'warning'),
+            'days' => 7,
+            'replace_placeholders' => true,
+            'permission' => 0644,
+        ],
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),

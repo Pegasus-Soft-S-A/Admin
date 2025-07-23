@@ -309,7 +309,6 @@ class adminController extends LicenciasBaseController
         switch ($tipo) {
             case '2':
                 $producto = [
-                    ["id" => "", "nombre" => "Todos"],
                     ["id" => "2", "nombre" => "Facturación"],
                     ["id" => "3", "nombre" => "Servicios"],
                     ["id" => "4", "nombre" => "Comercial"],
@@ -325,7 +324,6 @@ class adminController extends LicenciasBaseController
                 break;
             case '3':
                 $producto = [
-                    ["id" => "", "nombre" => "Todos"],
                     ["id" => "1", "nombre" => "Práctico"],
                     ["id" => "2", "nombre" => "Control"],
                     ["id" => "3", "nombre" => "Contable"],
@@ -593,7 +591,7 @@ class adminController extends LicenciasBaseController
 
             // Enviar email de demo
             $result = EmailLicenciaService::enviarCredenciales($cliente->sis_clientesid, $licencia->producto);
-            
+
         } catch (\Exception $e) {
             // Log el error pero no interrumpir el proceso principal
             \Log::error('Error creando licencia demo: ' . $e->getMessage(), [

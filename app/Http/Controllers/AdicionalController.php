@@ -194,35 +194,49 @@ class AdicionalController extends Controller
     //  Actualizar campo con lógica diferenciada PC/Web
     private function actualizarCampoLicenciaDinamico($licencia, $tipoAdicional, $cantidadAgregar)
     {
-        // Obtener mapeo dinámicamente de configuración
         $tiposConfig = config('sistema.tipos_adicionales', []);
-        $campo = $tiposConfig[$tipoAdicional]['campo_licencia'] ?? null;
+        $tipoConfig = $tiposConfig[$tipoAdicional] ?? null;
 
-        if (!$campo) {
-            throw new \Exception("No se encontró mapeo para el tipo adicional {$tipoAdicional}");
+        if (!$tipoConfig) {
+            throw new \Exception("No se encontró configuración para el tipo adicional {$tipoAdicional}");
         }
 
-        // Actualizar campo localmente
-        $valorActual = $licencia->{$campo} ?? 0;
+        // 1. ACTUALIZAR CAMPO PRINCIPAL
+        $campoPrincipal = $tipoConfig['campo_licencia'];
+        $valorActual = $licencia->{$campoPrincipal} ?? 0;
         $nuevoValor = $valorActual + $cantidadAgregar;
+        $licencia->{$campoPrincipal} = $nuevoValor;
 
-        $licencia->{$campo} = $nuevoValor;
-        $licencia->save();
-
-        Log::info("Campo {$campo} actualizado localmente", [
+        Log::info("Campo principal {$campoPrincipal} actualizado", [
             'licencia' => $licencia->numerocontrato,
-            'tipo_licencia' => $this->esLicenciaPC($licencia) ? 'PC' : 'Web',
             'valor_anterior' => $valorActual,
             'cantidad_agregada' => $cantidadAgregar,
             'nuevo_valor' => $nuevoValor
         ]);
 
-        //  SOLO actualizar servidor externo si es licencia WEB
+        // 2. ACTUALIZAR CAMPOS RELACIONADOS (misma cantidad)
+        if (isset($tipoConfig['campos_relacionados'])) {
+            foreach ($tipoConfig['campos_relacionados'] as $campoRelacionado) {
+                $valorActualRelacionado = $licencia->{$campoRelacionado} ?? 0;
+                $nuevoValorRelacionado = $valorActualRelacionado + $cantidadAgregar; // ✅ Misma cantidad
+                $licencia->{$campoRelacionado} = $nuevoValorRelacionado;
+
+                Log::info("Campo relacionado {$campoRelacionado} actualizado", [
+                    'licencia' => $licencia->numerocontrato,
+                    'valor_anterior' => $valorActualRelacionado,
+                    'cantidad_agregada' => $cantidadAgregar,
+                    'nuevo_valor' => $nuevoValorRelacionado
+                ]);
+            }
+        }
+
+        $licencia->save();
+
+        // Resto del método permanece igual...
         if (!$this->esLicenciaPC($licencia)) {
             $this->actualizarServidorExterno($licencia);
         }
 
-        // Log del servicio (aplica para ambos tipos)
         LogService::modificar(
             $this->esLicenciaPC($licencia) ? 'Licencia PC' : 'Licencia Web',
             $licencia->toArray()
@@ -263,10 +277,27 @@ class AdicionalController extends Controller
         $tiposConfig = config('sistema.tipos_adicionales', []);
         $campos = [];
 
+        // Siempre incluir campos básicos que pueden cambiar
+        $camposBasicos = ['numeromoviles', 'numerosucursales', 'numeroequipos', 'usuarios_nube', 'empresas'];
+        foreach ($camposBasicos as $campo) {
+            if (isset($licencia->{$campo})) {
+                $campos[$campo] = $licencia->{$campo};
+            }
+        }
+
+        // Agregar campos específicos de la configuración
         foreach ($tiposConfig as $tipoId => $config) {
+            // Campo principal
             if (isset($config['campo_licencia'])) {
                 $campo = $config['campo_licencia'];
                 $campos[$campo] = $licencia->{$campo} ?? 0;
+            }
+
+            // Campos relacionados
+            if (isset($config['campos_relacionados'])) {
+                foreach ($config['campos_relacionados'] as $campoRelacionado) {
+                    $campos[$campoRelacionado] = $licencia->{$campoRelacionado} ?? 0;
+                }
             }
         }
 
