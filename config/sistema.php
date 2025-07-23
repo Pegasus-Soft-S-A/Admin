@@ -184,73 +184,34 @@ return [
         ]
     ],
 
-    'emails' => [
-        'acciones' => [
-            'nuevo' => [
-                'titulo' => 'Nueva licencia:',
-                'accion' => 'Creación'
-            ],
-            'modificado' => [
-                'titulo' => 'Licencia modificada:',
-                'accion' => 'Modificación'
-            ],
-            'renovacion_mensual' => [
-                'titulo' => 'Renovación mensual:',
-                'accion' => 'Renovación'
-            ],
-            'renovacion_anual' => [
-                'titulo' => 'Renovación anual:',
-                'accion' => 'Renovación'
-            ],
-            'recarga_documentos' => [
-                'titulo' => 'Recarga de documentos:',
-                'accion' => 'Recarga'
-            ],
-            'credenciales' => [
-                'titulo' => 'Credenciales de acceso:',
-                'accion' => 'Envío de credenciales'
-            ],
-            'credenciales_simples' => [
-                'titulo' => 'Recordatorio de credenciales:',
-                'accion' => 'Credenciales de acceso'
-            ],
+    'periodos' => [
+        'web' => [
+            'normal' => [1 => 'mensual', 2 => 'anual'],
+            'facturito' => [1 => 'inicial', 2 => 'basico', 3 => 'premium', 4 => 'gratis']
         ],
-
-        'productos' => [
-            'web' => [
-                'nombre' => 'Licencia Web',
-                'plantilla' => 'emails.licenciaweb'
-            ],
+        'pc' => [
+            1 => ['nombre' => 'Mensual', 'meses' => 1, 'meses_actualizaciones' => 12],
+            2 => ['nombre' => 'Anual', 'meses' => 12, 'meses_actualizaciones' => 12],
+            3 => ['nombre' => 'Venta', 'meses' => 60, 'meses_actualizaciones' => 12, 'sin_renovacion' => true]
+        ],
+        'etiquetas' => [
             'facturito' => [
-                'nombre' => 'Licencia Facturito',
-                'plantilla' => 'emails.licenciaweb'
-            ],
-            'pc' => [
-                'nombre' => 'Licencia PC',
-                'plantilla' => 'emails.licenciapc'
-            ],
-            'vps' => [
-                'nombre' => 'Licencia VPS',
-                'plantilla' => 'emails.licenciavps'
-            ],
-            'credenciales_web' => [
-                'nombre' => 'Perseo Web',
-                'plantilla' => 'emails.credenciales'
-            ],
-            'credenciales_facturito' => [
-                'nombre' => 'Facturito',
-                'plantilla' => 'emails.credenciales'
-            ],
-            'credenciales_simples_web' => [
-                'nombre' => 'Perseo Web',
-                'plantilla' => 'emails.credenciales'
-            ],
-            'credenciales_simples_facturito' => [
-                'nombre' => 'Facturito',
-                'plantilla' => 'emails.credenciales'
-            ],
-        ],
+                'inicial' => 'Inicial',
+                'basico' => 'Básico',
+                'premium' => 'Premium',
+                'gratis' => 'Gratis'
+            ]
+        ]
+    ],
 
+    'emails' => [
+        'templates' => [
+            'web' => 'emails.licenciaweb',
+            'pc' => 'emails.licenciapc',
+            'vps' => 'emails.licenciavps',
+            'facturito' => 'emails.licenciaweb',
+            'credenciales' => 'emails.credenciales'
+        ],
         'subjects' => [
             'nuevo' => 'Nueva {producto}',
             'modificado' => '{producto} Modificada',
@@ -259,9 +220,13 @@ return [
             'recarga_documentos' => 'Recarga de Documentos {producto}',
             'credenciales' => 'Credenciales de Acceso {producto}',
             'credenciales_simples' => 'Recordatorio Credenciales {producto}'
-
         ],
-        // Configuración para attachments
+        'productos_nombres' => [
+            'web' => 'Licencia Web',
+            'pc' => 'Licencia PC',
+            'vps' => 'Licencia VPS',
+            'facturito' => 'Licencia Facturito'
+        ],
         'attachments' => [
             'credenciales' => [
                 'public_path/assets/media/Procedimiento Ingreso.pdf',
@@ -558,6 +523,7 @@ return [
                     'ids_aplicativos' => ['105', '110', '111', '112', '113', '114', '115', '117', '118', '120', '125', '126', '127', '130', '131', '135', '136', '141', '142', '150', '305', '310', '315', '320', '325', '330', '335', '430', '431', '432', '433', '434', '435', '440', '445', '450', '455', '456', '460', '461', '462', '463', '464', '465', '466', '469', '470', '471', '475', '480', '486', '491', '492', '495', '630', '905', '910', '915', '916', '917', '918', '919', '920', '925', '930', '931', '940', '960', '1105', '1110', '1115', '1120'],
                     'incluye_nomina' => false,
                     'incluye_activos' => false,
+                    'incluye_produccion' => true,
                     'adicionales' => [1, 2, 3]
                 ],
                 'control' => [
@@ -572,6 +538,7 @@ return [
                     'ids_aplicativos' => ['200', '142', '201', '205', '210', '215', '225', '230', '505', '510', '515', '516', '517', '462', '463', '485', '490', '116', '140', '605', '630', '635'],
                     'incluye_nomina' => false,
                     'incluye_activos' => false,
+                    'incluye_produccion' => true,
                     'hereda_de' => 'practico', // Incluye lo de práctico
                     'adicionales' => [1, 2, 3]
                 ],
@@ -587,6 +554,7 @@ return [
                     'ids_aplicativos' => ['605', '142', '606', '610', '615', '616', '620', '625', '626', '627', '628', '630', '635', '636', '640'],
                     'incluye_nomina' => true,
                     'incluye_activos' => true,
+                    'incluye_produccion' => true,
                     'hereda_de' => 'control', // Incluye lo de control + práctico
                     'adicionales' => [1, 2, 3]
                 ],
@@ -609,6 +577,7 @@ return [
                     'ids_aplicativos' => [], // Hereda de contable
                     'incluye_nomina' => true,
                     'incluye_activos' => true,
+                    'incluye_produccion' => true,
                     'hereda_de' => 'contable', // Incluye lo de contable + control + práctico
                     'requiere_configuracion_nube' => true,
                     'adicionales' => [4, 5]

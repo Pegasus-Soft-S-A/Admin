@@ -50,8 +50,7 @@ class LicenciaService
     // === PREPARACIÓN DE DATOS PARA EL MAILABLE ===
     private static function prepararDatos($accion, $tipo, $licencia, $cliente, $request)
     {
-        // Configuraciones desde config/licencias.php
-        $configEmails = config('licencias.emails');
+        $configEmails = config('sistema.emails');
         // LÓGICA ESPECIAL: Para credenciales usar template específico
         $esCredenciales = str_contains($accion, 'credenciales');
         $template = $esCredenciales ? $configEmails['templates']['credenciales'] : $configEmails['templates'][$tipo];
@@ -185,7 +184,7 @@ class LicenciaService
             !str_contains($datos['accion'], 'simples');
 
         if ($esCredenciales) {
-            $attachments = config('licencias.emails.attachments.credenciales', []);
+            $attachments = config('sistema.emails.attachments.credenciales', []);
 
             foreach ($attachments as $attachment) {
                 $path = str_replace('public_path', public_path(), $attachment);
@@ -253,8 +252,8 @@ class LicenciaService
                 return 'No definido';
             }
 
-            $etiquetas = config('licencias.periodos.etiquetas.facturito');
-            $mapa = config('licencias.periodos.web.facturito');
+            $etiquetas = config('sistema.periodos.etiquetas.facturito');
+            $mapa = config('sistema.periodos.web.facturito');
 
             // Validar que exista el mapeo
             if (!isset($mapa[$periodo])) {

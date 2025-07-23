@@ -597,19 +597,23 @@
                     @endphp
 
                     <div class="row">
-                        @foreach ($modulosAdicionales as $modulo)
-                            <div class="col-lg-3 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body d-flex align-items-center">
-                                        <i class="{{ $modulo['icon'] }} fa-2x text-muted me-3 mr-5"></i>
-                                        <div class="flex-grow-1">
-                                            <h6 class="card-title mb-1">{{ $modulo['label'] }}</h6>
-                                            <div class="custom-control custom-switch custom-switch-datos">
-                                                <input type="checkbox" class="custom-control-input"
-                                                       id="{{ $modulo['name'] }}" name="{{ $modulo['name'] }}"
-                                                    {{ $modulo['value'] ? 'checked' : '' }}
-                                                    {{ !puede('pc', 'editar_modulos_adicionales_' . strtolower($accion)) ? 'disabled' : '' }}>
-                                                <label class="custom-control-label" for="{{ $modulo['name'] }}"></label>
+                        @foreach($modulosAdicionales as $modulo)
+                            <div class="col-md-6 col-lg-4 col-xl-3">
+                                <div class="form-group">
+                                    <div class="card card-custom card-border">
+                                        <div class="card-body text-center">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="{{ $modulo['icon'] }} fa-lg text-primary mr-2"></i>
+                                                    <span class="font-weight-bold">{{ $modulo['label'] }}</span>
+                                                </div>
+                                                <div class="custom-control custom-switch custom-switch-datos">
+                                                    <input type="checkbox" class="custom-control-input modulo-checkbox"
+                                                           id="{{ $modulo['name'] }}" name="{{ $modulo['name'] }}"
+                                                        {{ $modulo['value'] == 1 ? 'checked' : '' }}
+                                                        {{ !puede('web', 'editar_modulos') ? 'disabled' : '' }}>
+                                                    <label class="custom-control-label" for="{{ $modulo['name'] }}"></label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1056,6 +1060,10 @@
                 if (config.incluye_activos) {
                     $("#activos").prop("checked", true);
                     this.actualizarCheckboxesPorModulo('activos', true);
+                }
+                if (config.incluye_produccion) {
+                    $("#produccion").prop("checked", true);
+                    this.actualizarCheckboxesPorModulo('produccion', true);
                 }
             },
 

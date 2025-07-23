@@ -91,12 +91,6 @@ class LicenciasWebController extends LicenciasBaseController
             $licenciaData['fechacaduca'] = date("d-m-Y", strtotime($licenciaData['fechacaduca']));
             $licenciaData['fechacreacion'] = date("Y-m-d H:i:s", strtotime($licenciaData['fechacreacion']));
 
-            if ($licenciaData['fechamodificacion'] != "0000-00-00T00:00:00.000") {
-                $licenciaData['fechamodificacion'] = date("Y-m-d H:i:s", strtotime($licenciaData['fechamodificacion']));
-            } else {
-                $licenciaData['fechamodificacion'] = "";
-            }
-
             $modulos = simplexml_load_string($licenciaData['modulos']);
             $licencia = json_decode(json_encode($licenciaData));
 
