@@ -7,7 +7,7 @@ use App\Models\Agrupados;
 use App\Models\Clientes;
 use App\Models\Licenciasweb;
 use App\Models\Servidores;
-use App\Services\EmailLicenciaService;
+use App\Services\LicenciaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -58,7 +58,7 @@ class LicenciasWebController extends LicenciasBaseController
 
             $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
 
-            EmailLicenciaService::enviarLicencia('nuevo', $licencia, $cliente, $request);
+            LicenciaService::procesar('nuevo', $licencia, $cliente, $request->all());
 
             flash('Guardado Correctamente')->success();
             return redirect()->route('licencias.Web.editar', [$request['sis_clientesid'], $request->sis_servidoresid, $resultado['license_id']]);
@@ -155,8 +155,7 @@ class LicenciasWebController extends LicenciasBaseController
                 default => 'modificado'
             };
 
-            EmailLicenciaService::enviarLicencia($accion, $licenciaweb, $cliente, $request);
-
+            LicenciaService::procesar($accion, $licenciaweb, $cliente, $request->all());
 
             flash('Actualizado Correctamente')->success();
 
@@ -375,9 +374,9 @@ class LicenciasWebController extends LicenciasBaseController
 
     public function enviarEmail($clienteId, $productoId)
     {
-        $result = EmailLicenciaService::enviarCredenciales($clienteId, $productoId);
+        $resultado = LicenciaService::enviarCredenciales($clienteId, $productoId);
 
-        flash($result['message'])->{$result['success'] ? 'success' : 'error'}();
+        flash($resultado['message'])->{$resultado['success'] ? 'success' : 'error'}();
         return back();
     }
 
@@ -398,12 +397,7 @@ class LicenciasWebController extends LicenciasBaseController
 
                 $productoId = $licencia ? $licencia->producto : 0;
 
-                // ENVIAR EMAIL DE CREDENCIALES SIMPLES
-                $emailResult = EmailLicenciaService::enviarCredenciales(
-                    $cliente->sis_clientesid,
-                    $productoId,
-                    'simples'
-                );
+                LicenciaService::enviarCredenciales($cliente->sis_clientesid, $productoId, 'simples');
 
                 return [
                     'mensaje' => 'Clave reseteada correctamente. Se han enviado las nuevas credenciales por email.',

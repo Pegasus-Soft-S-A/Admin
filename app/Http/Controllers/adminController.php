@@ -16,8 +16,8 @@ use App\Models\Usuarios;
 use App\Rules\UniqueSimilar;
 use App\Rules\ValidarCelular;
 use App\Rules\ValidarCorreo;
-use App\Services\EmailLicenciaService;
 use App\Services\ExternalServerService;
+use App\Services\LicenciaService;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -590,8 +590,7 @@ class adminController extends LicenciasBaseController
             );
 
             // Enviar email de demo
-            $result = EmailLicenciaService::enviarCredenciales($cliente->sis_clientesid, $licencia->producto);
-
+            LicenciaService::enviarCredenciales($cliente->sis_clientesid, $licencia->producto);
         } catch (\Exception $e) {
             // Log el error pero no interrumpir el proceso principal
             \Log::error('Error creando licencia demo: ' . $e->getMessage(), [

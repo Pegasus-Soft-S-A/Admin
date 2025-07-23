@@ -6,6 +6,7 @@ use App\Mail\enviarlicencia;
 use App\Models\Clientes;
 use App\Models\Licenciasvps;
 use App\Services\EmailLicenciaService;
+use App\Services\LicenciaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -36,7 +37,7 @@ class LicenciasVpsController extends LicenciasBaseController
 
             $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
 
-            EmailLicenciaService::enviarLicencia('nuevo', $licencia, $cliente, $request);
+            LicenciaService::procesar('nuevo', $licencia, $cliente, $request->all());
 
             flash('Guardado Correctamente')->success();
             return redirect()->route('licencias.Vps.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
@@ -70,8 +71,7 @@ class LicenciasVpsController extends LicenciasBaseController
 
             $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
 
-            EmailLicenciaService::enviarLicencia('modificado', $licencia, $cliente, $request);
-
+            LicenciaService::procesar("modificado", $licencia, $cliente, $request->all());
 
             flash('Actualizado Correctamente')->success();
 

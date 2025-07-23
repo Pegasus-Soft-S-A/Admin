@@ -7,7 +7,7 @@ use App\Models\Adicionales;
 use App\Models\Clientes;
 use App\Models\Licencias;
 use App\Models\Servidores;
-use App\Services\EmailLicenciaService;
+use App\Services\LicenciaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -76,7 +76,7 @@ class LicenciasPcController extends LicenciasBaseController
 
             $cliente = $this->obtenerDatosClienteEmail($request['sis_clientesid']);
 
-            EmailLicenciaService::enviarLicencia('nuevo', $licencia, $cliente);
+            LicenciaService::procesar('nuevo', $licencia, $cliente, $request->all());
 
             flash('Guardado Correctamente')->success();
             return redirect()->route('licencias.Pc.editar', [$request['sis_clientesid'], $licencia->sis_licenciasid]);
@@ -151,7 +151,8 @@ class LicenciasPcController extends LicenciasBaseController
                 default => 'modificado'
             };
 
-            EmailLicenciaService::enviarLicencia($accion, $licenciaActualizada, $cliente);
+            LicenciaService::procesar($accion, $licenciaActualizada, $cliente, $request->all());
+
             flash('Actualizado Correctamente')->success();
 
         } catch (\Exception $e) {

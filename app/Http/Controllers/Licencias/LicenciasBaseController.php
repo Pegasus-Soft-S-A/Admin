@@ -61,19 +61,6 @@ abstract class LicenciasBaseController extends Controller
             ->first();
     }
 
-    // Preparar lista de emails para envío
-    protected function prepararEmailsDestinatarios(object $cliente): array
-    {
-        $emails = explode(", ", $cliente->distribuidor ?? '');
-
-        return array_filter(array_merge($emails, [
-            "facturacion@perseo.ec",
-            $cliente->vendedor ?? '',
-            $cliente->correos ?? '',
-            Auth::user()->correo ?? '',
-        ]), fn($email) => !empty(trim($email)));
-    }
-
     // Manejar respuesta para requests AJAX y normales
     protected function manejarRespuesta(bool $esAjax, bool $exito, string $mensaje, $datos = null)
     {
@@ -90,12 +77,6 @@ abstract class LicenciasBaseController extends Controller
         }
 
         return back();
-    }
-
-    // Verificar permisos basado en configuración
-    protected function verificarPermiso(string $categoria, string $permiso): bool
-    {
-        return puede($categoria, $permiso);
     }
 
     // Ejecutar creación con transacción y log específico
