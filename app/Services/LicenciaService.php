@@ -162,16 +162,16 @@ class LicenciaService
         $emails = self::prepararEmails($cliente);
 
         // Solo enviar si no está en modo local y hay emails
-        //if (!config('sistema.local_mode') && !empty($emails)) {
+        if (!config('sistema.local_mode') && !empty($emails)) {
 
-        $mailable = new EnviarLicencia($datos);
+            $mailable = new EnviarLicencia($datos);
 
-        // Agregar attachments si existen
-        self::agregarAttachments($mailable, $datos);
+            // Agregar attachments si existen
+            self::agregarAttachments($mailable, $datos);
 
-        // Enviar
-        Mail::to($emails)->queue($mailable);
-        //}
+            // Enviar
+            Mail::to($emails)->queue($mailable);
+        }
 
         return ['success' => true, 'message' => 'Email procesado correctamente'];
     }
@@ -291,6 +291,7 @@ class LicenciaService
             'modificado' => 'Licencia modificada:',
             'renovacion_mensual' => 'Renovación mensual:',
             'renovacion_anual' => 'Renovación anual:',
+            'actualizacion_anual' => 'Actualización anual:',
             'recarga_documentos' => 'Recarga de documentos:',
             'credenciales' => 'Credenciales de acceso:',
             'credenciales_simples' => 'Recordatorio de credenciales:',
@@ -304,6 +305,7 @@ class LicenciaService
             'nuevo' => 'Creación',
             'modificado' => 'Modificación',
             'renovacion_mensual', 'renovacion_anual' => 'Renovación',
+            'actualizacion_anual' => 'Actualización Anual',
             'recarga_documentos' => 'Recarga',
             'credenciales' => 'Envío de credenciales',
             'credenciales_simples' => 'Credenciales de acceso',

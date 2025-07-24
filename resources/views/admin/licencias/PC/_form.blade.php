@@ -583,8 +583,8 @@
                             ['name' => 'woocomerce', 'label' => 'Plugin Woocomerce', 'icon' => 'fab fa-wordpress', 'value' => $modulos[0]->tienda_woocommerce ?? false],
                             ['name' => 'tienda', 'label' => 'Tienda Perseo', 'icon' => 'fas fa-store', 'value' => $modulos[0]->tienda_perseo_publico ?? false],
                             ['name' => 'restaurante', 'label' => 'Restaurantes', 'icon' => 'fas fa-utensils', 'value' => $modulos[0]->restaurante ?? false],
-                            ['name' => 'garantias', 'label' => 'Servicio Técnico/Garantías', 'icon' => 'fas fa-tools', 'value' => $modulos[0]->garantias ?? false],
-                            ['name' => 'talleres', 'label' => 'Servicio Técnico Talleres Vehículos', 'icon' => 'fas fa-car', 'value' => $modulos[0]->talleres ?? false],
+                            ['name' => 'garantias', 'label' => 'Garantías', 'icon' => 'fas fa-tools', 'value' => $modulos[0]->garantias ?? false],
+                            ['name' => 'talleres', 'label' => 'Talleres Vehículos', 'icon' => 'fas fa-car', 'value' => $modulos[0]->talleres ?? false],
                             ['name' => 'integraciones', 'label' => 'Integraciones', 'icon' => 'fas fa-plug', 'value' => $modulos[0]->tienda_perseo_distribuidor ?? false],
                             ['name' => 'cashmanager', 'label' => 'Cash Manager', 'icon' => 'fas fa-cash-register', 'value' => $modulos[0]->cash_manager ?? false],
                             ['name' => 'cashdebito', 'label' => 'Cash Debito', 'icon' => 'fas fa-credit-card', 'value' => $modulos[0]->cash_debito ?? false],
@@ -1411,25 +1411,18 @@
             },
 
             aplicarConfiguracionInicial() {
-                const usuariosActuales = parseInt($("#usuarios").val()) || 0;
-
-                if (usuariosActuales === 0) {
-                    const tipoNube = $("#tipo_nube").val() || '1';
-                    const usuarios = AppConfigPC.configuracion.productos.pc.configuracion_nube.usuarios_por_tipo[tipoNube] || 4;
-                    $("#usuarios").val(usuarios);
-                }
-
+                const usuariosActuales = parseInt($("#usuarios_nube").val()) || 0;
+                const tipoNube = $("#tipo_nube").val() == '1' ? 'prime' : 'contaplus';
+                const usuarios = AppConfigPC.configuracion.productos.pc.modulos_principales.nube.usuarios_por_defecto[tipoNube] || 4;
+                $("#usuarios_nube").val(usuarios);
                 GestorPrecios.actualizar();
             },
 
             actualizarTipo(tipoNube) {
-                const usuariosActuales = parseInt($("#usuarios").val()) || 0;
-
-                if (usuariosActuales === 0) {
-                    const usuarios = AppConfigPC.configuracion.productos.pc.configuracion_nube.usuarios_por_tipo[tipoNube] || 4;
-                    $("#usuarios").val(usuarios);
-                }
-
+                const usuariosActuales = parseInt($("#usuarios_nube").val()) || 0;
+                const tipo = tipoNube == '1' ? 'prime' : 'contaplus';
+                const usuarios = AppConfigPC.configuracion.productos.pc.modulos_principales.nube.usuarios_por_defecto[tipo] || 4;
+                $("#usuarios_nube").val(usuarios);
                 this.actualizarValores();
             },
 

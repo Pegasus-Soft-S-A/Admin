@@ -102,18 +102,7 @@ class LicenciasPcController extends LicenciasBaseController
         $licencia->fecha_actualizacion_ejecutable = date("d-m-Y", strtotime($licencia->fecha_actualizacion_ejecutable));
         $licencia->fecha_respaldo = date("d-m-Y", strtotime($licencia->fecha_respaldo));
 
-        // Obtener adicionales
-        $adicionales = Adicionales::where('numerocontrato', $licencia->numerocontrato)->get();
-        $tiposLicencia = config('sistema.tipos_productos');
-        $tiposAdicional = config('sistema.tipos_venta_adicionales');
-
-        $adicionales->transform(function ($adicional) use ($tiposAdicional, $tiposLicencia) {
-            $adicional->tipo_adicional = $tiposAdicional[$adicional->tipo_adicional] ?? $adicional->tipo_adicional;
-            $adicional->tipo_licencia = $tiposLicencia[$adicional->tipo_licencia] ?? $adicional->tipo_licencia;
-            return $adicional;
-        });
-
-        return view('admin.licencias.PC.editar', compact('cliente', 'licencia', 'modulos', 'empresas', 'adicionales'));
+        return view('admin.licencias.PC.editar', compact('cliente', 'licencia', 'modulos', 'empresas'));
     }
 
     public function actualizar(Request $request, Licencias $licencia)
@@ -147,7 +136,7 @@ class LicenciasPcController extends LicenciasBaseController
             $accion = match ($tipoOperacion) {
                 'mes' => 'renovacion_mensual',
                 'anual' => 'renovacion_anual',
-                'actualizacion' => 'renovacion_anual',
+                'actualizacion' => 'actualizacion_anual',
                 default => 'modificado'
             };
 

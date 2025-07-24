@@ -20,13 +20,6 @@ return [
         3 => 'VPS'
     ],
 
-    'tipos_venta_adicionales' => [
-        1 => 'Usuarios',
-        2 => 'Moviles',
-        3 => 'Sucursales',
-        4 => 'Estaciones',
-    ],
-
     'permisos' => [
 
         'clientes' => [
@@ -216,6 +209,7 @@ return [
             'nuevo' => 'Nueva {producto}',
             'modificado' => '{producto} Modificada',
             'renovacion_mensual' => 'Renovación Mensual {producto}',
+            'actualizacion_anual' => 'Actualización Anual {producto}',
             'renovacion_anual' => 'Renovación Anual {producto}',
             'recarga_documentos' => 'Recarga de Documentos {producto}',
             'credenciales' => 'Credenciales de Acceso {producto}',
@@ -513,7 +507,7 @@ return [
             'modulos_principales' => [
                 'practico' => [
                     'equipos' => 2,
-                    'moviles' => 0,
+                    'moviles' => 2,
                     'sucursales' => 1,
                     'precios' => [
                         'mensual' => 33,
@@ -528,7 +522,7 @@ return [
                 ],
                 'control' => [
                     'equipos' => 3,
-                    'moviles' => 0,
+                    'moviles' => 3,
                     'sucursales' => 1,
                     'precios' => [
                         'mensual' => 63,
@@ -544,7 +538,7 @@ return [
                 ],
                 'contable' => [
                     'equipos' => 4,
-                    'moviles' => 0,
+                    'moviles' => 4,
                     'sucursales' => 1,
                     'precios' => [
                         'mensual' => 77,
@@ -560,7 +554,7 @@ return [
                 ],
                 'nube' => [
                     'equipos' => 4,
-                    'moviles' => 0,
+                    'moviles' => 4,
                     'sucursales' => 1,
                     'precios' => [
                         'prime' => [
@@ -580,7 +574,11 @@ return [
                     'incluye_produccion' => true,
                     'hereda_de' => 'contable', // Incluye lo de contable + control + práctico
                     'requiere_configuracion_nube' => true,
-                    'adicionales' => [4, 5]
+                    'adicionales' => [4, 5],
+                    'usuarios_por_defecto' => [
+                        "prime" => 4, // Prime = 4 usuarios
+                        "contaplus" => 6  // Contaplus = 6 usuarios
+                    ]
                 ]
             ],
 
@@ -670,14 +668,7 @@ return [
                     'sin_renovacion' => true // No se puede renovar, solo actualizaciones
                 ]
             ],
-
-            // Configuración específica de nube
-            'configuracion_nube' => [
-                'usuarios_por_tipo' => [
-                    1 => 4, // Prime
-                    2 => 6  // Contaplus
-                ]
-            ]
+            
         ]
     ]
 ];
