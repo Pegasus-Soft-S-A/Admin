@@ -69,26 +69,37 @@
                     <label>Producto</label>
                     <select class="form-control {{ !puede('web', 'editar_producto_modificar') && $accion == 'Modificar' ? 'disabled' : '' }}"
                             name="producto" id="producto">
-                        @if ($accion == 'Modificar' && $licencia->producto == '12')
-                            <option value="12" {{ old('producto', $licencia->producto) == '12' ? 'Selected' : '' }}>Facturito</option>
-                        @else
-                            <option value="2" {{ old('producto', $licencia->producto) == '2' ? 'Selected' : '' }}>Facturación</option>
-                            <option value="3" {{ old('producto', $licencia->producto) == '3' ? 'Selected' : '' }}>Servicios</option>
-                            <option value="4" {{ old('producto', $licencia->producto) == '4' ? 'Selected' : '' }}>Comercial</option>
-                            <option value="5" {{ old('producto', $licencia->producto) == '5' ? 'Selected' : '' }}>Soy Contador Comercial</option>
-                            <option value="8" {{ old('producto', $licencia->producto) == '8' ? 'Selected' : '' }}>Soy Contador Servicios</option>
-                            @if ($accion == 'Modificar' && $licencia->producto == '6')
-                                <option value="6" {{ old('producto', $licencia->producto) == '6' ? 'Selected' : '' }}>Perseo Lite Anterior</option>
+
+                        @php
+                            $productos = config('sistema.productos.web');
+                            $valorSeleccionado = old('producto', $licencia->producto);
+
+                            // Definir qué productos mostrar según la acción
+                            if ($accion == 'Modificar' && $valorSeleccionado == '12') {
+                                // Solo Facturito si está en modificar y es Facturito
+                                $productosPermitidos = [12];
+                            } elseif ($accion == 'Crear') {
+                                // En crear, mostrar todos excepto los especiales de modificar
+                                $productosPermitidos = [2, 3, 4, 5, 8, 9, 11, 12];
+                            } else {
+                                // En modificar (no Facturito), mostrar productos normales + especiales si ya los tiene
+                                $productosPermitidos = [2, 3, 4, 5, 8, 9, 11];
+
+                                // Agregar productos especiales solo si ya los tiene asignados
+                                if ($valorSeleccionado == '6') $productosPermitidos[] = 6;
+                                if ($valorSeleccionado == '10') $productosPermitidos[] = 10;
+                            }
+                        @endphp
+
+                        @foreach($productosPermitidos as $productoId)
+                            @if(isset($productos[$productoId]))
+                                <option value="{{ $productoId }}"
+                                    {{ $valorSeleccionado == $productoId ? 'selected' : '' }}>
+                                    {{ $productos[$productoId]['descripcion'] }}
+                                </option>
                             @endif
-                            <option value="9" {{ old('producto', $licencia->producto) == '9' ? 'Selected' : '' }}>Perseo Lite</option>
-                            @if ($accion == 'Modificar' && $licencia->producto == '10')
-                                <option value="10" {{ old('producto', $licencia->producto) == '10' ? 'Selected' : '' }}>Emprendedor</option>
-                            @endif
-                            <option value="11" {{ old('producto', $licencia->producto) == '11' ? 'Selected' : '' }}>Socio Perseo</option>
-                            @if ($accion == 'Crear')
-                                <option value="12" {{ old('producto', $licencia->producto) == '12' ? 'Selected' : '' }}>Facturito</option>
-                            @endif
-                        @endif
+                        @endforeach
+
                     </select>
                     @error('producto')
                     <div class="invalid-feedback">{{ $message }}</div>

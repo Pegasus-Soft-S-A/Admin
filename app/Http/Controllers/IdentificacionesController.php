@@ -274,7 +274,6 @@ class IdentificacionesController extends Controller
         return xmlwriter_output_memory($xw);
     }
 
-
     private function producto($licencia)
     {
         $producto = "";

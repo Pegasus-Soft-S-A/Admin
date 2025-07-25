@@ -232,6 +232,7 @@ return [
     'productos' => [
         'web' => [
             2 => [ // Facturación
+                'descripcion' => "Facturacion",
                 'mensual' => [
                     'precio' => '17.99',
                     'meses' => 1,
@@ -257,6 +258,7 @@ return [
                 'adicionales' => [1, 2, 3]
             ],
             3 => [ // Servicios
+                'descripcion' => "Servicios",
                 'mensual' => [
                     'precio' => '29.99',
                     'meses' => 1,
@@ -282,6 +284,7 @@ return [
                 'adicionales' => [1, 2, 3]
             ],
             4 => [ // Comercial
+                'descripcion' => "Comercial",
                 'mensual' => [
                     'precio' => '41.99',
                     'meses' => 1,
@@ -316,6 +319,7 @@ return [
                 'servidor' => 3,
             ],
             5 => [ // Soy Contador Comercial
+                'descripcion' => "Soy Contador Comercial",
                 'mensual' => [
                     'precio' => '23.99',
                     'meses' => 1,
@@ -341,6 +345,7 @@ return [
                 'adicionales' => [1, 2, 3]
             ],
             6 => [ // Perseo Lite Anterior
+                'descripcion' => "Perseo Lite Anterior",
                 'anual' => [
                     'precio' => '0',
                     'meses' => 12,
@@ -362,6 +367,7 @@ return [
                 'adicionales' => [1, 2, 3]
             ],
             8 => [ // Soy Contador Servicios
+                'descripcion' => "Soy Contador Servicios",
                 'mensual' => [
                     'precio' => '17.99',
                     'meses' => 1,
@@ -387,6 +393,7 @@ return [
                 'adicionales' => [1, 2, 3]
             ],
             9 => [ // Perseo Lite
+                'descripcion' => "Perseo Lite",
                 'mensual' => [
                     'precio' => '0',
                     'meses' => 0.5,
@@ -422,6 +429,7 @@ return [
                 ]
             ],
             10 => [ // Emprendedor
+                'descripcion' => "Emprendedor",
                 'anual' => [
                     'precio' => '24.50',
                     'meses' => 12,
@@ -443,6 +451,7 @@ return [
                 'adicionales' => [1, 2, 3]
             ],
             11 => [ // Socio Perseo
+                'descripcion' => "Socio Perseo",
                 'mensual' => [
                     'precio' => '9.99',
                     'meses' => 1,
@@ -468,6 +477,7 @@ return [
                 'adicionales' => [1, 2, 3]
             ],
             12 => [ // Facturito
+                'descripcion' => "Facturito",
                 'inicial' => [
                     'precio' => '8.99',
                     'meses' => 12,
@@ -668,7 +678,35 @@ return [
                     'sin_renovacion' => true // No se puede renovar, solo actualizaciones
                 ]
             ],
-            
+
         ]
-    ]
+    ],
+
+    'provincias' => [
+        '01' => 'AZUAY',
+        '02' => 'BOLIVAR',
+        '03' => 'CAÑAR',
+        '04' => 'CARCHI',
+        '05' => 'CHIMBORAZO',
+        '06' => 'COTOPAXI',
+        '07' => 'EL ORO',
+        '08' => 'ESMERALDAS',
+        '09' => 'GUAYAS',
+        '10' => 'IMBABURA',
+        '11' => 'LOJA',
+        '12' => 'LOS RIOS',
+        '13' => 'MANABI',
+        '14' => 'MORONA SANTIAGO',
+        '15' => 'NAPO',
+        '16' => 'PASTAZA',
+        '17' => 'PICHINCHA',
+        '18' => 'TUNGURAHUA',
+        '19' => 'ZAMORA CHINCHIPE',
+        '20' => 'GALAPAGOS',
+        '21' => 'SUCUMBIOS',
+        '22' => 'ORELLANA',
+        '23' => 'SANTO DOMINGO DE LOS TSACHILAS',
+        '24' => 'SANTA ELENA'
+    ],
+
 ];

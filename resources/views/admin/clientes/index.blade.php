@@ -300,36 +300,8 @@
                                                     <select class="form-control form-control-solid datatable-input select2" id="provinciasid"
                                                             name="provinciasid">
                                                         <option value="">🗺️ Todas las provincias</option>
-                                                        @php
-                                                            $provincias = [
-                                                                ['id' => '01', 'nombre' => 'Azuay'],
-                                                                ['id' => '02', 'nombre' => 'Bolivar'],
-                                                                ['id' => '03', 'nombre' => 'Cañar'],
-                                                                ['id' => '04', 'nombre' => 'Carchi'],
-                                                                ['id' => '05', 'nombre' => 'Chimborazo'],
-                                                                ['id' => '06', 'nombre' => 'Cotopaxi'],
-                                                                ['id' => '07', 'nombre' => 'El Oro'],
-                                                                ['id' => '08', 'nombre' => 'Esmeraldas'],
-                                                                ['id' => '09', 'nombre' => 'Guayas'],
-                                                                ['id' => '20', 'nombre' => 'Galapagos'],
-                                                                ['id' => '10', 'nombre' => 'Imbabura'],
-                                                                ['id' => '11', 'nombre' => 'Loja'],
-                                                                ['id' => '12', 'nombre' => 'Los Rios'],
-                                                                ['id' => '13', 'nombre' => 'Manabi'],
-                                                                ['id' => '14', 'nombre' => 'Morona Santiago'],
-                                                                ['id' => '15', 'nombre' => 'Napo'],
-                                                                ['id' => '22', 'nombre' => 'Orellana'],
-                                                                ['id' => '16', 'nombre' => 'Pastaza'],
-                                                                ['id' => '17', 'nombre' => 'Pichincha'],
-                                                                ['id' => '24', 'nombre' => 'Santa Elena'],
-                                                                ['id' => '23', 'nombre' => 'Santo Domingo De Los Tsachilas'],
-                                                                ['id' => '21', 'nombre' => 'Sucumbios'],
-                                                                ['id' => '18', 'nombre' => 'Tungurahua'],
-                                                                ['id' => '19', 'nombre' => 'Zamora Chinchipe'],
-                                                            ];
-                                                        @endphp
-                                                        @foreach ($provincias as $provincia)
-                                                            <option value="{{ $provincia['id'] }}">{{ $provincia['nombre'] }}</option>
+                                                        @foreach (config('sistema.provincias') as $id => $nombre)
+                                                            <option value="{{ $id }}">{{ $nombre }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>

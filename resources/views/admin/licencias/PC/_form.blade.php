@@ -554,18 +554,20 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label>Clave de Activación</label>
-                                <textarea rows="15" class="form-control @error('key') is-invalid @enderror"
-                                          name="key" id="key" readonly>{{ $licencia->key }}</textarea>
-                                @error('key')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                    @if($accion=="Modificar")
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>Clave de Activación</label>
+                                    <textarea rows="15" class="form-control @error('key') is-invalid @enderror"
+                                              name="key" id="key" readonly>{{ $licencia->key }}</textarea>
+                                    @error('key')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
                 {{-- TAB: Modulos Adicionales --}}
                 <div class="tab-pane fade show" id="modulos_adicionales" role="tabpanel"

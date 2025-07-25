@@ -88,19 +88,9 @@ class clientesController extends LicenciasBaseController
             ];
 
             // Productos Web
-            $webProducts = [
-                2 => 'Facturación',
-                3 => 'Servicios',
-                4 => 'Comercial',
-                5 => 'Soy Contador Comercial',
-                6 => 'Perseo Lite Anterior',
-                7 => 'Total',
-                8 => 'Soy Contador Servicios',
-                9 => 'Perseo Lite',
-                10 => 'Emprendedor',
-                11 => 'Socio Perseo',
-                12 => 'Facturito'
-            ];
+            $webProducts = collect(config('sistema.productos.web'))
+                ->mapWithKeys(fn($producto, $id) => [$id => $producto['descripcion']])
+                ->toArray();
 
             // Periodos de Facturito
             $facturitoPeriods = [
@@ -124,32 +114,7 @@ class clientesController extends LicenciasBaseController
             ];
 
             // Provincias del Ecuador
-            $provinces = [
-                1 => 'AZUAY',
-                2 => 'BOLIVAR',
-                3 => 'CAÑAR',
-                4 => 'CARCHI',
-                5 => 'CHIMBORAZO',
-                6 => 'COTOPAXI',
-                7 => 'EL ORO',
-                8 => 'ESMERALDAS',
-                9 => 'GUAYAS',
-                10 => 'IMBABURA',
-                11 => 'LOJA',
-                12 => 'LOS RIOS',
-                13 => 'MANABI',
-                14 => 'MORONA SANTIAGO',
-                15 => 'NAPO',
-                16 => 'PASTAZA',
-                17 => 'PICHINCHA',
-                18 => 'TUNGURAHUA',
-                19 => 'ZAMORA CHINCHIPE',
-                20 => 'GALAPAGOS',
-                21 => 'SUCUMBIOS',
-                22 => 'ORELLANA',
-                23 => 'SANTO DOMINGO DE LOS TSACHILAS',
-                24 => 'SANTA ELENA'
-            ];
+            $provinces = config('sistema.provincias');
 
             // ========== OBTENER PARÁMETROS DEL REQUEST ==========
 

@@ -162,43 +162,15 @@
             <label class="font-weight-bold text-dark">
                 Provincia:
             </label>
-            @php
-                $provincias = [
-                    ['id' => '01', 'nombre' => 'Azuay'],
-                    ['id' => '02', 'nombre' => 'Bolívar'],
-                    ['id' => '03', 'nombre' => 'Cañar'],
-                    ['id' => '04', 'nombre' => 'Carchi'],
-                    ['id' => '05', 'nombre' => 'Cotopaxi'],
-                    ['id' => '06', 'nombre' => 'Chimborazo'],
-                    ['id' => '07', 'nombre' => 'El Oro'],
-                    ['id' => '08', 'nombre' => 'Esmeraldas'],
-                    ['id' => '09', 'nombre' => 'Guayas'],
-                    ['id' => '20', 'nombre' => 'Galápagos'],
-                    ['id' => '10', 'nombre' => 'Imbabura'],
-                    ['id' => '11', 'nombre' => 'Loja'],
-                    ['id' => '12', 'nombre' => 'Los Ríos'],
-                    ['id' => '13', 'nombre' => 'Manabí'],
-                    ['id' => '14', 'nombre' => 'Morona Santiago'],
-                    ['id' => '15', 'nombre' => 'Napo'],
-                    ['id' => '22', 'nombre' => 'Orellana'],
-                    ['id' => '16', 'nombre' => 'Pastaza'],
-                    ['id' => '17', 'nombre' => 'Pichincha'],
-                    ['id' => '24', 'nombre' => 'Santa Elena'],
-                    ['id' => '23', 'nombre' => 'Santo Domingo de los Tsáchilas'],
-                    ['id' => '21', 'nombre' => 'Sucumbíos'],
-                    ['id' => '18', 'nombre' => 'Tungurahua'],
-                    ['id' => '19', 'nombre' => 'Zamora Chinchipe'],
-                ];
-            @endphp
             <select class="form-control select2 {{ $errors->has('provinciasid') ? 'is-invalid' : '' }}"
                     name="provinciasid"
                     id="provinciasid"
                     onchange="cambiarCiudad(this);"
                     @if ($rol != 1 && $accion == 'Modificar') disabled @endif>
                 <option value="">Seleccione una provincia</option>
-                @foreach ($provincias as $provincia)
-                    <option value="{{ $provincia['id'] }}" {{ $cliente->provinciasid == $provincia['id'] ? 'selected' : '' }}>
-                        {{ $provincia['nombre'] }}
+                @foreach (config('sistema.provincias') as $id => $nombre)
+                    <option value="{{ $id }}" {{ $cliente->provinciasid == $id ? 'selected' : '' }}>
+                        {{ $nombre }}
                     </option>
                 @endforeach
             </select>
